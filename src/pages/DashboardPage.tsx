@@ -1,7 +1,10 @@
+import { cityService, zoneService } from "@/api";
+import type { City, Zone } from "@/api";
 import { DataTable } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   mockDeliveries,
@@ -26,9 +29,11 @@ import type { ColumnDef } from "@tanstack/react-table";
 import {
   AlertTriangle,
   BarChart3,
+  Building2,
   Factory,
   IndianRupee,
   MapPin,
+  MapPinned,
   Package,
   ShoppingCart,
   Store,
@@ -36,6 +41,7 @@ import {
   Truck,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -304,6 +310,45 @@ const productionColumns: ColumnDef<ProductionLine>[] = [
 ];
 
 export function DashboardPage() {
+  const [cities, setCities] = useState<City[]>([]);
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [loadingCities, setLoadingCities] = useState(false);
+  const [loadingZones, setLoadingZones] = useState(false);
+
+  // Fetch cities and zones on mount
+  useEffect(() => {
+    const fetchCitiesAndZones = async () => {
+      setLoadingCities(true);
+      setLoadingZones(true);
+
+      try {
+        const citiesResponse = await cityService.getCities({
+          page: 1,
+          pageSize: 5,
+        });
+        setCities(citiesResponse.data);
+      } catch (error) {
+        console.error("Failed to fetch cities:", error);
+      } finally {
+        setLoadingCities(false);
+      }
+
+      try {
+        const zonesResponse = await zoneService.getZones({
+          page: 1,
+          pageSize: 5,
+        });
+        setZones(zonesResponse.data);
+      } catch (error) {
+        console.error("Failed to fetch zones:", error);
+      } finally {
+        setLoadingZones(false);
+      }
+    };
+
+    fetchCitiesAndZones();
+  }, []);
+
   const stats = [
     {
       title: "Production Output",
@@ -686,6 +731,123 @@ export function DashboardPage() {
           searchPlaceholder="Search production lines..."
         />
       </motion.div>
+
+      {/* Cities and Zones Management */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.6 }}
+          className="rounded-lg border border-border bg-card p-6"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <Building2 className="h-5 w-5" />
+              Cities
+            </h3>
+            <Button size="sm" variant="outline" asChild>
+              <a href="/settings">Manage</a>
+            </Button>
+          </div>
+          {loadingCities ? (
+            <div className="text-sm text-muted-foreground py-8 text-center">
+              Loading cities...
+            </div>
+          ) : cities.length > 0 ? (
+            <div className="space-y-3">
+              {cities.map((city) => (
+                <div
+                  key={city.id}
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                >
+                  <div>
+                    <div className="font-medium">{city.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {city.state}, {city.country}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={
+                        city.status === "active" ? "default" : "secondary"
+                      }
+                    >
+                      {city.status}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {city.pinCodes?.length || 0} pincodes
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground py-8 text-center">
+              No cities available.{" "}
+              <a href="/settings" className="text-primary hover:underline">
+                Add cities
+              </a>
+            </div>
+          )}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.65 }}
+          className="rounded-lg border border-border bg-card p-6"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <MapPinned className="h-5 w-5" />
+              Delivery Zones
+            </h3>
+            <Button size="sm" variant="outline" asChild>
+              <a href="/settings">Manage</a>
+            </Button>
+          </div>
+          {loadingZones ? (
+            <div className="text-sm text-muted-foreground py-8 text-center">
+              Loading zones...
+            </div>
+          ) : zones.length > 0 ? (
+            <div className="space-y-3">
+              {zones.map((zone) => (
+                <div
+                  key={zone.id}
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                >
+                  <div>
+                    <div className="font-medium">{zone.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      Code: {zone.code}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <Badge
+                      variant={
+                        zone.status === "active" ? "default" : "secondary"
+                      }
+                    >
+                      {zone.status}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      ₹{zone.deliveryCharge} delivery
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground py-8 text-center">
+              No zones available.{" "}
+              <a href="/settings" className="text-primary hover:underline">
+                Add zones
+              </a>
+            </div>
+          )}
+        </motion.div>
+      </div>
 
       {/* Recent Orders + Franchise Requests */}
       <div className="grid gap-6 lg:grid-cols-2">

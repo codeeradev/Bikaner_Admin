@@ -14,27 +14,36 @@ export interface Category {
   name: string;
   slug: string;
   description: string;
-  image: string;
+  image?: string;
   status: "active" | "inactive";
-  productCount: number;
+  productCount?: number;
   createdAt: string;
 }
 
 export interface Product {
   id: string;
-  name: string;
-  sku: string;
   categoryId: string;
-  categoryName: string;
-  image: string;
-  description: string;
-  userPrice: number;
-  franchisePrice: number;
-  bulkPrice: number;
-  minOrder: number;
-  maxOrder: number;
+  name: string;
+  slug?: string;
+  description?: string;
+  sku?: string;
+  image?: string;
+  gallery?: string[];
+  weight?: number;
+  unit?: string;
+  mrp?: number;
+  sellingPrice?: number;
+  bulkPrice?: number;
+  stock?: number;
+  minBulkQty?: number;
+  isFeatured?: boolean;
   status: "active" | "inactive";
   createdAt: string;
+  updatedAt: string;
+  category?: {
+    id: string;
+    name: string;
+  };
 }
 
 export type PermissionAction = "view" | "create" | "edit" | "delete";

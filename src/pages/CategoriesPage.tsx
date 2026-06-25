@@ -1,3 +1,4 @@
+import type { Category } from "@/api";
 import { DataTable } from "@/components/DataTable";
 import {
   FormInput,
@@ -13,34 +14,49 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useAlert } from "@/hooks/use-alert";
 import { type CategoryFormData, categorySchema } from "@/lib/validations";
 import { useCategoryStore, useUIStore } from "@/store";
-import type { Category } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ImageIcon, Pencil, Plus, Trash2 } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 export function CategoriesPage() {
   const {
-    categories: _categories,
+    isLoading,
+    error,
     addCategory,
     updateCategory,
     deleteCategory,
     setSearchQuery,
     setStatusFilter,
     getFilteredCategories,
+    fetchCategories,
   } = useCategoryStore();
   const { showDialog } = useUIStore();
+  const alert = useAlert();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const methods = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
   });
   const { handleSubmit, reset } = methods;
+
+  // Fetch categories on mount
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  // Show error alert when error changes
+  useEffect(() => {
+    if (error) {
+      alert.error(error);
+    }
+  }, [error, alert]);
 
   const openAddModal = () => {
     setEditingCategory(null);
@@ -59,21 +75,57 @@ export function CategoriesPage() {
     setIsModalOpen(true);
   };
 
-  const onSubmit = (data: CategoryFormData) => {
-    if (editingCategory) {
-      updateCategory(editingCategory.id, data);
-    } else {
-      addCategory(data);
+  const onSubmit = async (data: CategoryFormData) => {
+    console.log("🟢 CategoriesPage: Form submitted with data:", data);
+    setIsSubmitting(true);
+    const loadingId = alert.loading(
+      editingCategory ? "Updating category..." : "Creating category...",
+    );
+
+    try {
+      if (editingCategory) {
+        console.log(
+          "🟡 CategoriesPage: Updating category:",
+          editingCategory.id,
+        );
+        await updateCategory(editingCategory.id, data);
+        alert.removeAlert(loadingId);
+        alert.success("Category updated successfully");
+      } else {
+        console.log("🟡 CategoriesPage: Creating new category");
+        await addCategory(data);
+        alert.removeAlert(loadingId);
+        alert.success("Category created successfully");
+      }
+      console.log("✅ CategoriesPage: Operation completed successfully");
+      setIsModalOpen(false);
+      reset();
+    } catch (err) {
+      console.error("❌ CategoriesPage: Operation failed:", err);
+      alert.removeAlert(loadingId);
+      alert.error(err instanceof Error ? err.message : "Operation failed");
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsModalOpen(false);
-    reset();
   };
 
   const handleDelete = (category: Category) => {
     showDialog({
       title: "Delete Category",
       description: `Are you sure you want to delete "${category.name}"? This action cannot be undone.`,
-      onConfirm: () => deleteCategory(category.id),
+      onConfirm: async () => {
+        const loadingId = alert.loading("Deleting category...");
+        try {
+          await deleteCategory(category.id);
+          alert.removeAlert(loadingId);
+          alert.success("Category deleted successfully");
+        } catch (err) {
+          alert.removeAlert(loadingId);
+          alert.error(
+            err instanceof Error ? err.message : "Failed to delete category",
+          );
+        }
+      },
     });
   };
 
@@ -157,12 +209,18 @@ export function CategoriesPage() {
         <input
           type="text"
           placeholder="Search categories..."
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            fetchCategories();
+          }}
           className="max-w-sm h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
           data-ocid="category.search_input"
         />
         <select
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            fetchCategories();
+          }}
           className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
           data-ocid="category.status_filter"
         >
@@ -172,11 +230,17 @@ export function CategoriesPage() {
         </select>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={filteredCategories}
-        emptyMessage="No categories found"
-      />
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-muted-foreground">Loading categories...</div>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filteredCategories}
+          emptyMessage="No categories found"
+        />
+      )}
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-lg">
@@ -211,11 +275,20 @@ export function CategoriesPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setIsModalOpen(false)}
+                  disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" data-ocid="category.submit_button">
-                  {editingCategory ? "Update" : "Create"}
+                <Button
+                  type="submit"
+                  data-ocid="category.submit_button"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting
+                    ? "Saving..."
+                    : editingCategory
+                      ? "Update"
+                      : "Create"}
                 </Button>
               </div>
             </form>

@@ -1,6 +1,8 @@
+import { AlertContainer } from "@/components/AlertContainer";
 import { MainLayout } from "@/layouts/MainLayout";
 import { BulkOrdersPage } from "@/pages/BulkOrdersPage";
 import { CategoriesPage } from "@/pages/CategoriesPage";
+import { CitiesPage } from "@/pages/CitiesPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { FranchisePage } from "@/pages/FranchisePage";
 import { FranchiseRequestsPage } from "@/pages/FranchiseRequestsPage";
@@ -15,6 +17,7 @@ import { RolesPage } from "@/pages/RolesPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { ThemePage } from "@/pages/ThemePage";
 import { WalletPage } from "@/pages/WalletPage";
+import { ZonesPage } from "@/pages/ZonesPage";
 import {
   Outlet,
   createRootRoute,
@@ -26,6 +29,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 const rootRoute = createRootRoute({
   component: () => (
     <>
+      <AlertContainer />
       <Outlet />
     </>
   ),
@@ -59,6 +63,18 @@ const categoriesRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "/categories",
   component: CategoriesPage,
+});
+
+const citiesRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: "/cities",
+  component: CitiesPage,
+});
+
+const zonesRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: "/zones",
+  component: ZonesPage,
 });
 
 const productsRoute = createRoute({
@@ -146,6 +162,8 @@ const routeTree = rootRoute.addChildren([
     protectedRoute.addChildren([
       dashboardRoute,
       categoriesRoute,
+      citiesRoute,
+      zonesRoute,
       productsRoute,
       ordersRoute,
       normalOrdersRoute,

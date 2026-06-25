@@ -1,5 +1,5 @@
-import { mockCategories } from "@/mock-data/categories";
-import type { Category } from "@/types";
+import { categoryService } from "@/api";
+import type { ApiError, Category, CategoryListResponse } from "@/api";
 import { create } from "zustand";
 
 interface CategoryState {
@@ -7,60 +7,151 @@ interface CategoryState {
   searchQuery: string;
   statusFilter: string;
   isLoading: boolean;
+  error: string | null;
+  total: number;
+  page: number;
+  pageSize: number;
+
+  // Actions
   setSearchQuery: (query: string) => void;
   setStatusFilter: (filter: string) => void;
+  setPage: (page: number) => void;
+  fetchCategories: () => Promise<void>;
   addCategory: (
-    category: Omit<Category, "id" | "createdAt" | "productCount">,
-  ) => void;
-  updateCategory: (id: string, category: Partial<Category>) => void;
-  deleteCategory: (id: string) => void;
+    category: Omit<Category, "id" | "createdAt" | "updatedAt">,
+  ) => Promise<void>;
+  updateCategory: (id: string, category: Partial<Category>) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
   getFilteredCategories: () => Category[];
 }
 
 export const useCategoryStore = create<CategoryState>((set, get) => ({
-  categories: mockCategories,
+  categories: [],
   searchQuery: "",
   statusFilter: "all",
   isLoading: false,
+  error: null,
+  total: 0,
+  page: 1,
+  pageSize: 20,
 
-  setSearchQuery: (query) => set({ searchQuery: query }),
-  setStatusFilter: (filter) => set({ statusFilter: filter }),
-
-  addCategory: (category) => {
-    const newCategory: Category = {
-      ...category,
-      id: `cat-${Date.now()}`,
-      productCount: 0,
-      createdAt: new Date().toISOString(),
-    };
-    set((state) => ({ categories: [...state.categories, newCategory] }));
+  setSearchQuery: (query) => {
+    set({ searchQuery: query, page: 1 });
   },
 
-  updateCategory: (id, category) => {
-    set((state) => ({
-      categories: state.categories.map((c) =>
-        c.id === id ? { ...c, ...category } : c,
-      ),
-    }));
+  setStatusFilter: (filter) => {
+    set({ statusFilter: filter, page: 1 });
   },
 
-  deleteCategory: (id) => {
-    set((state) => ({
-      categories: state.categories.filter((c) => c.id !== id),
-    }));
+  setPage: (page) => {
+    set({ page });
+    get().fetchCategories();
+  },
+
+  fetchCategories: async () => {
+    const { searchQuery, statusFilter, page, pageSize } = get();
+    set({ isLoading: true, error: null });
+
+    try {
+      const response: CategoryListResponse =
+        await categoryService.getCategories({
+          page,
+          pageSize,
+          search: searchQuery || undefined,
+          status:
+            statusFilter !== "all"
+              ? (statusFilter as "active" | "inactive")
+              : undefined,
+        });
+
+      set({
+        categories: response.data,
+        total: response.total,
+        isLoading: false,
+      });
+    } catch (err) {
+      const apiError = err as ApiError;
+      set({
+        error: apiError.message || "Failed to fetch categories",
+        isLoading: false,
+      });
+    }
+  },
+
+  addCategory: async (category) => {
+    console.log("🟡 CategoryStore: addCategory called with:", category);
+    set({ isLoading: true, error: null });
+
+    try {
+      const categoryData = {
+        name: category.name,
+        slug: category.slug,
+        description: category.description,
+        status: category.status,
+      };
+
+      console.log("🟡 CategoryStore: Sending data to API:", categoryData);
+
+      const result = await categoryService.createCategory(categoryData);
+      console.log("✅ CategoryStore: Category created, result:", result);
+
+      // Refresh the list
+      console.log("🟡 CategoryStore: Refreshing category list...");
+      await get().fetchCategories();
+      console.log("✅ CategoryStore: Category list refreshed");
+    } catch (err) {
+      const apiError = err as ApiError;
+      console.error("❌ CategoryStore: Error creating category:", apiError);
+      set({
+        error: apiError.message || "Failed to create category",
+        isLoading: false,
+      });
+      throw err;
+    }
+  },
+
+  updateCategory: async (id, category) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      await categoryService.updateCategory(id, {
+        name: category.name,
+        slug: category.slug,
+        description: category.description,
+        status: category.status,
+      });
+
+      // Refresh the list
+      await get().fetchCategories();
+    } catch (err) {
+      const apiError = err as ApiError;
+      set({
+        error: apiError.message || "Failed to update category",
+        isLoading: false,
+      });
+      throw err;
+    }
+  },
+
+  deleteCategory: async (id) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      await categoryService.deleteCategory(id);
+
+      // Refresh the list
+      await get().fetchCategories();
+    } catch (err) {
+      const apiError = err as ApiError;
+      set({
+        error: apiError.message || "Failed to delete category",
+        isLoading: false,
+      });
+      throw err;
+    }
   },
 
   getFilteredCategories: () => {
-    const { categories, searchQuery, statusFilter } = get();
-    return categories.filter((category) => {
-      const matchesSearch =
-        !searchQuery ||
-        category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        category.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        category.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus =
-        statusFilter === "all" || category.status === statusFilter;
-      return matchesSearch && matchesStatus;
-    });
+    return get().categories;
   },
 }));

@@ -6,6 +6,7 @@ import { useAuthStore, useRoleStore, useUIStore } from "@/store";
 import type { PermissionSection } from "@/types";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
+  Building2,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -13,6 +14,7 @@ import {
   Cookie,
   FolderTree,
   LayoutDashboard,
+  MapPin,
   Menu,
   Package,
   Palette,
@@ -55,6 +57,25 @@ const menuItems: MenuItem[] = [
         icon: Package,
         href: "/products",
         section: "products",
+      },
+    ],
+  },
+  {
+    label: "Locations",
+    icon: MapPin,
+    section: "settings",
+    children: [
+      {
+        label: "Cities",
+        icon: Building2,
+        href: "/cities",
+        section: "settings",
+      },
+      {
+        label: "Zones",
+        icon: MapPin,
+        href: "/zones",
+        section: "settings",
       },
     ],
   },

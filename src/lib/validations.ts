@@ -25,39 +25,35 @@ export const categorySchema = z.object({
     ),
   description: z
     .string()
-    .max(500, "Description must be less than 500 characters"),
-  image: z.string().min(0),
+    .max(500, "Description must be less than 500 characters")
+    .optional(),
+  image: z.string().optional(),
   status: z.enum(["active", "inactive"]),
 });
 
 export type CategoryFormData = z.infer<typeof categorySchema>;
 
-export const productSchema = z
-  .object({
-    name: z
-      .string()
-      .min(1, "Product name is required")
-      .max(200, "Name must be less than 200 characters"),
-    sku: z
-      .string()
-      .min(1, "SKU is required")
-      .max(50, "SKU must be less than 50 characters"),
-    categoryId: z.string().min(1, "Category is required"),
-    description: z
-      .string()
-      .max(1000, "Description must be less than 1000 characters"),
-    image: z.string().min(0),
-    userPrice: z.number().min(0, "Price must be 0 or greater"),
-    franchisePrice: z.number().min(0, "Franchise price must be 0 or greater"),
-    bulkPrice: z.number().min(0, "Bulk price must be 0 or greater"),
-    minOrder: z.number().int().min(1, "Minimum order must be at least 1"),
-    maxOrder: z.number().int().min(1, "Maximum order must be at least 1"),
-    status: z.enum(["active", "inactive"]),
-  })
-  .refine((data) => data.maxOrder >= data.minOrder, {
-    message: "Maximum order must be greater than or equal to minimum order",
-    path: ["maxOrder"],
-  });
+export const productSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Product name is required")
+    .max(200, "Name must be less than 200 characters"),
+  categoryId: z.string().min(1, "Category is required"),
+  slug: z.string().optional(),
+  description: z.string().optional(),
+  sku: z.string().optional(),
+  weight: z.coerce.number().min(0, "Weight must be 0 or greater").optional(),
+  unit: z.string().optional(),
+  mrp: z.coerce.number().min(0, "MRP must be 0 or greater").optional(),
+  sellingPrice: z.coerce.number().min(0, "Selling price must be 0 or greater").optional(),
+  bulkPrice: z.coerce.number().min(0, "Bulk price must be 0 or greater").optional(),
+  stock: z.coerce.number().int().min(0, "Stock must be 0 or greater").optional(),
+  minBulkQty: z.coerce.number().int().min(0, "Min bulk quantity must be 0 or greater").optional(),
+  isFeatured: z.boolean().optional(),
+  status: z.enum(["active", "inactive"]),
+  image: z.any().optional(),
+  gallery: z.array(z.any()).optional(),
+});
 
 export type ProductFormData = z.infer<typeof productSchema>;
 

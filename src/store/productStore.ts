@@ -1,5 +1,5 @@
-import { mockProducts } from "@/mock-data/products";
-import type { Product } from "@/types";
+import { productService } from "@/api";
+import type { ApiError, Product, ProductListResponse } from "@/api";
 import { create } from "zustand";
 
 interface ProductState {
@@ -8,62 +8,127 @@ interface ProductState {
   statusFilter: string;
   categoryFilter: string;
   isLoading: boolean;
+  error: string | null;
+  total: number;
+  page: number;
+  pageSize: number;
+
+  // Actions
   setSearchQuery: (query: string) => void;
   setStatusFilter: (filter: string) => void;
   setCategoryFilter: (filter: string) => void;
-  addProduct: (product: Omit<Product, "id" | "createdAt">) => void;
-  updateProduct: (id: string, product: Partial<Product>) => void;
-  deleteProduct: (id: string) => void;
+  setPage: (page: number) => void;
+  fetchProducts: () => Promise<void>;
+  addProduct: (product: any) => Promise<void>;
+  updateProduct: (id: string, product: any) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
   getFilteredProducts: () => Product[];
 }
 
 export const useProductStore = create<ProductState>((set, get) => ({
-  products: mockProducts,
+  products: [],
   searchQuery: "",
   statusFilter: "all",
   categoryFilter: "all",
   isLoading: false,
+  error: null,
+  total: 0,
+  page: 1,
+  pageSize: 100,
 
-  setSearchQuery: (query) => set({ searchQuery: query }),
-  setStatusFilter: (filter) => set({ statusFilter: filter }),
-  setCategoryFilter: (filter) => set({ categoryFilter: filter }),
-
-  addProduct: (product) => {
-    const newProduct: Product = {
-      ...product,
-      id: `prod-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-    };
-    set((state) => ({ products: [...state.products, newProduct] }));
+  setSearchQuery: (query) => {
+    set({ searchQuery: query, page: 1 });
   },
 
-  updateProduct: (id, product) => {
-    set((state) => ({
-      products: state.products.map((p) =>
-        p.id === id ? { ...p, ...product } : p,
-      ),
-    }));
+  setStatusFilter: (filter) => {
+    set({ statusFilter: filter, page: 1 });
   },
 
-  deleteProduct: (id) => {
-    set((state) => ({
-      products: state.products.filter((p) => p.id !== id),
-    }));
+  setCategoryFilter: (filter) => {
+    set({ categoryFilter: filter, page: 1 });
+  },
+
+  setPage: (page) => {
+    set({ page });
+    get().fetchProducts();
+  },
+
+  fetchProducts: async () => {
+    const { searchQuery, statusFilter, categoryFilter, page, pageSize } = get();
+    set({ isLoading: true, error: null });
+
+    try {
+      const response: ProductListResponse = await productService.getProducts({
+        page,
+        pageSize,
+        search: searchQuery || undefined,
+        status: statusFilter !== "all" ? (statusFilter as "active" | "inactive") : undefined,
+        categoryId: categoryFilter !== "all" ? categoryFilter : undefined,
+      });
+
+      set({
+        products: response.data,
+        total: response.total,
+        isLoading: false,
+      });
+    } catch (err) {
+      const apiError = err as ApiError;
+      set({
+        error: apiError.message || "Failed to fetch products",
+        isLoading: false,
+      });
+    }
+  },
+
+  addProduct: async (productData) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      await productService.createProduct(productData);
+      await get().fetchProducts();
+    } catch (err) {
+      const apiError = err as ApiError;
+      set({
+        error: apiError.message || "Failed to create product",
+        isLoading: false,
+      });
+      throw err;
+    }
+  },
+
+  updateProduct: async (id, productData) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      await productService.updateProduct(id, productData);
+      await get().fetchProducts();
+    } catch (err) {
+      const apiError = err as ApiError;
+      set({
+        error: apiError.message || "Failed to update product",
+        isLoading: false,
+      });
+      throw err;
+    }
+  },
+
+  deleteProduct: async (id) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      await productService.deleteProduct(id);
+      await get().fetchProducts();
+    } catch (err) {
+      const apiError = err as ApiError;
+      set({
+        error: apiError.message || "Failed to delete product",
+        isLoading: false,
+      });
+      throw err;
+    }
   },
 
   getFilteredProducts: () => {
-    const { products, searchQuery, statusFilter, categoryFilter } = get();
-    return products.filter((product) => {
-      const matchesSearch =
-        !searchQuery ||
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus =
-        statusFilter === "all" || product.status === statusFilter;
-      const matchesCategory =
-        categoryFilter === "all" || product.categoryId === categoryFilter;
-      return matchesSearch && matchesStatus && matchesCategory;
-    });
+    return get().products;
   },
 }));
