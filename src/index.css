@@ -1,0 +1,234 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("/assets/fonts/SpaceGrotesk.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DM Sans";
+  src: url("/assets/fonts/DMSans.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/assets/fonts/GeistMono.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("/assets/fonts/Fraunces.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/assets/fonts/GeneralSans.woff2") format("woff2");
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --font-display: "Fraunces";
+    --font-body: "General Sans";
+    --font-mono: "Geist Mono";
+    --radius: 0.625rem;
+
+    --background: 0.96 0.015 75;
+    --foreground: 0.18 0.03 55;
+    --card: 0.99 0.008 75;
+    --card-foreground: 0.18 0.03 55;
+    --popover: 0.99 0.008 75;
+    --popover-foreground: 0.18 0.03 55;
+
+    --primary: 0.5 0.18 70;
+    --primary-foreground: 0.98 0.005 70;
+
+    --secondary: 0.88 0.02 75;
+    --secondary-foreground: 0.35 0.03 55;
+    --muted: 0.9 0.015 75;
+    --muted-foreground: 0.5 0.02 55;
+
+    --accent: 0.5 0.14 30;
+    --accent-foreground: 0.98 0.005 30;
+
+    --destructive: 0.55 0.2 25;
+    --destructive-foreground: 0.95 0.01 25;
+
+    --border: 0.85 0.02 75;
+    --input: 0.85 0.02 75;
+    --ring: 0.5 0.18 70;
+
+    --chart-1: 0.5 0.18 70;
+    --chart-2: 0.6 0.16 150;
+    --chart-3: 0.75 0.16 80;
+    --chart-4: 0.5 0.14 30;
+    --chart-5: 0.65 0.18 25;
+
+    --sidebar: 0.97 0.012 75;
+    --sidebar-foreground: 0.18 0.03 55;
+    --sidebar-primary: 0.5 0.18 70;
+    --sidebar-primary-foreground: 0.98 0.005 70;
+    --sidebar-accent: 0.88 0.02 75;
+    --sidebar-accent-foreground: 0.35 0.03 55;
+    --sidebar-border: 0.85 0.02 75;
+    --sidebar-ring: 0.5 0.18 70;
+
+    --success: 0.55 0.16 150;
+    --warning: 0.75 0.16 80;
+    --gradient-primary: linear-gradient(
+      135deg,
+      oklch(var(--primary)),
+      oklch(var(--accent))
+    );
+    --gradient-subtle: linear-gradient(
+      180deg,
+      oklch(var(--foreground) / 0.6),
+      oklch(var(--background) / 0.9)
+    );
+    --shadow-subtle: 0 1px 2px 0 oklch(var(--foreground) / 0.05);
+    --shadow-elevated: 0 10px 30px oklch(var(--foreground) / 0.12);
+    --shadow-glow: 0 0 20px oklch(var(--primary) / 0.25);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 0.14 0.015 55;
+    --foreground: 0.92 0.01 60;
+    --card: 0.18 0.018 55;
+    --card-foreground: 0.92 0.01 60;
+    --popover: 0.18 0.018 55;
+    --popover-foreground: 0.92 0.01 60;
+
+    --primary: 0.72 0.16 70;
+    --primary-foreground: 0.1 0.01 70;
+
+    --secondary: 0.22 0.02 55;
+    --secondary-foreground: 0.82 0.01 60;
+    --muted: 0.22 0.02 55;
+    --muted-foreground: 0.52 0.012 55;
+
+    --accent: 0.65 0.12 30;
+    --accent-foreground: 0.12 0.015 30;
+
+    --destructive: 0.62 0.18 25;
+    --destructive-foreground: 0.92 0.01 25;
+
+    --border: 0.26 0.02 55;
+    --input: 0.26 0.02 55;
+    --ring: 0.72 0.16 70;
+
+    --chart-1: 0.72 0.16 70;
+    --chart-2: 0.58 0.14 150;
+    --chart-3: 0.72 0.14 80;
+    --chart-4: 0.65 0.12 30;
+    --chart-5: 0.62 0.16 25;
+
+    --sidebar: 0.12 0.015 55;
+    --sidebar-foreground: 0.92 0.01 60;
+    --sidebar-primary: 0.72 0.16 70;
+    --sidebar-primary-foreground: 0.1 0.01 70;
+    --sidebar-accent: 0.22 0.02 55;
+    --sidebar-accent-foreground: 0.82 0.01 60;
+    --sidebar-border: 0.26 0.02 55;
+    --sidebar-ring: 0.72 0.16 70;
+
+    --success: 0.58 0.14 150;
+    --warning: 0.72 0.14 80;
+    --gradient-primary: linear-gradient(
+      135deg,
+      oklch(var(--primary)),
+      oklch(var(--accent))
+    );
+    --gradient-subtle: linear-gradient(
+      180deg,
+      oklch(var(--foreground) / 0.6),
+      oklch(var(--background) / 0.9)
+    );
+    --shadow-subtle: 0 1px 2px 0 oklch(var(--foreground) / 0.05);
+    --shadow-elevated: 0 10px 30px oklch(var(--foreground) / 0.25);
+    --shadow-glow: 0 0 20px oklch(var(--primary) / 0.3);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+}
+
+@layer utilities {
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.5s ease-out forwards;
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius: var(--radius);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning-foreground: var(--warning-foreground);
+}
+
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.gradient-subtle {
+  background: var(--gradient-subtle);
+}
+
+.shadow-subtle {
+  box-shadow: var(--shadow-subtle);
+}
+
+.shadow-elevated {
+  box-shadow: var(--shadow-elevated);
+}
+
+.shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
