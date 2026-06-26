@@ -6,6 +6,7 @@ import {
   FormTextarea,
 } from "@/components/FormComponents";
 import { PageHeader } from "@/components/PageHeader";
+import { PermissionGuard } from "@/components/PermissionGuard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAlert } from "@/hooks/use-alert";
+import { PERMISSIONS } from "@/lib/permissions";
 import { useToast } from "@/hooks/use-toast";
 import type { ColumnDef } from "@tanstack/react-table";
 import { AlertCircle, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
@@ -185,20 +187,24 @@ export function ZonesPage() {
       header: "Actions",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => openEditModal(row.original)}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleDelete(row.original)}
-          >
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
+          <PermissionGuard permission={PERMISSIONS.ZONES_EDIT} hideOnDenied>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => openEditModal(row.original)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </PermissionGuard>
+          <PermissionGuard permission={PERMISSIONS.ZONES_DELETE} hideOnDenied>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDelete(row.original)}
+            >
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          </PermissionGuard>
         </div>
       ),
     },
@@ -209,8 +215,14 @@ export function ZonesPage() {
       <PageHeader
         title="Delivery Zones"
         description="Manage delivery zones and charges"
-        action={{ label: "Add Zone", icon: Plus, onClick: openAddModal }}
-      />
+      >
+        <PermissionGuard permission={PERMISSIONS.ZONES_CREATE} hideOnDenied>
+          <Button onClick={openAddModal}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Zone
+          </Button>
+        </PermissionGuard>
+      </PageHeader>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">

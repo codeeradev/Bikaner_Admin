@@ -2,6 +2,7 @@ import { type ApiError, type City, cityService } from "@/api";
 import { DataTable } from "@/components/DataTable";
 import { FormInput, FormSelect } from "@/components/FormComponents";
 import { PageHeader } from "@/components/PageHeader";
+import { PermissionGuard } from "@/components/PermissionGuard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAlert } from "@/hooks/use-alert";
+import { PERMISSIONS } from "@/lib/permissions";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Building2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -169,20 +171,24 @@ export function CitiesPage() {
       header: "Actions",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => openEditModal(row.original)}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleDelete(row.original)}
-          >
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
+          <PermissionGuard permission={PERMISSIONS.CITIES_EDIT} hideOnDenied>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => openEditModal(row.original)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </PermissionGuard>
+          <PermissionGuard permission={PERMISSIONS.CITIES_DELETE} hideOnDenied>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDelete(row.original)}
+            >
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          </PermissionGuard>
         </div>
       ),
     },
@@ -193,8 +199,14 @@ export function CitiesPage() {
       <PageHeader
         title="Cities"
         description="Manage cities"
-        action={{ label: "Add City", icon: Plus, onClick: openAddModal }}
-      />
+      >
+        <PermissionGuard permission={PERMISSIONS.CITIES_CREATE} hideOnDenied>
+          <Button onClick={openAddModal}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add City
+          </Button>
+        </PermissionGuard>
+      </PageHeader>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">

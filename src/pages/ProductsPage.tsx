@@ -6,6 +6,7 @@ import {
   FormTextarea,
 } from "@/components/FormComponents";
 import { PageHeader } from "@/components/PageHeader";
+import { PermissionGuard } from "@/components/PermissionGuard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAlert } from "@/hooks/use-alert";
+import { PERMISSIONS } from "@/lib/permissions";
 import { type ProductFormData, productSchema } from "@/lib/validations";
 import { useCategoryStore, useProductStore, useUIStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -230,20 +232,24 @@ export function ProductsPage() {
       header: "Actions",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => openEditModal(row.original)}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleDelete(row.original)}
-          >
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
+          <PermissionGuard permission={PERMISSIONS.PRODUCTS_EDIT} hideOnDenied>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => openEditModal(row.original)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </PermissionGuard>
+          <PermissionGuard permission={PERMISSIONS.PRODUCTS_DELETE} hideOnDenied>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDelete(row.original)}
+            >
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          </PermissionGuard>
         </div>
       ),
     },
@@ -260,8 +266,14 @@ export function ProductsPage() {
       <PageHeader
         title="Products"
         description="Manage your product catalog"
-        action={{ label: "Add Product", icon: Plus, onClick: openAddModal }}
-      />
+      >
+        <PermissionGuard permission={PERMISSIONS.PRODUCTS_CREATE} hideOnDenied>
+          <Button onClick={openAddModal}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Product
+          </Button>
+        </PermissionGuard>
+      </PageHeader>
 
       <div className="flex items-center gap-4 flex-wrap">
         <input

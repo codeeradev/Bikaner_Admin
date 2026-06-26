@@ -33,25 +33,44 @@ export function LoginPage() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "admin@franchise.com",
-      password: "password",
+      email: "9999999999",
+      password: "admin123",
       rememberMe: false,
     },
   });
 
+  // Log validation errors when they occur
+  if (Object.keys(errors).length > 0) {
+    console.log("⚠️ Validation errors:", errors);
+  }
+
   const onSubmit = async (data: LoginFormData) => {
+    console.log("🔐 Login form submitted with data:", { mobile: data.email });
     setError("");
     setIsSubmitting(true);
-    const success = await login(
-      data.email,
-      data.password,
-      data.rememberMe || false,
-    );
-    setIsSubmitting(false);
-    if (success) {
-      navigate({ to: "/dashboard" });
-    } else {
-      setError("Invalid email or password. Try admin@franchise.com / password");
+    
+    try {
+      console.log("📞 Calling login function...");
+      const result = await login(
+        data.email, // This will be used as mobile
+        data.password,
+        data.rememberMe || false,
+      );
+      
+      console.log("📦 Login result:", result);
+      setIsSubmitting(false);
+      
+      if (result.success) {
+        console.log("✅ Login successful, navigating to dashboard...");
+        navigate({ to: "/dashboard" });
+      } else {
+        console.error("❌ Login failed:", result.error);
+        setError(result.error || "Invalid mobile or password. Try 9999999999 / admin123");
+      }
+    } catch (err) {
+      console.error("💥 Login error:", err);
+      setIsSubmitting(false);
+      setError(`An error occurred during login: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
@@ -85,18 +104,24 @@ export function LoginPage() {
             )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Mobile Number</Label>
                 <Input
                   id="email"
-                  type="email"
-                  placeholder="admin@franchise.com"
+                  type="tel"
+                  inputMode="numeric"
+                  placeholder="Enter 10-digit mobile number"
                   {...register("email")}
                   className={errors.email ? "border-destructive" : ""}
-                  data-ocid="login.email_input"
+                  data-ocid="login.mobile_input"
                 />
                 {errors.email && (
                   <p className="text-xs text-destructive">
                     {errors.email.message}
+                  </p>
+                )}
+                {!errors.email && (
+                  <p className="text-xs text-muted-foreground">
+                    Use your 10-digit mobile number (e.g., 9999999999)
                   </p>
                 )}
               </div>
@@ -171,7 +196,7 @@ export function LoginPage() {
             </form>
 
             <div className="mt-4 text-center text-xs text-muted-foreground">
-              Demo credentials: admin@franchise.com / password
+              Demo credentials: 9999999999 / admin123
             </div>
           </CardContent>
         </Card>

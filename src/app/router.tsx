@@ -16,6 +16,8 @@ import { RegisteredFranchisePage } from "@/pages/RegisteredFranchisePage";
 import { RolesPage } from "@/pages/RolesPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { ThemePage } from "@/pages/ThemePage";
+import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
+import { UsersPage } from "@/pages/UsersPage";
 import { WalletPage } from "@/pages/WalletPage";
 import { ZonesPage } from "@/pages/ZonesPage";
 import {
@@ -149,6 +151,18 @@ const walletRoute = createRoute({
   component: WalletPage,
 });
 
+const usersRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: "/users",
+  component: UsersPage,
+});
+
+const unauthorizedRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/unauthorized",
+  component: UnauthorizedPage,
+});
+
 const notFoundRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "$",
@@ -157,6 +171,7 @@ const notFoundRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   loginRoute,
+  unauthorizedRoute,
   notFoundRoute,
   appRoute.addChildren([
     protectedRoute.addChildren([
@@ -172,6 +187,7 @@ const routeTree = rootRoute.addChildren([
       registeredFranchiseRoute,
       franchiseRequestsRoute,
       walletRoute,
+      usersRoute,
       rolesRoute,
       themeRoute,
       profileRoute,

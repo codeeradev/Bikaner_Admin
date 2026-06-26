@@ -5,6 +5,8 @@ export interface User {
   phone: string;
   avatar: string;
   role: string;
+  roleId: string;
+  permissions: string[];
   status: "active" | "inactive";
   createdAt: string;
 }
@@ -46,10 +48,73 @@ export interface Product {
   };
 }
 
-export type PermissionAction = "view" | "create" | "edit" | "delete";
+export type PermissionAction = "view" | "create" | "edit" | "delete" | "manage";
 
-export type PermissionSection =
+export type PermissionModule =
   | "dashboard"
+  | "categories"
+  | "products"
+  | "zones"
+  | "cities"
+  | "orders"
+  | "normalOrders"
+  | "bulkOrders"
+  | "franchise"
+  | "franchiseRequests"
+  | "registeredFranchises"
+  | "users"
+  | "roles"
+  | "wallet"
+  | "settings"
+  | "theme"
+  | "profile";
+
+export interface Permission {
+  module: PermissionModule;
+  action: PermissionAction;
+}
+
+export interface Role {
+  id: string;
+  name: string;
+  permissions: string[]; // Array of permission strings like "products:view"
+  isActive: boolean;
+  userCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PermissionsByModule {
+  [module: string]: string[];
+}
+
+export interface Staff {
+  id: string;
+  name: string;
+  email?: string;
+  mobile: string;
+  roleId: string;
+  role?: {
+    id: string;
+    name: string;
+    permissions: string[];
+  };
+  profileImage?: string;
+  cityId?: string;
+  city?: {
+    id: string;
+    name: string;
+  };
+  zoneIds?: string[];
+  zones?: Array<{
+    id: string;
+    name: string;
+  }>;
+  status: "active" | "inactive";
+  isBlocked?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
   | "categories"
   | "products"
   | "orders"

@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { useAuthStore, useRoleStore, useUIStore } from "@/store";
-import type { PermissionSection } from "@/types";
+import { PERMISSIONS } from "@/lib/permissions";
+import { useUIStore } from "@/store";
+import { usePermissions } from "@/hooks/usePermissions";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
   Building2,
@@ -30,7 +31,7 @@ interface MenuItem {
   label: string;
   icon: typeof LayoutDashboard;
   href?: string;
-  section?: PermissionSection;
+  permission?: string; // Changed from section to permission
   children?: MenuItem[];
 }
 
@@ -39,114 +40,125 @@ const menuItems: MenuItem[] = [
     label: "Dashboard",
     icon: LayoutDashboard,
     href: "/dashboard",
-    section: "dashboard",
+    permission: PERMISSIONS.DASHBOARD_VIEW,
   },
   {
     label: "Management",
     icon: FolderTree,
-    section: "categories",
     children: [
       {
         label: "Categories",
         icon: FolderTree,
         href: "/categories",
-        section: "categories",
+        permission: PERMISSIONS.CATEGORIES_VIEW,
       },
       {
         label: "Products",
         icon: Package,
         href: "/products",
-        section: "products",
+        permission: PERMISSIONS.PRODUCTS_VIEW,
       },
     ],
   },
   {
     label: "Locations",
     icon: MapPin,
-    section: "settings",
     children: [
       {
         label: "Cities",
         icon: Building2,
         href: "/cities",
-        section: "settings",
+        permission: PERMISSIONS.CITIES_VIEW,
       },
       {
         label: "Zones",
         icon: MapPin,
         href: "/zones",
-        section: "settings",
+        permission: PERMISSIONS.ZONES_VIEW,
       },
     ],
   },
   {
     label: "Orders",
     icon: ShoppingCart,
-    section: "orders",
     children: [
+      {
+        label: "All Orders",
+        icon: ShoppingCart,
+        href: "/orders",
+        permission: PERMISSIONS.ORDERS_VIEW,
+      },
       {
         label: "Normal Orders",
         icon: ShoppingCart,
-        href: "/orders",
-        section: "orders",
+        href: "/orders/normal",
+        permission: PERMISSIONS.NORMAL_ORDERS_VIEW,
       },
       {
         label: "Bulk Orders",
         icon: ShoppingCart,
-        href: "/bulk-orders",
-        section: "orders",
+        href: "/orders/bulk",
+        permission: PERMISSIONS.BULK_ORDERS_VIEW,
       },
     ],
   },
   {
     label: "Franchise",
     icon: Store,
-    section: "franchise",
     children: [
       {
         label: "Registered Franchise",
         icon: Store,
-        href: "/franchise",
-        section: "franchise",
+        href: "/franchise/registered",
+        permission: PERMISSIONS.REGISTERED_FRANCHISES_VIEW,
       },
       {
         label: "Franchise Requests",
         icon: Store,
-        href: "/franchise-requests",
-        section: "franchise",
+        href: "/franchise/requests",
+        permission: PERMISSIONS.FRANCHISE_REQUESTS_VIEW,
       },
     ],
   },
   {
     label: "Administration",
     icon: Shield,
-    section: "settings",
     children: [
+      {
+        label: "Users & Staff",
+        icon: User,
+        href: "/users",
+        permission: PERMISSIONS.USERS_VIEW,
+      },
       {
         label: "Roles & Permissions",
         icon: Shield,
         href: "/roles",
-        section: "settings",
+        permission: PERMISSIONS.ROLES_VIEW,
       },
       {
         label: "Theme Management",
         icon: Palette,
         href: "/theme",
-        section: "theme",
+        permission: PERMISSIONS.THEME_VIEW,
       },
     ],
   },
   {
     label: "Settings",
     icon: Settings,
-    section: "settings",
     children: [
-      { label: "Profile", icon: User, href: "/profile", section: "settings" },
+      { 
+        label: "Profile", 
+        icon: User, 
+        href: "/profile", 
+        permission: PERMISSIONS.PROFILE_VIEW 
+      },
       {
         label: "Settings",
         icon: Settings,
         href: "/settings",
-        section: "settings",
+        permission: PERMISSIONS.SETTINGS_VIEW,
       },
     ],
   },
@@ -163,16 +175,24 @@ function MenuItemComponent({
 }) {
   const location = useLocation();
   const [expanded, setExpanded] = useState(false);
-  const roleStore = useRoleStore();
-  const authStore = useAuthStore();
-  const userRole = authStore.user?.role || "Staff";
-  const roleId = `role-${mockRoleIds[userRole] || 4}`;
+  const { can, isAdmin } = usePermissions();
 
-  const hasPermission = item.section
-    ? roleStore.hasPermission(roleId, item.section, "view")
+  // Check if user has permission for this menu item
+  const hasAccess = item.permission 
+    ? (isAdmin || can(item.permission))
     : true;
 
-  if (!hasPermission) return null;
+  // For parent items, check if user has access to any child
+  const hasChildAccess = item.children 
+    ? item.children.some(child => {
+        return child.permission 
+          ? (isAdmin || can(child.permission))
+          : true;
+      })
+    : false;
+
+  // Don't show menu item if no permission
+  if (!hasAccess && !hasChildAccess) return null;
 
   const isActive = item.href
     ? location.pathname === item.href ||
@@ -246,13 +266,6 @@ function MenuItemComponent({
     </Link>
   );
 }
-
-const mockRoleIds: Record<string, number> = {
-  Admin: 1,
-  Franchise: 2,
-  Manager: 3,
-  Staff: 4,
-};
 
 export function Sidebar() {
   const {

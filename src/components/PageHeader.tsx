@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface PageHeaderProps {
   title: string;
@@ -10,6 +11,7 @@ interface PageHeaderProps {
     icon?: LucideIcon;
     onClick: () => void;
   };
+  children?: ReactNode;
   className?: string;
 }
 
@@ -17,6 +19,7 @@ export function PageHeader({
   title,
   description,
   action,
+  children,
   className,
 }: PageHeaderProps) {
   return (
@@ -37,6 +40,11 @@ export function PageHeader({
           {action.icon && <action.icon className="mr-2 h-4 w-4" />}
           {action.label}
         </Button>
+      )}
+      {children && (
+        <div className="flex items-center gap-2">
+          {children}
+        </div>
       )}
     </div>
   );
