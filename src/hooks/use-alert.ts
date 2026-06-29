@@ -49,27 +49,31 @@ export const useAlertStore = create<AlertState>((set, get) => ({
 }));
 
 // Custom hook for easy access
+import { useMemo } from "react";
+
 export const useAlert = () => {
   const { setAlert, removeAlert, clearAlerts } = useAlertStore();
 
-  return {
-    setAlert,
-    removeAlert,
-    clearAlerts,
-    success: (message: string, duration?: number) => {
-      return setAlert("success", message, duration);
-    },
-    error: (message: string, duration?: number) => {
-      return setAlert("error", message, duration);
-    },
-    loading: (message: string) => {
-      return setAlert("loading", message, 0);
-    },
-    info: (message: string, duration?: number) => {
-      return setAlert("info", message, duration);
-    },
-    warning: (message: string, duration?: number) => {
-      return setAlert("warning", message, duration);
-    },
-  };
+  return useMemo(
+    () => ({
+      setAlert,
+      removeAlert,
+      clearAlerts,
+
+      success: (message: string, duration?: number) =>
+        setAlert("success", message, duration),
+
+      error: (message: string, duration?: number) =>
+        setAlert("error", message, duration),
+
+      loading: (message: string) => setAlert("loading", message, 0),
+
+      info: (message: string, duration?: number) =>
+        setAlert("info", message, duration),
+
+      warning: (message: string, duration?: number) =>
+        setAlert("warning", message, duration),
+    }),
+    [setAlert, removeAlert, clearAlerts],
+  );
 };

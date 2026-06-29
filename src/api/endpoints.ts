@@ -1,8 +1,8 @@
 // Base URL for API - Update this with your actual backend URL
 const BASE_URL =
-  // import.meta.env.VITE_API_BASE_URL || "http://localhost:9020";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:9020";
 
-  import.meta.env.VITE_API_BASE_URL || "https://goutamkiapi.codeeratech.in";
+  // import.meta.env.VITE_API_BASE_URL || "https://goutamkiapi.codeeratech.in";
 export const ENDPOINTS = {
   // Authentication
   LOGIN: `${BASE_URL}/api/auth/login`,

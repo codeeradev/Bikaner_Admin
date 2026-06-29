@@ -21,6 +21,7 @@ import { UsersPage } from "@/pages/UsersPage";
 import { WalletPage } from "@/pages/WalletPage";
 import { ZonesPage } from "@/pages/ZonesPage";
 import {
+  Navigate,
   Outlet,
   createRootRoute,
   createRoute,
@@ -53,6 +54,12 @@ const protectedRoute = createRoute({
   getParentRoute: () => appRoute,
   id: "protected",
   component: ProtectedRoute,
+});
+
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: () => <Navigate to="/dashboard" />,
 });
 
 const dashboardRoute = createRoute({
@@ -175,6 +182,7 @@ const routeTree = rootRoute.addChildren([
   notFoundRoute,
   appRoute.addChildren([
     protectedRoute.addChildren([
+      indexRoute,
       dashboardRoute,
       categoriesRoute,
       citiesRoute,

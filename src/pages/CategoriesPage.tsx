@@ -53,12 +53,13 @@ export function CategoriesPage() {
     fetchCategories();
   }, [fetchCategories]);
 
-  // Show error alert when error changes
+  const { error: showError } = useAlert();
+
   useEffect(() => {
     if (error) {
-      alert.error(error);
+      showError(error);
     }
-  }, [error, alert]);
+  }, [error]);
 
   const openAddModal = () => {
     setEditingCategory(null);
@@ -176,7 +177,10 @@ export function CategoriesPage() {
       header: "Actions",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <PermissionGuard permission={PERMISSIONS.CATEGORIES_EDIT} hideOnDenied>
+          <PermissionGuard
+            permission={PERMISSIONS.CATEGORIES_EDIT}
+            hideOnDenied
+          >
             <Button
               variant="ghost"
               size="icon"
@@ -186,7 +190,10 @@ export function CategoriesPage() {
               <Pencil className="h-4 w-4" />
             </Button>
           </PermissionGuard>
-          <PermissionGuard permission={PERMISSIONS.CATEGORIES_DELETE} hideOnDenied>
+          <PermissionGuard
+            permission={PERMISSIONS.CATEGORIES_DELETE}
+            hideOnDenied
+          >
             <Button
               variant="ghost"
               size="icon"
@@ -205,11 +212,11 @@ export function CategoriesPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Categories"
-        description="Manage product categories"
-      >
-        <PermissionGuard permission={PERMISSIONS.CATEGORIES_CREATE} hideOnDenied>
+      <PageHeader title="Categories" description="Manage product categories">
+        <PermissionGuard
+          permission={PERMISSIONS.CATEGORIES_CREATE}
+          hideOnDenied
+        >
           <Button onClick={openAddModal}>
             <Plus className="h-4 w-4 mr-2" />
             Add Category
