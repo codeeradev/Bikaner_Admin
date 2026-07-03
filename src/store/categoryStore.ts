@@ -1,6 +1,10 @@
 import { categoryService } from "@/api";
 import type { ApiError, Category, CategoryListResponse } from "@/api";
 import { create } from "zustand";
+import type {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from "@/api";
 
 interface CategoryState {
   categories: Category[];
@@ -17,10 +21,13 @@ interface CategoryState {
   setStatusFilter: (filter: string) => void;
   setPage: (page: number) => void;
   fetchCategories: () => Promise<void>;
-  addCategory: (
-    category: Omit<Category, "id" | "createdAt" | "updatedAt">,
-  ) => Promise<void>;
-  updateCategory: (id: string, category: Partial<Category>) => Promise<void>;
+  addCategory: (category: CreateCategoryDto) => Promise<void>;
+
+updateCategory: (
+  id: string,
+  category: UpdateCategoryDto
+) => Promise<void>;
+
   deleteCategory: (id: string) => Promise<void>;
   getFilteredCategories: () => Category[];
 }
@@ -79,33 +86,20 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
   },
 
   addCategory: async (category) => {
-    console.log("🟡 CategoryStore: addCategory called with:", category);
     set({ isLoading: true, error: null });
 
     try {
-      const categoryData = {
-        name: category.name,
-        slug: category.slug,
-        description: category.description,
-        status: category.status,
-      };
+      await categoryService.createCategory(category);
 
-      console.log("🟡 CategoryStore: Sending data to API:", categoryData);
-
-      const result = await categoryService.createCategory(categoryData);
-      console.log("✅ CategoryStore: Category created, result:", result);
-
-      // Refresh the list
-      console.log("🟡 CategoryStore: Refreshing category list...");
       await get().fetchCategories();
-      console.log("✅ CategoryStore: Category list refreshed");
     } catch (err) {
       const apiError = err as ApiError;
-      console.error("❌ CategoryStore: Error creating category:", apiError);
+
       set({
         error: apiError.message || "Failed to create category",
         isLoading: false,
       });
+
       throw err;
     }
   },
@@ -114,21 +108,17 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      await categoryService.updateCategory(id, {
-        name: category.name,
-        slug: category.slug,
-        description: category.description,
-        status: category.status,
-      });
+      await categoryService.updateCategory(id, category);
 
-      // Refresh the list
       await get().fetchCategories();
     } catch (err) {
       const apiError = err as ApiError;
+
       set({
         error: apiError.message || "Failed to update category",
         isLoading: false,
       });
+
       throw err;
     }
   },

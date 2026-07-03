@@ -14,7 +14,6 @@ export interface User {
 export interface Category {
   id: string;
   name: string;
-  slug: string;
   description: string;
   image?: string;
   status: "active" | "inactive";
@@ -26,12 +25,10 @@ export interface Product {
   id: string;
   categoryId: string;
   name: string;
-  slug?: string;
   description?: string;
   sku?: string;
   image?: string;
-  gallery?: string[];
-  weight?: number;
+  unitValue?: number;
   unit?: string;
   mrp?: number;
   sellingPrice?: number;
@@ -115,6 +112,9 @@ export interface Staff {
   createdAt: string;
   updatedAt: string;
 }
+
+export type PermissionSection =
+  | "dashboard"
   | "categories"
   | "products"
   | "orders"
@@ -123,16 +123,16 @@ export interface Staff {
   | "theme"
   | "settings";
 
-export interface Permission {
+export interface PermissionOld {
   section: PermissionSection;
   actions: Record<PermissionAction, boolean>;
 }
 
-export interface Role {
+export interface RoleOld {
   id: string;
   name: string;
   description: string;
-  permissions: Permission[];
+  permissions: PermissionOld[];
   userCount: number;
   createdAt: string;
 }

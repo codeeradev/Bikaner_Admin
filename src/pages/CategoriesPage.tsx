@@ -42,6 +42,7 @@ export function CategoriesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   const methods = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
@@ -63,48 +64,53 @@ export function CategoriesPage() {
 
   const openAddModal = () => {
     setEditingCategory(null);
-    reset({ name: "", slug: "", description: "", status: "active" });
+    setImagePreview("");
+    reset({ name: "", description: "", status: "active" });
     setIsModalOpen(true);
   };
 
   const openEditModal = (category: Category) => {
     setEditingCategory(category);
+
     reset({
       name: category.name,
-      slug: category.slug,
       description: category.description,
       status: category.status,
     });
+
+    setImagePreview(category.image || "");
     setIsModalOpen(true);
   };
 
   const onSubmit = async (data: CategoryFormData) => {
-    console.log("🟢 CategoriesPage: Form submitted with data:", data);
     setIsSubmitting(true);
+
     const loadingId = alert.loading(
       editingCategory ? "Updating category..." : "Creating category...",
     );
 
     try {
+      const payload = {
+        name: data.name,
+        description: data.description,
+        status: data.status,
+        image: data.image,
+      };
+
       if (editingCategory) {
-        console.log(
-          "🟡 CategoriesPage: Updating category:",
-          editingCategory.id,
-        );
-        await updateCategory(editingCategory.id, data);
-        alert.removeAlert(loadingId);
+        await updateCategory(editingCategory.id, payload);
         alert.success("Category updated successfully");
       } else {
-        console.log("🟡 CategoriesPage: Creating new category");
-        await addCategory(data);
-        alert.removeAlert(loadingId);
+        await addCategory(payload);
         alert.success("Category created successfully");
       }
-      console.log("✅ CategoriesPage: Operation completed successfully");
+
+      alert.removeAlert(loadingId);
+
       setIsModalOpen(false);
       reset();
+      setImagePreview("");
     } catch (err) {
-      console.error("❌ CategoriesPage: Operation failed:", err);
       alert.removeAlert(loadingId);
       alert.error(err instanceof Error ? err.message : "Operation failed");
     } finally {
@@ -138,14 +144,21 @@ export function CategoriesPage() {
       header: "Category",
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+          <div className="h-10 w-10 rounded-lg overflow-hidden border">
+            {row.original.image ? (
+              <img
+                src={`${import.meta.env.VITE_API_BASE_URL}${row.original.image}`}
+                alt={row.original.name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center bg-muted">
+                <ImageIcon className="h-4 w-4 text-muted-foreground" />
+              </div>
+            )}
           </div>
           <div>
             <div className="font-medium">{row.getValue("name")}</div>
-            <div className="text-xs text-muted-foreground">
-              {row.original.slug}
-            </div>
           </div>
         </div>
       ),
@@ -275,12 +288,61 @@ export function CategoriesPage() {
                 label="Category Name"
                 placeholder="Enter category name"
               />
-              <FormInput name="slug" label="Slug" placeholder="category-slug" />
               <FormTextarea
                 name="description"
                 label="Description"
                 placeholder="Enter description"
               />
+              {/* 👇 ADD THIS HERE */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium">Category Image</label>
+
+                <div className="flex items-center gap-4">
+                  <div className="h-24 w-24 rounded-lg border overflow-hidden bg-muted flex items-center justify-center">
+                    {imagePreview ? (
+                      <img
+                        src={imagePreview}
+                        className="h-full w-full object-cover"
+                        alt="Preview"
+                      />
+                    ) : (
+                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                    )}
+                  </div>
+
+                  <div className="flex-1">
+                    <input
+                      id="category-image"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+
+                        methods.setValue("image", file);
+
+                        setImagePreview(URL.createObjectURL(file));
+                      }}
+                    />
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() =>
+                        document.getElementById("category-image")?.click()
+                      }
+                    >
+                      Choose Image
+                    </Button>
+
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      JPG, PNG or WEBP
+                    </p>
+                  </div>
+                </div>
+              </div>{" "}
+              {/* 👆 TILL HERE */}
               <FormSelect
                 name="status"
                 label="Status"
@@ -298,11 +360,8 @@ export function CategoriesPage() {
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  data-ocid="category.submit_button"
-                  disabled={isSubmitting}
-                >
+
+                <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting
                     ? "Saving..."
                     : editingCategory

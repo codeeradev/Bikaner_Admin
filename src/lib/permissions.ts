@@ -5,7 +5,27 @@
  * and working with the RBAC system
  */
 
-import type { PermissionAction, PermissionModule } from "@/types";
+// Export these types for external use
+export type PermissionAction = "view" | "create" | "edit" | "delete" | "manage";
+
+export type PermissionModule =
+  | "dashboard"
+  | "categories"
+  | "products"
+  | "zones"
+  | "cities"
+  | "orders"
+  | "normalOrders"
+  | "bulkOrders"
+  | "franchise"
+  | "franchiseRequests"
+  | "registeredFranchises"
+  | "users"
+  | "roles"
+  | "wallet"
+  | "settings"
+  | "theme"
+  | "profile";
 
 /**
  * Permission constants matching backend

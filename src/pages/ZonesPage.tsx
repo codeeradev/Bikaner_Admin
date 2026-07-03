@@ -1,4 +1,10 @@
-import { type ApiError, type Zone, zoneService } from "@/api";
+import {
+  type ApiError,
+  type City,
+  type Zone,
+  cityService,
+  zoneService,
+} from "@/api";
 import { DataTable } from "@/components/DataTable";
 import {
   FormInput,
@@ -19,6 +25,7 @@ import {
 import { useAlert } from "@/hooks/use-alert";
 import { PERMISSIONS } from "@/lib/permissions";
 import { useToast } from "@/hooks/use-toast";
+import { ZoneLocationPicker } from "@/components/ZoneLocationPicker";
 import type { ColumnDef } from "@tanstack/react-table";
 import { AlertCircle, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -28,8 +35,12 @@ interface ZoneFormData {
   name: string;
   description?: string;
   deliveryCharge: string;
-  minOrderAmount: string;
+  minimumOrderAmount: string;
   status: "active" | "inactive";
+  cityId: string;
+  lat: number | null;
+  lng: number | null;
+  locationLabel: string;
 }
 
 export function ZonesPage() {
@@ -40,14 +51,20 @@ export function ZonesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingZone, setEditingZone] = useState<Zone | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [cities, setCities] = useState<City[]>([]);
+  const [isCitiesLoading, setIsCitiesLoading] = useState(false);
 
   const methods = useForm<ZoneFormData>({
     defaultValues: {
       name: "",
       description: "",
       deliveryCharge: "",
-      minOrderAmount: "",
+      minimumOrderAmount: "",
       status: "active",
+      cityId: "",
+      lat: null,
+      lng: null,
+      locationLabel: "",
     },
   });
   const { handleSubmit, reset } = methods;
@@ -55,6 +72,11 @@ export function ZonesPage() {
   // Fetch zones on mount
   useEffect(() => {
     fetchZones();
+  }, []);
+
+  // Fetch cities (used to populate the City dropdown) on mount
+  useEffect(() => {
+    fetchCities();
   }, []);
 
   const fetchZones = async () => {
@@ -72,14 +94,32 @@ export function ZonesPage() {
     }
   };
 
+  const fetchCities = async () => {
+    setIsCitiesLoading(true);
+
+    try {
+      const response = await cityService.getCities({ page: 1, pageSize: 100 });
+      setCities(response.data);
+    } catch (err) {
+      const apiError = err as ApiError;
+      alert.error(apiError.message || "Failed to fetch cities");
+    } finally {
+      setIsCitiesLoading(false);
+    }
+  };
+
   const openAddModal = () => {
     setEditingZone(null);
     reset({
       name: "",
       description: "",
       deliveryCharge: "",
-      minOrderAmount: "",
+      minimumOrderAmount: "",
       status: "active",
+      cityId: "",
+      lat: null,
+      lng: null,
+      locationLabel: "",
     });
     setIsModalOpen(true);
   };
@@ -90,8 +130,12 @@ export function ZonesPage() {
       name: zone.name,
       description: zone.description || "",
       deliveryCharge: zone.deliveryCharge.toString(),
-      minOrderAmount: zone.minOrderAmount.toString(),
+      minimumOrderAmount: zone.minimumOrderAmount.toString(),
       status: zone.status,
+      cityId: zone.cityId?._id ?? "",
+      lat: zone.lat ?? null,
+      lng: zone.lng ?? null,
+      locationLabel: zone.locationLabel ?? "",
     });
     setIsModalOpen(true);
   };
@@ -103,8 +147,12 @@ export function ZonesPage() {
         name: data.name,
         description: data.description,
         deliveryCharge: Number.parseFloat(data.deliveryCharge),
-        minOrderAmount: Number.parseFloat(data.minOrderAmount),
+        minimumOrderAmount: Number.parseFloat(data.minimumOrderAmount),
         status: data.status,
+        cityId: data.cityId || null,
+        lat: data.lat,
+        lng: data.lng,
+        locationLabel: data.locationLabel,
       };
 
       if (editingZone) {
@@ -157,6 +205,11 @@ export function ZonesPage() {
       ),
     },
     {
+      accessorKey: "city",
+      header: "City",
+      cell: ({ row }) => <span>{row.original.cityId?.name ?? "-"}</span>,
+    },
+    {
       accessorKey: "deliveryCharge",
       header: "Delivery",
       cell: ({ row }) => (
@@ -164,10 +217,10 @@ export function ZonesPage() {
       ),
     },
     {
-      accessorKey: "minOrderAmount",
+      accessorKey: "minimumOrderAmount",
       header: "Min Order",
       cell: ({ row }) => (
-        <span className="text-sm">₹{row.getValue("minOrderAmount")}</span>
+        <span className="text-sm">₹{row.getValue("minimumOrderAmount")}</span>
       ),
     },
     {
@@ -237,7 +290,7 @@ export function ZonesPage() {
       )}
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingZone ? "Edit Zone" : "Add Zone"}</DialogTitle>
           </DialogHeader>
@@ -260,11 +313,23 @@ export function ZonesPage() {
                 type="number"
               />
               <FormInput
-                name="minOrderAmount"
+                name="minimumOrderAmount"
                 label="Minimum Order Amount (₹)"
                 placeholder="Enter minimum order amount"
                 type="number"
               />
+              <FormSelect
+                name="cityId"
+                label="City"
+                options={cities.map((city) => ({
+                  value: city.id,
+                  label: city.name,
+                }))}
+                placeholder={
+                  isCitiesLoading ? "Loading cities..." : "Select a city"
+                }
+              />
+              <ZoneLocationPicker cities={cities} />
               <FormSelect
                 name="status"
                 label="Status"

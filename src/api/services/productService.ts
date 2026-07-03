@@ -5,12 +5,10 @@ export interface Product {
   id: string;
   categoryId: string;
   name: string;
-  slug?: string;
   description?: string;
   sku?: string;
   image?: string;
-  gallery?: string[];
-  weight?: number;
+  unitValue?: number;
   unit?: string;
   mrp?: number;
   sellingPrice?: number;
@@ -30,12 +28,10 @@ export interface Product {
 export interface CreateProductDto {
   categoryId: string;
   name: string;
-  slug?: string;
   description?: string;
   sku?: string;
   image?: File;
-  gallery?: File[];
-  weight?: number;
+  unitValue?: number;
   unit?: string;
   mrp?: number;
   sellingPrice?: number;
@@ -49,12 +45,10 @@ export interface CreateProductDto {
 export interface UpdateProductDto {
   categoryId?: string;
   name?: string;
-  slug?: string;
   description?: string;
   sku?: string;
   image?: File;
-  gallery?: File[];
-  weight?: number;
+  unitValue?: number;
   unit?: string;
   mrp?: number;
   sellingPrice?: number;
@@ -104,16 +98,15 @@ export const productService = {
     formData.append("name", data.name);
     formData.append("categoryId", data.categoryId);
     
-    if (data.slug) formData.append("slug", data.slug);
-    if (data.description) formData.append("description", data.description);
-    if (data.sku) formData.append("sku", data.sku);
-    if (data.weight) formData.append("weight", data.weight.toString());
-    if (data.unit) formData.append("unit", data.unit);
-    if (data.mrp) formData.append("mrp", data.mrp.toString());
-    if (data.sellingPrice) formData.append("sellingPrice", data.sellingPrice.toString());
-    if (data.bulkPrice) formData.append("bulkPrice", data.bulkPrice.toString());
-    if (data.stock) formData.append("stock", data.stock.toString());
-    if (data.minBulkQty) formData.append("minBulkQty", data.minBulkQty.toString());
+    if (data.description !== undefined) formData.append("description", data.description);
+    if (data.sku !== undefined ) formData.append("sku", data.sku);
+    if (data.unitValue !== undefined) formData.append("unitValue", data.unitValue.toString());
+    if (data.unit !== undefined) formData.append("unit", data.unit);
+    if (data.mrp !== undefined) formData.append("mrp", data.mrp.toString());
+    if (data.sellingPrice !== undefined) formData.append("sellingPrice", data.sellingPrice.toString());
+    if (data.bulkPrice !== undefined) formData.append("bulkPrice", data.bulkPrice.toString());
+    if (data.stock !== undefined) formData.append("stock", data.stock.toString());
+    if (data.minBulkQty !== undefined) formData.append("minBulkQty", data.minBulkQty.toString());
     if (data.isFeatured !== undefined) formData.append("isFeatured", data.isFeatured.toString());
     
     // Convert status to isActive
@@ -126,12 +119,6 @@ export const productService = {
       formData.append("image", data.image);
     }
     
-    // Add gallery files
-    if (data.gallery && data.gallery.length > 0) {
-      data.gallery.forEach(file => {
-        formData.append("gallery", file);
-      });
-    }
     
     return upload<Product>(ENDPOINTS.CREATE_PRODUCT, formData);
   },
@@ -145,10 +132,9 @@ export const productService = {
     // Add text fields
     if (data.name) formData.append("name", data.name);
     if (data.categoryId) formData.append("categoryId", data.categoryId);
-    if (data.slug) formData.append("slug", data.slug);
     if (data.description) formData.append("description", data.description);
     if (data.sku) formData.append("sku", data.sku);
-    if (data.weight) formData.append("weight", data.weight.toString());
+    if (data.unitValue) formData.append("unitValue", data.unitValue.toString());
     if (data.unit) formData.append("unit", data.unit);
     if (data.mrp) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice) formData.append("sellingPrice", data.sellingPrice.toString());
@@ -165,13 +151,6 @@ export const productService = {
     // Add image file if provided
     if (data.image) {
       formData.append("image", data.image);
-    }
-    
-    // Add gallery files if provided
-    if (data.gallery && data.gallery.length > 0) {
-      data.gallery.forEach(file => {
-        formData.append("gallery", file);
-      });
     }
     
     return upload<Product>(ENDPOINTS.UPDATE_PRODUCT(id), formData, undefined, 'PUT');

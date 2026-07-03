@@ -1,4 +1,5 @@
 import { type ApiError, type City, cityService } from "@/api";
+import { CityLocationPicker } from "@/components/CityLocationPicker";
 import { DataTable } from "@/components/DataTable";
 import { FormInput, FormSelect } from "@/components/FormComponents";
 import { PageHeader } from "@/components/PageHeader";
@@ -21,6 +22,8 @@ import { FormProvider, useForm } from "react-hook-form";
 interface CityFormData {
   name: string;
   status: "active" | "inactive";
+  lat: number | null;
+  lng: number | null;
 }
 
 export function CitiesPage() {
@@ -36,6 +39,8 @@ export function CitiesPage() {
     defaultValues: {
       name: "",
       status: "active",
+      lat: null,
+      lng: null,
     },
   });
   const { handleSubmit, reset } = methods;
@@ -72,6 +77,8 @@ export function CitiesPage() {
     reset({
       name: "",
       status: "active",
+      lat: null,
+      lng: null,
     });
     setIsModalOpen(true);
   };
@@ -81,6 +88,8 @@ export function CitiesPage() {
     reset({
       name: city.name,
       status: city.status,
+      lat: city.lat ?? null,
+      lng: city.lng ?? null,
     });
     setIsModalOpen(true);
   };
@@ -96,6 +105,8 @@ export function CitiesPage() {
         await cityService.updateCity(editingCity.id, {
           name: data.name,
           status: data.status,
+          lat: data.lat,
+          lng: data.lng,
         });
         alert.removeAlert(loadingId);
         alert.success("City updated successfully");
@@ -103,6 +114,8 @@ export function CitiesPage() {
         await cityService.createCity({
           name: data.name,
           status: data.status,
+          lat: data.lat,
+          lng: data.lng,
         });
         alert.removeAlert(loadingId);
         alert.success("City created successfully");
@@ -221,7 +234,7 @@ export function CitiesPage() {
       )}
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingCity ? "Edit City" : "Add City"}</DialogTitle>
           </DialogHeader>
@@ -240,6 +253,7 @@ export function CitiesPage() {
                   { value: "inactive", label: "Inactive" },
                 ]}
               />
+              <CityLocationPicker />
               <div className="flex justify-end gap-2 pt-4">
                 <Button
                   type="button"

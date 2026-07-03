@@ -58,10 +58,10 @@ class ApiClient {
    */
   private buildHeaders(customHeaders?: HeadersInit): HeadersInit {
     const token = this.getAuthToken();
-    const headers: HeadersInit = { ...this.baseHeaders };
+    const headers: Record<string, string> = { ...this.baseHeaders } as Record<string, string>;
 
     if (token) {
-      headers.Authorization = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
 
     if (customHeaders) {

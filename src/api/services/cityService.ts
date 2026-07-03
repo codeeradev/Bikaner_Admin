@@ -5,6 +5,8 @@ export interface City {
   id: string;
   name: string;
   status: "active" | "inactive";
+  lat: number | null;
+  lng: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -12,11 +14,15 @@ export interface City {
 export interface CreateCityDto {
   name: string;
   status?: "active" | "inactive";
+  lat?: number | null;
+  lng?: number | null;
 }
 
 export interface UpdateCityDto {
   name?: string;
   status?: "active" | "inactive";
+  lat?: number | null;
+  lng?: number | null;
 }
 
 export interface CityListResponse {
@@ -57,7 +63,7 @@ export const cityService = {
       backendData.isActive = data.status === 'active';
       delete backendData.status;
     }
-    
+
     return post<City>(ENDPOINTS.CREATE_CITY, backendData);
   },
 
@@ -71,7 +77,7 @@ export const cityService = {
       backendData.isActive = data.status === 'active';
       delete backendData.status;
     }
-    
+
     return put<City>(ENDPOINTS.UPDATE_CITY(id), backendData);
   },
 

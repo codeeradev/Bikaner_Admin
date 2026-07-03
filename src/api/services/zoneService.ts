@@ -6,8 +6,17 @@ export interface Zone {
   name: string;
   description?: string;
   deliveryCharge: number;
-  minOrderAmount: number;
+  minimumOrderAmount: number;
   status: "active" | "inactive";
+  cityId?: {
+    _id: string;
+    name: string;
+  } | null;
+
+  lat: number | null;
+  lng: number | null;
+  /** Human-readable label of the searched/detected area (e.g. "Sector 15"). */
+  locationLabel?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -16,16 +25,26 @@ export interface CreateZoneDto {
   name: string;
   description?: string;
   deliveryCharge: number;
-  minOrderAmount: number;
+  minimumOrderAmount: number;
   status?: "active" | "inactive";
+  cityId?: string | null;
+
+  lat?: number | null;
+  lng?: number | null;
+  locationLabel?: string;
 }
 
 export interface UpdateZoneDto {
   name?: string;
   description?: string;
   deliveryCharge?: number;
-  minOrderAmount?: number;
+  minimumOrderAmount?: number;
   status?: "active" | "inactive";
+  cityId?: string | null;
+
+  lat?: number | null;
+  lng?: number | null;
+  locationLabel?: string;
 }
 
 export interface ZoneListResponse {
@@ -65,7 +84,7 @@ export const zoneService = {
       backendData.isActive = data.status === 'active';
       delete backendData.status;
     }
-    
+
     return post<Zone>(ENDPOINTS.CREATE_ZONE, backendData);
   },
 
@@ -79,7 +98,7 @@ export const zoneService = {
       backendData.isActive = data.status === 'active';
       delete backendData.status;
     }
-    
+
     return put<Zone>(ENDPOINTS.UPDATE_ZONE(id), backendData);
   },
 

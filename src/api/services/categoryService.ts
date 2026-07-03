@@ -4,7 +4,6 @@ import { ENDPOINTS } from "../endpoints";
 export interface Category {
   id: string;
   name: string;
-  slug?: string;
   description?: string;
   image?: string;
   status: "active" | "inactive";
@@ -15,7 +14,6 @@ export interface Category {
 
 export interface CreateCategoryDto {
   name: string;
-  slug?: string;
   description?: string;
   image?: File | string;
   status?: "active" | "inactive";
@@ -23,7 +21,6 @@ export interface CreateCategoryDto {
 
 export interface UpdateCategoryDto {
   name?: string;
-  slug?: string;
   description?: string;
   image?: File | string;
   status?: "active" | "inactive";
@@ -90,7 +87,6 @@ export const categoryService = {
       const formData = new FormData();
       formData.append("name", data.name);
       
-      if (data.slug) formData.append("slug", data.slug);
       if (data.description) formData.append("description", data.description);
       
       // Convert status to isActive for backend
@@ -123,7 +119,6 @@ export const categoryService = {
       const formData = new FormData();
       
       if (data.name) formData.append("name", data.name);
-      if (data.slug) formData.append("slug", data.slug);
       if (data.description) formData.append("description", data.description);
       
       // Convert status to isActive for backend

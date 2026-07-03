@@ -18284,6 +18284,18 @@ function useNavigate(_defaultOpts) {
     [_defaultOpts == null ? void 0 : _defaultOpts.from, router2]
   );
 }
+function Navigate(props) {
+  const router2 = useRouter();
+  const navigate = useNavigate();
+  const previousPropsRef = reactExports.useRef(null);
+  reactExports.useEffect(() => {
+    if (previousPropsRef.current !== props) {
+      navigate(props);
+      previousPropsRef.current = props;
+    }
+  }, [router2, props, navigate]);
+  return null;
+}
 const useLayoutEffect = typeof window !== "undefined" ? reactExports.useLayoutEffect : reactExports.useEffect;
 function usePrevious$1(value) {
   const ref = reactExports.useRef({
@@ -22129,26 +22141,19 @@ const useAlertStore = create((set2, get2) => ({
 }));
 const useAlert = () => {
   const { setAlert, removeAlert, clearAlerts } = useAlertStore();
-  return {
-    setAlert,
-    removeAlert,
-    clearAlerts,
-    success: (message, duration2) => {
-      return setAlert("success", message, duration2);
-    },
-    error: (message, duration2) => {
-      return setAlert("error", message, duration2);
-    },
-    loading: (message) => {
-      return setAlert("loading", message, 0);
-    },
-    info: (message, duration2) => {
-      return setAlert("info", message, duration2);
-    },
-    warning: (message, duration2) => {
-      return setAlert("warning", message, duration2);
-    }
-  };
+  return reactExports.useMemo(
+    () => ({
+      setAlert,
+      removeAlert,
+      clearAlerts,
+      success: (message, duration2) => setAlert("success", message, duration2),
+      error: (message, duration2) => setAlert("error", message, duration2),
+      loading: (message) => setAlert("loading", message, 0),
+      info: (message, duration2) => setAlert("info", message, duration2),
+      warning: (message, duration2) => setAlert("warning", message, duration2)
+    }),
+    [setAlert, removeAlert, clearAlerts]
+  );
 };
 /**
  * @license lucide-react v0.511.0 - ISC
@@ -25478,7 +25483,7 @@ class ApiClient {
     const token = this.getAuthToken();
     const headers = { ...this.baseHeaders };
     if (token) {
-      headers.Authorization = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
     if (customHeaders) {
       Object.assign(headers, customHeaders);
@@ -25685,98 +25690,98 @@ const del = (url, options) => apiClient.delete(url, options);
 const upload = (url, formData, onProgress, method) => apiClient.upload(url, formData, onProgress, method);
 const BASE_URL = (
   // import.meta.env.VITE_API_BASE_URL || "http://localhost:9020";
-  "https://goutamkiapi.codeeratech.in"
+  "http://localhost:9020"
 );
 const ENDPOINTS = {
   // Authentication
-  LOGIN: `${BASE_URL}/api/auth/login`,
-  LOGOUT: `${BASE_URL}/api/auth/logout`,
-  REFRESH_TOKEN: `${BASE_URL}/api/auth/refresh`,
-  PROFILE: `${BASE_URL}/api/auth/profile`,
+  LOGIN: `${BASE_URL}/auth/login`,
+  LOGOUT: `${BASE_URL}/auth/logout`,
+  REFRESH_TOKEN: `${BASE_URL}/auth/refresh`,
+  PROFILE: `${BASE_URL}/auth/profile`,
   // Permissions
-  GET_PERMISSIONS: `${BASE_URL}/api/permissions`,
+  GET_PERMISSIONS: `${BASE_URL}/permissions`,
   // Roles
-  GET_ROLES: `${BASE_URL}/api/roles`,
-  GET_ROLE: (id2) => `${BASE_URL}/api/roles/${id2}`,
-  CREATE_ROLE: `${BASE_URL}/api/roles`,
-  UPDATE_ROLE: (id2) => `${BASE_URL}/api/roles/${id2}`,
-  DELETE_ROLE: (id2) => `${BASE_URL}/api/roles/${id2}`,
-  TOGGLE_ROLE_STATUS: (id2) => `${BASE_URL}/api/roles/${id2}/toggle-status`,
+  GET_ROLES: `${BASE_URL}/roles`,
+  GET_ROLE: (id2) => `${BASE_URL}/roles/${id2}`,
+  CREATE_ROLE: `${BASE_URL}/roles`,
+  UPDATE_ROLE: (id2) => `${BASE_URL}/roles/${id2}`,
+  DELETE_ROLE: (id2) => `${BASE_URL}/roles/${id2}`,
+  TOGGLE_ROLE_STATUS: (id2) => `${BASE_URL}/roles/${id2}/toggle-status`,
   // Users/Staff
-  GET_USERS: `${BASE_URL}/api/users`,
-  GET_USER: (id2) => `${BASE_URL}/api/users/${id2}`,
-  CREATE_USER: `${BASE_URL}/api/users`,
-  UPDATE_USER: (id2) => `${BASE_URL}/api/users/${id2}`,
-  DELETE_USER: (id2) => `${BASE_URL}/api/users/${id2}`,
-  TOGGLE_USER_STATUS: (id2) => `${BASE_URL}/api/users/${id2}/toggle-status`,
+  GET_USERS: `${BASE_URL}/users`,
+  GET_USER: (id2) => `${BASE_URL}/users/${id2}`,
+  CREATE_USER: `${BASE_URL}/users`,
+  UPDATE_USER: (id2) => `${BASE_URL}/users/${id2}`,
+  DELETE_USER: (id2) => `${BASE_URL}/users/${id2}`,
+  TOGGLE_USER_STATUS: (id2) => `${BASE_URL}/users/${id2}/toggle-status`,
   // Categories
-  GET_CATEGORIES: `${BASE_URL}/api/categories`,
-  GET_CATEGORY: (id2) => `${BASE_URL}/api/categories/${id2}`,
-  CREATE_CATEGORY: `${BASE_URL}/api/categories`,
-  UPDATE_CATEGORY: (id2) => `${BASE_URL}/api/categories/${id2}`,
-  DELETE_CATEGORY: (id2) => `${BASE_URL}/api/categories/${id2}`,
+  GET_CATEGORIES: `${BASE_URL}/categories`,
+  GET_CATEGORY: (id2) => `${BASE_URL}/categories/${id2}`,
+  CREATE_CATEGORY: `${BASE_URL}/categories`,
+  UPDATE_CATEGORY: (id2) => `${BASE_URL}/categories/${id2}`,
+  DELETE_CATEGORY: (id2) => `${BASE_URL}/categories/${id2}`,
   // Products
-  GET_PRODUCTS: `${BASE_URL}/api/products`,
-  GET_PRODUCT: (id2) => `${BASE_URL}/api/products/${id2}`,
-  CREATE_PRODUCT: `${BASE_URL}/api/products`,
-  UPDATE_PRODUCT: (id2) => `${BASE_URL}/api/products/${id2}`,
-  DELETE_PRODUCT: (id2) => `${BASE_URL}/api/products/${id2}`,
+  GET_PRODUCTS: `${BASE_URL}/products`,
+  GET_PRODUCT: (id2) => `${BASE_URL}/products/${id2}`,
+  CREATE_PRODUCT: `${BASE_URL}/products`,
+  UPDATE_PRODUCT: (id2) => `${BASE_URL}/products/${id2}`,
+  DELETE_PRODUCT: (id2) => `${BASE_URL}/products/${id2}`,
   // Zones
-  GET_ZONES: `${BASE_URL}/api/zones`,
-  GET_ZONE: (id2) => `${BASE_URL}/api/zones/${id2}`,
-  CREATE_ZONE: `${BASE_URL}/api/zones`,
-  UPDATE_ZONE: (id2) => `${BASE_URL}/api/zones/${id2}`,
-  DELETE_ZONE: (id2) => `${BASE_URL}/api/zones/${id2}`,
+  GET_ZONES: `${BASE_URL}/zones`,
+  GET_ZONE: (id2) => `${BASE_URL}/zones/${id2}`,
+  CREATE_ZONE: `${BASE_URL}/zones`,
+  UPDATE_ZONE: (id2) => `${BASE_URL}/zones/${id2}`,
+  DELETE_ZONE: (id2) => `${BASE_URL}/zones/${id2}`,
   // Cities
-  GET_CITIES: `${BASE_URL}/api/cities`,
-  GET_CITY: (id2) => `${BASE_URL}/api/cities/${id2}`,
-  CREATE_CITY: `${BASE_URL}/api/cities`,
-  UPDATE_CITY: (id2) => `${BASE_URL}/api/cities/${id2}`,
-  DELETE_CITY: (id2) => `${BASE_URL}/api/cities/${id2}`,
+  GET_CITIES: `${BASE_URL}/cities`,
+  GET_CITY: (id2) => `${BASE_URL}/cities/${id2}`,
+  CREATE_CITY: `${BASE_URL}/cities`,
+  UPDATE_CITY: (id2) => `${BASE_URL}/cities/${id2}`,
+  DELETE_CITY: (id2) => `${BASE_URL}/cities/${id2}`,
   // Orders
-  GET_ORDERS: `${BASE_URL}/api/orders`,
-  GET_ORDER: (id2) => `${BASE_URL}/api/orders/${id2}`,
-  CREATE_ORDER: `${BASE_URL}/api/orders`,
-  UPDATE_ORDER: (id2) => `${BASE_URL}/api/orders/${id2}`,
-  UPDATE_ORDER_STATUS: (id2) => `${BASE_URL}/api/orders/${id2}/status`,
+  GET_ORDERS: `${BASE_URL}/orders`,
+  GET_ORDER: (id2) => `${BASE_URL}/orders/${id2}`,
+  CREATE_ORDER: `${BASE_URL}/orders`,
+  UPDATE_ORDER: (id2) => `${BASE_URL}/orders/${id2}`,
+  UPDATE_ORDER_STATUS: (id2) => `${BASE_URL}/orders/${id2}/status`,
   // Normal Orders
-  GET_NORMAL_ORDERS: `${BASE_URL}/api/orders/normal`,
-  GET_NORMAL_ORDER: (id2) => `${BASE_URL}/api/orders/normal/${id2}`,
+  GET_NORMAL_ORDERS: `${BASE_URL}/orders/normal`,
+  GET_NORMAL_ORDER: (id2) => `${BASE_URL}/orders/normal/${id2}`,
   // Bulk Orders
-  GET_BULK_ORDERS: `${BASE_URL}/api/orders/bulk`,
-  GET_BULK_ORDER: (id2) => `${BASE_URL}/api/orders/bulk/${id2}`,
+  GET_BULK_ORDERS: `${BASE_URL}/orders/bulk`,
+  GET_BULK_ORDER: (id2) => `${BASE_URL}/orders/bulk/${id2}`,
   // Franchise
-  GET_FRANCHISES: `${BASE_URL}/api/franchises`,
-  GET_FRANCHISE: (id2) => `${BASE_URL}/api/franchises/${id2}`,
-  CREATE_FRANCHISE: `${BASE_URL}/api/franchises`,
-  UPDATE_FRANCHISE: (id2) => `${BASE_URL}/api/franchises/${id2}`,
-  DELETE_FRANCHISE: (id2) => `${BASE_URL}/api/franchises/${id2}`,
+  GET_FRANCHISES: `${BASE_URL}/franchises`,
+  GET_FRANCHISE: (id2) => `${BASE_URL}/franchises/${id2}`,
+  CREATE_FRANCHISE: `${BASE_URL}/franchises`,
+  UPDATE_FRANCHISE: (id2) => `${BASE_URL}/franchises/${id2}`,
+  DELETE_FRANCHISE: (id2) => `${BASE_URL}/franchises/${id2}`,
   // Franchise Requests
-  GET_FRANCHISE_REQUESTS: `${BASE_URL}/api/franchise-requests`,
-  GET_FRANCHISE_REQUEST: (id2) => `${BASE_URL}/api/franchise-requests/${id2}`,
-  APPROVE_FRANCHISE_REQUEST: (id2) => `${BASE_URL}/api/franchise-requests/${id2}/approve`,
-  REJECT_FRANCHISE_REQUEST: (id2) => `${BASE_URL}/api/franchise-requests/${id2}/reject`,
+  GET_FRANCHISE_REQUESTS: `${BASE_URL}/franchise-requests`,
+  GET_FRANCHISE_REQUEST: (id2) => `${BASE_URL}/franchise-requests/${id2}`,
+  APPROVE_FRANCHISE_REQUEST: (id2) => `${BASE_URL}/franchise-requests/${id2}/approve`,
+  REJECT_FRANCHISE_REQUEST: (id2) => `${BASE_URL}/franchise-requests/${id2}/reject`,
   // Registered Franchises
-  GET_REGISTERED_FRANCHISES: `${BASE_URL}/api/franchises/registered`,
-  GET_REGISTERED_FRANCHISE: (id2) => `${BASE_URL}/api/franchises/registered/${id2}`,
+  GET_REGISTERED_FRANCHISES: `${BASE_URL}/franchises/registered`,
+  GET_REGISTERED_FRANCHISE: (id2) => `${BASE_URL}/franchises/registered/${id2}`,
   // Wallet
-  GET_WALLET: `${BASE_URL}/api/wallet`,
-  GET_WALLET_TRANSACTIONS: `${BASE_URL}/api/wallet/transactions`,
-  ADD_WALLET_BALANCE: `${BASE_URL}/api/wallet/add-balance`,
-  WITHDRAW_WALLET_BALANCE: `${BASE_URL}/api/wallet/withdraw`,
+  GET_WALLET: `${BASE_URL}/wallet`,
+  GET_WALLET_TRANSACTIONS: `${BASE_URL}/wallet/transactions`,
+  ADD_WALLET_BALANCE: `${BASE_URL}/wallet/add-balance`,
+  WITHDRAW_WALLET_BALANCE: `${BASE_URL}/wallet/withdraw`,
   // Dashboard
-  GET_DASHBOARD_STATS: `${BASE_URL}/api/dashboard/stats`,
-  GET_DASHBOARD_CHARTS: `${BASE_URL}/api/dashboard/charts`,
+  GET_DASHBOARD_STATS: `${BASE_URL}/dashboard/stats`,
+  GET_DASHBOARD_CHARTS: `${BASE_URL}/dashboard/charts`,
   // Theme
-  GET_THEME: `${BASE_URL}/api/theme`,
-  UPDATE_THEME: `${BASE_URL}/api/theme`,
+  GET_THEME: `${BASE_URL}/theme`,
+  UPDATE_THEME: `${BASE_URL}/theme`,
   // Profile
-  GET_PROFILE: `${BASE_URL}/api/profile`,
-  UPDATE_PROFILE: `${BASE_URL}/api/profile`,
-  CHANGE_PASSWORD: `${BASE_URL}/api/profile/change-password`,
+  GET_PROFILE: `${BASE_URL}/profile`,
+  UPDATE_PROFILE: `${BASE_URL}/profile`,
+  CHANGE_PASSWORD: `${BASE_URL}/profile/change-password`,
   // Settings
-  GET_SETTINGS: `${BASE_URL}/api/settings`,
-  UPDATE_SETTINGS: `${BASE_URL}/api/settings`
+  GET_SETTINGS: `${BASE_URL}/settings`,
+  UPDATE_SETTINGS: `${BASE_URL}/settings`
 };
 const authService = {
   /**
@@ -26480,7 +26485,6 @@ const categoryService = {
     try {
       const formData = new FormData();
       formData.append("name", data.name);
-      if (data.slug) formData.append("slug", data.slug);
       if (data.description) formData.append("description", data.description);
       if (data.status) {
         formData.append("isActive", (data.status === "active").toString());
@@ -26505,7 +26509,6 @@ const categoryService = {
     try {
       const formData = new FormData();
       if (data.name) formData.append("name", data.name);
-      if (data.slug) formData.append("slug", data.slug);
       if (data.description) formData.append("description", data.description);
       if (data.status) {
         formData.append("isActive", (data.status === "active").toString());
@@ -26653,10 +26656,9 @@ const productService = {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("categoryId", data.categoryId);
-    if (data.slug) formData.append("slug", data.slug);
     if (data.description) formData.append("description", data.description);
     if (data.sku) formData.append("sku", data.sku);
-    if (data.weight) formData.append("weight", data.weight.toString());
+    if (data.unitValue) formData.append("unitValue", data.unitValue.toString());
     if (data.unit) formData.append("unit", data.unit);
     if (data.mrp) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice) formData.append("sellingPrice", data.sellingPrice.toString());
@@ -26670,11 +26672,6 @@ const productService = {
     if (data.image) {
       formData.append("image", data.image);
     }
-    if (data.gallery && data.gallery.length > 0) {
-      data.gallery.forEach((file) => {
-        formData.append("gallery", file);
-      });
-    }
     return upload(ENDPOINTS.CREATE_PRODUCT, formData);
   },
   /**
@@ -26684,10 +26681,9 @@ const productService = {
     const formData = new FormData();
     if (data.name) formData.append("name", data.name);
     if (data.categoryId) formData.append("categoryId", data.categoryId);
-    if (data.slug) formData.append("slug", data.slug);
     if (data.description) formData.append("description", data.description);
     if (data.sku) formData.append("sku", data.sku);
-    if (data.weight) formData.append("weight", data.weight.toString());
+    if (data.unitValue) formData.append("unitValue", data.unitValue.toString());
     if (data.unit) formData.append("unit", data.unit);
     if (data.mrp) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice) formData.append("sellingPrice", data.sellingPrice.toString());
@@ -26700,11 +26696,6 @@ const productService = {
     }
     if (data.image) {
       formData.append("image", data.image);
-    }
-    if (data.gallery && data.gallery.length > 0) {
-      data.gallery.forEach((file) => {
-        formData.append("gallery", file);
-      });
     }
     return upload(ENDPOINTS.UPDATE_PRODUCT(id2), formData, void 0, "PUT");
   },
@@ -26763,7 +26754,6 @@ const useCategoryStore = create((set2, get2) => ({
     try {
       const categoryData = {
         name: category.name,
-        slug: category.slug,
         description: category.description,
         status: category.status
       };
@@ -26788,7 +26778,6 @@ const useCategoryStore = create((set2, get2) => ({
     try {
       await categoryService.updateCategory(id2, {
         name: category.name,
-        slug: category.slug,
         description: category.description,
         status: category.status
       });
@@ -52501,10 +52490,6 @@ const loginSchema = object$1({
 });
 const categorySchema = object$1({
   name: string$1().min(1, "Category name is required").max(100, "Name must be less than 100 characters"),
-  slug: string$1().min(1, "Slug is required").regex(
-    /^[a-z0-9-]+$/,
-    "Slug must contain only lowercase letters, numbers, and hyphens"
-  ),
   description: string$1().max(500, "Description must be less than 500 characters").optional(),
   image: string$1().optional(),
   status: _enum(["active", "inactive"])
@@ -52512,10 +52497,9 @@ const categorySchema = object$1({
 const productSchema = object$1({
   name: string$1().min(1, "Product name is required").max(200, "Name must be less than 200 characters"),
   categoryId: string$1().min(1, "Category is required"),
-  slug: string$1().optional(),
   description: string$1().optional(),
   sku: string$1().optional(),
-  weight: number$3().min(0, "Weight must be 0 or greater").optional(),
+  unitValue: number$3().min(0, "UnitValue must be 0 or greater").optional(),
   unit: string$1().optional(),
   mrp: number$3().min(0, "MRP must be 0 or greater").optional(),
   sellingPrice: number$3().min(0, "Selling price must be 0 or greater").optional(),
@@ -52524,8 +52508,7 @@ const productSchema = object$1({
   minBulkQty: number$3().int().min(0, "Min bulk quantity must be 0 or greater").optional(),
   isFeatured: boolean().optional(),
   status: _enum(["active", "inactive"]),
-  image: any().optional(),
-  gallery: array$1(any()).optional()
+  image: any().optional()
 });
 object$1({
   name: string$1().min(1, "Role name is required").max(100, "Name must be less than 100 characters"),
@@ -52688,21 +52671,21 @@ function CategoriesPage() {
   reactExports.useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
+  const { error: showError } = useAlert();
   reactExports.useEffect(() => {
     if (error) {
-      alert2.error(error);
+      showError(error);
     }
-  }, [error, alert2]);
+  }, [error]);
   const openAddModal = () => {
     setEditingCategory(null);
-    reset({ name: "", slug: "", description: "", status: "active" });
+    reset({ name: "", description: "", status: "active" });
     setIsModalOpen(true);
   };
   const openEditModal = (category) => {
     setEditingCategory(category);
     reset({
       name: category.name,
-      slug: category.slug,
       description: category.description,
       status: category.status
     });
@@ -52765,10 +52748,7 @@ function CategoriesPage() {
       header: "Category",
       cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-10 w-10 rounded-lg bg-muted flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Image$1, { className: "h-4 w-4 text-muted-foreground" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: row.getValue("name") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: row.original.slug })
-        ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: row.getValue("name") }) })
       ] })
     },
     {
@@ -52789,42 +52769,56 @@ function CategoriesPage() {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.CATEGORIES_EDIT, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          PermissionGuard,
           {
-            variant: "ghost",
-            size: "icon",
-            onClick: () => openEditModal(row.original),
-            "data-ocid": `category.edit_button.${row.index + 1}`,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "h-4 w-4" })
+            permission: PERMISSIONS.CATEGORIES_EDIT,
+            hideOnDenied: true,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "ghost",
+                size: "icon",
+                onClick: () => openEditModal(row.original),
+                "data-ocid": `category.edit_button.${row.index + 1}`,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "h-4 w-4" })
+              }
+            )
           }
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.CATEGORIES_DELETE, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button,
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          PermissionGuard,
           {
-            variant: "ghost",
-            size: "icon",
-            onClick: () => handleDelete(row.original),
-            "data-ocid": `category.delete_button.${row.index + 1}`,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4 text-destructive" })
+            permission: PERMISSIONS.CATEGORIES_DELETE,
+            hideOnDenied: true,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "ghost",
+                size: "icon",
+                onClick: () => handleDelete(row.original),
+                "data-ocid": `category.delete_button.${row.index + 1}`,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4 text-destructive" })
+              }
+            )
           }
-        ) })
+        )
       ] })
     }
   ];
   const filteredCategories = getFilteredCategories();
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      PageHeader,
+    /* @__PURE__ */ jsxRuntimeExports.jsx(PageHeader, { title: "Categories", description: "Manage product categories", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      PermissionGuard,
       {
-        title: "Categories",
-        description: "Manage product categories",
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.CATEGORIES_CREATE, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openAddModal, children: [
+        permission: PERMISSIONS.CATEGORIES_CREATE,
+        hideOnDenied: true,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openAddModal, children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "h-4 w-4 mr-2" }),
           "Add Category"
-        ] }) })
+        ] })
       }
-    ),
+    ) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "input",
@@ -52875,7 +52869,6 @@ function CategoriesPage() {
             placeholder: "Enter category name"
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(FormInput, { name: "slug", label: "Slug", placeholder: "category-slug" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           FormTextarea,
           {
@@ -77813,7 +77806,7 @@ function OrdersPage() {
     )
   ] });
 }
-const API_BASE = "https://goutamkiapi.codeeratech.in";
+const API_BASE = "http://localhost:9020";
 function ProductsPage() {
   const {
     isLoading,
@@ -77853,10 +77846,9 @@ function ProductsPage() {
     reset({
       name: "",
       categoryId: "",
-      slug: "",
       description: "",
       sku: "",
-      weight: 0,
+      unitValue: 0,
       unit: "kg",
       mrp: 0,
       sellingPrice: 0,
@@ -77874,10 +77866,9 @@ function ProductsPage() {
     reset({
       name: product.name,
       categoryId: product.categoryId,
-      slug: product.slug,
       description: product.description,
       sku: product.sku,
-      weight: product.weight,
+      unitValue: product.unitValue,
       unit: product.unit,
       mrp: product.mrp,
       sellingPrice: product.sellingPrice,
@@ -78109,7 +78100,6 @@ function ProductsPage() {
             placeholder: "Select category"
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(FormInput, { name: "slug", label: "Slug", placeholder: "product-slug" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           FormTextarea,
           {
@@ -78151,8 +78141,8 @@ function ProductsPage() {
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             FormInput,
             {
-              name: "weight",
-              label: "Weight",
+              name: "Unit Value",
+              label: "Unit Value",
               type: "number",
               step: "0.01"
             }
@@ -81824,7 +81814,7 @@ function ZonesPage() {
       name: "",
       description: "",
       deliveryCharge: "",
-      minOrderAmount: "",
+      minimumOrderAmount: "",
       status: "active"
     }
   });
@@ -81851,7 +81841,7 @@ function ZonesPage() {
       name: "",
       description: "",
       deliveryCharge: "",
-      minOrderAmount: "",
+      minimumOrderAmount: "",
       status: "active"
     });
     setIsModalOpen(true);
@@ -81862,7 +81852,7 @@ function ZonesPage() {
       name: zone.name,
       description: zone.description || "",
       deliveryCharge: zone.deliveryCharge.toString(),
-      minOrderAmount: zone.minOrderAmount.toString(),
+      minimumOrderAmount: zone.minimumOrderAmount.toString(),
       status: zone.status
     });
     setIsModalOpen(true);
@@ -81874,7 +81864,7 @@ function ZonesPage() {
         name: data.name,
         description: data.description,
         deliveryCharge: Number.parseFloat(data.deliveryCharge),
-        minOrderAmount: Number.parseFloat(data.minOrderAmount),
+        minimumOrderAmount: Number.parseFloat(data.minimumOrderAmount),
         status: data.status
       };
       if (editingZone) {
@@ -81924,11 +81914,11 @@ function ZonesPage() {
       ] })
     },
     {
-      accessorKey: "minOrderAmount",
+      accessorKey: "minimumOrderAmount",
       header: "Min Order",
       cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm", children: [
         "₹",
-        row.getValue("minOrderAmount")
+        row.getValue("minimumOrderAmount")
       ] })
     },
     {
@@ -82015,7 +82005,7 @@ function ZonesPage() {
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           FormInput,
           {
-            name: "minOrderAmount",
+            name: "minimumOrderAmount",
             label: "Minimum Order Amount (₹)",
             placeholder: "Enter minimum order amount",
             type: "number"
@@ -82126,6 +82116,11 @@ const protectedRoute = createRoute({
   id: "protected",
   component: ProtectedRoute
 });
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(Navigate, { to: "/dashboard" })
+});
 const dashboardRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "/dashboard",
@@ -82227,6 +82222,7 @@ const routeTree = rootRoute.addChildren([
   notFoundRoute,
   appRoute.addChildren([
     protectedRoute.addChildren([
+      indexRoute,
       dashboardRoute,
       categoriesRoute,
       citiesRoute,

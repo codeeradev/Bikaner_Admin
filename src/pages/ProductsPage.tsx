@@ -48,9 +48,10 @@ export function ProductsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const methods = useForm<ProductFormData>({
+  const methods = useForm({
     resolver: zodResolver(productSchema),
   });
+
   const { handleSubmit, reset } = methods;
 
   // Fetch products and categories on mount
@@ -72,10 +73,9 @@ export function ProductsPage() {
     reset({
       name: "",
       categoryId: "",
-      slug: "",
       description: "",
       sku: "",
-      weight: 0,
+      unitValue: 0,
       unit: "kg",
       mrp: 0,
       sellingPrice: 0,
@@ -94,10 +94,9 @@ export function ProductsPage() {
     reset({
       name: product.name,
       categoryId: product.categoryId,
-      slug: product.slug,
       description: product.description,
       sku: product.sku,
-      weight: product.weight,
+      unitValue: product.unitValue,
       unit: product.unit,
       mrp: product.mrp,
       sellingPrice: product.sellingPrice,
@@ -189,7 +188,7 @@ export function ProductsPage() {
           <div>
             <div className="font-medium">{row.getValue("name")}</div>
             <div className="text-xs text-muted-foreground">
-              {row.original.sku || 'No SKU'}
+              {row.original.sku || "No SKU"}
             </div>
           </div>
         </div>
@@ -203,12 +202,13 @@ export function ProductsPage() {
     {
       accessorKey: "mrp",
       header: "MRP",
-      cell: ({ row }) => row.original.mrp ? `₹${row.original.mrp}` : "N/A",
+      cell: ({ row }) => (row.original.mrp ? `₹${row.original.mrp}` : "N/A"),
     },
     {
       accessorKey: "sellingPrice",
       header: "Selling Price",
-      cell: ({ row }) => row.original.sellingPrice ? `₹${row.original.sellingPrice}` : "N/A",
+      cell: ({ row }) =>
+        row.original.sellingPrice ? `₹${row.original.sellingPrice}` : "N/A",
     },
     {
       accessorKey: "stock",
@@ -241,7 +241,10 @@ export function ProductsPage() {
               <Pencil className="h-4 w-4" />
             </Button>
           </PermissionGuard>
-          <PermissionGuard permission={PERMISSIONS.PRODUCTS_DELETE} hideOnDenied>
+          <PermissionGuard
+            permission={PERMISSIONS.PRODUCTS_DELETE}
+            hideOnDenied
+          >
             <Button
               variant="ghost"
               size="icon"
@@ -263,10 +266,7 @@ export function ProductsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Products"
-        description="Manage your product catalog"
-      >
+      <PageHeader title="Products" description="Manage your product catalog">
         <PermissionGuard permission={PERMISSIONS.PRODUCTS_CREATE} hideOnDenied>
           <Button onClick={openAddModal}>
             <Plus className="h-4 w-4 mr-2" />
@@ -301,10 +301,7 @@ export function ProductsPage() {
             </option>
           ))}
         </select>
-        <Button
-          variant="outline"
-          onClick={() => fetchProducts()}
-        >
+        <Button variant="outline" onClick={() => fetchProducts()}>
           Search
         </Button>
       </div>
@@ -344,19 +341,13 @@ export function ProductsPage() {
                 options={categoryOptions}
                 placeholder="Select category"
               />
-              <FormInput name="slug" label="Slug" placeholder="product-slug" />
               <FormTextarea
                 name="description"
                 label="Description"
                 placeholder="Enter product description"
               />
               <div className="grid grid-cols-3 gap-4">
-                <FormInput
-                  name="mrp"
-                  label="MRP"
-                  type="number"
-                  step="0.01"
-                />
+                <FormInput name="mrp" label="MRP" type="number" step="0.01" />
                 <FormInput
                   name="sellingPrice"
                   label="Selling Price"
@@ -372,8 +363,8 @@ export function ProductsPage() {
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <FormInput
-                  name="weight"
-                  label="Weight"
+                  name="unitValue"
+                  label="Unit Value"
                   type="number"
                   step="0.01"
                 />
@@ -382,11 +373,7 @@ export function ProductsPage() {
                   label="Unit"
                   placeholder="kg, ltr, pcs"
                 />
-                <FormInput
-                  name="stock"
-                  label="Stock"
-                  type="number"
-                />
+                <FormInput name="stock" label="Stock" type="number" />
               </div>
               <FormInput
                 name="minBulkQty"

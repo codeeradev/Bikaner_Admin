@@ -20,18 +20,11 @@ export const categorySchema = z.object({
     .string()
     .min(1, "Category name is required")
     .max(100, "Name must be less than 100 characters"),
-  slug: z
-    .string()
-    .min(1, "Slug is required")
-    .regex(
-      /^[a-z0-9-]+$/,
-      "Slug must contain only lowercase letters, numbers, and hyphens",
-    ),
   description: z
     .string()
     .max(500, "Description must be less than 500 characters")
     .optional(),
-  image: z.string().optional(),
+  image: z.instanceof(File).optional(),
   status: z.enum(["active", "inactive"]),
 });
 
@@ -43,10 +36,9 @@ export const productSchema = z.object({
     .min(1, "Product name is required")
     .max(200, "Name must be less than 200 characters"),
   categoryId: z.string().min(1, "Category is required"),
-  slug: z.string().optional(),
   description: z.string().optional(),
   sku: z.string().optional(),
-  weight: z.coerce.number().min(0, "Weight must be 0 or greater").optional(),
+  unitValue: z.coerce.number().min(0, "UnitValue must be 0 or greater").optional(),
   unit: z.string().optional(),
   mrp: z.coerce.number().min(0, "MRP must be 0 or greater").optional(),
   sellingPrice: z.coerce.number().min(0, "Selling price must be 0 or greater").optional(),
@@ -56,7 +48,6 @@ export const productSchema = z.object({
   isFeatured: z.boolean().optional(),
   status: z.enum(["active", "inactive"]),
   image: z.any().optional(),
-  gallery: z.array(z.any()).optional(),
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;

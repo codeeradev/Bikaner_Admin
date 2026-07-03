@@ -4,9 +4,9 @@ import {
   hasAnyPermission,
   hasAllPermissions,
   isAdmin,
+  createPermission,
   type PermissionAction,
   type PermissionModule,
-  createPermission,
 } from "@/lib/permissions";
 import { useMemo } from "react";
 
