@@ -88,44 +88,56 @@ export function DataTable<TData>({
 
       <div className="rounded-lg border border-border overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm table-fixed">
             <thead className="bg-muted/50">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
-                    >
-                      {header.isPlaceholder ? null : (
-                        <button
-                          type="button"
-                          className={cn(
-                            "flex items-center gap-1 hover:text-foreground transition-colors",
-                            header.column.getCanSort() && "cursor-pointer",
-                          )}
-                          onClick={header.column.getToggleSortingHandler()}
-                          disabled={!header.column.getCanSort()}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                          {header.column.getCanSort() && (
-                            <span className="ml-1">
-                              {header.column.getIsSorted() === "asc" ? (
-                                <ArrowUp className="h-3 w-3" />
-                              ) : header.column.getIsSorted() === "desc" ? (
-                                <ArrowDown className="h-3 w-3" />
-                              ) : (
-                                <ArrowUpDown className="h-3 w-3 opacity-50" />
-                              )}
-                            </span>
-                          )}
-                        </button>
-                      )}
-                    </th>
-                  ))}
+                  {headerGroup.headers.map((header, index) => {
+                    const isActionsColumn = header.id === 'actions';
+                    const isStatusColumn = header.column.id === 'status' || header.column.id === 'isActive';
+                    
+                    return (
+                      <th
+                        key={header.id}
+                        className={cn(
+                          "px-4 py-3 font-medium text-muted-foreground",
+                          isActionsColumn && "w-32 text-right",
+                          isStatusColumn && "w-32 text-center",
+                          !isActionsColumn && !isStatusColumn && "text-left"
+                        )}
+                      >
+                        {header.isPlaceholder ? null : (
+                          <button
+                            type="button"
+                            className={cn(
+                              "flex items-center gap-1 hover:text-foreground transition-colors",
+                              header.column.getCanSort() && "cursor-pointer",
+                              isActionsColumn && "ml-auto",
+                              isStatusColumn && "mx-auto"
+                            )}
+                            onClick={header.column.getToggleSortingHandler()}
+                            disabled={!header.column.getCanSort()}
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                            {header.column.getCanSort() && (
+                              <span className="ml-1">
+                                {header.column.getIsSorted() === "asc" ? (
+                                  <ArrowUp className="h-3 w-3" />
+                                ) : header.column.getIsSorted() === "desc" ? (
+                                  <ArrowDown className="h-3 w-3" />
+                                ) : (
+                                  <ArrowUpDown className="h-3 w-3 opacity-50" />
+                                )}
+                              </span>
+                            )}
+                          </button>
+                        )}
+                      </th>
+                    );
+                  })}
                 </tr>
               ))}
             </thead>
@@ -145,14 +157,26 @@ export function DataTable<TData>({
                     key={row.id}
                     className="hover:bg-muted/30 transition-colors"
                   >
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-4 py-3">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </td>
-                    ))}
+                    {row.getVisibleCells().map((cell) => {
+                      const isActionsColumn = cell.column.id === 'actions';
+                      const isStatusColumn = cell.column.id === 'status' || cell.column.id === 'isActive';
+                      
+                      return (
+                        <td 
+                          key={cell.id} 
+                          className={cn(
+                            "px-4 py-3",
+                            isActionsColumn && "text-right",
+                            isStatusColumn && "text-center"
+                          )}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))
               )}

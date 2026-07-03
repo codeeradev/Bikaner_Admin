@@ -181,9 +181,9 @@ export function CitiesPage() {
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => <div className="text-right">Actions</div>,
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-end">
           <PermissionGuard permission={PERMISSIONS.CITIES_EDIT} hideOnDenied>
             <Button
               variant="ghost"
@@ -226,11 +226,28 @@ export function CitiesPage() {
           <div className="text-muted-foreground">Loading cities...</div>
         </div>
       ) : (
-        <DataTable
-          columns={columns}
-          data={cities}
-          emptyMessage="No cities found"
-        />
+        <div className="cities-table-wrapper">
+          <style>{`
+            .cities-table-wrapper table {
+              table-layout: auto !important;
+            }
+            .cities-table-wrapper th:has(button:only-child),
+            .cities-table-wrapper th:has(div) {
+              width: auto !important;
+            }
+            .cities-table-wrapper th:last-child {
+              text-align: right;
+            }
+            .cities-table-wrapper td:last-child {
+              text-align: right;
+            }
+          `}</style>
+          <DataTable
+            columns={columns}
+            data={cities}
+            emptyMessage="No cities found"
+          />
+        </div>
       )}
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>

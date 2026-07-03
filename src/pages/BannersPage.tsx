@@ -241,18 +241,16 @@ export function BannersPage() {
     },
     {
       accessorKey: "isActive",
-      header: () => <div className="text-center">Status</div>,
+      header: "Status",
       cell: ({ row }) => (
-        <div className="text-center">
-          <Badge variant={row.original.isActive ? "default" : "secondary"}>
-            {row.original.isActive ? "Active" : "Inactive"}
-          </Badge>
-        </div>
+        <Badge variant={row.original.isActive ? "default" : "secondary"}>
+          {row.original.isActive ? "Active" : "Inactive"}
+        </Badge>
       ),
     },
     {
       id: "actions",
-      header: () => <div className="text-right">Actions</div>,
+      header: "Actions",
       cell: ({ row }) => (
         <div className="flex items-center gap-2 justify-end">
           <PermissionGuard permission={PERMISSIONS.BANNERS_EDIT} hideOnDenied>
