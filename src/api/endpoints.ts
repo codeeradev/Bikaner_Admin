@@ -114,4 +114,10 @@ export const ENDPOINTS = {
   // Settings
   GET_SETTINGS: `${BASE_URL}/settings`,
   UPDATE_SETTINGS: `${BASE_URL}/settings`,
+
+  // Banners
+  BANNERS_GET: `${BASE_URL}/banners`,
+  BANNERS_CREATE: `${BASE_URL}/banners`,
+  BANNERS_UPDATE: (id: string) => `${BASE_URL}/banners/${id}`,
+  BANNERS_DELETE: (id: string) => `${BASE_URL}/banners/${id}`,
 } as const;

@@ -4,4 +4,4 @@ export * from "./categoryService";
 export * from "./cityService";
 export * from "./zoneService";
 export * from "./productService";
-export * from "./productService";
+export * from "./bannerService";

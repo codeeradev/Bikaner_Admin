@@ -25,7 +25,8 @@ export type PermissionModule =
   | "wallet"
   | "settings"
   | "theme"
-  | "profile";
+  | "profile"
+  | "banners";
 
 /**
  * Permission constants matching backend
@@ -113,6 +114,12 @@ export const PERMISSIONS = {
   // Profile
   PROFILE_VIEW: "profile:view",
   PROFILE_EDIT: "profile:edit",
+
+  // Banners
+  BANNERS_VIEW: "banners:view",
+  BANNERS_CREATE: "banners:create",
+  BANNERS_EDIT: "banners:edit",
+  BANNERS_DELETE: "banners:delete",
 } as const;
 
 /**
@@ -136,6 +143,7 @@ export const MODULE_LABELS: Record<PermissionModule, string> = {
   settings: "Settings",
   theme: "Theme",
   profile: "Profile",
+  banners: "Banners",
 };
 
 /**

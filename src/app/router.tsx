@@ -1,5 +1,6 @@
 import { AlertContainer } from "@/components/AlertContainer";
 import { MainLayout } from "@/layouts/MainLayout";
+import { BannersPage } from "@/pages/BannersPage";
 import { BulkOrdersPage } from "@/pages/BulkOrdersPage";
 import { CategoriesPage } from "@/pages/CategoriesPage";
 import { CitiesPage } from "@/pages/CitiesPage";
@@ -90,6 +91,12 @@ const productsRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "/products",
   component: ProductsPage,
+});
+
+const bannersRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: "/banners",
+  component: BannersPage,
 });
 
 const rolesRoute = createRoute({
@@ -188,6 +195,7 @@ const routeTree = rootRoute.addChildren([
       citiesRoute,
       zonesRoute,
       productsRoute,
+      bannersRoute,
       ordersRoute,
       normalOrdersRoute,
       bulkOrdersRoute,
