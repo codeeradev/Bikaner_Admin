@@ -21821,16 +21821,16 @@ function xyzToOklab(x2, y2, z2) {
   const lmsL = Math.cbrt(lmsX);
   const lmsM = Math.cbrt(lmsY);
   const lmsS = Math.cbrt(lmsZ);
-  const L = lmsL * 0.2104542553 + lmsM * 0.793617785 + lmsS * -0.0040720468;
+  const L2 = lmsL * 0.2104542553 + lmsM * 0.793617785 + lmsS * -0.0040720468;
   const a2 = lmsL * 1.9779984951 + lmsM * -2.428592205 + lmsS * 0.4505937099;
   const b2 = lmsL * 0.0259040371 + lmsM * 0.7827717662 + lmsS * -0.8086757669;
-  return [L, a2, b2];
+  return [L2, a2, b2];
 }
-function oklabToOklch(L, a2, b2) {
+function oklabToOklch(L2, a2, b2) {
   const C = Math.sqrt(a2 * a2 + b2 * b2);
   let H = Math.atan2(b2, a2) * 180 / Math.PI;
   if (H < 0) H += 360;
-  return [L, C, H];
+  return [L2, C, H];
 }
 function hexToOklch(hex2) {
   let clean = hex2.trim();
@@ -21850,8 +21850,8 @@ function hexToOklch(hex2) {
     throw new Error(`Invalid hex color: ${hex2}`);
   }
   const [x2, y2, z2] = rgbToXyz(r2, g2, b2);
-  const [L, a2, bVal] = xyzToOklab(x2, y2, z2);
-  const [l2, c2, h2] = oklabToOklch(L, a2, bVal);
+  const [L2, a2, bVal] = xyzToOklab(x2, y2, z2);
+  const [l2, c2, h2] = oklabToOklch(L2, a2, bVal);
   const lStr = l2.toFixed(5);
   const cStr = c2.toFixed(5);
   const hStr = h2.toFixed(2);
@@ -25690,7 +25690,7 @@ const del = (url, options) => apiClient.delete(url, options);
 const upload = (url, formData, onProgress, method) => apiClient.upload(url, formData, onProgress, method);
 const BASE_URL = (
   // import.meta.env.VITE_API_BASE_URL || "http://localhost:9020";
-  "http://localhost:9020"
+  "https://bikanerapi.codeeratech.in"
 );
 const ENDPOINTS = {
   // Authentication
@@ -25781,7 +25781,12 @@ const ENDPOINTS = {
   CHANGE_PASSWORD: `${BASE_URL}/profile/change-password`,
   // Settings
   GET_SETTINGS: `${BASE_URL}/settings`,
-  UPDATE_SETTINGS: `${BASE_URL}/settings`
+  UPDATE_SETTINGS: `${BASE_URL}/settings`,
+  // Banners
+  BANNERS_GET: `${BASE_URL}/banners`,
+  BANNERS_CREATE: `${BASE_URL}/banners`,
+  BANNERS_UPDATE: (id2) => `${BASE_URL}/banners/${id2}`,
+  BANNERS_DELETE: (id2) => `${BASE_URL}/banners/${id2}`
 };
 const authService = {
   /**
@@ -26656,15 +26661,15 @@ const productService = {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("categoryId", data.categoryId);
-    if (data.description) formData.append("description", data.description);
-    if (data.sku) formData.append("sku", data.sku);
-    if (data.unitValue) formData.append("unitValue", data.unitValue.toString());
-    if (data.unit) formData.append("unit", data.unit);
-    if (data.mrp) formData.append("mrp", data.mrp.toString());
-    if (data.sellingPrice) formData.append("sellingPrice", data.sellingPrice.toString());
-    if (data.bulkPrice) formData.append("bulkPrice", data.bulkPrice.toString());
-    if (data.stock) formData.append("stock", data.stock.toString());
-    if (data.minBulkQty) formData.append("minBulkQty", data.minBulkQty.toString());
+    if (data.description !== void 0) formData.append("description", data.description);
+    if (data.sku !== void 0) formData.append("sku", data.sku);
+    if (data.unitValue !== void 0) formData.append("unitValue", data.unitValue.toString());
+    if (data.unit !== void 0) formData.append("unit", data.unit);
+    if (data.mrp !== void 0) formData.append("mrp", data.mrp.toString());
+    if (data.sellingPrice !== void 0) formData.append("sellingPrice", data.sellingPrice.toString());
+    if (data.bulkPrice !== void 0) formData.append("bulkPrice", data.bulkPrice.toString());
+    if (data.stock !== void 0) formData.append("stock", data.stock.toString());
+    if (data.minBulkQty !== void 0) formData.append("minBulkQty", data.minBulkQty.toString());
     if (data.isFeatured !== void 0) formData.append("isFeatured", data.isFeatured.toString());
     if (data.status) {
       formData.append("isActive", (data.status === "active").toString());
@@ -26704,6 +26709,93 @@ const productService = {
    */
   async deleteProduct(id2) {
     return del(ENDPOINTS.DELETE_PRODUCT(id2));
+  }
+};
+const bannerService = {
+  /**
+   * Get all banners
+   */
+  async getBanners() {
+    console.log("🔵 Fetching banners");
+    console.log("🔵 Endpoint:", ENDPOINTS.BANNERS_GET);
+    try {
+      const response = await get$4(ENDPOINTS.BANNERS_GET);
+      console.log("✅ Banners fetched successfully:", response);
+      return response;
+    } catch (error) {
+      console.error("❌ Failed to fetch banners:", error);
+      throw error;
+    }
+  },
+  /**
+   * Create a new banner
+   */
+  async createBanner(data) {
+    try {
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("image", data.image);
+      if (data.productId) {
+        formData.append("productId", data.productId);
+      }
+      formData.append("isActive", (data.isActive ?? true).toString());
+      const response = await upload(
+        ENDPOINTS.BANNERS_CREATE,
+        formData
+      );
+      console.log("✅ Banner created successfully:", response);
+      return response.data;
+    } catch (error) {
+      console.error("❌ Failed to create banner:", error);
+      throw error;
+    }
+  },
+  /**
+   * Update an existing banner
+   */
+  async updateBanner(id2, data) {
+    console.log("🔵 Updating banner:", id2, "with data:", data);
+    console.log("🔵 Endpoint:", ENDPOINTS.BANNERS_UPDATE(id2));
+    try {
+      const formData = new FormData();
+      if (data.title) {
+        formData.append("title", data.title);
+      }
+      if (data.image instanceof File) {
+        formData.append("image", data.image);
+      }
+      if (data.productId !== void 0) {
+        formData.append("productId", data.productId);
+      }
+      if (data.isActive !== void 0) {
+        formData.append("isActive", data.isActive.toString());
+      }
+      const response = await upload(
+        ENDPOINTS.BANNERS_UPDATE(id2),
+        formData,
+        void 0,
+        "PUT"
+      );
+      console.log("✅ Banner updated successfully:", response);
+      return response.updatedBanner;
+    } catch (error) {
+      console.error("❌ Failed to update banner:", error);
+      throw error;
+    }
+  },
+  /**
+   * Delete a banner
+   */
+  async deleteBanner(id2) {
+    console.log("🔵 Deleting banner:", id2);
+    console.log("🔵 Endpoint:", ENDPOINTS.BANNERS_DELETE(id2));
+    try {
+      await del(ENDPOINTS.BANNERS_DELETE(id2));
+      console.log("✅ Banner deleted successfully");
+    } catch (error) {
+      console.error("❌ Failed to delete banner:", error);
+      throw error;
+    }
   }
 };
 const useCategoryStore = create((set2, get2) => ({
@@ -26749,23 +26841,12 @@ const useCategoryStore = create((set2, get2) => ({
     }
   },
   addCategory: async (category) => {
-    console.log("🟡 CategoryStore: addCategory called with:", category);
     set2({ isLoading: true, error: null });
     try {
-      const categoryData = {
-        name: category.name,
-        description: category.description,
-        status: category.status
-      };
-      console.log("🟡 CategoryStore: Sending data to API:", categoryData);
-      const result = await categoryService.createCategory(categoryData);
-      console.log("✅ CategoryStore: Category created, result:", result);
-      console.log("🟡 CategoryStore: Refreshing category list...");
+      await categoryService.createCategory(category);
       await get2().fetchCategories();
-      console.log("✅ CategoryStore: Category list refreshed");
     } catch (err) {
       const apiError = err;
-      console.error("❌ CategoryStore: Error creating category:", apiError);
       set2({
         error: apiError.message || "Failed to create category",
         isLoading: false
@@ -26776,11 +26857,7 @@ const useCategoryStore = create((set2, get2) => ({
   updateCategory: async (id2, category) => {
     set2({ isLoading: true, error: null });
     try {
-      await categoryService.updateCategory(id2, {
-        name: category.name,
-        description: category.description,
-        status: category.status
-      });
+      await categoryService.updateCategory(id2, category);
       await get2().fetchCategories();
     } catch (err) {
       const apiError = err;
@@ -27250,7 +27327,7 @@ function xe(n2) {
 }
 var ve = (n2) => {
   var Dt, Pt, Nt, Bt, Ct, kt, It, Mt, Ht, At, Lt;
-  let { invert: e3, toast: t2, unstyled: a2, interacting: u2, setHeights: f2, visibleToasts: w, heights: S, index: g2, toasts: i2, expanded: D, removeToast: T, defaultRichColors: F, closeButton: et, style: ut, cancelButtonStyle: ft, actionButtonStyle: l2, className: ot = "", descriptionClassName: at = "", duration: X2, position: st, gap: pt, loadingIcon: rt, expandByDefault: B, classNames: s2, icons: P2, closeButtonAriaLabel: nt = "Close toast", pauseWhenPageIsHidden: it } = n2, [Y, C] = React$4.useState(null), [lt, J] = React$4.useState(null), [W, H] = React$4.useState(false), [A, mt] = React$4.useState(false), [L, z2] = React$4.useState(false), [ct, d2] = React$4.useState(false), [h2, y2] = React$4.useState(false), [R, j] = React$4.useState(0), [p2, _] = React$4.useState(0), O = React$4.useRef(t2.duration || X2 || Wt), G = React$4.useRef(null), k2 = React$4.useRef(null), Vt = g2 === 0, Ut = g2 + 1 <= w, N = t2.type, V = t2.dismissible !== false, Kt = t2.className || "", Xt = t2.descriptionClassName || "", dt = React$4.useMemo(() => S.findIndex((r2) => r2.toastId === t2.id) || 0, [S, t2.id]), Jt = React$4.useMemo(() => {
+  let { invert: e3, toast: t2, unstyled: a2, interacting: u2, setHeights: f2, visibleToasts: w, heights: S, index: g2, toasts: i2, expanded: D, removeToast: T, defaultRichColors: F, closeButton: et, style: ut, cancelButtonStyle: ft, actionButtonStyle: l2, className: ot = "", descriptionClassName: at = "", duration: X2, position: st, gap: pt, loadingIcon: rt, expandByDefault: B, classNames: s2, icons: P2, closeButtonAriaLabel: nt = "Close toast", pauseWhenPageIsHidden: it } = n2, [Y, C] = React$4.useState(null), [lt, J] = React$4.useState(null), [W, H] = React$4.useState(false), [A, mt] = React$4.useState(false), [L2, z2] = React$4.useState(false), [ct, d2] = React$4.useState(false), [h2, y2] = React$4.useState(false), [R, j] = React$4.useState(0), [p2, _] = React$4.useState(0), O = React$4.useRef(t2.duration || X2 || Wt), G = React$4.useRef(null), k2 = React$4.useRef(null), Vt = g2 === 0, Ut = g2 + 1 <= w, N = t2.type, V = t2.dismissible !== false, Kt = t2.className || "", Xt = t2.descriptionClassName || "", dt = React$4.useMemo(() => S.findIndex((r2) => r2.toastId === t2.id) || 0, [S, t2.id]), Jt = React$4.useMemo(() => {
     var r2;
     return (r2 = t2.closeButton) != null ? r2 : et;
   }, [t2.closeButton, et]), Tt = React$4.useMemo(() => t2.duration || X2 || Wt, [t2.duration, X2]), gt = React$4.useRef(0), U2 = React$4.useRef(0), St = React$4.useRef(0), K = React$4.useRef(null), [Gt, Qt] = st.split("-"), Rt = React$4.useMemo(() => S.reduce((r2, m2, c2) => c2 >= dt ? r2 : r2 + m2.height, 0), [S, dt]), Et = Ft(), qt = t2.invert || e3, ht = N === "loading";
@@ -27298,7 +27375,7 @@ var ve = (n2) => {
     var r2, m2, c2;
     return P2 != null && P2.loading ? React$4.createElement("div", { className: M(s2 == null ? void 0 : s2.loader, (r2 = t2 == null ? void 0 : t2.classNames) == null ? void 0 : r2.loader, "sonner-loader"), "data-visible": N === "loading" }, P2.loading) : rt ? React$4.createElement("div", { className: M(s2 == null ? void 0 : s2.loader, (m2 = t2 == null ? void 0 : t2.classNames) == null ? void 0 : m2.loader, "sonner-loader"), "data-visible": N === "loading" }, rt) : React$4.createElement(Yt, { className: M(s2 == null ? void 0 : s2.loader, (c2 = t2 == null ? void 0 : t2.classNames) == null ? void 0 : c2.loader), visible: N === "loading" });
   }
-  return React$4.createElement("li", { tabIndex: 0, ref: k2, className: M(ot, Kt, s2 == null ? void 0 : s2.toast, (Dt = t2 == null ? void 0 : t2.classNames) == null ? void 0 : Dt.toast, s2 == null ? void 0 : s2.default, s2 == null ? void 0 : s2[N], (Pt = t2 == null ? void 0 : t2.classNames) == null ? void 0 : Pt[N]), "data-sonner-toast": "", "data-rich-colors": (Nt = t2.richColors) != null ? Nt : F, "data-styled": !(t2.jsx || t2.unstyled || a2), "data-mounted": W, "data-promise": !!t2.promise, "data-swiped": h2, "data-removed": A, "data-visible": Ut, "data-y-position": Gt, "data-x-position": Qt, "data-index": g2, "data-front": Vt, "data-swiping": L, "data-dismissible": V, "data-type": N, "data-invert": qt, "data-swipe-out": ct, "data-swipe-direction": lt, "data-expanded": !!(D || B && W), style: { "--index": g2, "--toasts-before": g2, "--z-index": i2.length - g2, "--offset": `${A ? R : U2.current}px`, "--initial-height": B ? "auto" : `${p2}px`, ...ut, ...t2.style }, onDragEnd: () => {
+  return React$4.createElement("li", { tabIndex: 0, ref: k2, className: M(ot, Kt, s2 == null ? void 0 : s2.toast, (Dt = t2 == null ? void 0 : t2.classNames) == null ? void 0 : Dt.toast, s2 == null ? void 0 : s2.default, s2 == null ? void 0 : s2[N], (Pt = t2 == null ? void 0 : t2.classNames) == null ? void 0 : Pt[N]), "data-sonner-toast": "", "data-rich-colors": (Nt = t2.richColors) != null ? Nt : F, "data-styled": !(t2.jsx || t2.unstyled || a2), "data-mounted": W, "data-promise": !!t2.promise, "data-swiped": h2, "data-removed": A, "data-visible": Ut, "data-y-position": Gt, "data-x-position": Qt, "data-index": g2, "data-front": Vt, "data-swiping": L2, "data-dismissible": V, "data-type": N, "data-invert": qt, "data-swipe-out": ct, "data-swipe-direction": lt, "data-expanded": !!(D || B && W), style: { "--index": g2, "--toasts-before": g2, "--z-index": i2.length - g2, "--offset": `${A ? R : U2.current}px`, "--initial-height": B ? "auto" : `${p2}px`, ...ut, ...t2.style }, onDragEnd: () => {
     z2(false), C(null), K.current = null;
   }, onPointerDown: (r2) => {
     ht || !V || (G.current = /* @__PURE__ */ new Date(), j(U2.current), r2.target.setPointerCapture(r2.pointerId), r2.target.tagName !== "BUTTON" && (z2(true), K.current = { x: r2.clientX, y: r2.clientY }));
@@ -27351,7 +27428,7 @@ function Te(n2, e3) {
   }), t2;
 }
 var $e = reactExports.forwardRef(function(e3, t2) {
-  let { invert: a2, position: u2 = "bottom-right", hotkey: f2 = ["altKey", "KeyT"], expand: w, closeButton: S, className: g2, offset: i2, mobileOffset: D, theme: T = "light", richColors: F, duration: et, style: ut, visibleToasts: ft = pe, toastOptions: l2, dir: ot = _t(), gap: at = be, loadingIcon: X2, icons: st, containerAriaLabel: pt = "Notifications", pauseWhenPageIsHidden: rt } = e3, [B, s2] = React$4.useState([]), P2 = React$4.useMemo(() => Array.from(new Set([u2].concat(B.filter((d2) => d2.position).map((d2) => d2.position)))), [B, u2]), [nt, it] = React$4.useState([]), [Y, C] = React$4.useState(false), [lt, J] = React$4.useState(false), [W, H] = React$4.useState(T !== "system" ? T : typeof window != "undefined" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"), A = React$4.useRef(null), mt = f2.join("+").replace(/Key/g, "").replace(/Digit/g, ""), L = React$4.useRef(null), z2 = React$4.useRef(false), ct = React$4.useCallback((d2) => {
+  let { invert: a2, position: u2 = "bottom-right", hotkey: f2 = ["altKey", "KeyT"], expand: w, closeButton: S, className: g2, offset: i2, mobileOffset: D, theme: T = "light", richColors: F, duration: et, style: ut, visibleToasts: ft = pe, toastOptions: l2, dir: ot = _t(), gap: at = be, loadingIcon: X2, icons: st, containerAriaLabel: pt = "Notifications", pauseWhenPageIsHidden: rt } = e3, [B, s2] = React$4.useState([]), P2 = React$4.useMemo(() => Array.from(new Set([u2].concat(B.filter((d2) => d2.position).map((d2) => d2.position)))), [B, u2]), [nt, it] = React$4.useState([]), [Y, C] = React$4.useState(false), [lt, J] = React$4.useState(false), [W, H] = React$4.useState(T !== "system" ? T : typeof window != "undefined" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"), A = React$4.useRef(null), mt = f2.join("+").replace(/Key/g, "").replace(/Digit/g, ""), L2 = React$4.useRef(null), z2 = React$4.useRef(false), ct = React$4.useCallback((d2) => {
     s2((h2) => {
       var y2;
       return (y2 = h2.find((R) => R.id === d2.id)) != null && y2.delete || v$1.dismiss(d2.id), h2.filter(({ id: R }) => R !== d2.id);
@@ -27400,15 +27477,15 @@ var $e = reactExports.forwardRef(function(e3, t2) {
     return document.addEventListener("keydown", d2), () => document.removeEventListener("keydown", d2);
   }, [f2]), React$4.useEffect(() => {
     if (A.current) return () => {
-      L.current && (L.current.focus({ preventScroll: true }), L.current = null, z2.current = false);
+      L2.current && (L2.current.focus({ preventScroll: true }), L2.current = null, z2.current = false);
     };
   }, [A.current]), React$4.createElement("section", { ref: t2, "aria-label": `${pt} ${mt}`, tabIndex: -1, "aria-live": "polite", "aria-relevant": "additions text", "aria-atomic": "false", suppressHydrationWarning: true }, P2.map((d2, h2) => {
     var j;
     let [y2, R] = d2.split("-");
     return B.length ? React$4.createElement("ol", { key: d2, dir: ot === "auto" ? _t() : ot, tabIndex: -1, ref: A, className: g2, "data-sonner-toaster": true, "data-theme": W, "data-y-position": y2, "data-lifted": Y && B.length > 1 && !w, "data-x-position": R, style: { "--front-toast-height": `${((j = nt[0]) == null ? void 0 : j.height) || 0}px`, "--width": `${he}px`, "--gap": `${at}px`, ...ut, ...Te(i2, D) }, onBlur: (p2) => {
-      z2.current && !p2.currentTarget.contains(p2.relatedTarget) && (z2.current = false, L.current && (L.current.focus({ preventScroll: true }), L.current = null));
+      z2.current && !p2.currentTarget.contains(p2.relatedTarget) && (z2.current = false, L2.current && (L2.current.focus({ preventScroll: true }), L2.current = null));
     }, onFocus: (p2) => {
-      p2.target instanceof HTMLElement && p2.target.dataset.dismissible === "false" || z2.current || (z2.current = true, L.current = p2.relatedTarget);
+      p2.target instanceof HTMLElement && p2.target.dataset.dismissible === "false" || z2.current || (z2.current = true, L2.current = p2.relatedTarget);
     }, onMouseEnter: () => C(true), onMouseMove: () => C(true), onMouseLeave: () => {
       lt || C(false);
     }, onDragEnd: () => C(false), onPointerDown: (p2) => {
@@ -30014,7 +30091,7 @@ RovingFocusGroup.displayName = GROUP_NAME$3;
 var RovingFocusGroupImpl = reactExports.forwardRef((props, forwardedRef) => {
   const {
     __scopeRovingFocusGroup,
-    orientation,
+    orientation: orientation2,
     loop = false,
     dir,
     currentTabStopId: currentTabStopIdProp,
@@ -30049,7 +30126,7 @@ var RovingFocusGroupImpl = reactExports.forwardRef((props, forwardedRef) => {
     RovingFocusProvider,
     {
       scope: __scopeRovingFocusGroup,
-      orientation,
+      orientation: orientation2,
       dir: direction,
       loop,
       currentTabStopId,
@@ -30070,7 +30147,7 @@ var RovingFocusGroupImpl = reactExports.forwardRef((props, forwardedRef) => {
         Primitive$1.div,
         {
           tabIndex: isTabbingBackOut || focusableItemsCount === 0 ? -1 : 0,
-          "data-orientation": orientation,
+          "data-orientation": orientation2,
           ...groupProps,
           ref: composedRefs,
           style: { outline: "none", ...props.style },
@@ -30186,10 +30263,10 @@ function getDirectionAwareKey(key, dir) {
   if (dir !== "rtl") return key;
   return key === "ArrowLeft" ? "ArrowRight" : key === "ArrowRight" ? "ArrowLeft" : key;
 }
-function getFocusIntent(event, orientation, dir) {
+function getFocusIntent(event, orientation2, dir) {
   const key = getDirectionAwareKey(event.key, dir);
-  if (orientation === "vertical" && ["ArrowLeft", "ArrowRight"].includes(key)) return void 0;
-  if (orientation === "horizontal" && ["ArrowUp", "ArrowDown"].includes(key)) return void 0;
+  if (orientation2 === "vertical" && ["ArrowLeft", "ArrowRight"].includes(key)) return void 0;
+  if (orientation2 === "horizontal" && ["ArrowUp", "ArrowDown"].includes(key)) return void 0;
   return MAP_KEY_TO_FOCUS_INTENT[key];
 }
 function focusFirst$1(candidates, preventScroll = false) {
@@ -31683,7 +31760,7 @@ var ScrollAreaScrollbarAuto = reactExports.forwardRef((props, forwardedRef) => {
   ) });
 });
 var ScrollAreaScrollbarVisible = reactExports.forwardRef((props, forwardedRef) => {
-  const { orientation = "vertical", ...scrollbarProps } = props;
+  const { orientation: orientation2 = "vertical", ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
   const thumbRef = reactExports.useRef(null);
   const pointerOffsetRef = reactExports.useRef(0);
@@ -31705,7 +31782,7 @@ var ScrollAreaScrollbarVisible = reactExports.forwardRef((props, forwardedRef) =
   function getScrollPosition(pointerPos, dir) {
     return getScrollPositionFromPointer(pointerPos, pointerOffsetRef.current, sizes, dir);
   }
-  if (orientation === "horizontal") {
+  if (orientation2 === "horizontal") {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ScrollAreaScrollbarX,
       {
@@ -31729,7 +31806,7 @@ var ScrollAreaScrollbarVisible = reactExports.forwardRef((props, forwardedRef) =
       }
     );
   }
-  if (orientation === "vertical") {
+  if (orientation2 === "vertical") {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ScrollAreaScrollbarY,
       {
@@ -32168,18 +32245,18 @@ function ScrollArea({
 }
 function ScrollBar({
   className,
-  orientation = "vertical",
+  orientation: orientation2 = "vertical",
   ...props
 }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     ScrollAreaScrollbar,
     {
       "data-slot": "scroll-area-scrollbar",
-      orientation,
+      orientation: orientation2,
       className: cn(
         "flex touch-none p-px transition-colors select-none",
-        orientation === "vertical" && "h-full w-2.5 border-l border-l-transparent",
-        orientation === "horizontal" && "h-2.5 flex-col border-t border-t-transparent",
+        orientation2 === "vertical" && "h-full w-2.5 border-l border-l-transparent",
+        orientation2 === "horizontal" && "h-2.5 flex-col border-t border-t-transparent",
         className
       ),
       ...props,
@@ -32302,7 +32379,12 @@ const PERMISSIONS = {
   // Theme
   THEME_VIEW: "theme:view",
   // Profile
-  PROFILE_VIEW: "profile:view"
+  PROFILE_VIEW: "profile:view",
+  // Banners
+  BANNERS_VIEW: "banners:view",
+  BANNERS_CREATE: "banners:create",
+  BANNERS_EDIT: "banners:edit",
+  BANNERS_DELETE: "banners:delete"
 };
 const SPECIAL_ROLES = {
   ADMIN: "Admin"
@@ -32409,6 +32491,12 @@ const menuItems = [
         icon: Package,
         href: "/products",
         permission: PERMISSIONS.PRODUCTS_VIEW
+      },
+      {
+        label: "Banners",
+        icon: Image$1,
+        href: "/banners",
+        permission: PERMISSIONS.BANNERS_VIEW
       }
     ]
   },
@@ -35725,33 +35813,44 @@ function DataTable({
         " results"
       ] })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg border border-border overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-muted/50", children: table.getHeaderGroups().map((headerGroup) => /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: headerGroup.headers.map((header) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "th",
-        {
-          className: "px-4 py-3 text-left font-medium text-muted-foreground",
-          children: header.isPlaceholder ? null : /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "button",
-            {
-              type: "button",
-              className: cn(
-                "flex items-center gap-1 hover:text-foreground transition-colors",
-                header.column.getCanSort() && "cursor-pointer"
-              ),
-              onClick: header.column.getToggleSortingHandler(),
-              disabled: !header.column.getCanSort(),
-              children: [
-                flexRender(
-                  header.column.columnDef.header,
-                  header.getContext()
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg border border-border overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm table-fixed", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-muted/50", children: table.getHeaderGroups().map((headerGroup) => /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: headerGroup.headers.map((header, index2) => {
+        const isActionsColumn = header.id === "actions";
+        const isStatusColumn = header.column.id === "status" || header.column.id === "isActive";
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "th",
+          {
+            className: cn(
+              "px-4 py-3 font-medium text-muted-foreground",
+              isActionsColumn && "w-32 text-right",
+              isStatusColumn && "w-32 text-center",
+              !isActionsColumn && !isStatusColumn && "text-left"
+            ),
+            children: header.isPlaceholder ? null : /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                type: "button",
+                className: cn(
+                  "flex items-center gap-1 hover:text-foreground transition-colors",
+                  header.column.getCanSort() && "cursor-pointer",
+                  isActionsColumn && "ml-auto",
+                  isStatusColumn && "mx-auto"
                 ),
-                header.column.getCanSort() && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1", children: header.column.getIsSorted() === "asc" ? /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, { className: "h-3 w-3" }) : header.column.getIsSorted() === "desc" ? /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, { className: "h-3 w-3" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUpDown, { className: "h-3 w-3 opacity-50" }) })
-              ]
-            }
-          )
-        },
-        header.id
-      )) }, headerGroup.id)) }),
+                onClick: header.column.getToggleSortingHandler(),
+                disabled: !header.column.getCanSort(),
+                children: [
+                  flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  ),
+                  header.column.getCanSort() && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1", children: header.column.getIsSorted() === "asc" ? /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, { className: "h-3 w-3" }) : header.column.getIsSorted() === "desc" ? /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, { className: "h-3 w-3" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUpDown, { className: "h-3 w-3 opacity-50" }) })
+                ]
+              }
+            )
+          },
+          header.id
+        );
+      }) }, headerGroup.id)) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-border", children: table.getRowModel().rows.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         "td",
         {
@@ -35763,10 +35862,25 @@ function DataTable({
         "tr",
         {
           className: "hover:bg-muted/30 transition-colors",
-          children: row.getVisibleCells().map((cell) => /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-4 py-3", children: flexRender(
-            cell.column.columnDef.cell,
-            cell.getContext()
-          ) }, cell.id))
+          children: row.getVisibleCells().map((cell) => {
+            const isActionsColumn = cell.column.id === "actions";
+            const isStatusColumn = cell.column.id === "status" || cell.column.id === "isActive";
+            return /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "td",
+              {
+                className: cn(
+                  "px-4 py-3",
+                  isActionsColumn && "text-right",
+                  isStatusColumn && "text-center"
+                ),
+                children: flexRender(
+                  cell.column.columnDef.cell,
+                  cell.getContext()
+                )
+              },
+              cell.id
+            );
+          })
         },
         row.id
       )) })
@@ -35856,6 +35970,50 @@ function PageHeader({
     }
   );
 }
+const PermissionGuard = ({
+  permission,
+  logic = "AND",
+  children,
+  fallback = null,
+  hideOnDenied = false
+}) => {
+  const { can, canAny, canAll, isAdmin: isAdmin2 } = usePermissions();
+  console.log("🛡️ PermissionGuard Check:", {
+    permission,
+    isAdmin: isAdmin2,
+    logic,
+    hideOnDenied
+  });
+  if (isAdmin2) {
+    console.log("  ✅ Access granted: User is Admin");
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children });
+  }
+  if (!permission) {
+    console.log("  ✅ Access granted: No permission required");
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children });
+  }
+  let hasAccess = false;
+  if (Array.isArray(permission)) {
+    if (logic === "OR") {
+      hasAccess = canAny(permission);
+      console.log(`  ${hasAccess ? "✅" : "❌"} Multiple permissions (OR): ${hasAccess}`);
+    } else {
+      hasAccess = canAll(permission);
+      console.log(`  ${hasAccess ? "✅" : "❌"} Multiple permissions (AND): ${hasAccess}`);
+    }
+  } else {
+    hasAccess = can(permission);
+    console.log(`  ${hasAccess ? "✅" : "❌"} Single permission "${permission}": ${hasAccess}`);
+  }
+  if (hasAccess) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children });
+  }
+  console.log(`  🚫 Access denied - hideOnDenied: ${hideOnDenied}`);
+  if (hideOnDenied) {
+    return null;
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: fallback });
+};
 const badgeVariants = cva(
   "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
   {
@@ -35887,6 +36045,1798 @@ function Badge({
       ...props
     }
   );
+}
+function Dialog({
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$7, { "data-slot": "dialog", ...props });
+}
+function DialogPortal({
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$3, { "data-slot": "dialog-portal", ...props });
+}
+function DialogOverlay({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Overlay,
+    {
+      "data-slot": "dialog-overlay",
+      className: cn(
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function DialogContent({
+  className,
+  children,
+  showCloseButton = true,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogPortal, { "data-slot": "dialog-portal", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogOverlay, {}),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      Content$2,
+      {
+        "data-slot": "dialog-content",
+        className: cn(
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+          className
+        ),
+        ...props,
+        children: [
+          children,
+          showCloseButton && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Close,
+            {
+              "data-slot": "dialog-close",
+              className: "ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(X, {}),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Close" })
+              ]
+            }
+          )
+        ]
+      }
+    )
+  ] });
+}
+function DialogHeader({ className, ...props }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "div",
+    {
+      "data-slot": "dialog-header",
+      className: cn("flex flex-col gap-2 text-center sm:text-left", className),
+      ...props
+    }
+  );
+}
+function DialogFooter({ className, ...props }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "div",
+    {
+      "data-slot": "dialog-footer",
+      className: cn(
+        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function DialogTitle({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Title,
+    {
+      "data-slot": "dialog-title",
+      className: cn("text-lg leading-none font-semibold", className),
+      ...props
+    }
+  );
+}
+function DialogDescription({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Description,
+    {
+      "data-slot": "dialog-description",
+      className: cn("text-muted-foreground text-sm", className),
+      ...props
+    }
+  );
+}
+var NAME$1 = "Label";
+var Label$2 = reactExports.forwardRef((props, forwardedRef) => {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Primitive.label,
+    {
+      ...props,
+      ref: forwardedRef,
+      onMouseDown: (event) => {
+        var _a3;
+        const target = event.target;
+        if (target.closest("button, input, select, textarea")) return;
+        (_a3 = props.onMouseDown) == null ? void 0 : _a3.call(props, event);
+        if (!event.defaultPrevented && event.detail > 1) event.preventDefault();
+      }
+    }
+  );
+});
+Label$2.displayName = NAME$1;
+var Root$2 = Label$2;
+function Label$1({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Root$2,
+    {
+      "data-slot": "label",
+      className: cn(
+        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function usePrevious(value) {
+  const ref = reactExports.useRef({ value, previous: value });
+  return reactExports.useMemo(() => {
+    if (ref.current.value !== value) {
+      ref.current.previous = ref.current.value;
+      ref.current.value = value;
+    }
+    return ref.current.previous;
+  }, [value]);
+}
+var VISUALLY_HIDDEN_STYLES = Object.freeze({
+  // See: https://github.com/twbs/bootstrap/blob/main/scss/mixins/_visually-hidden.scss
+  position: "absolute",
+  border: 0,
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: "hidden",
+  clip: "rect(0, 0, 0, 0)",
+  whiteSpace: "nowrap",
+  wordWrap: "normal"
+});
+var NAME = "VisuallyHidden";
+var VisuallyHidden = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive$1.span,
+      {
+        ...props,
+        ref: forwardedRef,
+        style: { ...VISUALLY_HIDDEN_STYLES, ...props.style }
+      }
+    );
+  }
+);
+VisuallyHidden.displayName = NAME;
+var Root$1 = VisuallyHidden;
+var OPEN_KEYS = [" ", "Enter", "ArrowUp", "ArrowDown"];
+var SELECTION_KEYS = [" ", "Enter"];
+var SELECT_NAME = "Select";
+var [Collection, useCollection, createCollectionScope] = createCollection(SELECT_NAME);
+var [createSelectContext] = createContextScope$1(SELECT_NAME, [
+  createCollectionScope,
+  createPopperScope
+]);
+var usePopperScope$1 = createPopperScope();
+var [SelectProvider, useSelectContext] = createSelectContext(SELECT_NAME);
+var [SelectNativeOptionsProvider, useSelectNativeOptionsContext] = createSelectContext(SELECT_NAME);
+var Select$1 = (props) => {
+  const {
+    __scopeSelect,
+    children,
+    open: openProp,
+    defaultOpen,
+    onOpenChange,
+    value: valueProp,
+    defaultValue,
+    onValueChange,
+    dir,
+    name,
+    autoComplete,
+    disabled,
+    required: required2,
+    form
+  } = props;
+  const popperScope = usePopperScope$1(__scopeSelect);
+  const [trigger, setTrigger] = reactExports.useState(null);
+  const [valueNode, setValueNode] = reactExports.useState(null);
+  const [valueNodeHasChildren, setValueNodeHasChildren] = reactExports.useState(false);
+  const direction = useDirection(dir);
+  const [open, setOpen] = useControllableState({
+    prop: openProp,
+    defaultProp: defaultOpen ?? false,
+    onChange: onOpenChange,
+    caller: SELECT_NAME
+  });
+  const [value, setValue] = useControllableState({
+    prop: valueProp,
+    defaultProp: defaultValue,
+    onChange: onValueChange,
+    caller: SELECT_NAME
+  });
+  const triggerPointerDownPosRef = reactExports.useRef(null);
+  const isFormControl = trigger ? form || !!trigger.closest("form") : true;
+  const [nativeOptionsSet, setNativeOptionsSet] = reactExports.useState(/* @__PURE__ */ new Set());
+  const nativeSelectKey = Array.from(nativeOptionsSet).map((option) => option.props.value).join(";");
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$3, { ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    SelectProvider,
+    {
+      required: required2,
+      scope: __scopeSelect,
+      trigger,
+      onTriggerChange: setTrigger,
+      valueNode,
+      onValueNodeChange: setValueNode,
+      valueNodeHasChildren,
+      onValueNodeHasChildrenChange: setValueNodeHasChildren,
+      contentId: useId(),
+      value,
+      onValueChange: setValue,
+      open,
+      onOpenChange: setOpen,
+      dir: direction,
+      triggerPointerDownPosRef,
+      disabled,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Provider, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          SelectNativeOptionsProvider,
+          {
+            scope: props.__scopeSelect,
+            onNativeOptionAdd: reactExports.useCallback((option) => {
+              setNativeOptionsSet((prev) => new Set(prev).add(option));
+            }, []),
+            onNativeOptionRemove: reactExports.useCallback((option) => {
+              setNativeOptionsSet((prev) => {
+                const optionsSet = new Set(prev);
+                optionsSet.delete(option);
+                return optionsSet;
+              });
+            }, []),
+            children
+          }
+        ) }),
+        isFormControl ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          SelectBubbleInput,
+          {
+            "aria-hidden": true,
+            required: required2,
+            tabIndex: -1,
+            name,
+            autoComplete,
+            value,
+            onChange: (event) => setValue(event.target.value),
+            disabled,
+            form,
+            children: [
+              value === void 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "" }) : null,
+              Array.from(nativeOptionsSet)
+            ]
+          },
+          nativeSelectKey
+        ) : null
+      ]
+    }
+  ) });
+};
+Select$1.displayName = SELECT_NAME;
+var TRIGGER_NAME$3 = "SelectTrigger";
+var SelectTrigger$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, disabled = false, ...triggerProps } = props;
+    const popperScope = usePopperScope$1(__scopeSelect);
+    const context = useSelectContext(TRIGGER_NAME$3, __scopeSelect);
+    const isDisabled = context.disabled || disabled;
+    const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
+    const getItems = useCollection(__scopeSelect);
+    const pointerTypeRef = reactExports.useRef("touch");
+    const [searchRef, handleTypeaheadSearch, resetTypeahead] = useTypeaheadSearch((search) => {
+      const enabledItems = getItems().filter((item) => !item.disabled);
+      const currentItem = enabledItems.find((item) => item.value === context.value);
+      const nextItem = findNextItem(enabledItems, search, currentItem);
+      if (nextItem !== void 0) {
+        context.onValueChange(nextItem.value);
+      }
+    });
+    const handleOpen = (pointerEvent) => {
+      if (!isDisabled) {
+        context.onOpenChange(true);
+        resetTypeahead();
+      }
+      if (pointerEvent) {
+        context.triggerPointerDownPosRef.current = {
+          x: Math.round(pointerEvent.pageX),
+          y: Math.round(pointerEvent.pageY)
+        };
+      }
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Anchor, { asChild: true, ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive$1.button,
+      {
+        type: "button",
+        role: "combobox",
+        "aria-controls": context.contentId,
+        "aria-expanded": context.open,
+        "aria-required": context.required,
+        "aria-autocomplete": "none",
+        dir: context.dir,
+        "data-state": context.open ? "open" : "closed",
+        disabled: isDisabled,
+        "data-disabled": isDisabled ? "" : void 0,
+        "data-placeholder": shouldShowPlaceholder(context.value) ? "" : void 0,
+        ...triggerProps,
+        ref: composedRefs,
+        onClick: composeEventHandlers(triggerProps.onClick, (event) => {
+          event.currentTarget.focus();
+          if (pointerTypeRef.current !== "mouse") {
+            handleOpen(event);
+          }
+        }),
+        onPointerDown: composeEventHandlers(triggerProps.onPointerDown, (event) => {
+          pointerTypeRef.current = event.pointerType;
+          const target = event.target;
+          if (target.hasPointerCapture(event.pointerId)) {
+            target.releasePointerCapture(event.pointerId);
+          }
+          if (event.button === 0 && event.ctrlKey === false && event.pointerType === "mouse") {
+            handleOpen(event);
+            event.preventDefault();
+          }
+        }),
+        onKeyDown: composeEventHandlers(triggerProps.onKeyDown, (event) => {
+          const isTypingAhead = searchRef.current !== "";
+          const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+          if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+          if (isTypingAhead && event.key === " ") return;
+          if (OPEN_KEYS.includes(event.key)) {
+            handleOpen();
+            event.preventDefault();
+          }
+        })
+      }
+    ) });
+  }
+);
+SelectTrigger$1.displayName = TRIGGER_NAME$3;
+var VALUE_NAME = "SelectValue";
+var SelectValue$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, className, style: style2, children, placeholder = "", ...valueProps } = props;
+    const context = useSelectContext(VALUE_NAME, __scopeSelect);
+    const { onValueNodeHasChildrenChange } = context;
+    const hasChildren = children !== void 0;
+    const composedRefs = useComposedRefs(forwardedRef, context.onValueNodeChange);
+    useLayoutEffect2(() => {
+      onValueNodeHasChildrenChange(hasChildren);
+    }, [onValueNodeHasChildrenChange, hasChildren]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive$1.span,
+      {
+        ...valueProps,
+        ref: composedRefs,
+        style: { pointerEvents: "none" },
+        children: shouldShowPlaceholder(context.value) ? /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: placeholder }) : children
+      }
+    );
+  }
+);
+SelectValue$1.displayName = VALUE_NAME;
+var ICON_NAME = "SelectIcon";
+var SelectIcon = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, children, ...iconProps } = props;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.span, { "aria-hidden": true, ...iconProps, ref: forwardedRef, children: children || "▼" });
+  }
+);
+SelectIcon.displayName = ICON_NAME;
+var PORTAL_NAME$1 = "SelectPortal";
+var SelectPortal = (props) => {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$4, { asChild: true, ...props });
+};
+SelectPortal.displayName = PORTAL_NAME$1;
+var CONTENT_NAME$2 = "SelectContent";
+var SelectContent$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const context = useSelectContext(CONTENT_NAME$2, props.__scopeSelect);
+    const [fragment, setFragment] = reactExports.useState();
+    useLayoutEffect2(() => {
+      setFragment(new DocumentFragment());
+    }, []);
+    if (!context.open) {
+      const frag = fragment;
+      return frag ? reactDomExports.createPortal(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContentProvider, { scope: props.__scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: props.__scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: props.children }) }) }),
+        frag
+      ) : null;
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContentImpl, { ...props, ref: forwardedRef });
+  }
+);
+SelectContent$1.displayName = CONTENT_NAME$2;
+var CONTENT_MARGIN = 10;
+var [SelectContentProvider, useSelectContentContext] = createSelectContext(CONTENT_NAME$2);
+var CONTENT_IMPL_NAME = "SelectContentImpl";
+var Slot = /* @__PURE__ */ createSlot("SelectContent.RemoveScroll");
+var SelectContentImpl = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const {
+      __scopeSelect,
+      position = "item-aligned",
+      onCloseAutoFocus,
+      onEscapeKeyDown,
+      onPointerDownOutside,
+      //
+      // PopperContent props
+      side,
+      sideOffset,
+      align,
+      alignOffset,
+      arrowPadding,
+      collisionBoundary,
+      collisionPadding,
+      sticky,
+      hideWhenDetached,
+      avoidCollisions,
+      //
+      ...contentProps
+    } = props;
+    const context = useSelectContext(CONTENT_NAME$2, __scopeSelect);
+    const [content, setContent] = reactExports.useState(null);
+    const [viewport, setViewport] = reactExports.useState(null);
+    const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
+    const [selectedItem, setSelectedItem] = reactExports.useState(null);
+    const [selectedItemText, setSelectedItemText] = reactExports.useState(
+      null
+    );
+    const getItems = useCollection(__scopeSelect);
+    const [isPositioned, setIsPositioned] = reactExports.useState(false);
+    const firstValidItemFoundRef = reactExports.useRef(false);
+    reactExports.useEffect(() => {
+      if (content) return hideOthers(content);
+    }, [content]);
+    useFocusGuards();
+    const focusFirst2 = reactExports.useCallback(
+      (candidates) => {
+        const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
+        const [lastItem] = restItems.slice(-1);
+        const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+        for (const candidate of candidates) {
+          if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
+          candidate == null ? void 0 : candidate.scrollIntoView({ block: "nearest" });
+          if (candidate === firstItem && viewport) viewport.scrollTop = 0;
+          if (candidate === lastItem && viewport) viewport.scrollTop = viewport.scrollHeight;
+          candidate == null ? void 0 : candidate.focus();
+          if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+        }
+      },
+      [getItems, viewport]
+    );
+    const focusSelectedItem = reactExports.useCallback(
+      () => focusFirst2([selectedItem, content]),
+      [focusFirst2, selectedItem, content]
+    );
+    reactExports.useEffect(() => {
+      if (isPositioned) {
+        focusSelectedItem();
+      }
+    }, [isPositioned, focusSelectedItem]);
+    const { onOpenChange, triggerPointerDownPosRef } = context;
+    reactExports.useEffect(() => {
+      if (content) {
+        let pointerMoveDelta = { x: 0, y: 0 };
+        const handlePointerMove = (event) => {
+          var _a3, _b2;
+          pointerMoveDelta = {
+            x: Math.abs(Math.round(event.pageX) - (((_a3 = triggerPointerDownPosRef.current) == null ? void 0 : _a3.x) ?? 0)),
+            y: Math.abs(Math.round(event.pageY) - (((_b2 = triggerPointerDownPosRef.current) == null ? void 0 : _b2.y) ?? 0))
+          };
+        };
+        const handlePointerUp = (event) => {
+          if (pointerMoveDelta.x <= 10 && pointerMoveDelta.y <= 10) {
+            event.preventDefault();
+          } else {
+            if (!content.contains(event.target)) {
+              onOpenChange(false);
+            }
+          }
+          document.removeEventListener("pointermove", handlePointerMove);
+          triggerPointerDownPosRef.current = null;
+        };
+        if (triggerPointerDownPosRef.current !== null) {
+          document.addEventListener("pointermove", handlePointerMove);
+          document.addEventListener("pointerup", handlePointerUp, { capture: true, once: true });
+        }
+        return () => {
+          document.removeEventListener("pointermove", handlePointerMove);
+          document.removeEventListener("pointerup", handlePointerUp, { capture: true });
+        };
+      }
+    }, [content, onOpenChange, triggerPointerDownPosRef]);
+    reactExports.useEffect(() => {
+      const close = () => onOpenChange(false);
+      window.addEventListener("blur", close);
+      window.addEventListener("resize", close);
+      return () => {
+        window.removeEventListener("blur", close);
+        window.removeEventListener("resize", close);
+      };
+    }, [onOpenChange]);
+    const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
+      const enabledItems = getItems().filter((item) => !item.disabled);
+      const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
+      const nextItem = findNextItem(enabledItems, search, currentItem);
+      if (nextItem) {
+        setTimeout(() => nextItem.ref.current.focus());
+      }
+    });
+    const itemRefCallback = reactExports.useCallback(
+      (node, value, disabled) => {
+        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
+        const isSelectedItem = context.value !== void 0 && context.value === value;
+        if (isSelectedItem || isFirstValidItem) {
+          setSelectedItem(node);
+          if (isFirstValidItem) firstValidItemFoundRef.current = true;
+        }
+      },
+      [context.value]
+    );
+    const handleItemLeave = reactExports.useCallback(() => content == null ? void 0 : content.focus(), [content]);
+    const itemTextRefCallback = reactExports.useCallback(
+      (node, value, disabled) => {
+        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
+        const isSelectedItem = context.value !== void 0 && context.value === value;
+        if (isSelectedItem || isFirstValidItem) {
+          setSelectedItemText(node);
+        }
+      },
+      [context.value]
+    );
+    const SelectPosition = position === "popper" ? SelectPopperPosition : SelectItemAlignedPosition;
+    const popperContentProps = SelectPosition === SelectPopperPosition ? {
+      side,
+      sideOffset,
+      align,
+      alignOffset,
+      arrowPadding,
+      collisionBoundary,
+      collisionPadding,
+      sticky,
+      hideWhenDetached,
+      avoidCollisions
+    } : {};
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      SelectContentProvider,
+      {
+        scope: __scopeSelect,
+        content,
+        viewport,
+        onViewportChange: setViewport,
+        itemRefCallback,
+        selectedItem,
+        onItemLeave: handleItemLeave,
+        itemTextRefCallback,
+        focusSelectedItem,
+        selectedItemText,
+        position,
+        isPositioned,
+        searchRef,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(ReactRemoveScroll, { as: Slot, allowPinchZoom: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          FocusScope,
+          {
+            asChild: true,
+            trapped: context.open,
+            onMountAutoFocus: (event) => {
+              event.preventDefault();
+            },
+            onUnmountAutoFocus: composeEventHandlers(onCloseAutoFocus, (event) => {
+              var _a3;
+              (_a3 = context.trigger) == null ? void 0 : _a3.focus({ preventScroll: true });
+              event.preventDefault();
+            }),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DismissableLayer,
+              {
+                asChild: true,
+                disableOutsidePointerEvents: true,
+                onEscapeKeyDown,
+                onPointerDownOutside,
+                onFocusOutside: (event) => event.preventDefault(),
+                onDismiss: () => context.onOpenChange(false),
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  SelectPosition,
+                  {
+                    role: "listbox",
+                    id: context.contentId,
+                    "data-state": context.open ? "open" : "closed",
+                    dir: context.dir,
+                    onContextMenu: (event) => event.preventDefault(),
+                    ...contentProps,
+                    ...popperContentProps,
+                    onPlaced: () => setIsPositioned(true),
+                    ref: composedRefs,
+                    style: {
+                      // flex layout so we can place the scroll buttons properly
+                      display: "flex",
+                      flexDirection: "column",
+                      // reset the outline by default as the content MAY get focused
+                      outline: "none",
+                      ...contentProps.style
+                    },
+                    onKeyDown: composeEventHandlers(contentProps.onKeyDown, (event) => {
+                      const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+                      if (event.key === "Tab") event.preventDefault();
+                      if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+                      if (["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) {
+                        const items = getItems().filter((item) => !item.disabled);
+                        let candidateNodes = items.map((item) => item.ref.current);
+                        if (["ArrowUp", "End"].includes(event.key)) {
+                          candidateNodes = candidateNodes.slice().reverse();
+                        }
+                        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+                          const currentElement = event.target;
+                          const currentIndex = candidateNodes.indexOf(currentElement);
+                          candidateNodes = candidateNodes.slice(currentIndex + 1);
+                        }
+                        setTimeout(() => focusFirst2(candidateNodes));
+                        event.preventDefault();
+                      }
+                    })
+                  }
+                )
+              }
+            )
+          }
+        ) })
+      }
+    );
+  }
+);
+SelectContentImpl.displayName = CONTENT_IMPL_NAME;
+var ITEM_ALIGNED_POSITION_NAME = "SelectItemAlignedPosition";
+var SelectItemAlignedPosition = reactExports.forwardRef((props, forwardedRef) => {
+  const { __scopeSelect, onPlaced, ...popperProps } = props;
+  const context = useSelectContext(CONTENT_NAME$2, __scopeSelect);
+  const contentContext = useSelectContentContext(CONTENT_NAME$2, __scopeSelect);
+  const [contentWrapper, setContentWrapper] = reactExports.useState(null);
+  const [content, setContent] = reactExports.useState(null);
+  const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
+  const getItems = useCollection(__scopeSelect);
+  const shouldExpandOnScrollRef = reactExports.useRef(false);
+  const shouldRepositionRef = reactExports.useRef(true);
+  const { viewport, selectedItem, selectedItemText, focusSelectedItem } = contentContext;
+  const position = reactExports.useCallback(() => {
+    if (context.trigger && context.valueNode && contentWrapper && content && viewport && selectedItem && selectedItemText) {
+      const triggerRect = context.trigger.getBoundingClientRect();
+      const contentRect = content.getBoundingClientRect();
+      const valueNodeRect = context.valueNode.getBoundingClientRect();
+      const itemTextRect = selectedItemText.getBoundingClientRect();
+      if (context.dir !== "rtl") {
+        const itemTextOffset = itemTextRect.left - contentRect.left;
+        const left = valueNodeRect.left - itemTextOffset;
+        const leftDelta = triggerRect.left - left;
+        const minContentWidth = triggerRect.width + leftDelta;
+        const contentWidth = Math.max(minContentWidth, contentRect.width);
+        const rightEdge = window.innerWidth - CONTENT_MARGIN;
+        const clampedLeft = clamp$1(left, [
+          CONTENT_MARGIN,
+          // Prevents the content from going off the starting edge of the
+          // viewport. It may still go off the ending edge, but this can be
+          // controlled by the user since they may want to manage overflow in a
+          // specific way.
+          // https://github.com/radix-ui/primitives/issues/2049
+          Math.max(CONTENT_MARGIN, rightEdge - contentWidth)
+        ]);
+        contentWrapper.style.minWidth = minContentWidth + "px";
+        contentWrapper.style.left = clampedLeft + "px";
+      } else {
+        const itemTextOffset = contentRect.right - itemTextRect.right;
+        const right = window.innerWidth - valueNodeRect.right - itemTextOffset;
+        const rightDelta = window.innerWidth - triggerRect.right - right;
+        const minContentWidth = triggerRect.width + rightDelta;
+        const contentWidth = Math.max(minContentWidth, contentRect.width);
+        const leftEdge = window.innerWidth - CONTENT_MARGIN;
+        const clampedRight = clamp$1(right, [
+          CONTENT_MARGIN,
+          Math.max(CONTENT_MARGIN, leftEdge - contentWidth)
+        ]);
+        contentWrapper.style.minWidth = minContentWidth + "px";
+        contentWrapper.style.right = clampedRight + "px";
+      }
+      const items = getItems();
+      const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
+      const itemsHeight = viewport.scrollHeight;
+      const contentStyles = window.getComputedStyle(content);
+      const contentBorderTopWidth = parseInt(contentStyles.borderTopWidth, 10);
+      const contentPaddingTop = parseInt(contentStyles.paddingTop, 10);
+      const contentBorderBottomWidth = parseInt(contentStyles.borderBottomWidth, 10);
+      const contentPaddingBottom = parseInt(contentStyles.paddingBottom, 10);
+      const fullContentHeight = contentBorderTopWidth + contentPaddingTop + itemsHeight + contentPaddingBottom + contentBorderBottomWidth;
+      const minContentHeight = Math.min(selectedItem.offsetHeight * 5, fullContentHeight);
+      const viewportStyles = window.getComputedStyle(viewport);
+      const viewportPaddingTop = parseInt(viewportStyles.paddingTop, 10);
+      const viewportPaddingBottom = parseInt(viewportStyles.paddingBottom, 10);
+      const topEdgeToTriggerMiddle = triggerRect.top + triggerRect.height / 2 - CONTENT_MARGIN;
+      const triggerMiddleToBottomEdge = availableHeight - topEdgeToTriggerMiddle;
+      const selectedItemHalfHeight = selectedItem.offsetHeight / 2;
+      const itemOffsetMiddle = selectedItem.offsetTop + selectedItemHalfHeight;
+      const contentTopToItemMiddle = contentBorderTopWidth + contentPaddingTop + itemOffsetMiddle;
+      const itemMiddleToContentBottom = fullContentHeight - contentTopToItemMiddle;
+      const willAlignWithoutTopOverflow = contentTopToItemMiddle <= topEdgeToTriggerMiddle;
+      if (willAlignWithoutTopOverflow) {
+        const isLastItem = items.length > 0 && selectedItem === items[items.length - 1].ref.current;
+        contentWrapper.style.bottom = "0px";
+        const viewportOffsetBottom = content.clientHeight - viewport.offsetTop - viewport.offsetHeight;
+        const clampedTriggerMiddleToBottomEdge = Math.max(
+          triggerMiddleToBottomEdge,
+          selectedItemHalfHeight + // viewport might have padding bottom, include it to avoid a scrollable viewport
+          (isLastItem ? viewportPaddingBottom : 0) + viewportOffsetBottom + contentBorderBottomWidth
+        );
+        const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
+        contentWrapper.style.height = height + "px";
+      } else {
+        const isFirstItem = items.length > 0 && selectedItem === items[0].ref.current;
+        contentWrapper.style.top = "0px";
+        const clampedTopEdgeToTriggerMiddle = Math.max(
+          topEdgeToTriggerMiddle,
+          contentBorderTopWidth + viewport.offsetTop + // viewport might have padding top, include it to avoid a scrollable viewport
+          (isFirstItem ? viewportPaddingTop : 0) + selectedItemHalfHeight
+        );
+        const height = clampedTopEdgeToTriggerMiddle + itemMiddleToContentBottom;
+        contentWrapper.style.height = height + "px";
+        viewport.scrollTop = contentTopToItemMiddle - topEdgeToTriggerMiddle + viewport.offsetTop;
+      }
+      contentWrapper.style.margin = `${CONTENT_MARGIN}px 0`;
+      contentWrapper.style.minHeight = minContentHeight + "px";
+      contentWrapper.style.maxHeight = availableHeight + "px";
+      onPlaced == null ? void 0 : onPlaced();
+      requestAnimationFrame(() => shouldExpandOnScrollRef.current = true);
+    }
+  }, [
+    getItems,
+    context.trigger,
+    context.valueNode,
+    contentWrapper,
+    content,
+    viewport,
+    selectedItem,
+    selectedItemText,
+    context.dir,
+    onPlaced
+  ]);
+  useLayoutEffect2(() => position(), [position]);
+  const [contentZIndex, setContentZIndex] = reactExports.useState();
+  useLayoutEffect2(() => {
+    if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
+  }, [content]);
+  const handleScrollButtonChange = reactExports.useCallback(
+    (node) => {
+      if (node && shouldRepositionRef.current === true) {
+        position();
+        focusSelectedItem == null ? void 0 : focusSelectedItem();
+        shouldRepositionRef.current = false;
+      }
+    },
+    [position, focusSelectedItem]
+  );
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    SelectViewportProvider,
+    {
+      scope: __scopeSelect,
+      contentWrapper,
+      shouldExpandOnScrollRef,
+      onScrollButtonChange: handleScrollButtonChange,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          ref: setContentWrapper,
+          style: {
+            display: "flex",
+            flexDirection: "column",
+            position: "fixed",
+            zIndex: contentZIndex
+          },
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Primitive$1.div,
+            {
+              ...popperProps,
+              ref: composedRefs,
+              style: {
+                // When we get the height of the content, it includes borders. If we were to set
+                // the height without having `boxSizing: 'border-box'` it would be too big.
+                boxSizing: "border-box",
+                // We need to ensure the content doesn't get taller than the wrapper
+                maxHeight: "100%",
+                ...popperProps.style
+              }
+            }
+          )
+        }
+      )
+    }
+  );
+});
+SelectItemAlignedPosition.displayName = ITEM_ALIGNED_POSITION_NAME;
+var POPPER_POSITION_NAME = "SelectPopperPosition";
+var SelectPopperPosition = reactExports.forwardRef((props, forwardedRef) => {
+  const {
+    __scopeSelect,
+    align = "start",
+    collisionPadding = CONTENT_MARGIN,
+    ...popperProps
+  } = props;
+  const popperScope = usePopperScope$1(__scopeSelect);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Content$1,
+    {
+      ...popperScope,
+      ...popperProps,
+      ref: forwardedRef,
+      align,
+      collisionPadding,
+      style: {
+        // Ensure border-box for floating-ui calculations
+        boxSizing: "border-box",
+        ...popperProps.style,
+        // re-namespace exposed content custom properties
+        ...{
+          "--radix-select-content-transform-origin": "var(--radix-popper-transform-origin)",
+          "--radix-select-content-available-width": "var(--radix-popper-available-width)",
+          "--radix-select-content-available-height": "var(--radix-popper-available-height)",
+          "--radix-select-trigger-width": "var(--radix-popper-anchor-width)",
+          "--radix-select-trigger-height": "var(--radix-popper-anchor-height)"
+        }
+      }
+    }
+  );
+});
+SelectPopperPosition.displayName = POPPER_POSITION_NAME;
+var [SelectViewportProvider, useSelectViewportContext] = createSelectContext(CONTENT_NAME$2, {});
+var VIEWPORT_NAME = "SelectViewport";
+var SelectViewport = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, nonce, ...viewportProps } = props;
+    const contentContext = useSelectContentContext(VIEWPORT_NAME, __scopeSelect);
+    const viewportContext = useSelectViewportContext(VIEWPORT_NAME, __scopeSelect);
+    const composedRefs = useComposedRefs(forwardedRef, contentContext.onViewportChange);
+    const prevScrollTopRef = reactExports.useRef(0);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "style",
+        {
+          dangerouslySetInnerHTML: {
+            __html: `[data-radix-select-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-select-viewport]::-webkit-scrollbar{display:none}`
+          },
+          nonce
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Primitive$1.div,
+        {
+          "data-radix-select-viewport": "",
+          role: "presentation",
+          ...viewportProps,
+          ref: composedRefs,
+          style: {
+            // we use position: 'relative' here on the `viewport` so that when we call
+            // `selectedItem.offsetTop` in calculations, the offset is relative to the viewport
+            // (independent of the scrollUpButton).
+            position: "relative",
+            flex: 1,
+            // Viewport should only be scrollable in the vertical direction.
+            // This won't work in vertical writing modes, so we'll need to
+            // revisit this if/when that is supported
+            // https://developer.chrome.com/blog/vertical-form-controls
+            overflow: "hidden auto",
+            ...viewportProps.style
+          },
+          onScroll: composeEventHandlers(viewportProps.onScroll, (event) => {
+            const viewport = event.currentTarget;
+            const { contentWrapper, shouldExpandOnScrollRef } = viewportContext;
+            if ((shouldExpandOnScrollRef == null ? void 0 : shouldExpandOnScrollRef.current) && contentWrapper) {
+              const scrolledBy = Math.abs(prevScrollTopRef.current - viewport.scrollTop);
+              if (scrolledBy > 0) {
+                const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
+                const cssMinHeight = parseFloat(contentWrapper.style.minHeight);
+                const cssHeight = parseFloat(contentWrapper.style.height);
+                const prevHeight = Math.max(cssMinHeight, cssHeight);
+                if (prevHeight < availableHeight) {
+                  const nextHeight = prevHeight + scrolledBy;
+                  const clampedNextHeight = Math.min(availableHeight, nextHeight);
+                  const heightDiff = nextHeight - clampedNextHeight;
+                  contentWrapper.style.height = clampedNextHeight + "px";
+                  if (contentWrapper.style.bottom === "0px") {
+                    viewport.scrollTop = heightDiff > 0 ? heightDiff : 0;
+                    contentWrapper.style.justifyContent = "flex-end";
+                  }
+                }
+              }
+            }
+            prevScrollTopRef.current = viewport.scrollTop;
+          })
+        }
+      ) })
+    ] });
+  }
+);
+SelectViewport.displayName = VIEWPORT_NAME;
+var GROUP_NAME = "SelectGroup";
+var [SelectGroupContextProvider, useSelectGroupContext] = createSelectContext(GROUP_NAME);
+var SelectGroup = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, ...groupProps } = props;
+    const groupId = useId();
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(SelectGroupContextProvider, { scope: __scopeSelect, id: groupId, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { role: "group", "aria-labelledby": groupId, ...groupProps, ref: forwardedRef }) });
+  }
+);
+SelectGroup.displayName = GROUP_NAME;
+var LABEL_NAME = "SelectLabel";
+var SelectLabel = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, ...labelProps } = props;
+    const groupContext = useSelectGroupContext(LABEL_NAME, __scopeSelect);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { id: groupContext.id, ...labelProps, ref: forwardedRef });
+  }
+);
+SelectLabel.displayName = LABEL_NAME;
+var ITEM_NAME = "SelectItem";
+var [SelectItemContextProvider, useSelectItemContext] = createSelectContext(ITEM_NAME);
+var SelectItem$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const {
+      __scopeSelect,
+      value,
+      disabled = false,
+      textValue: textValueProp,
+      ...itemProps
+    } = props;
+    const context = useSelectContext(ITEM_NAME, __scopeSelect);
+    const contentContext = useSelectContentContext(ITEM_NAME, __scopeSelect);
+    const isSelected = context.value === value;
+    const [textValue, setTextValue] = reactExports.useState(textValueProp ?? "");
+    const [isFocused, setIsFocused] = reactExports.useState(false);
+    const composedRefs = useComposedRefs(
+      forwardedRef,
+      (node) => {
+        var _a3;
+        return (_a3 = contentContext.itemRefCallback) == null ? void 0 : _a3.call(contentContext, node, value, disabled);
+      }
+    );
+    const textId = useId();
+    const pointerTypeRef = reactExports.useRef("touch");
+    const handleSelect = () => {
+      if (!disabled) {
+        context.onValueChange(value);
+        context.onOpenChange(false);
+      }
+    };
+    if (value === "") {
+      throw new Error(
+        "A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder."
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      SelectItemContextProvider,
+      {
+        scope: __scopeSelect,
+        value,
+        disabled,
+        textId,
+        isSelected,
+        onItemTextChange: reactExports.useCallback((node) => {
+          setTextValue((prevTextValue) => prevTextValue || ((node == null ? void 0 : node.textContent) ?? "").trim());
+        }, []),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Collection.ItemSlot,
+          {
+            scope: __scopeSelect,
+            value,
+            disabled,
+            textValue,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Primitive$1.div,
+              {
+                role: "option",
+                "aria-labelledby": textId,
+                "data-highlighted": isFocused ? "" : void 0,
+                "aria-selected": isSelected && isFocused,
+                "data-state": isSelected ? "checked" : "unchecked",
+                "aria-disabled": disabled || void 0,
+                "data-disabled": disabled ? "" : void 0,
+                tabIndex: disabled ? void 0 : -1,
+                ...itemProps,
+                ref: composedRefs,
+                onFocus: composeEventHandlers(itemProps.onFocus, () => setIsFocused(true)),
+                onBlur: composeEventHandlers(itemProps.onBlur, () => setIsFocused(false)),
+                onClick: composeEventHandlers(itemProps.onClick, () => {
+                  if (pointerTypeRef.current !== "mouse") handleSelect();
+                }),
+                onPointerUp: composeEventHandlers(itemProps.onPointerUp, () => {
+                  if (pointerTypeRef.current === "mouse") handleSelect();
+                }),
+                onPointerDown: composeEventHandlers(itemProps.onPointerDown, (event) => {
+                  pointerTypeRef.current = event.pointerType;
+                }),
+                onPointerMove: composeEventHandlers(itemProps.onPointerMove, (event) => {
+                  var _a3;
+                  pointerTypeRef.current = event.pointerType;
+                  if (disabled) {
+                    (_a3 = contentContext.onItemLeave) == null ? void 0 : _a3.call(contentContext);
+                  } else if (pointerTypeRef.current === "mouse") {
+                    event.currentTarget.focus({ preventScroll: true });
+                  }
+                }),
+                onPointerLeave: composeEventHandlers(itemProps.onPointerLeave, (event) => {
+                  var _a3;
+                  if (event.currentTarget === document.activeElement) {
+                    (_a3 = contentContext.onItemLeave) == null ? void 0 : _a3.call(contentContext);
+                  }
+                }),
+                onKeyDown: composeEventHandlers(itemProps.onKeyDown, (event) => {
+                  var _a3;
+                  const isTypingAhead = ((_a3 = contentContext.searchRef) == null ? void 0 : _a3.current) !== "";
+                  if (isTypingAhead && event.key === " ") return;
+                  if (SELECTION_KEYS.includes(event.key)) handleSelect();
+                  if (event.key === " ") event.preventDefault();
+                })
+              }
+            )
+          }
+        )
+      }
+    );
+  }
+);
+SelectItem$1.displayName = ITEM_NAME;
+var ITEM_TEXT_NAME = "SelectItemText";
+var SelectItemText = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, className, style: style2, ...itemTextProps } = props;
+    const context = useSelectContext(ITEM_TEXT_NAME, __scopeSelect);
+    const contentContext = useSelectContentContext(ITEM_TEXT_NAME, __scopeSelect);
+    const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
+    const nativeOptionsContext = useSelectNativeOptionsContext(ITEM_TEXT_NAME, __scopeSelect);
+    const [itemTextNode, setItemTextNode] = reactExports.useState(null);
+    const composedRefs = useComposedRefs(
+      forwardedRef,
+      (node) => setItemTextNode(node),
+      itemContext.onItemTextChange,
+      (node) => {
+        var _a3;
+        return (_a3 = contentContext.itemTextRefCallback) == null ? void 0 : _a3.call(contentContext, node, itemContext.value, itemContext.disabled);
+      }
+    );
+    const textContent = itemTextNode == null ? void 0 : itemTextNode.textContent;
+    const nativeOption = reactExports.useMemo(
+      () => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: itemContext.value, disabled: itemContext.disabled, children: textContent }, itemContext.value),
+      [itemContext.disabled, itemContext.value, textContent]
+    );
+    const { onNativeOptionAdd, onNativeOptionRemove } = nativeOptionsContext;
+    useLayoutEffect2(() => {
+      onNativeOptionAdd(nativeOption);
+      return () => onNativeOptionRemove(nativeOption);
+    }, [onNativeOptionAdd, onNativeOptionRemove, nativeOption]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }),
+      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? reactDomExports.createPortal(itemTextProps.children, context.valueNode) : null
+    ] });
+  }
+);
+SelectItemText.displayName = ITEM_TEXT_NAME;
+var ITEM_INDICATOR_NAME = "SelectItemIndicator";
+var SelectItemIndicator = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, ...itemIndicatorProps } = props;
+    const itemContext = useSelectItemContext(ITEM_INDICATOR_NAME, __scopeSelect);
+    return itemContext.isSelected ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.span, { "aria-hidden": true, ...itemIndicatorProps, ref: forwardedRef }) : null;
+  }
+);
+SelectItemIndicator.displayName = ITEM_INDICATOR_NAME;
+var SCROLL_UP_BUTTON_NAME = "SelectScrollUpButton";
+var SelectScrollUpButton$1 = reactExports.forwardRef((props, forwardedRef) => {
+  const contentContext = useSelectContentContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
+  const viewportContext = useSelectViewportContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
+  const [canScrollUp, setCanScrollUp] = reactExports.useState(false);
+  const composedRefs = useComposedRefs(forwardedRef, viewportContext.onScrollButtonChange);
+  useLayoutEffect2(() => {
+    if (contentContext.viewport && contentContext.isPositioned) {
+      let handleScroll2 = function() {
+        const canScrollUp2 = viewport.scrollTop > 0;
+        setCanScrollUp(canScrollUp2);
+      };
+      const viewport = contentContext.viewport;
+      handleScroll2();
+      viewport.addEventListener("scroll", handleScroll2);
+      return () => viewport.removeEventListener("scroll", handleScroll2);
+    }
+  }, [contentContext.viewport, contentContext.isPositioned]);
+  return canScrollUp ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+    SelectScrollButtonImpl,
+    {
+      ...props,
+      ref: composedRefs,
+      onAutoScroll: () => {
+        const { viewport, selectedItem } = contentContext;
+        if (viewport && selectedItem) {
+          viewport.scrollTop = viewport.scrollTop - selectedItem.offsetHeight;
+        }
+      }
+    }
+  ) : null;
+});
+SelectScrollUpButton$1.displayName = SCROLL_UP_BUTTON_NAME;
+var SCROLL_DOWN_BUTTON_NAME = "SelectScrollDownButton";
+var SelectScrollDownButton$1 = reactExports.forwardRef((props, forwardedRef) => {
+  const contentContext = useSelectContentContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
+  const viewportContext = useSelectViewportContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
+  const [canScrollDown, setCanScrollDown] = reactExports.useState(false);
+  const composedRefs = useComposedRefs(forwardedRef, viewportContext.onScrollButtonChange);
+  useLayoutEffect2(() => {
+    if (contentContext.viewport && contentContext.isPositioned) {
+      let handleScroll2 = function() {
+        const maxScroll = viewport.scrollHeight - viewport.clientHeight;
+        const canScrollDown2 = Math.ceil(viewport.scrollTop) < maxScroll;
+        setCanScrollDown(canScrollDown2);
+      };
+      const viewport = contentContext.viewport;
+      handleScroll2();
+      viewport.addEventListener("scroll", handleScroll2);
+      return () => viewport.removeEventListener("scroll", handleScroll2);
+    }
+  }, [contentContext.viewport, contentContext.isPositioned]);
+  return canScrollDown ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+    SelectScrollButtonImpl,
+    {
+      ...props,
+      ref: composedRefs,
+      onAutoScroll: () => {
+        const { viewport, selectedItem } = contentContext;
+        if (viewport && selectedItem) {
+          viewport.scrollTop = viewport.scrollTop + selectedItem.offsetHeight;
+        }
+      }
+    }
+  ) : null;
+});
+SelectScrollDownButton$1.displayName = SCROLL_DOWN_BUTTON_NAME;
+var SelectScrollButtonImpl = reactExports.forwardRef((props, forwardedRef) => {
+  const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
+  const contentContext = useSelectContentContext("SelectScrollButton", __scopeSelect);
+  const autoScrollTimerRef = reactExports.useRef(null);
+  const getItems = useCollection(__scopeSelect);
+  const clearAutoScrollTimer = reactExports.useCallback(() => {
+    if (autoScrollTimerRef.current !== null) {
+      window.clearInterval(autoScrollTimerRef.current);
+      autoScrollTimerRef.current = null;
+    }
+  }, []);
+  reactExports.useEffect(() => {
+    return () => clearAutoScrollTimer();
+  }, [clearAutoScrollTimer]);
+  useLayoutEffect2(() => {
+    var _a3;
+    const activeItem = getItems().find((item) => item.ref.current === document.activeElement);
+    (_a3 = activeItem == null ? void 0 : activeItem.ref.current) == null ? void 0 : _a3.scrollIntoView({ block: "nearest" });
+  }, [getItems]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Primitive$1.div,
+    {
+      "aria-hidden": true,
+      ...scrollIndicatorProps,
+      ref: forwardedRef,
+      style: { flexShrink: 0, ...scrollIndicatorProps.style },
+      onPointerDown: composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
+        if (autoScrollTimerRef.current === null) {
+          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
+        }
+      }),
+      onPointerMove: composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
+        var _a3;
+        (_a3 = contentContext.onItemLeave) == null ? void 0 : _a3.call(contentContext);
+        if (autoScrollTimerRef.current === null) {
+          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
+        }
+      }),
+      onPointerLeave: composeEventHandlers(scrollIndicatorProps.onPointerLeave, () => {
+        clearAutoScrollTimer();
+      })
+    }
+  );
+});
+var SEPARATOR_NAME = "SelectSeparator";
+var SelectSeparator = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, ...separatorProps } = props;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { "aria-hidden": true, ...separatorProps, ref: forwardedRef });
+  }
+);
+SelectSeparator.displayName = SEPARATOR_NAME;
+var ARROW_NAME$1 = "SelectArrow";
+var SelectArrow = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, ...arrowProps } = props;
+    const popperScope = usePopperScope$1(__scopeSelect);
+    const context = useSelectContext(ARROW_NAME$1, __scopeSelect);
+    const contentContext = useSelectContentContext(ARROW_NAME$1, __scopeSelect);
+    return context.open && contentContext.position === "popper" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Arrow, { ...popperScope, ...arrowProps, ref: forwardedRef }) : null;
+  }
+);
+SelectArrow.displayName = ARROW_NAME$1;
+var BUBBLE_INPUT_NAME$1 = "SelectBubbleInput";
+var SelectBubbleInput = reactExports.forwardRef(
+  ({ __scopeSelect, value, ...props }, forwardedRef) => {
+    const ref = reactExports.useRef(null);
+    const composedRefs = useComposedRefs(forwardedRef, ref);
+    const prevValue = usePrevious(value);
+    reactExports.useEffect(() => {
+      const select = ref.current;
+      if (!select) return;
+      const selectProto = window.HTMLSelectElement.prototype;
+      const descriptor = Object.getOwnPropertyDescriptor(
+        selectProto,
+        "value"
+      );
+      const setValue = descriptor.set;
+      if (prevValue !== value && setValue) {
+        const event = new Event("change", { bubbles: true });
+        setValue.call(select, value);
+        select.dispatchEvent(event);
+      }
+    }, [prevValue, value]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive$1.select,
+      {
+        ...props,
+        style: { ...VISUALLY_HIDDEN_STYLES, ...props.style },
+        ref: composedRefs,
+        defaultValue: value
+      }
+    );
+  }
+);
+SelectBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
+function shouldShowPlaceholder(value) {
+  return value === "" || value === void 0;
+}
+function useTypeaheadSearch(onSearchChange) {
+  const handleSearchChange = useCallbackRef$1(onSearchChange);
+  const searchRef = reactExports.useRef("");
+  const timerRef = reactExports.useRef(0);
+  const handleTypeaheadSearch = reactExports.useCallback(
+    (key) => {
+      const search = searchRef.current + key;
+      handleSearchChange(search);
+      (function updateSearch(value) {
+        searchRef.current = value;
+        window.clearTimeout(timerRef.current);
+        if (value !== "") timerRef.current = window.setTimeout(() => updateSearch(""), 1e3);
+      })(search);
+    },
+    [handleSearchChange]
+  );
+  const resetTypeahead = reactExports.useCallback(() => {
+    searchRef.current = "";
+    window.clearTimeout(timerRef.current);
+  }, []);
+  reactExports.useEffect(() => {
+    return () => window.clearTimeout(timerRef.current);
+  }, []);
+  return [searchRef, handleTypeaheadSearch, resetTypeahead];
+}
+function findNextItem(items, search, currentItem) {
+  const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
+  const normalizedSearch = isRepeated ? search[0] : search;
+  const currentItemIndex = currentItem ? items.indexOf(currentItem) : -1;
+  let wrappedItems = wrapArray(items, Math.max(currentItemIndex, 0));
+  const excludeCurrentItem = normalizedSearch.length === 1;
+  if (excludeCurrentItem) wrappedItems = wrappedItems.filter((v2) => v2 !== currentItem);
+  const nextItem = wrappedItems.find(
+    (item) => item.textValue.toLowerCase().startsWith(normalizedSearch.toLowerCase())
+  );
+  return nextItem !== currentItem ? nextItem : void 0;
+}
+function wrapArray(array2, startIndex) {
+  return array2.map((_, index2) => array2[(startIndex + index2) % array2.length]);
+}
+var Root2$1 = Select$1;
+var Trigger$2 = SelectTrigger$1;
+var Value = SelectValue$1;
+var Icon = SelectIcon;
+var Portal$1 = SelectPortal;
+var Content2$1 = SelectContent$1;
+var Viewport = SelectViewport;
+var Item = SelectItem$1;
+var ItemText = SelectItemText;
+var ItemIndicator = SelectItemIndicator;
+var ScrollUpButton = SelectScrollUpButton$1;
+var ScrollDownButton = SelectScrollDownButton$1;
+function Select({
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$1, { "data-slot": "select", ...props });
+}
+function SelectValue({
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Value, { "data-slot": "select-value", ...props });
+}
+function SelectTrigger({
+  className,
+  size: size2 = "default",
+  children,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    Trigger$2,
+    {
+      "data-slot": "select-trigger",
+      "data-size": size2,
+      className: cn(
+        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      ),
+      ...props,
+      children: [
+        children,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Icon, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-4 opacity-50" }) })
+      ]
+    }
+  );
+}
+function SelectContent({
+  className,
+  children,
+  position = "popper",
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    Content2$1,
+    {
+      "data-slot": "select-content",
+      className: cn(
+        "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md",
+        position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+        className
+      ),
+      position,
+      ...props,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectScrollUpButton, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Viewport,
+          {
+            className: cn(
+              "p-1",
+              position === "popper" && "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1"
+            ),
+            children
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectScrollDownButton, {})
+      ]
+    }
+  ) });
+}
+function SelectItem({
+  className,
+  children,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    Item,
+    {
+      "data-slot": "select-item",
+      className: cn(
+        "focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        className
+      ),
+      ...props,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute right-2 flex size-3.5 items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ItemIndicator, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-4" }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ItemText, { children })
+      ]
+    }
+  );
+}
+function SelectScrollUpButton({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    ScrollUpButton,
+    {
+      "data-slot": "select-scroll-up-button",
+      className: cn(
+        "flex cursor-default items-center justify-center py-1",
+        className
+      ),
+      ...props,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, { className: "size-4" })
+    }
+  );
+}
+function SelectScrollDownButton({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    ScrollDownButton,
+    {
+      "data-slot": "select-scroll-down-button",
+      className: cn(
+        "flex cursor-default items-center justify-center py-1",
+        className
+      ),
+      ...props,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-4" })
+    }
+  );
+}
+function BannersPage() {
+  const alert2 = useAlert();
+  const { showDialog } = useUIStore();
+  const [banners, setBanners] = reactExports.useState([]);
+  const [products, setProducts] = reactExports.useState([]);
+  const [loading, setLoading] = reactExports.useState(true);
+  const [isDialogOpen, setIsDialogOpen] = reactExports.useState(false);
+  const [editingBanner, setEditingBanner] = reactExports.useState(null);
+  const [isSubmitting, setIsSubmitting] = reactExports.useState(false);
+  const [imagePreview, setImagePreview] = reactExports.useState("");
+  const [formData, setFormData] = reactExports.useState({
+    title: "",
+    image: null,
+    productId: "",
+    isActive: true
+  });
+  const [errors, setErrors] = reactExports.useState({});
+  reactExports.useEffect(() => {
+    loadData();
+  }, []);
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [bannersRes, productsRes] = await Promise.all([
+        bannerService.getBanners(),
+        productService.getProducts({ pageSize: 1e3 })
+      ]);
+      if (bannersRes.success) {
+        setBanners(bannersRes.data);
+      }
+      if (productsRes == null ? void 0 : productsRes.data) {
+        setProducts(productsRes.data);
+      }
+    } catch (error) {
+      console.error("Failed to load data:", error);
+      alert2.error("Failed to load banners");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const openAddDialog = () => {
+    setEditingBanner(null);
+    setFormData({ title: "", image: null, productId: "", isActive: true });
+    setImagePreview("");
+    setErrors({});
+    setIsDialogOpen(true);
+  };
+  const openEditDialog = (banner) => {
+    setEditingBanner(banner);
+    setFormData({
+      title: banner.title,
+      image: null,
+      productId: banner.productId || "",
+      isActive: banner.isActive
+    });
+    setImagePreview(
+      banner.image ? `${"https://bikanerapi.codeeratech.in"}${banner.image}` : ""
+    );
+    setErrors({});
+    setIsDialogOpen(true);
+  };
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.title.trim()) {
+      newErrors.title = "Banner title is required";
+    }
+    if (!editingBanner && !formData.image) {
+      newErrors.image = "Banner image is required";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  const handleSubmit = async (e3) => {
+    e3.preventDefault();
+    if (!validateForm()) return;
+    setIsSubmitting(true);
+    const loadingId = alert2.loading(
+      editingBanner ? "Updating banner..." : "Creating banner..."
+    );
+    try {
+      if (editingBanner) {
+        const updateData = {
+          title: formData.title,
+          productId: formData.productId || void 0,
+          isActive: formData.isActive
+        };
+        if (formData.image) {
+          updateData.image = formData.image;
+        }
+        await bannerService.updateBanner(editingBanner.id, updateData);
+        alert2.success("Banner updated successfully");
+      } else {
+        if (!formData.image) return;
+        await bannerService.createBanner({
+          title: formData.title,
+          image: formData.image,
+          productId: formData.productId || void 0,
+          isActive: formData.isActive
+        });
+        alert2.success("Banner created successfully");
+      }
+      alert2.removeAlert(loadingId);
+      setIsDialogOpen(false);
+      setFormData({ title: "", image: null, productId: "", isActive: true });
+      setImagePreview("");
+      await loadData();
+    } catch (error) {
+      alert2.removeAlert(loadingId);
+      alert2.error((error == null ? void 0 : error.message) || "Failed to save banner");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  const handleDeleteBanner = async (banner) => {
+    showDialog({
+      title: "Delete Banner",
+      description: `Are you sure you want to delete "${banner.title}"? This action cannot be undone.`,
+      onConfirm: async () => {
+        const loadingId = alert2.loading("Deleting banner...");
+        try {
+          await bannerService.deleteBanner(banner.id);
+          alert2.removeAlert(loadingId);
+          alert2.success("Banner deleted successfully");
+          await loadData();
+        } catch (error) {
+          alert2.removeAlert(loadingId);
+          alert2.error((error == null ? void 0 : error.message) || "Failed to delete banner");
+        }
+      }
+    });
+  };
+  const handleImageChange = (file) => {
+    if (!file) return;
+    setFormData({ ...formData, image: file });
+    setImagePreview(URL.createObjectURL(file));
+    setErrors({ ...errors, image: "" });
+  };
+  reactExports.useEffect(() => {
+    return () => {
+      if (imagePreview && imagePreview.startsWith("blob:")) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+  const columns2 = [
+    {
+      accessorKey: "title",
+      header: "Banner",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-10 w-10 rounded-lg overflow-hidden border", children: row.original.image ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            src: `${"https://bikanerapi.codeeratech.in"}${row.original.image}`,
+            alt: row.original.title,
+            className: "h-full w-full object-cover"
+          }
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-full w-full flex items-center justify-center bg-muted", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Image$1, { className: "h-4 w-4 text-muted-foreground" }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: row.original.title }) })
+      ] })
+    },
+    {
+      accessorKey: "product",
+      header: "Linked Product",
+      cell: ({ row }) => {
+        var _a3;
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: ((_a3 = row.original.product) == null ? void 0 : _a3.name) || /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground", children: "None" }) });
+      }
+    },
+    {
+      accessorKey: "isActive",
+      header: "Status",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: row.original.isActive ? "default" : "secondary", children: row.original.isActive ? "Active" : "Inactive" })
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 justify-end", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.BANNERS_EDIT, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            variant: "ghost",
+            size: "icon",
+            onClick: () => openEditDialog(row.original),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "h-4 w-4" })
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.BANNERS_DELETE, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            variant: "ghost",
+            size: "icon",
+            onClick: () => handleDeleteBanner(row.original),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4 text-destructive" })
+          }
+        ) })
+      ] })
+    }
+  ];
+  if (loading) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center h-96", children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-8 w-8 animate-spin text-primary" }) });
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      PageHeader,
+      {
+        title: "Banners",
+        description: "Manage promotional banners for your store",
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.BANNERS_CREATE, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openAddDialog, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "h-4 w-4 mr-2" }),
+          "Add Banner"
+        ] }) })
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      DataTable,
+      {
+        columns: columns2,
+        data: banners,
+        emptyMessage: "No banners found"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isDialogOpen, onOpenChange: setIsDialogOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-lg", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: editingBanner ? "Edit Banner" : "Add New Banner" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(Label$1, { htmlFor: "title", children: [
+            "Banner Title ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-destructive", children: "*" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Input,
+            {
+              id: "title",
+              value: formData.title,
+              onChange: (e3) => setFormData({ ...formData, title: e3.target.value }),
+              placeholder: "Enter banner title",
+              className: errors.title ? "border-destructive" : ""
+            }
+          ),
+          errors.title && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-destructive mt-1", children: errors.title })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(Label$1, { children: [
+            "Banner Image",
+            " ",
+            !editingBanner && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-destructive", children: "*" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-24 w-24 rounded-lg border overflow-hidden bg-muted flex items-center justify-center", children: imagePreview ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: imagePreview,
+                className: "h-full w-full object-cover",
+                alt: "Preview"
+              }
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsx(Image$1, { className: "h-8 w-8 text-muted-foreground" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  id: "banner-image",
+                  type: "file",
+                  accept: "image/*",
+                  className: "hidden",
+                  onChange: (e3) => {
+                    var _a3;
+                    const file = (_a3 = e3.target.files) == null ? void 0 : _a3[0];
+                    if (file) handleImageChange(file);
+                  }
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  onClick: () => {
+                    var _a3;
+                    return (_a3 = document.getElementById("banner-image")) == null ? void 0 : _a3.click();
+                  },
+                  children: "Choose Image"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 text-xs text-muted-foreground", children: "JPG, PNG or WEBP (Recommended: 1200x400px)" })
+            ] })
+          ] }),
+          errors.image && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-destructive", children: errors.image })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "productId", children: "Linked Product (Optional)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Select,
+            {
+              value: formData.productId || "none",
+              onValueChange: (value) => setFormData({
+                ...formData,
+                productId: value === "none" ? "" : value
+              }),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select a product" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "none", children: "None" }),
+                  products.map((product) => /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: product.id, children: product.name }, product.id))
+                ] })
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "isActive", children: "Status" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Select,
+            {
+              value: formData.isActive ? "active" : "inactive",
+              onValueChange: (value) => setFormData({ ...formData, isActive: value === "active" }),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {}) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "active", children: "Active" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "inactive", children: "Inactive" })
+                ] })
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              type: "button",
+              variant: "outline",
+              onClick: () => setIsDialogOpen(false),
+              disabled: isSubmitting,
+              children: "Cancel"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "submit", disabled: isSubmitting, children: isSubmitting ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-4 w-4 mr-2 animate-spin" }),
+            "Saving..."
+          ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            editingBanner ? "Update" : "Create",
+            " Banner"
+          ] }) })
+        ] })
+      ] })
+    ] }) })
+  ] });
 }
 const mockDashboardStats = {
   walletBalance: 45230.75
@@ -44255,16 +46205,6 @@ function BulkOrdersPage() {
     )
   ] });
 }
-function usePrevious(value) {
-  const ref = reactExports.useRef({ value, previous: value });
-  return reactExports.useMemo(() => {
-    if (ref.current.value !== value) {
-      ref.current.previous = ref.current.value;
-      ref.current.value = value;
-    }
-    return ref.current.previous;
-  }, [value]);
-}
 var CHECKBOX_NAME = "Checkbox";
 var [createCheckboxContext] = createContextScope$1(CHECKBOX_NAME);
 var [CheckboxProviderImpl, useCheckboxContext] = createCheckboxContext(CHECKBOX_NAME);
@@ -44321,7 +46261,7 @@ function CheckboxProvider(props) {
     }
   );
 }
-var TRIGGER_NAME$3 = "CheckboxTrigger";
+var TRIGGER_NAME$2 = "CheckboxTrigger";
 var CheckboxTrigger = reactExports.forwardRef(
   ({ __scopeCheckbox, onKeyDown, onClick, ...checkboxProps }, forwardedRef) => {
     const {
@@ -44335,7 +46275,7 @@ var CheckboxTrigger = reactExports.forwardRef(
       hasConsumerStoppedPropagationRef,
       isFormControl,
       bubbleInput
-    } = useCheckboxContext(TRIGGER_NAME$3, __scopeCheckbox);
+    } = useCheckboxContext(TRIGGER_NAME$2, __scopeCheckbox);
     const composedRefs = useComposedRefs(forwardedRef, setControl);
     const initialCheckedStateRef = reactExports.useRef(checked);
     reactExports.useEffect(() => {
@@ -44373,7 +46313,7 @@ var CheckboxTrigger = reactExports.forwardRef(
     );
   }
 );
-CheckboxTrigger.displayName = TRIGGER_NAME$3;
+CheckboxTrigger.displayName = TRIGGER_NAME$2;
 var Checkbox$1 = reactExports.forwardRef(
   (props, forwardedRef) => {
     const {
@@ -44445,7 +46385,7 @@ var CheckboxIndicator = reactExports.forwardRef(
   }
 );
 CheckboxIndicator.displayName = INDICATOR_NAME$1;
-var BUBBLE_INPUT_NAME$1 = "CheckboxBubbleInput";
+var BUBBLE_INPUT_NAME = "CheckboxBubbleInput";
 var CheckboxBubbleInput = reactExports.forwardRef(
   ({ __scopeCheckbox, ...props }, forwardedRef) => {
     const {
@@ -44460,7 +46400,7 @@ var CheckboxBubbleInput = reactExports.forwardRef(
       form,
       bubbleInput,
       setBubbleInput
-    } = useCheckboxContext(BUBBLE_INPUT_NAME$1, __scopeCheckbox);
+    } = useCheckboxContext(BUBBLE_INPUT_NAME, __scopeCheckbox);
     const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
     const prevChecked = usePrevious(checked);
     const controlSize = useSize(control);
@@ -44512,7 +46452,7 @@ var CheckboxBubbleInput = reactExports.forwardRef(
     );
   }
 );
-CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
+CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME;
 function isFunction$5(value) {
   return typeof value === "function";
 }
@@ -44543,1330 +46483,6 @@ function Checkbox({
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-3.5" })
         }
       )
-    }
-  );
-}
-var NAME$1 = "Label";
-var Label$2 = reactExports.forwardRef((props, forwardedRef) => {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Primitive.label,
-    {
-      ...props,
-      ref: forwardedRef,
-      onMouseDown: (event) => {
-        var _a3;
-        const target = event.target;
-        if (target.closest("button, input, select, textarea")) return;
-        (_a3 = props.onMouseDown) == null ? void 0 : _a3.call(props, event);
-        if (!event.defaultPrevented && event.detail > 1) event.preventDefault();
-      }
-    }
-  );
-});
-Label$2.displayName = NAME$1;
-var Root$2 = Label$2;
-function Label$1({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Root$2,
-    {
-      "data-slot": "label",
-      className: cn(
-        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
-        className
-      ),
-      ...props
-    }
-  );
-}
-var VISUALLY_HIDDEN_STYLES = Object.freeze({
-  // See: https://github.com/twbs/bootstrap/blob/main/scss/mixins/_visually-hidden.scss
-  position: "absolute",
-  border: 0,
-  width: 1,
-  height: 1,
-  padding: 0,
-  margin: -1,
-  overflow: "hidden",
-  clip: "rect(0, 0, 0, 0)",
-  whiteSpace: "nowrap",
-  wordWrap: "normal"
-});
-var NAME = "VisuallyHidden";
-var VisuallyHidden = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.span,
-      {
-        ...props,
-        ref: forwardedRef,
-        style: { ...VISUALLY_HIDDEN_STYLES, ...props.style }
-      }
-    );
-  }
-);
-VisuallyHidden.displayName = NAME;
-var Root$1 = VisuallyHidden;
-var OPEN_KEYS = [" ", "Enter", "ArrowUp", "ArrowDown"];
-var SELECTION_KEYS = [" ", "Enter"];
-var SELECT_NAME = "Select";
-var [Collection, useCollection, createCollectionScope] = createCollection(SELECT_NAME);
-var [createSelectContext] = createContextScope$1(SELECT_NAME, [
-  createCollectionScope,
-  createPopperScope
-]);
-var usePopperScope$1 = createPopperScope();
-var [SelectProvider, useSelectContext] = createSelectContext(SELECT_NAME);
-var [SelectNativeOptionsProvider, useSelectNativeOptionsContext] = createSelectContext(SELECT_NAME);
-var Select$1 = (props) => {
-  const {
-    __scopeSelect,
-    children,
-    open: openProp,
-    defaultOpen,
-    onOpenChange,
-    value: valueProp,
-    defaultValue,
-    onValueChange,
-    dir,
-    name,
-    autoComplete,
-    disabled,
-    required: required2,
-    form
-  } = props;
-  const popperScope = usePopperScope$1(__scopeSelect);
-  const [trigger, setTrigger] = reactExports.useState(null);
-  const [valueNode, setValueNode] = reactExports.useState(null);
-  const [valueNodeHasChildren, setValueNodeHasChildren] = reactExports.useState(false);
-  const direction = useDirection(dir);
-  const [open, setOpen] = useControllableState({
-    prop: openProp,
-    defaultProp: defaultOpen ?? false,
-    onChange: onOpenChange,
-    caller: SELECT_NAME
-  });
-  const [value, setValue] = useControllableState({
-    prop: valueProp,
-    defaultProp: defaultValue,
-    onChange: onValueChange,
-    caller: SELECT_NAME
-  });
-  const triggerPointerDownPosRef = reactExports.useRef(null);
-  const isFormControl = trigger ? form || !!trigger.closest("form") : true;
-  const [nativeOptionsSet, setNativeOptionsSet] = reactExports.useState(/* @__PURE__ */ new Set());
-  const nativeSelectKey = Array.from(nativeOptionsSet).map((option) => option.props.value).join(";");
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$3, { ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    SelectProvider,
-    {
-      required: required2,
-      scope: __scopeSelect,
-      trigger,
-      onTriggerChange: setTrigger,
-      valueNode,
-      onValueNodeChange: setValueNode,
-      valueNodeHasChildren,
-      onValueNodeHasChildrenChange: setValueNodeHasChildren,
-      contentId: useId(),
-      value,
-      onValueChange: setValue,
-      open,
-      onOpenChange: setOpen,
-      dir: direction,
-      triggerPointerDownPosRef,
-      disabled,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Provider, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          SelectNativeOptionsProvider,
-          {
-            scope: props.__scopeSelect,
-            onNativeOptionAdd: reactExports.useCallback((option) => {
-              setNativeOptionsSet((prev) => new Set(prev).add(option));
-            }, []),
-            onNativeOptionRemove: reactExports.useCallback((option) => {
-              setNativeOptionsSet((prev) => {
-                const optionsSet = new Set(prev);
-                optionsSet.delete(option);
-                return optionsSet;
-              });
-            }, []),
-            children
-          }
-        ) }),
-        isFormControl ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          SelectBubbleInput,
-          {
-            "aria-hidden": true,
-            required: required2,
-            tabIndex: -1,
-            name,
-            autoComplete,
-            value,
-            onChange: (event) => setValue(event.target.value),
-            disabled,
-            form,
-            children: [
-              value === void 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "" }) : null,
-              Array.from(nativeOptionsSet)
-            ]
-          },
-          nativeSelectKey
-        ) : null
-      ]
-    }
-  ) });
-};
-Select$1.displayName = SELECT_NAME;
-var TRIGGER_NAME$2 = "SelectTrigger";
-var SelectTrigger$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, disabled = false, ...triggerProps } = props;
-    const popperScope = usePopperScope$1(__scopeSelect);
-    const context = useSelectContext(TRIGGER_NAME$2, __scopeSelect);
-    const isDisabled = context.disabled || disabled;
-    const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
-    const getItems = useCollection(__scopeSelect);
-    const pointerTypeRef = reactExports.useRef("touch");
-    const [searchRef, handleTypeaheadSearch, resetTypeahead] = useTypeaheadSearch((search) => {
-      const enabledItems = getItems().filter((item) => !item.disabled);
-      const currentItem = enabledItems.find((item) => item.value === context.value);
-      const nextItem = findNextItem(enabledItems, search, currentItem);
-      if (nextItem !== void 0) {
-        context.onValueChange(nextItem.value);
-      }
-    });
-    const handleOpen = (pointerEvent) => {
-      if (!isDisabled) {
-        context.onOpenChange(true);
-        resetTypeahead();
-      }
-      if (pointerEvent) {
-        context.triggerPointerDownPosRef.current = {
-          x: Math.round(pointerEvent.pageX),
-          y: Math.round(pointerEvent.pageY)
-        };
-      }
-    };
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Anchor, { asChild: true, ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.button,
-      {
-        type: "button",
-        role: "combobox",
-        "aria-controls": context.contentId,
-        "aria-expanded": context.open,
-        "aria-required": context.required,
-        "aria-autocomplete": "none",
-        dir: context.dir,
-        "data-state": context.open ? "open" : "closed",
-        disabled: isDisabled,
-        "data-disabled": isDisabled ? "" : void 0,
-        "data-placeholder": shouldShowPlaceholder(context.value) ? "" : void 0,
-        ...triggerProps,
-        ref: composedRefs,
-        onClick: composeEventHandlers(triggerProps.onClick, (event) => {
-          event.currentTarget.focus();
-          if (pointerTypeRef.current !== "mouse") {
-            handleOpen(event);
-          }
-        }),
-        onPointerDown: composeEventHandlers(triggerProps.onPointerDown, (event) => {
-          pointerTypeRef.current = event.pointerType;
-          const target = event.target;
-          if (target.hasPointerCapture(event.pointerId)) {
-            target.releasePointerCapture(event.pointerId);
-          }
-          if (event.button === 0 && event.ctrlKey === false && event.pointerType === "mouse") {
-            handleOpen(event);
-            event.preventDefault();
-          }
-        }),
-        onKeyDown: composeEventHandlers(triggerProps.onKeyDown, (event) => {
-          const isTypingAhead = searchRef.current !== "";
-          const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-          if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
-          if (isTypingAhead && event.key === " ") return;
-          if (OPEN_KEYS.includes(event.key)) {
-            handleOpen();
-            event.preventDefault();
-          }
-        })
-      }
-    ) });
-  }
-);
-SelectTrigger$1.displayName = TRIGGER_NAME$2;
-var VALUE_NAME = "SelectValue";
-var SelectValue$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, className, style: style2, children, placeholder = "", ...valueProps } = props;
-    const context = useSelectContext(VALUE_NAME, __scopeSelect);
-    const { onValueNodeHasChildrenChange } = context;
-    const hasChildren = children !== void 0;
-    const composedRefs = useComposedRefs(forwardedRef, context.onValueNodeChange);
-    useLayoutEffect2(() => {
-      onValueNodeHasChildrenChange(hasChildren);
-    }, [onValueNodeHasChildrenChange, hasChildren]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.span,
-      {
-        ...valueProps,
-        ref: composedRefs,
-        style: { pointerEvents: "none" },
-        children: shouldShowPlaceholder(context.value) ? /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: placeholder }) : children
-      }
-    );
-  }
-);
-SelectValue$1.displayName = VALUE_NAME;
-var ICON_NAME = "SelectIcon";
-var SelectIcon = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, children, ...iconProps } = props;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.span, { "aria-hidden": true, ...iconProps, ref: forwardedRef, children: children || "▼" });
-  }
-);
-SelectIcon.displayName = ICON_NAME;
-var PORTAL_NAME$1 = "SelectPortal";
-var SelectPortal = (props) => {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$4, { asChild: true, ...props });
-};
-SelectPortal.displayName = PORTAL_NAME$1;
-var CONTENT_NAME$2 = "SelectContent";
-var SelectContent$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const context = useSelectContext(CONTENT_NAME$2, props.__scopeSelect);
-    const [fragment, setFragment] = reactExports.useState();
-    useLayoutEffect2(() => {
-      setFragment(new DocumentFragment());
-    }, []);
-    if (!context.open) {
-      const frag = fragment;
-      return frag ? reactDomExports.createPortal(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContentProvider, { scope: props.__scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: props.__scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: props.children }) }) }),
-        frag
-      ) : null;
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContentImpl, { ...props, ref: forwardedRef });
-  }
-);
-SelectContent$1.displayName = CONTENT_NAME$2;
-var CONTENT_MARGIN = 10;
-var [SelectContentProvider, useSelectContentContext] = createSelectContext(CONTENT_NAME$2);
-var CONTENT_IMPL_NAME = "SelectContentImpl";
-var Slot = /* @__PURE__ */ createSlot("SelectContent.RemoveScroll");
-var SelectContentImpl = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const {
-      __scopeSelect,
-      position = "item-aligned",
-      onCloseAutoFocus,
-      onEscapeKeyDown,
-      onPointerDownOutside,
-      //
-      // PopperContent props
-      side,
-      sideOffset,
-      align,
-      alignOffset,
-      arrowPadding,
-      collisionBoundary,
-      collisionPadding,
-      sticky,
-      hideWhenDetached,
-      avoidCollisions,
-      //
-      ...contentProps
-    } = props;
-    const context = useSelectContext(CONTENT_NAME$2, __scopeSelect);
-    const [content, setContent] = reactExports.useState(null);
-    const [viewport, setViewport] = reactExports.useState(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
-    const [selectedItem, setSelectedItem] = reactExports.useState(null);
-    const [selectedItemText, setSelectedItemText] = reactExports.useState(
-      null
-    );
-    const getItems = useCollection(__scopeSelect);
-    const [isPositioned, setIsPositioned] = reactExports.useState(false);
-    const firstValidItemFoundRef = reactExports.useRef(false);
-    reactExports.useEffect(() => {
-      if (content) return hideOthers(content);
-    }, [content]);
-    useFocusGuards();
-    const focusFirst2 = reactExports.useCallback(
-      (candidates) => {
-        const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
-        const [lastItem] = restItems.slice(-1);
-        const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
-        for (const candidate of candidates) {
-          if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
-          candidate == null ? void 0 : candidate.scrollIntoView({ block: "nearest" });
-          if (candidate === firstItem && viewport) viewport.scrollTop = 0;
-          if (candidate === lastItem && viewport) viewport.scrollTop = viewport.scrollHeight;
-          candidate == null ? void 0 : candidate.focus();
-          if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
-        }
-      },
-      [getItems, viewport]
-    );
-    const focusSelectedItem = reactExports.useCallback(
-      () => focusFirst2([selectedItem, content]),
-      [focusFirst2, selectedItem, content]
-    );
-    reactExports.useEffect(() => {
-      if (isPositioned) {
-        focusSelectedItem();
-      }
-    }, [isPositioned, focusSelectedItem]);
-    const { onOpenChange, triggerPointerDownPosRef } = context;
-    reactExports.useEffect(() => {
-      if (content) {
-        let pointerMoveDelta = { x: 0, y: 0 };
-        const handlePointerMove = (event) => {
-          var _a3, _b2;
-          pointerMoveDelta = {
-            x: Math.abs(Math.round(event.pageX) - (((_a3 = triggerPointerDownPosRef.current) == null ? void 0 : _a3.x) ?? 0)),
-            y: Math.abs(Math.round(event.pageY) - (((_b2 = triggerPointerDownPosRef.current) == null ? void 0 : _b2.y) ?? 0))
-          };
-        };
-        const handlePointerUp = (event) => {
-          if (pointerMoveDelta.x <= 10 && pointerMoveDelta.y <= 10) {
-            event.preventDefault();
-          } else {
-            if (!content.contains(event.target)) {
-              onOpenChange(false);
-            }
-          }
-          document.removeEventListener("pointermove", handlePointerMove);
-          triggerPointerDownPosRef.current = null;
-        };
-        if (triggerPointerDownPosRef.current !== null) {
-          document.addEventListener("pointermove", handlePointerMove);
-          document.addEventListener("pointerup", handlePointerUp, { capture: true, once: true });
-        }
-        return () => {
-          document.removeEventListener("pointermove", handlePointerMove);
-          document.removeEventListener("pointerup", handlePointerUp, { capture: true });
-        };
-      }
-    }, [content, onOpenChange, triggerPointerDownPosRef]);
-    reactExports.useEffect(() => {
-      const close = () => onOpenChange(false);
-      window.addEventListener("blur", close);
-      window.addEventListener("resize", close);
-      return () => {
-        window.removeEventListener("blur", close);
-        window.removeEventListener("resize", close);
-      };
-    }, [onOpenChange]);
-    const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
-      const enabledItems = getItems().filter((item) => !item.disabled);
-      const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
-      const nextItem = findNextItem(enabledItems, search, currentItem);
-      if (nextItem) {
-        setTimeout(() => nextItem.ref.current.focus());
-      }
-    });
-    const itemRefCallback = reactExports.useCallback(
-      (node, value, disabled) => {
-        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
-        const isSelectedItem = context.value !== void 0 && context.value === value;
-        if (isSelectedItem || isFirstValidItem) {
-          setSelectedItem(node);
-          if (isFirstValidItem) firstValidItemFoundRef.current = true;
-        }
-      },
-      [context.value]
-    );
-    const handleItemLeave = reactExports.useCallback(() => content == null ? void 0 : content.focus(), [content]);
-    const itemTextRefCallback = reactExports.useCallback(
-      (node, value, disabled) => {
-        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
-        const isSelectedItem = context.value !== void 0 && context.value === value;
-        if (isSelectedItem || isFirstValidItem) {
-          setSelectedItemText(node);
-        }
-      },
-      [context.value]
-    );
-    const SelectPosition = position === "popper" ? SelectPopperPosition : SelectItemAlignedPosition;
-    const popperContentProps = SelectPosition === SelectPopperPosition ? {
-      side,
-      sideOffset,
-      align,
-      alignOffset,
-      arrowPadding,
-      collisionBoundary,
-      collisionPadding,
-      sticky,
-      hideWhenDetached,
-      avoidCollisions
-    } : {};
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      SelectContentProvider,
-      {
-        scope: __scopeSelect,
-        content,
-        viewport,
-        onViewportChange: setViewport,
-        itemRefCallback,
-        selectedItem,
-        onItemLeave: handleItemLeave,
-        itemTextRefCallback,
-        focusSelectedItem,
-        selectedItemText,
-        position,
-        isPositioned,
-        searchRef,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(ReactRemoveScroll, { as: Slot, allowPinchZoom: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          FocusScope,
-          {
-            asChild: true,
-            trapped: context.open,
-            onMountAutoFocus: (event) => {
-              event.preventDefault();
-            },
-            onUnmountAutoFocus: composeEventHandlers(onCloseAutoFocus, (event) => {
-              var _a3;
-              (_a3 = context.trigger) == null ? void 0 : _a3.focus({ preventScroll: true });
-              event.preventDefault();
-            }),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DismissableLayer,
-              {
-                asChild: true,
-                disableOutsidePointerEvents: true,
-                onEscapeKeyDown,
-                onPointerDownOutside,
-                onFocusOutside: (event) => event.preventDefault(),
-                onDismiss: () => context.onOpenChange(false),
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  SelectPosition,
-                  {
-                    role: "listbox",
-                    id: context.contentId,
-                    "data-state": context.open ? "open" : "closed",
-                    dir: context.dir,
-                    onContextMenu: (event) => event.preventDefault(),
-                    ...contentProps,
-                    ...popperContentProps,
-                    onPlaced: () => setIsPositioned(true),
-                    ref: composedRefs,
-                    style: {
-                      // flex layout so we can place the scroll buttons properly
-                      display: "flex",
-                      flexDirection: "column",
-                      // reset the outline by default as the content MAY get focused
-                      outline: "none",
-                      ...contentProps.style
-                    },
-                    onKeyDown: composeEventHandlers(contentProps.onKeyDown, (event) => {
-                      const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-                      if (event.key === "Tab") event.preventDefault();
-                      if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
-                      if (["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) {
-                        const items = getItems().filter((item) => !item.disabled);
-                        let candidateNodes = items.map((item) => item.ref.current);
-                        if (["ArrowUp", "End"].includes(event.key)) {
-                          candidateNodes = candidateNodes.slice().reverse();
-                        }
-                        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
-                          const currentElement = event.target;
-                          const currentIndex = candidateNodes.indexOf(currentElement);
-                          candidateNodes = candidateNodes.slice(currentIndex + 1);
-                        }
-                        setTimeout(() => focusFirst2(candidateNodes));
-                        event.preventDefault();
-                      }
-                    })
-                  }
-                )
-              }
-            )
-          }
-        ) })
-      }
-    );
-  }
-);
-SelectContentImpl.displayName = CONTENT_IMPL_NAME;
-var ITEM_ALIGNED_POSITION_NAME = "SelectItemAlignedPosition";
-var SelectItemAlignedPosition = reactExports.forwardRef((props, forwardedRef) => {
-  const { __scopeSelect, onPlaced, ...popperProps } = props;
-  const context = useSelectContext(CONTENT_NAME$2, __scopeSelect);
-  const contentContext = useSelectContentContext(CONTENT_NAME$2, __scopeSelect);
-  const [contentWrapper, setContentWrapper] = reactExports.useState(null);
-  const [content, setContent] = reactExports.useState(null);
-  const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
-  const getItems = useCollection(__scopeSelect);
-  const shouldExpandOnScrollRef = reactExports.useRef(false);
-  const shouldRepositionRef = reactExports.useRef(true);
-  const { viewport, selectedItem, selectedItemText, focusSelectedItem } = contentContext;
-  const position = reactExports.useCallback(() => {
-    if (context.trigger && context.valueNode && contentWrapper && content && viewport && selectedItem && selectedItemText) {
-      const triggerRect = context.trigger.getBoundingClientRect();
-      const contentRect = content.getBoundingClientRect();
-      const valueNodeRect = context.valueNode.getBoundingClientRect();
-      const itemTextRect = selectedItemText.getBoundingClientRect();
-      if (context.dir !== "rtl") {
-        const itemTextOffset = itemTextRect.left - contentRect.left;
-        const left = valueNodeRect.left - itemTextOffset;
-        const leftDelta = triggerRect.left - left;
-        const minContentWidth = triggerRect.width + leftDelta;
-        const contentWidth = Math.max(minContentWidth, contentRect.width);
-        const rightEdge = window.innerWidth - CONTENT_MARGIN;
-        const clampedLeft = clamp$1(left, [
-          CONTENT_MARGIN,
-          // Prevents the content from going off the starting edge of the
-          // viewport. It may still go off the ending edge, but this can be
-          // controlled by the user since they may want to manage overflow in a
-          // specific way.
-          // https://github.com/radix-ui/primitives/issues/2049
-          Math.max(CONTENT_MARGIN, rightEdge - contentWidth)
-        ]);
-        contentWrapper.style.minWidth = minContentWidth + "px";
-        contentWrapper.style.left = clampedLeft + "px";
-      } else {
-        const itemTextOffset = contentRect.right - itemTextRect.right;
-        const right = window.innerWidth - valueNodeRect.right - itemTextOffset;
-        const rightDelta = window.innerWidth - triggerRect.right - right;
-        const minContentWidth = triggerRect.width + rightDelta;
-        const contentWidth = Math.max(minContentWidth, contentRect.width);
-        const leftEdge = window.innerWidth - CONTENT_MARGIN;
-        const clampedRight = clamp$1(right, [
-          CONTENT_MARGIN,
-          Math.max(CONTENT_MARGIN, leftEdge - contentWidth)
-        ]);
-        contentWrapper.style.minWidth = minContentWidth + "px";
-        contentWrapper.style.right = clampedRight + "px";
-      }
-      const items = getItems();
-      const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
-      const itemsHeight = viewport.scrollHeight;
-      const contentStyles = window.getComputedStyle(content);
-      const contentBorderTopWidth = parseInt(contentStyles.borderTopWidth, 10);
-      const contentPaddingTop = parseInt(contentStyles.paddingTop, 10);
-      const contentBorderBottomWidth = parseInt(contentStyles.borderBottomWidth, 10);
-      const contentPaddingBottom = parseInt(contentStyles.paddingBottom, 10);
-      const fullContentHeight = contentBorderTopWidth + contentPaddingTop + itemsHeight + contentPaddingBottom + contentBorderBottomWidth;
-      const minContentHeight = Math.min(selectedItem.offsetHeight * 5, fullContentHeight);
-      const viewportStyles = window.getComputedStyle(viewport);
-      const viewportPaddingTop = parseInt(viewportStyles.paddingTop, 10);
-      const viewportPaddingBottom = parseInt(viewportStyles.paddingBottom, 10);
-      const topEdgeToTriggerMiddle = triggerRect.top + triggerRect.height / 2 - CONTENT_MARGIN;
-      const triggerMiddleToBottomEdge = availableHeight - topEdgeToTriggerMiddle;
-      const selectedItemHalfHeight = selectedItem.offsetHeight / 2;
-      const itemOffsetMiddle = selectedItem.offsetTop + selectedItemHalfHeight;
-      const contentTopToItemMiddle = contentBorderTopWidth + contentPaddingTop + itemOffsetMiddle;
-      const itemMiddleToContentBottom = fullContentHeight - contentTopToItemMiddle;
-      const willAlignWithoutTopOverflow = contentTopToItemMiddle <= topEdgeToTriggerMiddle;
-      if (willAlignWithoutTopOverflow) {
-        const isLastItem = items.length > 0 && selectedItem === items[items.length - 1].ref.current;
-        contentWrapper.style.bottom = "0px";
-        const viewportOffsetBottom = content.clientHeight - viewport.offsetTop - viewport.offsetHeight;
-        const clampedTriggerMiddleToBottomEdge = Math.max(
-          triggerMiddleToBottomEdge,
-          selectedItemHalfHeight + // viewport might have padding bottom, include it to avoid a scrollable viewport
-          (isLastItem ? viewportPaddingBottom : 0) + viewportOffsetBottom + contentBorderBottomWidth
-        );
-        const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
-        contentWrapper.style.height = height + "px";
-      } else {
-        const isFirstItem = items.length > 0 && selectedItem === items[0].ref.current;
-        contentWrapper.style.top = "0px";
-        const clampedTopEdgeToTriggerMiddle = Math.max(
-          topEdgeToTriggerMiddle,
-          contentBorderTopWidth + viewport.offsetTop + // viewport might have padding top, include it to avoid a scrollable viewport
-          (isFirstItem ? viewportPaddingTop : 0) + selectedItemHalfHeight
-        );
-        const height = clampedTopEdgeToTriggerMiddle + itemMiddleToContentBottom;
-        contentWrapper.style.height = height + "px";
-        viewport.scrollTop = contentTopToItemMiddle - topEdgeToTriggerMiddle + viewport.offsetTop;
-      }
-      contentWrapper.style.margin = `${CONTENT_MARGIN}px 0`;
-      contentWrapper.style.minHeight = minContentHeight + "px";
-      contentWrapper.style.maxHeight = availableHeight + "px";
-      onPlaced == null ? void 0 : onPlaced();
-      requestAnimationFrame(() => shouldExpandOnScrollRef.current = true);
-    }
-  }, [
-    getItems,
-    context.trigger,
-    context.valueNode,
-    contentWrapper,
-    content,
-    viewport,
-    selectedItem,
-    selectedItemText,
-    context.dir,
-    onPlaced
-  ]);
-  useLayoutEffect2(() => position(), [position]);
-  const [contentZIndex, setContentZIndex] = reactExports.useState();
-  useLayoutEffect2(() => {
-    if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
-  }, [content]);
-  const handleScrollButtonChange = reactExports.useCallback(
-    (node) => {
-      if (node && shouldRepositionRef.current === true) {
-        position();
-        focusSelectedItem == null ? void 0 : focusSelectedItem();
-        shouldRepositionRef.current = false;
-      }
-    },
-    [position, focusSelectedItem]
-  );
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    SelectViewportProvider,
-    {
-      scope: __scopeSelect,
-      contentWrapper,
-      shouldExpandOnScrollRef,
-      onScrollButtonChange: handleScrollButtonChange,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          ref: setContentWrapper,
-          style: {
-            display: "flex",
-            flexDirection: "column",
-            position: "fixed",
-            zIndex: contentZIndex
-          },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Primitive$1.div,
-            {
-              ...popperProps,
-              ref: composedRefs,
-              style: {
-                // When we get the height of the content, it includes borders. If we were to set
-                // the height without having `boxSizing: 'border-box'` it would be too big.
-                boxSizing: "border-box",
-                // We need to ensure the content doesn't get taller than the wrapper
-                maxHeight: "100%",
-                ...popperProps.style
-              }
-            }
-          )
-        }
-      )
-    }
-  );
-});
-SelectItemAlignedPosition.displayName = ITEM_ALIGNED_POSITION_NAME;
-var POPPER_POSITION_NAME = "SelectPopperPosition";
-var SelectPopperPosition = reactExports.forwardRef((props, forwardedRef) => {
-  const {
-    __scopeSelect,
-    align = "start",
-    collisionPadding = CONTENT_MARGIN,
-    ...popperProps
-  } = props;
-  const popperScope = usePopperScope$1(__scopeSelect);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Content$1,
-    {
-      ...popperScope,
-      ...popperProps,
-      ref: forwardedRef,
-      align,
-      collisionPadding,
-      style: {
-        // Ensure border-box for floating-ui calculations
-        boxSizing: "border-box",
-        ...popperProps.style,
-        // re-namespace exposed content custom properties
-        ...{
-          "--radix-select-content-transform-origin": "var(--radix-popper-transform-origin)",
-          "--radix-select-content-available-width": "var(--radix-popper-available-width)",
-          "--radix-select-content-available-height": "var(--radix-popper-available-height)",
-          "--radix-select-trigger-width": "var(--radix-popper-anchor-width)",
-          "--radix-select-trigger-height": "var(--radix-popper-anchor-height)"
-        }
-      }
-    }
-  );
-});
-SelectPopperPosition.displayName = POPPER_POSITION_NAME;
-var [SelectViewportProvider, useSelectViewportContext] = createSelectContext(CONTENT_NAME$2, {});
-var VIEWPORT_NAME = "SelectViewport";
-var SelectViewport = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, nonce, ...viewportProps } = props;
-    const contentContext = useSelectContentContext(VIEWPORT_NAME, __scopeSelect);
-    const viewportContext = useSelectViewportContext(VIEWPORT_NAME, __scopeSelect);
-    const composedRefs = useComposedRefs(forwardedRef, contentContext.onViewportChange);
-    const prevScrollTopRef = reactExports.useRef(0);
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "style",
-        {
-          dangerouslySetInnerHTML: {
-            __html: `[data-radix-select-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-select-viewport]::-webkit-scrollbar{display:none}`
-          },
-          nonce
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Primitive$1.div,
-        {
-          "data-radix-select-viewport": "",
-          role: "presentation",
-          ...viewportProps,
-          ref: composedRefs,
-          style: {
-            // we use position: 'relative' here on the `viewport` so that when we call
-            // `selectedItem.offsetTop` in calculations, the offset is relative to the viewport
-            // (independent of the scrollUpButton).
-            position: "relative",
-            flex: 1,
-            // Viewport should only be scrollable in the vertical direction.
-            // This won't work in vertical writing modes, so we'll need to
-            // revisit this if/when that is supported
-            // https://developer.chrome.com/blog/vertical-form-controls
-            overflow: "hidden auto",
-            ...viewportProps.style
-          },
-          onScroll: composeEventHandlers(viewportProps.onScroll, (event) => {
-            const viewport = event.currentTarget;
-            const { contentWrapper, shouldExpandOnScrollRef } = viewportContext;
-            if ((shouldExpandOnScrollRef == null ? void 0 : shouldExpandOnScrollRef.current) && contentWrapper) {
-              const scrolledBy = Math.abs(prevScrollTopRef.current - viewport.scrollTop);
-              if (scrolledBy > 0) {
-                const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
-                const cssMinHeight = parseFloat(contentWrapper.style.minHeight);
-                const cssHeight = parseFloat(contentWrapper.style.height);
-                const prevHeight = Math.max(cssMinHeight, cssHeight);
-                if (prevHeight < availableHeight) {
-                  const nextHeight = prevHeight + scrolledBy;
-                  const clampedNextHeight = Math.min(availableHeight, nextHeight);
-                  const heightDiff = nextHeight - clampedNextHeight;
-                  contentWrapper.style.height = clampedNextHeight + "px";
-                  if (contentWrapper.style.bottom === "0px") {
-                    viewport.scrollTop = heightDiff > 0 ? heightDiff : 0;
-                    contentWrapper.style.justifyContent = "flex-end";
-                  }
-                }
-              }
-            }
-            prevScrollTopRef.current = viewport.scrollTop;
-          })
-        }
-      ) })
-    ] });
-  }
-);
-SelectViewport.displayName = VIEWPORT_NAME;
-var GROUP_NAME = "SelectGroup";
-var [SelectGroupContextProvider, useSelectGroupContext] = createSelectContext(GROUP_NAME);
-var SelectGroup = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, ...groupProps } = props;
-    const groupId = useId();
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SelectGroupContextProvider, { scope: __scopeSelect, id: groupId, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { role: "group", "aria-labelledby": groupId, ...groupProps, ref: forwardedRef }) });
-  }
-);
-SelectGroup.displayName = GROUP_NAME;
-var LABEL_NAME = "SelectLabel";
-var SelectLabel = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, ...labelProps } = props;
-    const groupContext = useSelectGroupContext(LABEL_NAME, __scopeSelect);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { id: groupContext.id, ...labelProps, ref: forwardedRef });
-  }
-);
-SelectLabel.displayName = LABEL_NAME;
-var ITEM_NAME = "SelectItem";
-var [SelectItemContextProvider, useSelectItemContext] = createSelectContext(ITEM_NAME);
-var SelectItem$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const {
-      __scopeSelect,
-      value,
-      disabled = false,
-      textValue: textValueProp,
-      ...itemProps
-    } = props;
-    const context = useSelectContext(ITEM_NAME, __scopeSelect);
-    const contentContext = useSelectContentContext(ITEM_NAME, __scopeSelect);
-    const isSelected = context.value === value;
-    const [textValue, setTextValue] = reactExports.useState(textValueProp ?? "");
-    const [isFocused, setIsFocused] = reactExports.useState(false);
-    const composedRefs = useComposedRefs(
-      forwardedRef,
-      (node) => {
-        var _a3;
-        return (_a3 = contentContext.itemRefCallback) == null ? void 0 : _a3.call(contentContext, node, value, disabled);
-      }
-    );
-    const textId = useId();
-    const pointerTypeRef = reactExports.useRef("touch");
-    const handleSelect = () => {
-      if (!disabled) {
-        context.onValueChange(value);
-        context.onOpenChange(false);
-      }
-    };
-    if (value === "") {
-      throw new Error(
-        "A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder."
-      );
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      SelectItemContextProvider,
-      {
-        scope: __scopeSelect,
-        value,
-        disabled,
-        textId,
-        isSelected,
-        onItemTextChange: reactExports.useCallback((node) => {
-          setTextValue((prevTextValue) => prevTextValue || ((node == null ? void 0 : node.textContent) ?? "").trim());
-        }, []),
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Collection.ItemSlot,
-          {
-            scope: __scopeSelect,
-            value,
-            disabled,
-            textValue,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Primitive$1.div,
-              {
-                role: "option",
-                "aria-labelledby": textId,
-                "data-highlighted": isFocused ? "" : void 0,
-                "aria-selected": isSelected && isFocused,
-                "data-state": isSelected ? "checked" : "unchecked",
-                "aria-disabled": disabled || void 0,
-                "data-disabled": disabled ? "" : void 0,
-                tabIndex: disabled ? void 0 : -1,
-                ...itemProps,
-                ref: composedRefs,
-                onFocus: composeEventHandlers(itemProps.onFocus, () => setIsFocused(true)),
-                onBlur: composeEventHandlers(itemProps.onBlur, () => setIsFocused(false)),
-                onClick: composeEventHandlers(itemProps.onClick, () => {
-                  if (pointerTypeRef.current !== "mouse") handleSelect();
-                }),
-                onPointerUp: composeEventHandlers(itemProps.onPointerUp, () => {
-                  if (pointerTypeRef.current === "mouse") handleSelect();
-                }),
-                onPointerDown: composeEventHandlers(itemProps.onPointerDown, (event) => {
-                  pointerTypeRef.current = event.pointerType;
-                }),
-                onPointerMove: composeEventHandlers(itemProps.onPointerMove, (event) => {
-                  var _a3;
-                  pointerTypeRef.current = event.pointerType;
-                  if (disabled) {
-                    (_a3 = contentContext.onItemLeave) == null ? void 0 : _a3.call(contentContext);
-                  } else if (pointerTypeRef.current === "mouse") {
-                    event.currentTarget.focus({ preventScroll: true });
-                  }
-                }),
-                onPointerLeave: composeEventHandlers(itemProps.onPointerLeave, (event) => {
-                  var _a3;
-                  if (event.currentTarget === document.activeElement) {
-                    (_a3 = contentContext.onItemLeave) == null ? void 0 : _a3.call(contentContext);
-                  }
-                }),
-                onKeyDown: composeEventHandlers(itemProps.onKeyDown, (event) => {
-                  var _a3;
-                  const isTypingAhead = ((_a3 = contentContext.searchRef) == null ? void 0 : _a3.current) !== "";
-                  if (isTypingAhead && event.key === " ") return;
-                  if (SELECTION_KEYS.includes(event.key)) handleSelect();
-                  if (event.key === " ") event.preventDefault();
-                })
-              }
-            )
-          }
-        )
-      }
-    );
-  }
-);
-SelectItem$1.displayName = ITEM_NAME;
-var ITEM_TEXT_NAME = "SelectItemText";
-var SelectItemText = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, className, style: style2, ...itemTextProps } = props;
-    const context = useSelectContext(ITEM_TEXT_NAME, __scopeSelect);
-    const contentContext = useSelectContentContext(ITEM_TEXT_NAME, __scopeSelect);
-    const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
-    const nativeOptionsContext = useSelectNativeOptionsContext(ITEM_TEXT_NAME, __scopeSelect);
-    const [itemTextNode, setItemTextNode] = reactExports.useState(null);
-    const composedRefs = useComposedRefs(
-      forwardedRef,
-      (node) => setItemTextNode(node),
-      itemContext.onItemTextChange,
-      (node) => {
-        var _a3;
-        return (_a3 = contentContext.itemTextRefCallback) == null ? void 0 : _a3.call(contentContext, node, itemContext.value, itemContext.disabled);
-      }
-    );
-    const textContent = itemTextNode == null ? void 0 : itemTextNode.textContent;
-    const nativeOption = reactExports.useMemo(
-      () => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: itemContext.value, disabled: itemContext.disabled, children: textContent }, itemContext.value),
-      [itemContext.disabled, itemContext.value, textContent]
-    );
-    const { onNativeOptionAdd, onNativeOptionRemove } = nativeOptionsContext;
-    useLayoutEffect2(() => {
-      onNativeOptionAdd(nativeOption);
-      return () => onNativeOptionRemove(nativeOption);
-    }, [onNativeOptionAdd, onNativeOptionRemove, nativeOption]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }),
-      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? reactDomExports.createPortal(itemTextProps.children, context.valueNode) : null
-    ] });
-  }
-);
-SelectItemText.displayName = ITEM_TEXT_NAME;
-var ITEM_INDICATOR_NAME = "SelectItemIndicator";
-var SelectItemIndicator = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, ...itemIndicatorProps } = props;
-    const itemContext = useSelectItemContext(ITEM_INDICATOR_NAME, __scopeSelect);
-    return itemContext.isSelected ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.span, { "aria-hidden": true, ...itemIndicatorProps, ref: forwardedRef }) : null;
-  }
-);
-SelectItemIndicator.displayName = ITEM_INDICATOR_NAME;
-var SCROLL_UP_BUTTON_NAME = "SelectScrollUpButton";
-var SelectScrollUpButton$1 = reactExports.forwardRef((props, forwardedRef) => {
-  const contentContext = useSelectContentContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
-  const viewportContext = useSelectViewportContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
-  const [canScrollUp, setCanScrollUp] = reactExports.useState(false);
-  const composedRefs = useComposedRefs(forwardedRef, viewportContext.onScrollButtonChange);
-  useLayoutEffect2(() => {
-    if (contentContext.viewport && contentContext.isPositioned) {
-      let handleScroll2 = function() {
-        const canScrollUp2 = viewport.scrollTop > 0;
-        setCanScrollUp(canScrollUp2);
-      };
-      const viewport = contentContext.viewport;
-      handleScroll2();
-      viewport.addEventListener("scroll", handleScroll2);
-      return () => viewport.removeEventListener("scroll", handleScroll2);
-    }
-  }, [contentContext.viewport, contentContext.isPositioned]);
-  return canScrollUp ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-    SelectScrollButtonImpl,
-    {
-      ...props,
-      ref: composedRefs,
-      onAutoScroll: () => {
-        const { viewport, selectedItem } = contentContext;
-        if (viewport && selectedItem) {
-          viewport.scrollTop = viewport.scrollTop - selectedItem.offsetHeight;
-        }
-      }
-    }
-  ) : null;
-});
-SelectScrollUpButton$1.displayName = SCROLL_UP_BUTTON_NAME;
-var SCROLL_DOWN_BUTTON_NAME = "SelectScrollDownButton";
-var SelectScrollDownButton$1 = reactExports.forwardRef((props, forwardedRef) => {
-  const contentContext = useSelectContentContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
-  const viewportContext = useSelectViewportContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
-  const [canScrollDown, setCanScrollDown] = reactExports.useState(false);
-  const composedRefs = useComposedRefs(forwardedRef, viewportContext.onScrollButtonChange);
-  useLayoutEffect2(() => {
-    if (contentContext.viewport && contentContext.isPositioned) {
-      let handleScroll2 = function() {
-        const maxScroll = viewport.scrollHeight - viewport.clientHeight;
-        const canScrollDown2 = Math.ceil(viewport.scrollTop) < maxScroll;
-        setCanScrollDown(canScrollDown2);
-      };
-      const viewport = contentContext.viewport;
-      handleScroll2();
-      viewport.addEventListener("scroll", handleScroll2);
-      return () => viewport.removeEventListener("scroll", handleScroll2);
-    }
-  }, [contentContext.viewport, contentContext.isPositioned]);
-  return canScrollDown ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-    SelectScrollButtonImpl,
-    {
-      ...props,
-      ref: composedRefs,
-      onAutoScroll: () => {
-        const { viewport, selectedItem } = contentContext;
-        if (viewport && selectedItem) {
-          viewport.scrollTop = viewport.scrollTop + selectedItem.offsetHeight;
-        }
-      }
-    }
-  ) : null;
-});
-SelectScrollDownButton$1.displayName = SCROLL_DOWN_BUTTON_NAME;
-var SelectScrollButtonImpl = reactExports.forwardRef((props, forwardedRef) => {
-  const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
-  const contentContext = useSelectContentContext("SelectScrollButton", __scopeSelect);
-  const autoScrollTimerRef = reactExports.useRef(null);
-  const getItems = useCollection(__scopeSelect);
-  const clearAutoScrollTimer = reactExports.useCallback(() => {
-    if (autoScrollTimerRef.current !== null) {
-      window.clearInterval(autoScrollTimerRef.current);
-      autoScrollTimerRef.current = null;
-    }
-  }, []);
-  reactExports.useEffect(() => {
-    return () => clearAutoScrollTimer();
-  }, [clearAutoScrollTimer]);
-  useLayoutEffect2(() => {
-    var _a3;
-    const activeItem = getItems().find((item) => item.ref.current === document.activeElement);
-    (_a3 = activeItem == null ? void 0 : activeItem.ref.current) == null ? void 0 : _a3.scrollIntoView({ block: "nearest" });
-  }, [getItems]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Primitive$1.div,
-    {
-      "aria-hidden": true,
-      ...scrollIndicatorProps,
-      ref: forwardedRef,
-      style: { flexShrink: 0, ...scrollIndicatorProps.style },
-      onPointerDown: composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
-        if (autoScrollTimerRef.current === null) {
-          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
-        }
-      }),
-      onPointerMove: composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
-        var _a3;
-        (_a3 = contentContext.onItemLeave) == null ? void 0 : _a3.call(contentContext);
-        if (autoScrollTimerRef.current === null) {
-          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
-        }
-      }),
-      onPointerLeave: composeEventHandlers(scrollIndicatorProps.onPointerLeave, () => {
-        clearAutoScrollTimer();
-      })
-    }
-  );
-});
-var SEPARATOR_NAME = "SelectSeparator";
-var SelectSeparator = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, ...separatorProps } = props;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { "aria-hidden": true, ...separatorProps, ref: forwardedRef });
-  }
-);
-SelectSeparator.displayName = SEPARATOR_NAME;
-var ARROW_NAME$1 = "SelectArrow";
-var SelectArrow = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, ...arrowProps } = props;
-    const popperScope = usePopperScope$1(__scopeSelect);
-    const context = useSelectContext(ARROW_NAME$1, __scopeSelect);
-    const contentContext = useSelectContentContext(ARROW_NAME$1, __scopeSelect);
-    return context.open && contentContext.position === "popper" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Arrow, { ...popperScope, ...arrowProps, ref: forwardedRef }) : null;
-  }
-);
-SelectArrow.displayName = ARROW_NAME$1;
-var BUBBLE_INPUT_NAME = "SelectBubbleInput";
-var SelectBubbleInput = reactExports.forwardRef(
-  ({ __scopeSelect, value, ...props }, forwardedRef) => {
-    const ref = reactExports.useRef(null);
-    const composedRefs = useComposedRefs(forwardedRef, ref);
-    const prevValue = usePrevious(value);
-    reactExports.useEffect(() => {
-      const select = ref.current;
-      if (!select) return;
-      const selectProto = window.HTMLSelectElement.prototype;
-      const descriptor = Object.getOwnPropertyDescriptor(
-        selectProto,
-        "value"
-      );
-      const setValue = descriptor.set;
-      if (prevValue !== value && setValue) {
-        const event = new Event("change", { bubbles: true });
-        setValue.call(select, value);
-        select.dispatchEvent(event);
-      }
-    }, [prevValue, value]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.select,
-      {
-        ...props,
-        style: { ...VISUALLY_HIDDEN_STYLES, ...props.style },
-        ref: composedRefs,
-        defaultValue: value
-      }
-    );
-  }
-);
-SelectBubbleInput.displayName = BUBBLE_INPUT_NAME;
-function shouldShowPlaceholder(value) {
-  return value === "" || value === void 0;
-}
-function useTypeaheadSearch(onSearchChange) {
-  const handleSearchChange = useCallbackRef$1(onSearchChange);
-  const searchRef = reactExports.useRef("");
-  const timerRef = reactExports.useRef(0);
-  const handleTypeaheadSearch = reactExports.useCallback(
-    (key) => {
-      const search = searchRef.current + key;
-      handleSearchChange(search);
-      (function updateSearch(value) {
-        searchRef.current = value;
-        window.clearTimeout(timerRef.current);
-        if (value !== "") timerRef.current = window.setTimeout(() => updateSearch(""), 1e3);
-      })(search);
-    },
-    [handleSearchChange]
-  );
-  const resetTypeahead = reactExports.useCallback(() => {
-    searchRef.current = "";
-    window.clearTimeout(timerRef.current);
-  }, []);
-  reactExports.useEffect(() => {
-    return () => window.clearTimeout(timerRef.current);
-  }, []);
-  return [searchRef, handleTypeaheadSearch, resetTypeahead];
-}
-function findNextItem(items, search, currentItem) {
-  const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
-  const normalizedSearch = isRepeated ? search[0] : search;
-  const currentItemIndex = currentItem ? items.indexOf(currentItem) : -1;
-  let wrappedItems = wrapArray(items, Math.max(currentItemIndex, 0));
-  const excludeCurrentItem = normalizedSearch.length === 1;
-  if (excludeCurrentItem) wrappedItems = wrappedItems.filter((v2) => v2 !== currentItem);
-  const nextItem = wrappedItems.find(
-    (item) => item.textValue.toLowerCase().startsWith(normalizedSearch.toLowerCase())
-  );
-  return nextItem !== currentItem ? nextItem : void 0;
-}
-function wrapArray(array2, startIndex) {
-  return array2.map((_, index2) => array2[(startIndex + index2) % array2.length]);
-}
-var Root2$1 = Select$1;
-var Trigger$2 = SelectTrigger$1;
-var Value = SelectValue$1;
-var Icon = SelectIcon;
-var Portal$1 = SelectPortal;
-var Content2$1 = SelectContent$1;
-var Viewport = SelectViewport;
-var Item = SelectItem$1;
-var ItemText = SelectItemText;
-var ItemIndicator = SelectItemIndicator;
-var ScrollUpButton = SelectScrollUpButton$1;
-var ScrollDownButton = SelectScrollDownButton$1;
-function Select({
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$1, { "data-slot": "select", ...props });
-}
-function SelectValue({
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Value, { "data-slot": "select-value", ...props });
-}
-function SelectTrigger({
-  className,
-  size: size2 = "default",
-  children,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    Trigger$2,
-    {
-      "data-slot": "select-trigger",
-      "data-size": size2,
-      className: cn(
-        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      ),
-      ...props,
-      children: [
-        children,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Icon, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-4 opacity-50" }) })
-      ]
-    }
-  );
-}
-function SelectContent({
-  className,
-  children,
-  position = "popper",
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    Content2$1,
-    {
-      "data-slot": "select-content",
-      className: cn(
-        "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md",
-        position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-        className
-      ),
-      position,
-      ...props,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectScrollUpButton, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Viewport,
-          {
-            className: cn(
-              "p-1",
-              position === "popper" && "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1"
-            ),
-            children
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectScrollDownButton, {})
-      ]
-    }
-  ) });
-}
-function SelectItem({
-  className,
-  children,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    Item,
-    {
-      "data-slot": "select-item",
-      className: cn(
-        "focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
-        className
-      ),
-      ...props,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute right-2 flex size-3.5 items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ItemIndicator, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-4" }) }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ItemText, { children })
-      ]
-    }
-  );
-}
-function SelectScrollUpButton({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    ScrollUpButton,
-    {
-      "data-slot": "select-scroll-up-button",
-      className: cn(
-        "flex cursor-default items-center justify-center py-1",
-        className
-      ),
-      ...props,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, { className: "size-4" })
-    }
-  );
-}
-function SelectScrollDownButton({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    ScrollDownButton,
-    {
-      "data-slot": "select-scroll-down-button",
-      className: cn(
-        "flex cursor-default items-center justify-center py-1",
-        className
-      ),
-      ...props,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-4" })
     }
   );
 }
@@ -47956,160 +48572,6 @@ function FormSelect({
     ),
     error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-destructive", children: error })
   ] });
-}
-const PermissionGuard = ({
-  permission,
-  logic = "AND",
-  children,
-  fallback = null,
-  hideOnDenied = false
-}) => {
-  const { can, canAny, canAll, isAdmin: isAdmin2 } = usePermissions();
-  console.log("🛡️ PermissionGuard Check:", {
-    permission,
-    isAdmin: isAdmin2,
-    logic,
-    hideOnDenied
-  });
-  if (isAdmin2) {
-    console.log("  ✅ Access granted: User is Admin");
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children });
-  }
-  if (!permission) {
-    console.log("  ✅ Access granted: No permission required");
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children });
-  }
-  let hasAccess = false;
-  if (Array.isArray(permission)) {
-    if (logic === "OR") {
-      hasAccess = canAny(permission);
-      console.log(`  ${hasAccess ? "✅" : "❌"} Multiple permissions (OR): ${hasAccess}`);
-    } else {
-      hasAccess = canAll(permission);
-      console.log(`  ${hasAccess ? "✅" : "❌"} Multiple permissions (AND): ${hasAccess}`);
-    }
-  } else {
-    hasAccess = can(permission);
-    console.log(`  ${hasAccess ? "✅" : "❌"} Single permission "${permission}": ${hasAccess}`);
-  }
-  if (hasAccess) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children });
-  }
-  console.log(`  🚫 Access denied - hideOnDenied: ${hideOnDenied}`);
-  if (hideOnDenied) {
-    return null;
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: fallback });
-};
-function Dialog({
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$7, { "data-slot": "dialog", ...props });
-}
-function DialogPortal({
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$3, { "data-slot": "dialog-portal", ...props });
-}
-function DialogOverlay({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Overlay,
-    {
-      "data-slot": "dialog-overlay",
-      className: cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
-        className
-      ),
-      ...props
-    }
-  );
-}
-function DialogContent({
-  className,
-  children,
-  showCloseButton = true,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogPortal, { "data-slot": "dialog-portal", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogOverlay, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      Content$2,
-      {
-        "data-slot": "dialog-content",
-        className: cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
-          className
-        ),
-        ...props,
-        children: [
-          children,
-          showCloseButton && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            Close,
-            {
-              "data-slot": "dialog-close",
-              className: "ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(X, {}),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Close" })
-              ]
-            }
-          )
-        ]
-      }
-    )
-  ] });
-}
-function DialogHeader({ className, ...props }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "div",
-    {
-      "data-slot": "dialog-header",
-      className: cn("flex flex-col gap-2 text-center sm:text-left", className),
-      ...props
-    }
-  );
-}
-function DialogFooter({ className, ...props }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "div",
-    {
-      "data-slot": "dialog-footer",
-      className: cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-        className
-      ),
-      ...props
-    }
-  );
-}
-function DialogTitle({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Title,
-    {
-      "data-slot": "dialog-title",
-      className: cn("text-lg leading-none font-semibold", className),
-      ...props
-    }
-  );
-}
-function DialogDescription({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Description,
-    {
-      "data-slot": "dialog-description",
-      className: cn("text-muted-foreground text-sm", className),
-      ...props
-    }
-  );
 }
 var _a$1;
 function $constructor(name, initializer2, params) {
@@ -52480,6 +52942,28 @@ function refine(fn, _params = {}) {
 function superRefine(fn, params) {
   return /* @__PURE__ */ _superRefine(fn, params);
 }
+function _instanceof(cls, params = {}) {
+  const inst = new ZodCustom({
+    type: "custom",
+    check: "custom",
+    fn: (data) => data instanceof cls,
+    abort: true,
+    ...normalizeParams(params)
+  });
+  inst._zod.bag.Class = cls;
+  inst._zod.check = (payload) => {
+    if (!(payload.value instanceof cls)) {
+      payload.issues.push({
+        code: "invalid_type",
+        expected: cls.name,
+        input: payload.value,
+        inst,
+        path: [...inst._zod.def.path ?? []]
+      });
+    }
+  };
+  return inst;
+}
 function number$3(params) {
   return /* @__PURE__ */ _coercedNumber(ZodNumber, params);
 }
@@ -52491,7 +52975,7 @@ const loginSchema = object$1({
 const categorySchema = object$1({
   name: string$1().min(1, "Category name is required").max(100, "Name must be less than 100 characters"),
   description: string$1().max(500, "Description must be less than 500 characters").optional(),
-  image: string$1().optional(),
+  image: _instanceof(File).optional(),
   status: _enum(["active", "inactive"])
 });
 const productSchema = object$1({
@@ -52664,6 +53148,7 @@ function CategoriesPage() {
   const [isModalOpen, setIsModalOpen] = reactExports.useState(false);
   const [editingCategory, setEditingCategory] = reactExports.useState(null);
   const [isSubmitting, setIsSubmitting] = reactExports.useState(false);
+  const [imagePreview, setImagePreview] = reactExports.useState("");
   const methods = useForm({
     resolver: u$1(categorySchema)
   });
@@ -52679,6 +53164,7 @@ function CategoriesPage() {
   }, [error]);
   const openAddModal = () => {
     setEditingCategory(null);
+    setImagePreview("");
     reset({ name: "", description: "", status: "active" });
     setIsModalOpen(true);
   };
@@ -52689,34 +53175,33 @@ function CategoriesPage() {
       description: category.description,
       status: category.status
     });
+    setImagePreview(category.image || "");
     setIsModalOpen(true);
   };
   const onSubmit = async (data) => {
-    console.log("🟢 CategoriesPage: Form submitted with data:", data);
     setIsSubmitting(true);
     const loadingId = alert2.loading(
       editingCategory ? "Updating category..." : "Creating category..."
     );
     try {
+      const payload = {
+        name: data.name,
+        description: data.description,
+        status: data.status,
+        image: data.image
+      };
       if (editingCategory) {
-        console.log(
-          "🟡 CategoriesPage: Updating category:",
-          editingCategory.id
-        );
-        await updateCategory(editingCategory.id, data);
-        alert2.removeAlert(loadingId);
+        await updateCategory(editingCategory.id, payload);
         alert2.success("Category updated successfully");
       } else {
-        console.log("🟡 CategoriesPage: Creating new category");
-        await addCategory(data);
-        alert2.removeAlert(loadingId);
+        await addCategory(payload);
         alert2.success("Category created successfully");
       }
-      console.log("✅ CategoriesPage: Operation completed successfully");
+      alert2.removeAlert(loadingId);
       setIsModalOpen(false);
       reset();
+      setImagePreview("");
     } catch (err) {
-      console.error("❌ CategoriesPage: Operation failed:", err);
       alert2.removeAlert(loadingId);
       alert2.error(err instanceof Error ? err.message : "Operation failed");
     } finally {
@@ -52747,7 +53232,14 @@ function CategoriesPage() {
       accessorKey: "name",
       header: "Category",
       cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-10 w-10 rounded-lg bg-muted flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Image$1, { className: "h-4 w-4 text-muted-foreground" }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-10 w-10 rounded-lg overflow-hidden border", children: row.original.image ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            src: `${"https://bikanerapi.codeeratech.in"}${row.original.image}`,
+            alt: row.original.name,
+            className: "h-full w-full object-cover"
+          }
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-full w-full flex items-center justify-center bg-muted", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Image$1, { className: "h-4 w-4 text-muted-foreground" }) }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: row.getValue("name") }) })
       ] })
     },
@@ -52877,6 +53369,51 @@ function CategoriesPage() {
             placeholder: "Enter description"
           }
         ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-sm font-medium", children: "Category Image" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-24 w-24 rounded-lg border overflow-hidden bg-muted flex items-center justify-center", children: imagePreview ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: imagePreview,
+                className: "h-full w-full object-cover",
+                alt: "Preview"
+              }
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsx(Image$1, { className: "h-8 w-8 text-muted-foreground" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  id: "category-image",
+                  type: "file",
+                  accept: "image/*",
+                  className: "hidden",
+                  onChange: (e3) => {
+                    var _a3;
+                    const file = (_a3 = e3.target.files) == null ? void 0 : _a3[0];
+                    if (!file) return;
+                    methods.setValue("image", file);
+                    setImagePreview(URL.createObjectURL(file));
+                  }
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  onClick: () => {
+                    var _a3;
+                    return (_a3 = document.getElementById("category-image")) == null ? void 0 : _a3.click();
+                  },
+                  children: "Choose Image"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 text-xs text-muted-foreground", children: "JPG, PNG or WEBP" })
+            ] })
+          ] })
+        ] }),
+        " ",
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           FormSelect,
           {
@@ -52899,18 +53436,9972 @@ function CategoriesPage() {
               children: "Cancel"
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Button,
-            {
-              type: "submit",
-              "data-ocid": "category.submit_button",
-              disabled: isSubmitting,
-              children: isSubmitting ? "Saving..." : editingCategory ? "Update" : "Create"
-            }
-          )
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "submit", disabled: isSubmitting, children: isSubmitting ? "Saving..." : editingCategory ? "Update" : "Create" })
         ] })
       ] }) })
     ] }) })
+  ] });
+}
+var leafletSrc = { exports: {} };
+/* @preserve
+ * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
+ * (c) 2010-2023 Vladimir Agafonkin, (c) 2010-2011 CloudMade
+ */
+(function(module, exports$1) {
+  (function(global2, factory) {
+    factory(exports$1);
+  })(commonjsGlobal, function(exports$12) {
+    var version2 = "1.9.4";
+    function extend2(dest) {
+      var i2, j, len, src;
+      for (j = 1, len = arguments.length; j < len; j++) {
+        src = arguments[j];
+        for (i2 in src) {
+          dest[i2] = src[i2];
+        }
+      }
+      return dest;
+    }
+    var create$2 = Object.create || /* @__PURE__ */ function() {
+      function F() {
+      }
+      return function(proto) {
+        F.prototype = proto;
+        return new F();
+      };
+    }();
+    function bind(fn, obj) {
+      var slice = Array.prototype.slice;
+      if (fn.bind) {
+        return fn.bind.apply(fn, slice.call(arguments, 1));
+      }
+      var args = slice.call(arguments, 2);
+      return function() {
+        return fn.apply(obj, args.length ? args.concat(slice.call(arguments)) : arguments);
+      };
+    }
+    var lastId = 0;
+    function stamp(obj) {
+      if (!("_leaflet_id" in obj)) {
+        obj["_leaflet_id"] = ++lastId;
+      }
+      return obj._leaflet_id;
+    }
+    function throttle2(fn, time2, context) {
+      var lock, args, wrapperFn, later;
+      later = function() {
+        lock = false;
+        if (args) {
+          wrapperFn.apply(context, args);
+          args = false;
+        }
+      };
+      wrapperFn = function() {
+        if (lock) {
+          args = arguments;
+        } else {
+          fn.apply(context, arguments);
+          setTimeout(later, time2);
+          lock = true;
+        }
+      };
+      return wrapperFn;
+    }
+    function wrapNum(x2, range3, includeMax) {
+      var max2 = range3[1], min2 = range3[0], d2 = max2 - min2;
+      return x2 === max2 && includeMax ? x2 : ((x2 - min2) % d2 + d2) % d2 + min2;
+    }
+    function falseFn() {
+      return false;
+    }
+    function formatNum(num, precision) {
+      if (precision === false) {
+        return num;
+      }
+      var pow2 = Math.pow(10, precision === void 0 ? 6 : precision);
+      return Math.round(num * pow2) / pow2;
+    }
+    function trim(str) {
+      return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, "");
+    }
+    function splitWords(str) {
+      return trim(str).split(/\s+/);
+    }
+    function setOptions(obj, options) {
+      if (!Object.prototype.hasOwnProperty.call(obj, "options")) {
+        obj.options = obj.options ? create$2(obj.options) : {};
+      }
+      for (var i2 in options) {
+        obj.options[i2] = options[i2];
+      }
+      return obj.options;
+    }
+    function getParamString(obj, existingUrl, uppercase2) {
+      var params = [];
+      for (var i2 in obj) {
+        params.push(encodeURIComponent(uppercase2 ? i2.toUpperCase() : i2) + "=" + encodeURIComponent(obj[i2]));
+      }
+      return (!existingUrl || existingUrl.indexOf("?") === -1 ? "?" : "&") + params.join("&");
+    }
+    var templateRe = /\{ *([\w_ -]+) *\}/g;
+    function template(str, data) {
+      return str.replace(templateRe, function(str2, key) {
+        var value = data[key];
+        if (value === void 0) {
+          throw new Error("No value provided for variable " + str2);
+        } else if (typeof value === "function") {
+          value = value(data);
+        }
+        return value;
+      });
+    }
+    var isArray2 = Array.isArray || function(obj) {
+      return Object.prototype.toString.call(obj) === "[object Array]";
+    };
+    function indexOf(array2, el) {
+      for (var i2 = 0; i2 < array2.length; i2++) {
+        if (array2[i2] === el) {
+          return i2;
+        }
+      }
+      return -1;
+    }
+    var emptyImageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+    function getPrefixed(name) {
+      return window["webkit" + name] || window["moz" + name] || window["ms" + name];
+    }
+    var lastTime = 0;
+    function timeoutDefer(fn) {
+      var time2 = +/* @__PURE__ */ new Date(), timeToCall = Math.max(0, 16 - (time2 - lastTime));
+      lastTime = time2 + timeToCall;
+      return window.setTimeout(fn, timeToCall);
+    }
+    var requestFn = window.requestAnimationFrame || getPrefixed("RequestAnimationFrame") || timeoutDefer;
+    var cancelFn = window.cancelAnimationFrame || getPrefixed("CancelAnimationFrame") || getPrefixed("CancelRequestAnimationFrame") || function(id2) {
+      window.clearTimeout(id2);
+    };
+    function requestAnimFrame(fn, context, immediate) {
+      if (immediate && requestFn === timeoutDefer) {
+        fn.call(context);
+      } else {
+        return requestFn.call(window, bind(fn, context));
+      }
+    }
+    function cancelAnimFrame(id2) {
+      if (id2) {
+        cancelFn.call(window, id2);
+      }
+    }
+    var Util = {
+      __proto__: null,
+      extend: extend2,
+      create: create$2,
+      bind,
+      get lastId() {
+        return lastId;
+      },
+      stamp,
+      throttle: throttle2,
+      wrapNum,
+      falseFn,
+      formatNum,
+      trim,
+      splitWords,
+      setOptions,
+      getParamString,
+      template,
+      isArray: isArray2,
+      indexOf,
+      emptyImageUrl,
+      requestFn,
+      cancelFn,
+      requestAnimFrame,
+      cancelAnimFrame
+    };
+    function Class() {
+    }
+    Class.extend = function(props) {
+      var NewClass = function() {
+        setOptions(this);
+        if (this.initialize) {
+          this.initialize.apply(this, arguments);
+        }
+        this.callInitHooks();
+      };
+      var parentProto = NewClass.__super__ = this.prototype;
+      var proto = create$2(parentProto);
+      proto.constructor = NewClass;
+      NewClass.prototype = proto;
+      for (var i2 in this) {
+        if (Object.prototype.hasOwnProperty.call(this, i2) && i2 !== "prototype" && i2 !== "__super__") {
+          NewClass[i2] = this[i2];
+        }
+      }
+      if (props.statics) {
+        extend2(NewClass, props.statics);
+      }
+      if (props.includes) {
+        checkDeprecatedMixinEvents(props.includes);
+        extend2.apply(null, [proto].concat(props.includes));
+      }
+      extend2(proto, props);
+      delete proto.statics;
+      delete proto.includes;
+      if (proto.options) {
+        proto.options = parentProto.options ? create$2(parentProto.options) : {};
+        extend2(proto.options, props.options);
+      }
+      proto._initHooks = [];
+      proto.callInitHooks = function() {
+        if (this._initHooksCalled) {
+          return;
+        }
+        if (parentProto.callInitHooks) {
+          parentProto.callInitHooks.call(this);
+        }
+        this._initHooksCalled = true;
+        for (var i3 = 0, len = proto._initHooks.length; i3 < len; i3++) {
+          proto._initHooks[i3].call(this);
+        }
+      };
+      return NewClass;
+    };
+    Class.include = function(props) {
+      var parentOptions = this.prototype.options;
+      extend2(this.prototype, props);
+      if (props.options) {
+        this.prototype.options = parentOptions;
+        this.mergeOptions(props.options);
+      }
+      return this;
+    };
+    Class.mergeOptions = function(options) {
+      extend2(this.prototype.options, options);
+      return this;
+    };
+    Class.addInitHook = function(fn) {
+      var args = Array.prototype.slice.call(arguments, 1);
+      var init = typeof fn === "function" ? fn : function() {
+        this[fn].apply(this, args);
+      };
+      this.prototype._initHooks = this.prototype._initHooks || [];
+      this.prototype._initHooks.push(init);
+      return this;
+    };
+    function checkDeprecatedMixinEvents(includes) {
+      if (typeof L === "undefined" || !L || !L.Mixin) {
+        return;
+      }
+      includes = isArray2(includes) ? includes : [includes];
+      for (var i2 = 0; i2 < includes.length; i2++) {
+        if (includes[i2] === L.Mixin.Events) {
+          console.warn("Deprecated include of L.Mixin.Events: this property will be removed in future releases, please inherit from L.Evented instead.", new Error().stack);
+        }
+      }
+    }
+    var Events = {
+      /* @method on(type: String, fn: Function, context?: Object): this
+       * Adds a listener function (`fn`) to a particular event type of the object. You can optionally specify the context of the listener (object the this keyword will point to). You can also pass several space-separated types (e.g. `'click dblclick'`).
+       *
+       * @alternative
+       * @method on(eventMap: Object): this
+       * Adds a set of type/listener pairs, e.g. `{click: onClick, mousemove: onMouseMove}`
+       */
+      on: function(types, fn, context) {
+        if (typeof types === "object") {
+          for (var type in types) {
+            this._on(type, types[type], fn);
+          }
+        } else {
+          types = splitWords(types);
+          for (var i2 = 0, len = types.length; i2 < len; i2++) {
+            this._on(types[i2], fn, context);
+          }
+        }
+        return this;
+      },
+      /* @method off(type: String, fn?: Function, context?: Object): this
+       * Removes a previously added listener function. If no function is specified, it will remove all the listeners of that particular event from the object. Note that if you passed a custom context to `on`, you must pass the same context to `off` in order to remove the listener.
+       *
+       * @alternative
+       * @method off(eventMap: Object): this
+       * Removes a set of type/listener pairs.
+       *
+       * @alternative
+       * @method off: this
+       * Removes all listeners to all events on the object. This includes implicitly attached events.
+       */
+      off: function(types, fn, context) {
+        if (!arguments.length) {
+          delete this._events;
+        } else if (typeof types === "object") {
+          for (var type in types) {
+            this._off(type, types[type], fn);
+          }
+        } else {
+          types = splitWords(types);
+          var removeAll = arguments.length === 1;
+          for (var i2 = 0, len = types.length; i2 < len; i2++) {
+            if (removeAll) {
+              this._off(types[i2]);
+            } else {
+              this._off(types[i2], fn, context);
+            }
+          }
+        }
+        return this;
+      },
+      // attach listener (without syntactic sugar now)
+      _on: function(type, fn, context, _once) {
+        if (typeof fn !== "function") {
+          console.warn("wrong listener type: " + typeof fn);
+          return;
+        }
+        if (this._listens(type, fn, context) !== false) {
+          return;
+        }
+        if (context === this) {
+          context = void 0;
+        }
+        var newListener = { fn, ctx: context };
+        if (_once) {
+          newListener.once = true;
+        }
+        this._events = this._events || {};
+        this._events[type] = this._events[type] || [];
+        this._events[type].push(newListener);
+      },
+      _off: function(type, fn, context) {
+        var listeners, i2, len;
+        if (!this._events) {
+          return;
+        }
+        listeners = this._events[type];
+        if (!listeners) {
+          return;
+        }
+        if (arguments.length === 1) {
+          if (this._firingCount) {
+            for (i2 = 0, len = listeners.length; i2 < len; i2++) {
+              listeners[i2].fn = falseFn;
+            }
+          }
+          delete this._events[type];
+          return;
+        }
+        if (typeof fn !== "function") {
+          console.warn("wrong listener type: " + typeof fn);
+          return;
+        }
+        var index3 = this._listens(type, fn, context);
+        if (index3 !== false) {
+          var listener = listeners[index3];
+          if (this._firingCount) {
+            listener.fn = falseFn;
+            this._events[type] = listeners = listeners.slice();
+          }
+          listeners.splice(index3, 1);
+        }
+      },
+      // @method fire(type: String, data?: Object, propagate?: Boolean): this
+      // Fires an event of the specified type. You can optionally provide a data
+      // object — the first argument of the listener function will contain its
+      // properties. The event can optionally be propagated to event parents.
+      fire: function(type, data, propagate) {
+        if (!this.listens(type, propagate)) {
+          return this;
+        }
+        var event = extend2({}, data, {
+          type,
+          target: this,
+          sourceTarget: data && data.sourceTarget || this
+        });
+        if (this._events) {
+          var listeners = this._events[type];
+          if (listeners) {
+            this._firingCount = this._firingCount + 1 || 1;
+            for (var i2 = 0, len = listeners.length; i2 < len; i2++) {
+              var l2 = listeners[i2];
+              var fn = l2.fn;
+              if (l2.once) {
+                this.off(type, fn, l2.ctx);
+              }
+              fn.call(l2.ctx || this, event);
+            }
+            this._firingCount--;
+          }
+        }
+        if (propagate) {
+          this._propagateEvent(event);
+        }
+        return this;
+      },
+      // @method listens(type: String, propagate?: Boolean): Boolean
+      // @method listens(type: String, fn: Function, context?: Object, propagate?: Boolean): Boolean
+      // Returns `true` if a particular event type has any listeners attached to it.
+      // The verification can optionally be propagated, it will return `true` if parents have the listener attached to it.
+      listens: function(type, fn, context, propagate) {
+        if (typeof type !== "string") {
+          console.warn('"string" type argument expected');
+        }
+        var _fn = fn;
+        if (typeof fn !== "function") {
+          propagate = !!fn;
+          _fn = void 0;
+          context = void 0;
+        }
+        var listeners = this._events && this._events[type];
+        if (listeners && listeners.length) {
+          if (this._listens(type, _fn, context) !== false) {
+            return true;
+          }
+        }
+        if (propagate) {
+          for (var id2 in this._eventParents) {
+            if (this._eventParents[id2].listens(type, fn, context, propagate)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      },
+      // returns the index (number) or false
+      _listens: function(type, fn, context) {
+        if (!this._events) {
+          return false;
+        }
+        var listeners = this._events[type] || [];
+        if (!fn) {
+          return !!listeners.length;
+        }
+        if (context === this) {
+          context = void 0;
+        }
+        for (var i2 = 0, len = listeners.length; i2 < len; i2++) {
+          if (listeners[i2].fn === fn && listeners[i2].ctx === context) {
+            return i2;
+          }
+        }
+        return false;
+      },
+      // @method once(…): this
+      // Behaves as [`on(…)`](#evented-on), except the listener will only get fired once and then removed.
+      once: function(types, fn, context) {
+        if (typeof types === "object") {
+          for (var type in types) {
+            this._on(type, types[type], fn, true);
+          }
+        } else {
+          types = splitWords(types);
+          for (var i2 = 0, len = types.length; i2 < len; i2++) {
+            this._on(types[i2], fn, context, true);
+          }
+        }
+        return this;
+      },
+      // @method addEventParent(obj: Evented): this
+      // Adds an event parent - an `Evented` that will receive propagated events
+      addEventParent: function(obj) {
+        this._eventParents = this._eventParents || {};
+        this._eventParents[stamp(obj)] = obj;
+        return this;
+      },
+      // @method removeEventParent(obj: Evented): this
+      // Removes an event parent, so it will stop receiving propagated events
+      removeEventParent: function(obj) {
+        if (this._eventParents) {
+          delete this._eventParents[stamp(obj)];
+        }
+        return this;
+      },
+      _propagateEvent: function(e3) {
+        for (var id2 in this._eventParents) {
+          this._eventParents[id2].fire(e3.type, extend2({
+            layer: e3.target,
+            propagatedFrom: e3.target
+          }, e3), true);
+        }
+      }
+    };
+    Events.addEventListener = Events.on;
+    Events.removeEventListener = Events.clearAllEventListeners = Events.off;
+    Events.addOneTimeEventListener = Events.once;
+    Events.fireEvent = Events.fire;
+    Events.hasEventListeners = Events.listens;
+    var Evented = Class.extend(Events);
+    function Point(x2, y2, round2) {
+      this.x = round2 ? Math.round(x2) : x2;
+      this.y = round2 ? Math.round(y2) : y2;
+    }
+    var trunc = Math.trunc || function(v2) {
+      return v2 > 0 ? Math.floor(v2) : Math.ceil(v2);
+    };
+    Point.prototype = {
+      // @method clone(): Point
+      // Returns a copy of the current point.
+      clone: function() {
+        return new Point(this.x, this.y);
+      },
+      // @method add(otherPoint: Point): Point
+      // Returns the result of addition of the current and the given points.
+      add: function(point2) {
+        return this.clone()._add(toPoint(point2));
+      },
+      _add: function(point2) {
+        this.x += point2.x;
+        this.y += point2.y;
+        return this;
+      },
+      // @method subtract(otherPoint: Point): Point
+      // Returns the result of subtraction of the given point from the current.
+      subtract: function(point2) {
+        return this.clone()._subtract(toPoint(point2));
+      },
+      _subtract: function(point2) {
+        this.x -= point2.x;
+        this.y -= point2.y;
+        return this;
+      },
+      // @method divideBy(num: Number): Point
+      // Returns the result of division of the current point by the given number.
+      divideBy: function(num) {
+        return this.clone()._divideBy(num);
+      },
+      _divideBy: function(num) {
+        this.x /= num;
+        this.y /= num;
+        return this;
+      },
+      // @method multiplyBy(num: Number): Point
+      // Returns the result of multiplication of the current point by the given number.
+      multiplyBy: function(num) {
+        return this.clone()._multiplyBy(num);
+      },
+      _multiplyBy: function(num) {
+        this.x *= num;
+        this.y *= num;
+        return this;
+      },
+      // @method scaleBy(scale: Point): Point
+      // Multiply each coordinate of the current point by each coordinate of
+      // `scale`. In linear algebra terms, multiply the point by the
+      // [scaling matrix](https://en.wikipedia.org/wiki/Scaling_%28geometry%29#Matrix_representation)
+      // defined by `scale`.
+      scaleBy: function(point2) {
+        return new Point(this.x * point2.x, this.y * point2.y);
+      },
+      // @method unscaleBy(scale: Point): Point
+      // Inverse of `scaleBy`. Divide each coordinate of the current point by
+      // each coordinate of `scale`.
+      unscaleBy: function(point2) {
+        return new Point(this.x / point2.x, this.y / point2.y);
+      },
+      // @method round(): Point
+      // Returns a copy of the current point with rounded coordinates.
+      round: function() {
+        return this.clone()._round();
+      },
+      _round: function() {
+        this.x = Math.round(this.x);
+        this.y = Math.round(this.y);
+        return this;
+      },
+      // @method floor(): Point
+      // Returns a copy of the current point with floored coordinates (rounded down).
+      floor: function() {
+        return this.clone()._floor();
+      },
+      _floor: function() {
+        this.x = Math.floor(this.x);
+        this.y = Math.floor(this.y);
+        return this;
+      },
+      // @method ceil(): Point
+      // Returns a copy of the current point with ceiled coordinates (rounded up).
+      ceil: function() {
+        return this.clone()._ceil();
+      },
+      _ceil: function() {
+        this.x = Math.ceil(this.x);
+        this.y = Math.ceil(this.y);
+        return this;
+      },
+      // @method trunc(): Point
+      // Returns a copy of the current point with truncated coordinates (rounded towards zero).
+      trunc: function() {
+        return this.clone()._trunc();
+      },
+      _trunc: function() {
+        this.x = trunc(this.x);
+        this.y = trunc(this.y);
+        return this;
+      },
+      // @method distanceTo(otherPoint: Point): Number
+      // Returns the cartesian distance between the current and the given points.
+      distanceTo: function(point2) {
+        point2 = toPoint(point2);
+        var x2 = point2.x - this.x, y2 = point2.y - this.y;
+        return Math.sqrt(x2 * x2 + y2 * y2);
+      },
+      // @method equals(otherPoint: Point): Boolean
+      // Returns `true` if the given point has the same coordinates.
+      equals: function(point2) {
+        point2 = toPoint(point2);
+        return point2.x === this.x && point2.y === this.y;
+      },
+      // @method contains(otherPoint: Point): Boolean
+      // Returns `true` if both coordinates of the given point are less than the corresponding current point coordinates (in absolute values).
+      contains: function(point2) {
+        point2 = toPoint(point2);
+        return Math.abs(point2.x) <= Math.abs(this.x) && Math.abs(point2.y) <= Math.abs(this.y);
+      },
+      // @method toString(): String
+      // Returns a string representation of the point for debugging purposes.
+      toString: function() {
+        return "Point(" + formatNum(this.x) + ", " + formatNum(this.y) + ")";
+      }
+    };
+    function toPoint(x2, y2, round2) {
+      if (x2 instanceof Point) {
+        return x2;
+      }
+      if (isArray2(x2)) {
+        return new Point(x2[0], x2[1]);
+      }
+      if (x2 === void 0 || x2 === null) {
+        return x2;
+      }
+      if (typeof x2 === "object" && "x" in x2 && "y" in x2) {
+        return new Point(x2.x, x2.y);
+      }
+      return new Point(x2, y2, round2);
+    }
+    function Bounds(a2, b2) {
+      if (!a2) {
+        return;
+      }
+      var points = b2 ? [a2, b2] : a2;
+      for (var i2 = 0, len = points.length; i2 < len; i2++) {
+        this.extend(points[i2]);
+      }
+    }
+    Bounds.prototype = {
+      // @method extend(point: Point): this
+      // Extends the bounds to contain the given point.
+      // @alternative
+      // @method extend(otherBounds: Bounds): this
+      // Extend the bounds to contain the given bounds
+      extend: function(obj) {
+        var min2, max2;
+        if (!obj) {
+          return this;
+        }
+        if (obj instanceof Point || typeof obj[0] === "number" || "x" in obj) {
+          min2 = max2 = toPoint(obj);
+        } else {
+          obj = toBounds(obj);
+          min2 = obj.min;
+          max2 = obj.max;
+          if (!min2 || !max2) {
+            return this;
+          }
+        }
+        if (!this.min && !this.max) {
+          this.min = min2.clone();
+          this.max = max2.clone();
+        } else {
+          this.min.x = Math.min(min2.x, this.min.x);
+          this.max.x = Math.max(max2.x, this.max.x);
+          this.min.y = Math.min(min2.y, this.min.y);
+          this.max.y = Math.max(max2.y, this.max.y);
+        }
+        return this;
+      },
+      // @method getCenter(round?: Boolean): Point
+      // Returns the center point of the bounds.
+      getCenter: function(round2) {
+        return toPoint(
+          (this.min.x + this.max.x) / 2,
+          (this.min.y + this.max.y) / 2,
+          round2
+        );
+      },
+      // @method getBottomLeft(): Point
+      // Returns the bottom-left point of the bounds.
+      getBottomLeft: function() {
+        return toPoint(this.min.x, this.max.y);
+      },
+      // @method getTopRight(): Point
+      // Returns the top-right point of the bounds.
+      getTopRight: function() {
+        return toPoint(this.max.x, this.min.y);
+      },
+      // @method getTopLeft(): Point
+      // Returns the top-left point of the bounds (i.e. [`this.min`](#bounds-min)).
+      getTopLeft: function() {
+        return this.min;
+      },
+      // @method getBottomRight(): Point
+      // Returns the bottom-right point of the bounds (i.e. [`this.max`](#bounds-max)).
+      getBottomRight: function() {
+        return this.max;
+      },
+      // @method getSize(): Point
+      // Returns the size of the given bounds
+      getSize: function() {
+        return this.max.subtract(this.min);
+      },
+      // @method contains(otherBounds: Bounds): Boolean
+      // Returns `true` if the rectangle contains the given one.
+      // @alternative
+      // @method contains(point: Point): Boolean
+      // Returns `true` if the rectangle contains the given point.
+      contains: function(obj) {
+        var min2, max2;
+        if (typeof obj[0] === "number" || obj instanceof Point) {
+          obj = toPoint(obj);
+        } else {
+          obj = toBounds(obj);
+        }
+        if (obj instanceof Bounds) {
+          min2 = obj.min;
+          max2 = obj.max;
+        } else {
+          min2 = max2 = obj;
+        }
+        return min2.x >= this.min.x && max2.x <= this.max.x && min2.y >= this.min.y && max2.y <= this.max.y;
+      },
+      // @method intersects(otherBounds: Bounds): Boolean
+      // Returns `true` if the rectangle intersects the given bounds. Two bounds
+      // intersect if they have at least one point in common.
+      intersects: function(bounds) {
+        bounds = toBounds(bounds);
+        var min2 = this.min, max2 = this.max, min22 = bounds.min, max22 = bounds.max, xIntersects = max22.x >= min2.x && min22.x <= max2.x, yIntersects = max22.y >= min2.y && min22.y <= max2.y;
+        return xIntersects && yIntersects;
+      },
+      // @method overlaps(otherBounds: Bounds): Boolean
+      // Returns `true` if the rectangle overlaps the given bounds. Two bounds
+      // overlap if their intersection is an area.
+      overlaps: function(bounds) {
+        bounds = toBounds(bounds);
+        var min2 = this.min, max2 = this.max, min22 = bounds.min, max22 = bounds.max, xOverlaps = max22.x > min2.x && min22.x < max2.x, yOverlaps = max22.y > min2.y && min22.y < max2.y;
+        return xOverlaps && yOverlaps;
+      },
+      // @method isValid(): Boolean
+      // Returns `true` if the bounds are properly initialized.
+      isValid: function() {
+        return !!(this.min && this.max);
+      },
+      // @method pad(bufferRatio: Number): Bounds
+      // Returns bounds created by extending or retracting the current bounds by a given ratio in each direction.
+      // For example, a ratio of 0.5 extends the bounds by 50% in each direction.
+      // Negative values will retract the bounds.
+      pad: function(bufferRatio) {
+        var min2 = this.min, max2 = this.max, heightBuffer = Math.abs(min2.x - max2.x) * bufferRatio, widthBuffer = Math.abs(min2.y - max2.y) * bufferRatio;
+        return toBounds(
+          toPoint(min2.x - heightBuffer, min2.y - widthBuffer),
+          toPoint(max2.x + heightBuffer, max2.y + widthBuffer)
+        );
+      },
+      // @method equals(otherBounds: Bounds): Boolean
+      // Returns `true` if the rectangle is equivalent to the given bounds.
+      equals: function(bounds) {
+        if (!bounds) {
+          return false;
+        }
+        bounds = toBounds(bounds);
+        return this.min.equals(bounds.getTopLeft()) && this.max.equals(bounds.getBottomRight());
+      }
+    };
+    function toBounds(a2, b2) {
+      if (!a2 || a2 instanceof Bounds) {
+        return a2;
+      }
+      return new Bounds(a2, b2);
+    }
+    function LatLngBounds(corner1, corner2) {
+      if (!corner1) {
+        return;
+      }
+      var latlngs = corner2 ? [corner1, corner2] : corner1;
+      for (var i2 = 0, len = latlngs.length; i2 < len; i2++) {
+        this.extend(latlngs[i2]);
+      }
+    }
+    LatLngBounds.prototype = {
+      // @method extend(latlng: LatLng): this
+      // Extend the bounds to contain the given point
+      // @alternative
+      // @method extend(otherBounds: LatLngBounds): this
+      // Extend the bounds to contain the given bounds
+      extend: function(obj) {
+        var sw = this._southWest, ne2 = this._northEast, sw2, ne22;
+        if (obj instanceof LatLng) {
+          sw2 = obj;
+          ne22 = obj;
+        } else if (obj instanceof LatLngBounds) {
+          sw2 = obj._southWest;
+          ne22 = obj._northEast;
+          if (!sw2 || !ne22) {
+            return this;
+          }
+        } else {
+          return obj ? this.extend(toLatLng(obj) || toLatLngBounds(obj)) : this;
+        }
+        if (!sw && !ne2) {
+          this._southWest = new LatLng(sw2.lat, sw2.lng);
+          this._northEast = new LatLng(ne22.lat, ne22.lng);
+        } else {
+          sw.lat = Math.min(sw2.lat, sw.lat);
+          sw.lng = Math.min(sw2.lng, sw.lng);
+          ne2.lat = Math.max(ne22.lat, ne2.lat);
+          ne2.lng = Math.max(ne22.lng, ne2.lng);
+        }
+        return this;
+      },
+      // @method pad(bufferRatio: Number): LatLngBounds
+      // Returns bounds created by extending or retracting the current bounds by a given ratio in each direction.
+      // For example, a ratio of 0.5 extends the bounds by 50% in each direction.
+      // Negative values will retract the bounds.
+      pad: function(bufferRatio) {
+        var sw = this._southWest, ne2 = this._northEast, heightBuffer = Math.abs(sw.lat - ne2.lat) * bufferRatio, widthBuffer = Math.abs(sw.lng - ne2.lng) * bufferRatio;
+        return new LatLngBounds(
+          new LatLng(sw.lat - heightBuffer, sw.lng - widthBuffer),
+          new LatLng(ne2.lat + heightBuffer, ne2.lng + widthBuffer)
+        );
+      },
+      // @method getCenter(): LatLng
+      // Returns the center point of the bounds.
+      getCenter: function() {
+        return new LatLng(
+          (this._southWest.lat + this._northEast.lat) / 2,
+          (this._southWest.lng + this._northEast.lng) / 2
+        );
+      },
+      // @method getSouthWest(): LatLng
+      // Returns the south-west point of the bounds.
+      getSouthWest: function() {
+        return this._southWest;
+      },
+      // @method getNorthEast(): LatLng
+      // Returns the north-east point of the bounds.
+      getNorthEast: function() {
+        return this._northEast;
+      },
+      // @method getNorthWest(): LatLng
+      // Returns the north-west point of the bounds.
+      getNorthWest: function() {
+        return new LatLng(this.getNorth(), this.getWest());
+      },
+      // @method getSouthEast(): LatLng
+      // Returns the south-east point of the bounds.
+      getSouthEast: function() {
+        return new LatLng(this.getSouth(), this.getEast());
+      },
+      // @method getWest(): Number
+      // Returns the west longitude of the bounds
+      getWest: function() {
+        return this._southWest.lng;
+      },
+      // @method getSouth(): Number
+      // Returns the south latitude of the bounds
+      getSouth: function() {
+        return this._southWest.lat;
+      },
+      // @method getEast(): Number
+      // Returns the east longitude of the bounds
+      getEast: function() {
+        return this._northEast.lng;
+      },
+      // @method getNorth(): Number
+      // Returns the north latitude of the bounds
+      getNorth: function() {
+        return this._northEast.lat;
+      },
+      // @method contains(otherBounds: LatLngBounds): Boolean
+      // Returns `true` if the rectangle contains the given one.
+      // @alternative
+      // @method contains (latlng: LatLng): Boolean
+      // Returns `true` if the rectangle contains the given point.
+      contains: function(obj) {
+        if (typeof obj[0] === "number" || obj instanceof LatLng || "lat" in obj) {
+          obj = toLatLng(obj);
+        } else {
+          obj = toLatLngBounds(obj);
+        }
+        var sw = this._southWest, ne2 = this._northEast, sw2, ne22;
+        if (obj instanceof LatLngBounds) {
+          sw2 = obj.getSouthWest();
+          ne22 = obj.getNorthEast();
+        } else {
+          sw2 = ne22 = obj;
+        }
+        return sw2.lat >= sw.lat && ne22.lat <= ne2.lat && sw2.lng >= sw.lng && ne22.lng <= ne2.lng;
+      },
+      // @method intersects(otherBounds: LatLngBounds): Boolean
+      // Returns `true` if the rectangle intersects the given bounds. Two bounds intersect if they have at least one point in common.
+      intersects: function(bounds) {
+        bounds = toLatLngBounds(bounds);
+        var sw = this._southWest, ne2 = this._northEast, sw2 = bounds.getSouthWest(), ne22 = bounds.getNorthEast(), latIntersects = ne22.lat >= sw.lat && sw2.lat <= ne2.lat, lngIntersects = ne22.lng >= sw.lng && sw2.lng <= ne2.lng;
+        return latIntersects && lngIntersects;
+      },
+      // @method overlaps(otherBounds: LatLngBounds): Boolean
+      // Returns `true` if the rectangle overlaps the given bounds. Two bounds overlap if their intersection is an area.
+      overlaps: function(bounds) {
+        bounds = toLatLngBounds(bounds);
+        var sw = this._southWest, ne2 = this._northEast, sw2 = bounds.getSouthWest(), ne22 = bounds.getNorthEast(), latOverlaps = ne22.lat > sw.lat && sw2.lat < ne2.lat, lngOverlaps = ne22.lng > sw.lng && sw2.lng < ne2.lng;
+        return latOverlaps && lngOverlaps;
+      },
+      // @method toBBoxString(): String
+      // Returns a string with bounding box coordinates in a 'southwest_lng,southwest_lat,northeast_lng,northeast_lat' format. Useful for sending requests to web services that return geo data.
+      toBBoxString: function() {
+        return [this.getWest(), this.getSouth(), this.getEast(), this.getNorth()].join(",");
+      },
+      // @method equals(otherBounds: LatLngBounds, maxMargin?: Number): Boolean
+      // Returns `true` if the rectangle is equivalent (within a small margin of error) to the given bounds. The margin of error can be overridden by setting `maxMargin` to a small number.
+      equals: function(bounds, maxMargin) {
+        if (!bounds) {
+          return false;
+        }
+        bounds = toLatLngBounds(bounds);
+        return this._southWest.equals(bounds.getSouthWest(), maxMargin) && this._northEast.equals(bounds.getNorthEast(), maxMargin);
+      },
+      // @method isValid(): Boolean
+      // Returns `true` if the bounds are properly initialized.
+      isValid: function() {
+        return !!(this._southWest && this._northEast);
+      }
+    };
+    function toLatLngBounds(a2, b2) {
+      if (a2 instanceof LatLngBounds) {
+        return a2;
+      }
+      return new LatLngBounds(a2, b2);
+    }
+    function LatLng(lat, lng, alt) {
+      if (isNaN(lat) || isNaN(lng)) {
+        throw new Error("Invalid LatLng object: (" + lat + ", " + lng + ")");
+      }
+      this.lat = +lat;
+      this.lng = +lng;
+      if (alt !== void 0) {
+        this.alt = +alt;
+      }
+    }
+    LatLng.prototype = {
+      // @method equals(otherLatLng: LatLng, maxMargin?: Number): Boolean
+      // Returns `true` if the given `LatLng` point is at the same position (within a small margin of error). The margin of error can be overridden by setting `maxMargin` to a small number.
+      equals: function(obj, maxMargin) {
+        if (!obj) {
+          return false;
+        }
+        obj = toLatLng(obj);
+        var margin = Math.max(
+          Math.abs(this.lat - obj.lat),
+          Math.abs(this.lng - obj.lng)
+        );
+        return margin <= (maxMargin === void 0 ? 1e-9 : maxMargin);
+      },
+      // @method toString(): String
+      // Returns a string representation of the point (for debugging purposes).
+      toString: function(precision) {
+        return "LatLng(" + formatNum(this.lat, precision) + ", " + formatNum(this.lng, precision) + ")";
+      },
+      // @method distanceTo(otherLatLng: LatLng): Number
+      // Returns the distance (in meters) to the given `LatLng` calculated using the [Spherical Law of Cosines](https://en.wikipedia.org/wiki/Spherical_law_of_cosines).
+      distanceTo: function(other) {
+        return Earth.distance(this, toLatLng(other));
+      },
+      // @method wrap(): LatLng
+      // Returns a new `LatLng` object with the longitude wrapped so it's always between -180 and +180 degrees.
+      wrap: function() {
+        return Earth.wrapLatLng(this);
+      },
+      // @method toBounds(sizeInMeters: Number): LatLngBounds
+      // Returns a new `LatLngBounds` object in which each boundary is `sizeInMeters/2` meters apart from the `LatLng`.
+      toBounds: function(sizeInMeters) {
+        var latAccuracy = 180 * sizeInMeters / 40075017, lngAccuracy = latAccuracy / Math.cos(Math.PI / 180 * this.lat);
+        return toLatLngBounds(
+          [this.lat - latAccuracy, this.lng - lngAccuracy],
+          [this.lat + latAccuracy, this.lng + lngAccuracy]
+        );
+      },
+      clone: function() {
+        return new LatLng(this.lat, this.lng, this.alt);
+      }
+    };
+    function toLatLng(a2, b2, c2) {
+      if (a2 instanceof LatLng) {
+        return a2;
+      }
+      if (isArray2(a2) && typeof a2[0] !== "object") {
+        if (a2.length === 3) {
+          return new LatLng(a2[0], a2[1], a2[2]);
+        }
+        if (a2.length === 2) {
+          return new LatLng(a2[0], a2[1]);
+        }
+        return null;
+      }
+      if (a2 === void 0 || a2 === null) {
+        return a2;
+      }
+      if (typeof a2 === "object" && "lat" in a2) {
+        return new LatLng(a2.lat, "lng" in a2 ? a2.lng : a2.lon, a2.alt);
+      }
+      if (b2 === void 0) {
+        return null;
+      }
+      return new LatLng(a2, b2, c2);
+    }
+    var CRS = {
+      // @method latLngToPoint(latlng: LatLng, zoom: Number): Point
+      // Projects geographical coordinates into pixel coordinates for a given zoom.
+      latLngToPoint: function(latlng, zoom2) {
+        var projectedPoint = this.projection.project(latlng), scale3 = this.scale(zoom2);
+        return this.transformation._transform(projectedPoint, scale3);
+      },
+      // @method pointToLatLng(point: Point, zoom: Number): LatLng
+      // The inverse of `latLngToPoint`. Projects pixel coordinates on a given
+      // zoom into geographical coordinates.
+      pointToLatLng: function(point2, zoom2) {
+        var scale3 = this.scale(zoom2), untransformedPoint = this.transformation.untransform(point2, scale3);
+        return this.projection.unproject(untransformedPoint);
+      },
+      // @method project(latlng: LatLng): Point
+      // Projects geographical coordinates into coordinates in units accepted for
+      // this CRS (e.g. meters for EPSG:3857, for passing it to WMS services).
+      project: function(latlng) {
+        return this.projection.project(latlng);
+      },
+      // @method unproject(point: Point): LatLng
+      // Given a projected coordinate returns the corresponding LatLng.
+      // The inverse of `project`.
+      unproject: function(point2) {
+        return this.projection.unproject(point2);
+      },
+      // @method scale(zoom: Number): Number
+      // Returns the scale used when transforming projected coordinates into
+      // pixel coordinates for a particular zoom. For example, it returns
+      // `256 * 2^zoom` for Mercator-based CRS.
+      scale: function(zoom2) {
+        return 256 * Math.pow(2, zoom2);
+      },
+      // @method zoom(scale: Number): Number
+      // Inverse of `scale()`, returns the zoom level corresponding to a scale
+      // factor of `scale`.
+      zoom: function(scale3) {
+        return Math.log(scale3 / 256) / Math.LN2;
+      },
+      // @method getProjectedBounds(zoom: Number): Bounds
+      // Returns the projection's bounds scaled and transformed for the provided `zoom`.
+      getProjectedBounds: function(zoom2) {
+        if (this.infinite) {
+          return null;
+        }
+        var b2 = this.projection.bounds, s2 = this.scale(zoom2), min2 = this.transformation.transform(b2.min, s2), max2 = this.transformation.transform(b2.max, s2);
+        return new Bounds(min2, max2);
+      },
+      // @method distance(latlng1: LatLng, latlng2: LatLng): Number
+      // Returns the distance between two geographical coordinates.
+      // @property code: String
+      // Standard code name of the CRS passed into WMS services (e.g. `'EPSG:3857'`)
+      //
+      // @property wrapLng: Number[]
+      // An array of two numbers defining whether the longitude (horizontal) coordinate
+      // axis wraps around a given range and how. Defaults to `[-180, 180]` in most
+      // geographical CRSs. If `undefined`, the longitude axis does not wrap around.
+      //
+      // @property wrapLat: Number[]
+      // Like `wrapLng`, but for the latitude (vertical) axis.
+      // wrapLng: [min, max],
+      // wrapLat: [min, max],
+      // @property infinite: Boolean
+      // If true, the coordinate space will be unbounded (infinite in both axes)
+      infinite: false,
+      // @method wrapLatLng(latlng: LatLng): LatLng
+      // Returns a `LatLng` where lat and lng has been wrapped according to the
+      // CRS's `wrapLat` and `wrapLng` properties, if they are outside the CRS's bounds.
+      wrapLatLng: function(latlng) {
+        var lng = this.wrapLng ? wrapNum(latlng.lng, this.wrapLng, true) : latlng.lng, lat = this.wrapLat ? wrapNum(latlng.lat, this.wrapLat, true) : latlng.lat, alt = latlng.alt;
+        return new LatLng(lat, lng, alt);
+      },
+      // @method wrapLatLngBounds(bounds: LatLngBounds): LatLngBounds
+      // Returns a `LatLngBounds` with the same size as the given one, ensuring
+      // that its center is within the CRS's bounds.
+      // Only accepts actual `L.LatLngBounds` instances, not arrays.
+      wrapLatLngBounds: function(bounds) {
+        var center = bounds.getCenter(), newCenter = this.wrapLatLng(center), latShift = center.lat - newCenter.lat, lngShift = center.lng - newCenter.lng;
+        if (latShift === 0 && lngShift === 0) {
+          return bounds;
+        }
+        var sw = bounds.getSouthWest(), ne2 = bounds.getNorthEast(), newSw = new LatLng(sw.lat - latShift, sw.lng - lngShift), newNe = new LatLng(ne2.lat - latShift, ne2.lng - lngShift);
+        return new LatLngBounds(newSw, newNe);
+      }
+    };
+    var Earth = extend2({}, CRS, {
+      wrapLng: [-180, 180],
+      // Mean Earth Radius, as recommended for use by
+      // the International Union of Geodesy and Geophysics,
+      // see https://rosettacode.org/wiki/Haversine_formula
+      R: 6371e3,
+      // distance between two geographical points using spherical law of cosines approximation
+      distance: function(latlng1, latlng2) {
+        var rad = Math.PI / 180, lat1 = latlng1.lat * rad, lat2 = latlng2.lat * rad, sinDLat = Math.sin((latlng2.lat - latlng1.lat) * rad / 2), sinDLon = Math.sin((latlng2.lng - latlng1.lng) * rad / 2), a2 = sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLon * sinDLon, c2 = 2 * Math.atan2(Math.sqrt(a2), Math.sqrt(1 - a2));
+        return this.R * c2;
+      }
+    });
+    var earthRadius = 6378137;
+    var SphericalMercator = {
+      R: earthRadius,
+      MAX_LATITUDE: 85.0511287798,
+      project: function(latlng) {
+        var d2 = Math.PI / 180, max2 = this.MAX_LATITUDE, lat = Math.max(Math.min(max2, latlng.lat), -max2), sin2 = Math.sin(lat * d2);
+        return new Point(
+          this.R * latlng.lng * d2,
+          this.R * Math.log((1 + sin2) / (1 - sin2)) / 2
+        );
+      },
+      unproject: function(point2) {
+        var d2 = 180 / Math.PI;
+        return new LatLng(
+          (2 * Math.atan(Math.exp(point2.y / this.R)) - Math.PI / 2) * d2,
+          point2.x * d2 / this.R
+        );
+      },
+      bounds: function() {
+        var d2 = earthRadius * Math.PI;
+        return new Bounds([-d2, -d2], [d2, d2]);
+      }()
+    };
+    function Transformation(a2, b2, c2, d2) {
+      if (isArray2(a2)) {
+        this._a = a2[0];
+        this._b = a2[1];
+        this._c = a2[2];
+        this._d = a2[3];
+        return;
+      }
+      this._a = a2;
+      this._b = b2;
+      this._c = c2;
+      this._d = d2;
+    }
+    Transformation.prototype = {
+      // @method transform(point: Point, scale?: Number): Point
+      // Returns a transformed point, optionally multiplied by the given scale.
+      // Only accepts actual `L.Point` instances, not arrays.
+      transform: function(point2, scale3) {
+        return this._transform(point2.clone(), scale3);
+      },
+      // destructive transform (faster)
+      _transform: function(point2, scale3) {
+        scale3 = scale3 || 1;
+        point2.x = scale3 * (this._a * point2.x + this._b);
+        point2.y = scale3 * (this._c * point2.y + this._d);
+        return point2;
+      },
+      // @method untransform(point: Point, scale?: Number): Point
+      // Returns the reverse transformation of the given point, optionally divided
+      // by the given scale. Only accepts actual `L.Point` instances, not arrays.
+      untransform: function(point2, scale3) {
+        scale3 = scale3 || 1;
+        return new Point(
+          (point2.x / scale3 - this._b) / this._a,
+          (point2.y / scale3 - this._d) / this._c
+        );
+      }
+    };
+    function toTransformation(a2, b2, c2, d2) {
+      return new Transformation(a2, b2, c2, d2);
+    }
+    var EPSG3857 = extend2({}, Earth, {
+      code: "EPSG:3857",
+      projection: SphericalMercator,
+      transformation: function() {
+        var scale3 = 0.5 / (Math.PI * SphericalMercator.R);
+        return toTransformation(scale3, 0.5, -scale3, 0.5);
+      }()
+    });
+    var EPSG900913 = extend2({}, EPSG3857, {
+      code: "EPSG:900913"
+    });
+    function svgCreate(name) {
+      return document.createElementNS("http://www.w3.org/2000/svg", name);
+    }
+    function pointsToPath(rings, closed) {
+      var str = "", i2, j, len, len2, points, p2;
+      for (i2 = 0, len = rings.length; i2 < len; i2++) {
+        points = rings[i2];
+        for (j = 0, len2 = points.length; j < len2; j++) {
+          p2 = points[j];
+          str += (j ? "L" : "M") + p2.x + " " + p2.y;
+        }
+        str += closed ? Browser.svg ? "z" : "x" : "";
+      }
+      return str || "M0 0";
+    }
+    var style2 = document.documentElement.style;
+    var ie2 = "ActiveXObject" in window;
+    var ielt9 = ie2 && !document.addEventListener;
+    var edge = "msLaunchUri" in navigator && !("documentMode" in document);
+    var webkit = userAgentContains2("webkit");
+    var android = userAgentContains2("android");
+    var android23 = userAgentContains2("android 2") || userAgentContains2("android 3");
+    var webkitVer = parseInt(/WebKit\/([0-9]+)|$/.exec(navigator.userAgent)[1], 10);
+    var androidStock = android && userAgentContains2("Google") && webkitVer < 537 && !("AudioNode" in window);
+    var opera = !!window.opera;
+    var chrome = !edge && userAgentContains2("chrome");
+    var gecko = userAgentContains2("gecko") && !webkit && !opera && !ie2;
+    var safari = !chrome && userAgentContains2("safari");
+    var phantom = userAgentContains2("phantom");
+    var opera12 = "OTransition" in style2;
+    var win = navigator.platform.indexOf("Win") === 0;
+    var ie3d = ie2 && "transition" in style2;
+    var webkit3d = "WebKitCSSMatrix" in window && "m11" in new window.WebKitCSSMatrix() && !android23;
+    var gecko3d = "MozPerspective" in style2;
+    var any3d = !window.L_DISABLE_3D && (ie3d || webkit3d || gecko3d) && !opera12 && !phantom;
+    var mobile = typeof orientation !== "undefined" || userAgentContains2("mobile");
+    var mobileWebkit = mobile && webkit;
+    var mobileWebkit3d = mobile && webkit3d;
+    var msPointer = !window.PointerEvent && window.MSPointerEvent;
+    var pointer = !!(window.PointerEvent || msPointer);
+    var touchNative = "ontouchstart" in window || !!window.TouchEvent;
+    var touch = !window.L_NO_TOUCH && (touchNative || pointer);
+    var mobileOpera = mobile && opera;
+    var mobileGecko = mobile && gecko;
+    var retina = (window.devicePixelRatio || window.screen.deviceXDPI / window.screen.logicalXDPI) > 1;
+    var passiveEvents = function() {
+      var supportsPassiveOption = false;
+      try {
+        var opts = Object.defineProperty({}, "passive", {
+          get: function() {
+            supportsPassiveOption = true;
+          }
+        });
+        window.addEventListener("testPassiveEventSupport", falseFn, opts);
+        window.removeEventListener("testPassiveEventSupport", falseFn, opts);
+      } catch (e3) {
+      }
+      return supportsPassiveOption;
+    }();
+    var canvas$1 = function() {
+      return !!document.createElement("canvas").getContext;
+    }();
+    var svg$1 = !!(document.createElementNS && svgCreate("svg").createSVGRect);
+    var inlineSvg = !!svg$1 && function() {
+      var div = document.createElement("div");
+      div.innerHTML = "<svg/>";
+      return (div.firstChild && div.firstChild.namespaceURI) === "http://www.w3.org/2000/svg";
+    }();
+    var vml = !svg$1 && function() {
+      try {
+        var div = document.createElement("div");
+        div.innerHTML = '<v:shape adj="1"/>';
+        var shape = div.firstChild;
+        shape.style.behavior = "url(#default#VML)";
+        return shape && typeof shape.adj === "object";
+      } catch (e3) {
+        return false;
+      }
+    }();
+    var mac = navigator.platform.indexOf("Mac") === 0;
+    var linux = navigator.platform.indexOf("Linux") === 0;
+    function userAgentContains2(str) {
+      return navigator.userAgent.toLowerCase().indexOf(str) >= 0;
+    }
+    var Browser = {
+      ie: ie2,
+      ielt9,
+      edge,
+      webkit,
+      android,
+      android23,
+      androidStock,
+      opera,
+      chrome,
+      gecko,
+      safari,
+      phantom,
+      opera12,
+      win,
+      ie3d,
+      webkit3d,
+      gecko3d,
+      any3d,
+      mobile,
+      mobileWebkit,
+      mobileWebkit3d,
+      msPointer,
+      pointer,
+      touch,
+      touchNative,
+      mobileOpera,
+      mobileGecko,
+      retina,
+      passiveEvents,
+      canvas: canvas$1,
+      svg: svg$1,
+      vml,
+      inlineSvg,
+      mac,
+      linux
+    };
+    var POINTER_DOWN = Browser.msPointer ? "MSPointerDown" : "pointerdown";
+    var POINTER_MOVE = Browser.msPointer ? "MSPointerMove" : "pointermove";
+    var POINTER_UP = Browser.msPointer ? "MSPointerUp" : "pointerup";
+    var POINTER_CANCEL = Browser.msPointer ? "MSPointerCancel" : "pointercancel";
+    var pEvent = {
+      touchstart: POINTER_DOWN,
+      touchmove: POINTER_MOVE,
+      touchend: POINTER_UP,
+      touchcancel: POINTER_CANCEL
+    };
+    var handle = {
+      touchstart: _onPointerStart,
+      touchmove: _handlePointer,
+      touchend: _handlePointer,
+      touchcancel: _handlePointer
+    };
+    var _pointers = {};
+    var _pointerDocListener = false;
+    function addPointerListener(obj, type, handler) {
+      if (type === "touchstart") {
+        _addPointerDocListener();
+      }
+      if (!handle[type]) {
+        console.warn("wrong event specified:", type);
+        return falseFn;
+      }
+      handler = handle[type].bind(this, handler);
+      obj.addEventListener(pEvent[type], handler, false);
+      return handler;
+    }
+    function removePointerListener(obj, type, handler) {
+      if (!pEvent[type]) {
+        console.warn("wrong event specified:", type);
+        return;
+      }
+      obj.removeEventListener(pEvent[type], handler, false);
+    }
+    function _globalPointerDown(e3) {
+      _pointers[e3.pointerId] = e3;
+    }
+    function _globalPointerMove(e3) {
+      if (_pointers[e3.pointerId]) {
+        _pointers[e3.pointerId] = e3;
+      }
+    }
+    function _globalPointerUp(e3) {
+      delete _pointers[e3.pointerId];
+    }
+    function _addPointerDocListener() {
+      if (!_pointerDocListener) {
+        document.addEventListener(POINTER_DOWN, _globalPointerDown, true);
+        document.addEventListener(POINTER_MOVE, _globalPointerMove, true);
+        document.addEventListener(POINTER_UP, _globalPointerUp, true);
+        document.addEventListener(POINTER_CANCEL, _globalPointerUp, true);
+        _pointerDocListener = true;
+      }
+    }
+    function _handlePointer(handler, e3) {
+      if (e3.pointerType === (e3.MSPOINTER_TYPE_MOUSE || "mouse")) {
+        return;
+      }
+      e3.touches = [];
+      for (var i2 in _pointers) {
+        e3.touches.push(_pointers[i2]);
+      }
+      e3.changedTouches = [e3];
+      handler(e3);
+    }
+    function _onPointerStart(handler, e3) {
+      if (e3.MSPOINTER_TYPE_TOUCH && e3.pointerType === e3.MSPOINTER_TYPE_TOUCH) {
+        preventDefault(e3);
+      }
+      _handlePointer(handler, e3);
+    }
+    function makeDblclick(event) {
+      var newEvent = {}, prop, i2;
+      for (i2 in event) {
+        prop = event[i2];
+        newEvent[i2] = prop && prop.bind ? prop.bind(event) : prop;
+      }
+      event = newEvent;
+      newEvent.type = "dblclick";
+      newEvent.detail = 2;
+      newEvent.isTrusted = false;
+      newEvent._simulated = true;
+      return newEvent;
+    }
+    var delay2 = 200;
+    function addDoubleTapListener(obj, handler) {
+      obj.addEventListener("dblclick", handler);
+      var last2 = 0, detail;
+      function simDblclick(e3) {
+        if (e3.detail !== 1) {
+          detail = e3.detail;
+          return;
+        }
+        if (e3.pointerType === "mouse" || e3.sourceCapabilities && !e3.sourceCapabilities.firesTouchEvents) {
+          return;
+        }
+        var path = getPropagationPath(e3);
+        if (path.some(function(el) {
+          return el instanceof HTMLLabelElement && el.attributes.for;
+        }) && !path.some(function(el) {
+          return el instanceof HTMLInputElement || el instanceof HTMLSelectElement;
+        })) {
+          return;
+        }
+        var now2 = Date.now();
+        if (now2 - last2 <= delay2) {
+          detail++;
+          if (detail === 2) {
+            handler(makeDblclick(e3));
+          }
+        } else {
+          detail = 1;
+        }
+        last2 = now2;
+      }
+      obj.addEventListener("click", simDblclick);
+      return {
+        dblclick: handler,
+        simDblclick
+      };
+    }
+    function removeDoubleTapListener(obj, handlers) {
+      obj.removeEventListener("dblclick", handlers.dblclick);
+      obj.removeEventListener("click", handlers.simDblclick);
+    }
+    var TRANSFORM = testProp(
+      ["transform", "webkitTransform", "OTransform", "MozTransform", "msTransform"]
+    );
+    var TRANSITION = testProp(
+      ["webkitTransition", "transition", "OTransition", "MozTransition", "msTransition"]
+    );
+    var TRANSITION_END2 = TRANSITION === "webkitTransition" || TRANSITION === "OTransition" ? TRANSITION + "End" : "transitionend";
+    function get2(id2) {
+      return typeof id2 === "string" ? document.getElementById(id2) : id2;
+    }
+    function getStyle(el, style3) {
+      var value = el.style[style3] || el.currentStyle && el.currentStyle[style3];
+      if ((!value || value === "auto") && document.defaultView) {
+        var css = document.defaultView.getComputedStyle(el, null);
+        value = css ? css[style3] : null;
+      }
+      return value === "auto" ? null : value;
+    }
+    function create$1(tagName, className, container) {
+      var el = document.createElement(tagName);
+      el.className = className || "";
+      if (container) {
+        container.appendChild(el);
+      }
+      return el;
+    }
+    function remove(el) {
+      var parent = el.parentNode;
+      if (parent) {
+        parent.removeChild(el);
+      }
+    }
+    function empty(el) {
+      while (el.firstChild) {
+        el.removeChild(el.firstChild);
+      }
+    }
+    function toFront(el) {
+      var parent = el.parentNode;
+      if (parent && parent.lastChild !== el) {
+        parent.appendChild(el);
+      }
+    }
+    function toBack(el) {
+      var parent = el.parentNode;
+      if (parent && parent.firstChild !== el) {
+        parent.insertBefore(el, parent.firstChild);
+      }
+    }
+    function hasClass(el, name) {
+      if (el.classList !== void 0) {
+        return el.classList.contains(name);
+      }
+      var className = getClass(el);
+      return className.length > 0 && new RegExp("(^|\\s)" + name + "(\\s|$)").test(className);
+    }
+    function addClass(el, name) {
+      if (el.classList !== void 0) {
+        var classes = splitWords(name);
+        for (var i2 = 0, len = classes.length; i2 < len; i2++) {
+          el.classList.add(classes[i2]);
+        }
+      } else if (!hasClass(el, name)) {
+        var className = getClass(el);
+        setClass(el, (className ? className + " " : "") + name);
+      }
+    }
+    function removeClass(el, name) {
+      if (el.classList !== void 0) {
+        el.classList.remove(name);
+      } else {
+        setClass(el, trim((" " + getClass(el) + " ").replace(" " + name + " ", " ")));
+      }
+    }
+    function setClass(el, name) {
+      if (el.className.baseVal === void 0) {
+        el.className = name;
+      } else {
+        el.className.baseVal = name;
+      }
+    }
+    function getClass(el) {
+      if (el.correspondingElement) {
+        el = el.correspondingElement;
+      }
+      return el.className.baseVal === void 0 ? el.className : el.className.baseVal;
+    }
+    function setOpacity(el, value) {
+      if ("opacity" in el.style) {
+        el.style.opacity = value;
+      } else if ("filter" in el.style) {
+        _setOpacityIE(el, value);
+      }
+    }
+    function _setOpacityIE(el, value) {
+      var filter2 = false, filterName = "DXImageTransform.Microsoft.Alpha";
+      try {
+        filter2 = el.filters.item(filterName);
+      } catch (e3) {
+        if (value === 1) {
+          return;
+        }
+      }
+      value = Math.round(value * 100);
+      if (filter2) {
+        filter2.Enabled = value !== 100;
+        filter2.Opacity = value;
+      } else {
+        el.style.filter += " progid:" + filterName + "(opacity=" + value + ")";
+      }
+    }
+    function testProp(props) {
+      var style3 = document.documentElement.style;
+      for (var i2 = 0; i2 < props.length; i2++) {
+        if (props[i2] in style3) {
+          return props[i2];
+        }
+      }
+      return false;
+    }
+    function setTransform(el, offset2, scale3) {
+      var pos = offset2 || new Point(0, 0);
+      el.style[TRANSFORM] = (Browser.ie3d ? "translate(" + pos.x + "px," + pos.y + "px)" : "translate3d(" + pos.x + "px," + pos.y + "px,0)") + (scale3 ? " scale(" + scale3 + ")" : "");
+    }
+    function setPosition(el, point2) {
+      el._leaflet_pos = point2;
+      if (Browser.any3d) {
+        setTransform(el, point2);
+      } else {
+        el.style.left = point2.x + "px";
+        el.style.top = point2.y + "px";
+      }
+    }
+    function getPosition(el) {
+      return el._leaflet_pos || new Point(0, 0);
+    }
+    var disableTextSelection;
+    var enableTextSelection;
+    var _userSelect;
+    if ("onselectstart" in document) {
+      disableTextSelection = function() {
+        on(window, "selectstart", preventDefault);
+      };
+      enableTextSelection = function() {
+        off(window, "selectstart", preventDefault);
+      };
+    } else {
+      var userSelectProperty = testProp(
+        ["userSelect", "WebkitUserSelect", "OUserSelect", "MozUserSelect", "msUserSelect"]
+      );
+      disableTextSelection = function() {
+        if (userSelectProperty) {
+          var style3 = document.documentElement.style;
+          _userSelect = style3[userSelectProperty];
+          style3[userSelectProperty] = "none";
+        }
+      };
+      enableTextSelection = function() {
+        if (userSelectProperty) {
+          document.documentElement.style[userSelectProperty] = _userSelect;
+          _userSelect = void 0;
+        }
+      };
+    }
+    function disableImageDrag() {
+      on(window, "dragstart", preventDefault);
+    }
+    function enableImageDrag() {
+      off(window, "dragstart", preventDefault);
+    }
+    var _outlineElement, _outlineStyle;
+    function preventOutline(element) {
+      while (element.tabIndex === -1) {
+        element = element.parentNode;
+      }
+      if (!element.style) {
+        return;
+      }
+      restoreOutline();
+      _outlineElement = element;
+      _outlineStyle = element.style.outlineStyle;
+      element.style.outlineStyle = "none";
+      on(window, "keydown", restoreOutline);
+    }
+    function restoreOutline() {
+      if (!_outlineElement) {
+        return;
+      }
+      _outlineElement.style.outlineStyle = _outlineStyle;
+      _outlineElement = void 0;
+      _outlineStyle = void 0;
+      off(window, "keydown", restoreOutline);
+    }
+    function getSizedParentNode(element) {
+      do {
+        element = element.parentNode;
+      } while ((!element.offsetWidth || !element.offsetHeight) && element !== document.body);
+      return element;
+    }
+    function getScale2(element) {
+      var rect = element.getBoundingClientRect();
+      return {
+        x: rect.width / element.offsetWidth || 1,
+        y: rect.height / element.offsetHeight || 1,
+        boundingClientRect: rect
+      };
+    }
+    var DomUtil = {
+      __proto__: null,
+      TRANSFORM,
+      TRANSITION,
+      TRANSITION_END: TRANSITION_END2,
+      get: get2,
+      getStyle,
+      create: create$1,
+      remove,
+      empty,
+      toFront,
+      toBack,
+      hasClass,
+      addClass,
+      removeClass,
+      setClass,
+      getClass,
+      setOpacity,
+      testProp,
+      setTransform,
+      setPosition,
+      getPosition,
+      get disableTextSelection() {
+        return disableTextSelection;
+      },
+      get enableTextSelection() {
+        return enableTextSelection;
+      },
+      disableImageDrag,
+      enableImageDrag,
+      preventOutline,
+      restoreOutline,
+      getSizedParentNode,
+      getScale: getScale2
+    };
+    function on(obj, types, fn, context) {
+      if (types && typeof types === "object") {
+        for (var type in types) {
+          addOne(obj, type, types[type], fn);
+        }
+      } else {
+        types = splitWords(types);
+        for (var i2 = 0, len = types.length; i2 < len; i2++) {
+          addOne(obj, types[i2], fn, context);
+        }
+      }
+      return this;
+    }
+    var eventsKey = "_leaflet_events";
+    function off(obj, types, fn, context) {
+      if (arguments.length === 1) {
+        batchRemove(obj);
+        delete obj[eventsKey];
+      } else if (types && typeof types === "object") {
+        for (var type in types) {
+          removeOne(obj, type, types[type], fn);
+        }
+      } else {
+        types = splitWords(types);
+        if (arguments.length === 2) {
+          batchRemove(obj, function(type2) {
+            return indexOf(types, type2) !== -1;
+          });
+        } else {
+          for (var i2 = 0, len = types.length; i2 < len; i2++) {
+            removeOne(obj, types[i2], fn, context);
+          }
+        }
+      }
+      return this;
+    }
+    function batchRemove(obj, filterFn) {
+      for (var id2 in obj[eventsKey]) {
+        var type = id2.split(/\d/)[0];
+        if (!filterFn || filterFn(type)) {
+          removeOne(obj, type, null, null, id2);
+        }
+      }
+    }
+    var mouseSubst = {
+      mouseenter: "mouseover",
+      mouseleave: "mouseout",
+      wheel: !("onwheel" in window) && "mousewheel"
+    };
+    function addOne(obj, type, fn, context) {
+      var id2 = type + stamp(fn) + (context ? "_" + stamp(context) : "");
+      if (obj[eventsKey] && obj[eventsKey][id2]) {
+        return this;
+      }
+      var handler = function(e3) {
+        return fn.call(context || obj, e3 || window.event);
+      };
+      var originalHandler = handler;
+      if (!Browser.touchNative && Browser.pointer && type.indexOf("touch") === 0) {
+        handler = addPointerListener(obj, type, handler);
+      } else if (Browser.touch && type === "dblclick") {
+        handler = addDoubleTapListener(obj, handler);
+      } else if ("addEventListener" in obj) {
+        if (type === "touchstart" || type === "touchmove" || type === "wheel" || type === "mousewheel") {
+          obj.addEventListener(mouseSubst[type] || type, handler, Browser.passiveEvents ? { passive: false } : false);
+        } else if (type === "mouseenter" || type === "mouseleave") {
+          handler = function(e3) {
+            e3 = e3 || window.event;
+            if (isExternalTarget(obj, e3)) {
+              originalHandler(e3);
+            }
+          };
+          obj.addEventListener(mouseSubst[type], handler, false);
+        } else {
+          obj.addEventListener(type, originalHandler, false);
+        }
+      } else {
+        obj.attachEvent("on" + type, handler);
+      }
+      obj[eventsKey] = obj[eventsKey] || {};
+      obj[eventsKey][id2] = handler;
+    }
+    function removeOne(obj, type, fn, context, id2) {
+      id2 = id2 || type + stamp(fn) + (context ? "_" + stamp(context) : "");
+      var handler = obj[eventsKey] && obj[eventsKey][id2];
+      if (!handler) {
+        return this;
+      }
+      if (!Browser.touchNative && Browser.pointer && type.indexOf("touch") === 0) {
+        removePointerListener(obj, type, handler);
+      } else if (Browser.touch && type === "dblclick") {
+        removeDoubleTapListener(obj, handler);
+      } else if ("removeEventListener" in obj) {
+        obj.removeEventListener(mouseSubst[type] || type, handler, false);
+      } else {
+        obj.detachEvent("on" + type, handler);
+      }
+      obj[eventsKey][id2] = null;
+    }
+    function stopPropagation(e3) {
+      if (e3.stopPropagation) {
+        e3.stopPropagation();
+      } else if (e3.originalEvent) {
+        e3.originalEvent._stopped = true;
+      } else {
+        e3.cancelBubble = true;
+      }
+      return this;
+    }
+    function disableScrollPropagation(el) {
+      addOne(el, "wheel", stopPropagation);
+      return this;
+    }
+    function disableClickPropagation(el) {
+      on(el, "mousedown touchstart dblclick contextmenu", stopPropagation);
+      el["_leaflet_disable_click"] = true;
+      return this;
+    }
+    function preventDefault(e3) {
+      if (e3.preventDefault) {
+        e3.preventDefault();
+      } else {
+        e3.returnValue = false;
+      }
+      return this;
+    }
+    function stop(e3) {
+      preventDefault(e3);
+      stopPropagation(e3);
+      return this;
+    }
+    function getPropagationPath(ev) {
+      if (ev.composedPath) {
+        return ev.composedPath();
+      }
+      var path = [];
+      var el = ev.target;
+      while (el) {
+        path.push(el);
+        el = el.parentNode;
+      }
+      return path;
+    }
+    function getMousePosition(e3, container) {
+      if (!container) {
+        return new Point(e3.clientX, e3.clientY);
+      }
+      var scale3 = getScale2(container), offset2 = scale3.boundingClientRect;
+      return new Point(
+        // offset.left/top values are in page scale (like clientX/Y),
+        // whereas clientLeft/Top (border width) values are the original values (before CSS scale applies).
+        (e3.clientX - offset2.left) / scale3.x - container.clientLeft,
+        (e3.clientY - offset2.top) / scale3.y - container.clientTop
+      );
+    }
+    var wheelPxFactor = Browser.linux && Browser.chrome ? window.devicePixelRatio : Browser.mac ? window.devicePixelRatio * 3 : window.devicePixelRatio > 0 ? 2 * window.devicePixelRatio : 1;
+    function getWheelDelta(e3) {
+      return Browser.edge ? e3.wheelDeltaY / 2 : (
+        // Don't trust window-geometry-based delta
+        e3.deltaY && e3.deltaMode === 0 ? -e3.deltaY / wheelPxFactor : (
+          // Pixels
+          e3.deltaY && e3.deltaMode === 1 ? -e3.deltaY * 20 : (
+            // Lines
+            e3.deltaY && e3.deltaMode === 2 ? -e3.deltaY * 60 : (
+              // Pages
+              e3.deltaX || e3.deltaZ ? 0 : (
+                // Skip horizontal/depth wheel events
+                e3.wheelDelta ? (e3.wheelDeltaY || e3.wheelDelta) / 2 : (
+                  // Legacy IE pixels
+                  e3.detail && Math.abs(e3.detail) < 32765 ? -e3.detail * 20 : (
+                    // Legacy Moz lines
+                    e3.detail ? e3.detail / -32765 * 60 : (
+                      // Legacy Moz pages
+                      0
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+    function isExternalTarget(el, e3) {
+      var related = e3.relatedTarget;
+      if (!related) {
+        return true;
+      }
+      try {
+        while (related && related !== el) {
+          related = related.parentNode;
+        }
+      } catch (err) {
+        return false;
+      }
+      return related !== el;
+    }
+    var DomEvent = {
+      __proto__: null,
+      on,
+      off,
+      stopPropagation,
+      disableScrollPropagation,
+      disableClickPropagation,
+      preventDefault,
+      stop,
+      getPropagationPath,
+      getMousePosition,
+      getWheelDelta,
+      isExternalTarget,
+      addListener: on,
+      removeListener: off
+    };
+    var PosAnimation = Evented.extend({
+      // @method run(el: HTMLElement, newPos: Point, duration?: Number, easeLinearity?: Number)
+      // Run an animation of a given element to a new position, optionally setting
+      // duration in seconds (`0.25` by default) and easing linearity factor (3rd
+      // argument of the [cubic bezier curve](https://cubic-bezier.com/#0,0,.5,1),
+      // `0.5` by default).
+      run: function(el, newPos, duration2, easeLinearity) {
+        this.stop();
+        this._el = el;
+        this._inProgress = true;
+        this._duration = duration2 || 0.25;
+        this._easeOutPower = 1 / Math.max(easeLinearity || 0.5, 0.2);
+        this._startPos = getPosition(el);
+        this._offset = newPos.subtract(this._startPos);
+        this._startTime = +/* @__PURE__ */ new Date();
+        this.fire("start");
+        this._animate();
+      },
+      // @method stop()
+      // Stops the animation (if currently running).
+      stop: function() {
+        if (!this._inProgress) {
+          return;
+        }
+        this._step(true);
+        this._complete();
+      },
+      _animate: function() {
+        this._animId = requestAnimFrame(this._animate, this);
+        this._step();
+      },
+      _step: function(round2) {
+        var elapsed = +/* @__PURE__ */ new Date() - this._startTime, duration2 = this._duration * 1e3;
+        if (elapsed < duration2) {
+          this._runFrame(this._easeOut(elapsed / duration2), round2);
+        } else {
+          this._runFrame(1);
+          this._complete();
+        }
+      },
+      _runFrame: function(progress2, round2) {
+        var pos = this._startPos.add(this._offset.multiplyBy(progress2));
+        if (round2) {
+          pos._round();
+        }
+        setPosition(this._el, pos);
+        this.fire("step");
+      },
+      _complete: function() {
+        cancelAnimFrame(this._animId);
+        this._inProgress = false;
+        this.fire("end");
+      },
+      _easeOut: function(t2) {
+        return 1 - Math.pow(1 - t2, this._easeOutPower);
+      }
+    });
+    var Map2 = Evented.extend({
+      options: {
+        // @section Map State Options
+        // @option crs: CRS = L.CRS.EPSG3857
+        // The [Coordinate Reference System](#crs) to use. Don't change this if you're not
+        // sure what it means.
+        crs: EPSG3857,
+        // @option center: LatLng = undefined
+        // Initial geographic center of the map
+        center: void 0,
+        // @option zoom: Number = undefined
+        // Initial map zoom level
+        zoom: void 0,
+        // @option minZoom: Number = *
+        // Minimum zoom level of the map.
+        // If not specified and at least one `GridLayer` or `TileLayer` is in the map,
+        // the lowest of their `minZoom` options will be used instead.
+        minZoom: void 0,
+        // @option maxZoom: Number = *
+        // Maximum zoom level of the map.
+        // If not specified and at least one `GridLayer` or `TileLayer` is in the map,
+        // the highest of their `maxZoom` options will be used instead.
+        maxZoom: void 0,
+        // @option layers: Layer[] = []
+        // Array of layers that will be added to the map initially
+        layers: [],
+        // @option maxBounds: LatLngBounds = null
+        // When this option is set, the map restricts the view to the given
+        // geographical bounds, bouncing the user back if the user tries to pan
+        // outside the view. To set the restriction dynamically, use
+        // [`setMaxBounds`](#map-setmaxbounds) method.
+        maxBounds: void 0,
+        // @option renderer: Renderer = *
+        // The default method for drawing vector layers on the map. `L.SVG`
+        // or `L.Canvas` by default depending on browser support.
+        renderer: void 0,
+        // @section Animation Options
+        // @option zoomAnimation: Boolean = true
+        // Whether the map zoom animation is enabled. By default it's enabled
+        // in all browsers that support CSS3 Transitions except Android.
+        zoomAnimation: true,
+        // @option zoomAnimationThreshold: Number = 4
+        // Won't animate zoom if the zoom difference exceeds this value.
+        zoomAnimationThreshold: 4,
+        // @option fadeAnimation: Boolean = true
+        // Whether the tile fade animation is enabled. By default it's enabled
+        // in all browsers that support CSS3 Transitions except Android.
+        fadeAnimation: true,
+        // @option markerZoomAnimation: Boolean = true
+        // Whether markers animate their zoom with the zoom animation, if disabled
+        // they will disappear for the length of the animation. By default it's
+        // enabled in all browsers that support CSS3 Transitions except Android.
+        markerZoomAnimation: true,
+        // @option transform3DLimit: Number = 2^23
+        // Defines the maximum size of a CSS translation transform. The default
+        // value should not be changed unless a web browser positions layers in
+        // the wrong place after doing a large `panBy`.
+        transform3DLimit: 8388608,
+        // Precision limit of a 32-bit float
+        // @section Interaction Options
+        // @option zoomSnap: Number = 1
+        // Forces the map's zoom level to always be a multiple of this, particularly
+        // right after a [`fitBounds()`](#map-fitbounds) or a pinch-zoom.
+        // By default, the zoom level snaps to the nearest integer; lower values
+        // (e.g. `0.5` or `0.1`) allow for greater granularity. A value of `0`
+        // means the zoom level will not be snapped after `fitBounds` or a pinch-zoom.
+        zoomSnap: 1,
+        // @option zoomDelta: Number = 1
+        // Controls how much the map's zoom level will change after a
+        // [`zoomIn()`](#map-zoomin), [`zoomOut()`](#map-zoomout), pressing `+`
+        // or `-` on the keyboard, or using the [zoom controls](#control-zoom).
+        // Values smaller than `1` (e.g. `0.5`) allow for greater granularity.
+        zoomDelta: 1,
+        // @option trackResize: Boolean = true
+        // Whether the map automatically handles browser window resize to update itself.
+        trackResize: true
+      },
+      initialize: function(id2, options) {
+        options = setOptions(this, options);
+        this._handlers = [];
+        this._layers = {};
+        this._zoomBoundLayers = {};
+        this._sizeChanged = true;
+        this._initContainer(id2);
+        this._initLayout();
+        this._onResize = bind(this._onResize, this);
+        this._initEvents();
+        if (options.maxBounds) {
+          this.setMaxBounds(options.maxBounds);
+        }
+        if (options.zoom !== void 0) {
+          this._zoom = this._limitZoom(options.zoom);
+        }
+        if (options.center && options.zoom !== void 0) {
+          this.setView(toLatLng(options.center), options.zoom, { reset: true });
+        }
+        this.callInitHooks();
+        this._zoomAnimated = TRANSITION && Browser.any3d && !Browser.mobileOpera && this.options.zoomAnimation;
+        if (this._zoomAnimated) {
+          this._createAnimProxy();
+          on(this._proxy, TRANSITION_END2, this._catchTransitionEnd, this);
+        }
+        this._addLayers(this.options.layers);
+      },
+      // @section Methods for modifying map state
+      // @method setView(center: LatLng, zoom: Number, options?: Zoom/pan options): this
+      // Sets the view of the map (geographical center and zoom) with the given
+      // animation options.
+      setView: function(center, zoom2, options) {
+        zoom2 = zoom2 === void 0 ? this._zoom : this._limitZoom(zoom2);
+        center = this._limitCenter(toLatLng(center), zoom2, this.options.maxBounds);
+        options = options || {};
+        this._stop();
+        if (this._loaded && !options.reset && options !== true) {
+          if (options.animate !== void 0) {
+            options.zoom = extend2({ animate: options.animate }, options.zoom);
+            options.pan = extend2({ animate: options.animate, duration: options.duration }, options.pan);
+          }
+          var moved = this._zoom !== zoom2 ? this._tryAnimatedZoom && this._tryAnimatedZoom(center, zoom2, options.zoom) : this._tryAnimatedPan(center, options.pan);
+          if (moved) {
+            clearTimeout(this._sizeTimer);
+            return this;
+          }
+        }
+        this._resetView(center, zoom2, options.pan && options.pan.noMoveStart);
+        return this;
+      },
+      // @method setZoom(zoom: Number, options?: Zoom/pan options): this
+      // Sets the zoom of the map.
+      setZoom: function(zoom2, options) {
+        if (!this._loaded) {
+          this._zoom = zoom2;
+          return this;
+        }
+        return this.setView(this.getCenter(), zoom2, { zoom: options });
+      },
+      // @method zoomIn(delta?: Number, options?: Zoom options): this
+      // Increases the zoom of the map by `delta` ([`zoomDelta`](#map-zoomdelta) by default).
+      zoomIn: function(delta, options) {
+        delta = delta || (Browser.any3d ? this.options.zoomDelta : 1);
+        return this.setZoom(this._zoom + delta, options);
+      },
+      // @method zoomOut(delta?: Number, options?: Zoom options): this
+      // Decreases the zoom of the map by `delta` ([`zoomDelta`](#map-zoomdelta) by default).
+      zoomOut: function(delta, options) {
+        delta = delta || (Browser.any3d ? this.options.zoomDelta : 1);
+        return this.setZoom(this._zoom - delta, options);
+      },
+      // @method setZoomAround(latlng: LatLng, zoom: Number, options: Zoom options): this
+      // Zooms the map while keeping a specified geographical point on the map
+      // stationary (e.g. used internally for scroll zoom and double-click zoom).
+      // @alternative
+      // @method setZoomAround(offset: Point, zoom: Number, options: Zoom options): this
+      // Zooms the map while keeping a specified pixel on the map (relative to the top-left corner) stationary.
+      setZoomAround: function(latlng, zoom2, options) {
+        var scale3 = this.getZoomScale(zoom2), viewHalf = this.getSize().divideBy(2), containerPoint = latlng instanceof Point ? latlng : this.latLngToContainerPoint(latlng), centerOffset = containerPoint.subtract(viewHalf).multiplyBy(1 - 1 / scale3), newCenter = this.containerPointToLatLng(viewHalf.add(centerOffset));
+        return this.setView(newCenter, zoom2, { zoom: options });
+      },
+      _getBoundsCenterZoom: function(bounds, options) {
+        options = options || {};
+        bounds = bounds.getBounds ? bounds.getBounds() : toLatLngBounds(bounds);
+        var paddingTL = toPoint(options.paddingTopLeft || options.padding || [0, 0]), paddingBR = toPoint(options.paddingBottomRight || options.padding || [0, 0]), zoom2 = this.getBoundsZoom(bounds, false, paddingTL.add(paddingBR));
+        zoom2 = typeof options.maxZoom === "number" ? Math.min(options.maxZoom, zoom2) : zoom2;
+        if (zoom2 === Infinity) {
+          return {
+            center: bounds.getCenter(),
+            zoom: zoom2
+          };
+        }
+        var paddingOffset = paddingBR.subtract(paddingTL).divideBy(2), swPoint = this.project(bounds.getSouthWest(), zoom2), nePoint = this.project(bounds.getNorthEast(), zoom2), center = this.unproject(swPoint.add(nePoint).divideBy(2).add(paddingOffset), zoom2);
+        return {
+          center,
+          zoom: zoom2
+        };
+      },
+      // @method fitBounds(bounds: LatLngBounds, options?: fitBounds options): this
+      // Sets a map view that contains the given geographical bounds with the
+      // maximum zoom level possible.
+      fitBounds: function(bounds, options) {
+        bounds = toLatLngBounds(bounds);
+        if (!bounds.isValid()) {
+          throw new Error("Bounds are not valid.");
+        }
+        var target = this._getBoundsCenterZoom(bounds, options);
+        return this.setView(target.center, target.zoom, options);
+      },
+      // @method fitWorld(options?: fitBounds options): this
+      // Sets a map view that mostly contains the whole world with the maximum
+      // zoom level possible.
+      fitWorld: function(options) {
+        return this.fitBounds([[-90, -180], [90, 180]], options);
+      },
+      // @method panTo(latlng: LatLng, options?: Pan options): this
+      // Pans the map to a given center.
+      panTo: function(center, options) {
+        return this.setView(center, this._zoom, { pan: options });
+      },
+      // @method panBy(offset: Point, options?: Pan options): this
+      // Pans the map by a given number of pixels (animated).
+      panBy: function(offset2, options) {
+        offset2 = toPoint(offset2).round();
+        options = options || {};
+        if (!offset2.x && !offset2.y) {
+          return this.fire("moveend");
+        }
+        if (options.animate !== true && !this.getSize().contains(offset2)) {
+          this._resetView(this.unproject(this.project(this.getCenter()).add(offset2)), this.getZoom());
+          return this;
+        }
+        if (!this._panAnim) {
+          this._panAnim = new PosAnimation();
+          this._panAnim.on({
+            "step": this._onPanTransitionStep,
+            "end": this._onPanTransitionEnd
+          }, this);
+        }
+        if (!options.noMoveStart) {
+          this.fire("movestart");
+        }
+        if (options.animate !== false) {
+          addClass(this._mapPane, "leaflet-pan-anim");
+          var newPos = this._getMapPanePos().subtract(offset2).round();
+          this._panAnim.run(this._mapPane, newPos, options.duration || 0.25, options.easeLinearity);
+        } else {
+          this._rawPanBy(offset2);
+          this.fire("move").fire("moveend");
+        }
+        return this;
+      },
+      // @method flyTo(latlng: LatLng, zoom?: Number, options?: Zoom/pan options): this
+      // Sets the view of the map (geographical center and zoom) performing a smooth
+      // pan-zoom animation.
+      flyTo: function(targetCenter, targetZoom, options) {
+        options = options || {};
+        if (options.animate === false || !Browser.any3d) {
+          return this.setView(targetCenter, targetZoom, options);
+        }
+        this._stop();
+        var from = this.project(this.getCenter()), to = this.project(targetCenter), size2 = this.getSize(), startZoom = this._zoom;
+        targetCenter = toLatLng(targetCenter);
+        targetZoom = targetZoom === void 0 ? startZoom : targetZoom;
+        var w0 = Math.max(size2.x, size2.y), w1 = w0 * this.getZoomScale(startZoom, targetZoom), u1 = to.distanceTo(from) || 1, rho = 1.42, rho2 = rho * rho;
+        function r2(i2) {
+          var s1 = i2 ? -1 : 1, s2 = i2 ? w1 : w0, t12 = w1 * w1 - w0 * w0 + s1 * rho2 * rho2 * u1 * u1, b1 = 2 * s2 * rho2 * u1, b2 = t12 / b1, sq = Math.sqrt(b2 * b2 + 1) - b2;
+          var log2 = sq < 1e-9 ? -18 : Math.log(sq);
+          return log2;
+        }
+        function sinh(n2) {
+          return (Math.exp(n2) - Math.exp(-n2)) / 2;
+        }
+        function cosh(n2) {
+          return (Math.exp(n2) + Math.exp(-n2)) / 2;
+        }
+        function tanh(n2) {
+          return sinh(n2) / cosh(n2);
+        }
+        var r0 = r2(0);
+        function w(s2) {
+          return w0 * (cosh(r0) / cosh(r0 + rho * s2));
+        }
+        function u2(s2) {
+          return w0 * (cosh(r0) * tanh(r0 + rho * s2) - sinh(r0)) / rho2;
+        }
+        function easeOut2(t2) {
+          return 1 - Math.pow(1 - t2, 1.5);
+        }
+        var start = Date.now(), S = (r2(1) - r0) / rho, duration2 = options.duration ? 1e3 * options.duration : 1e3 * S * 0.8;
+        function frame2() {
+          var t2 = (Date.now() - start) / duration2, s2 = easeOut2(t2) * S;
+          if (t2 <= 1) {
+            this._flyToFrame = requestAnimFrame(frame2, this);
+            this._move(
+              this.unproject(from.add(to.subtract(from).multiplyBy(u2(s2) / u1)), startZoom),
+              this.getScaleZoom(w0 / w(s2), startZoom),
+              { flyTo: true }
+            );
+          } else {
+            this._move(targetCenter, targetZoom)._moveEnd(true);
+          }
+        }
+        this._moveStart(true, options.noMoveStart);
+        frame2.call(this);
+        return this;
+      },
+      // @method flyToBounds(bounds: LatLngBounds, options?: fitBounds options): this
+      // Sets the view of the map with a smooth animation like [`flyTo`](#map-flyto),
+      // but takes a bounds parameter like [`fitBounds`](#map-fitbounds).
+      flyToBounds: function(bounds, options) {
+        var target = this._getBoundsCenterZoom(bounds, options);
+        return this.flyTo(target.center, target.zoom, options);
+      },
+      // @method setMaxBounds(bounds: LatLngBounds): this
+      // Restricts the map view to the given bounds (see the [maxBounds](#map-maxbounds) option).
+      setMaxBounds: function(bounds) {
+        bounds = toLatLngBounds(bounds);
+        if (this.listens("moveend", this._panInsideMaxBounds)) {
+          this.off("moveend", this._panInsideMaxBounds);
+        }
+        if (!bounds.isValid()) {
+          this.options.maxBounds = null;
+          return this;
+        }
+        this.options.maxBounds = bounds;
+        if (this._loaded) {
+          this._panInsideMaxBounds();
+        }
+        return this.on("moveend", this._panInsideMaxBounds);
+      },
+      // @method setMinZoom(zoom: Number): this
+      // Sets the lower limit for the available zoom levels (see the [minZoom](#map-minzoom) option).
+      setMinZoom: function(zoom2) {
+        var oldZoom = this.options.minZoom;
+        this.options.minZoom = zoom2;
+        if (this._loaded && oldZoom !== zoom2) {
+          this.fire("zoomlevelschange");
+          if (this.getZoom() < this.options.minZoom) {
+            return this.setZoom(zoom2);
+          }
+        }
+        return this;
+      },
+      // @method setMaxZoom(zoom: Number): this
+      // Sets the upper limit for the available zoom levels (see the [maxZoom](#map-maxzoom) option).
+      setMaxZoom: function(zoom2) {
+        var oldZoom = this.options.maxZoom;
+        this.options.maxZoom = zoom2;
+        if (this._loaded && oldZoom !== zoom2) {
+          this.fire("zoomlevelschange");
+          if (this.getZoom() > this.options.maxZoom) {
+            return this.setZoom(zoom2);
+          }
+        }
+        return this;
+      },
+      // @method panInsideBounds(bounds: LatLngBounds, options?: Pan options): this
+      // Pans the map to the closest view that would lie inside the given bounds (if it's not already), controlling the animation using the options specific, if any.
+      panInsideBounds: function(bounds, options) {
+        this._enforcingBounds = true;
+        var center = this.getCenter(), newCenter = this._limitCenter(center, this._zoom, toLatLngBounds(bounds));
+        if (!center.equals(newCenter)) {
+          this.panTo(newCenter, options);
+        }
+        this._enforcingBounds = false;
+        return this;
+      },
+      // @method panInside(latlng: LatLng, options?: padding options): this
+      // Pans the map the minimum amount to make the `latlng` visible. Use
+      // padding options to fit the display to more restricted bounds.
+      // If `latlng` is already within the (optionally padded) display bounds,
+      // the map will not be panned.
+      panInside: function(latlng, options) {
+        options = options || {};
+        var paddingTL = toPoint(options.paddingTopLeft || options.padding || [0, 0]), paddingBR = toPoint(options.paddingBottomRight || options.padding || [0, 0]), pixelCenter = this.project(this.getCenter()), pixelPoint = this.project(latlng), pixelBounds = this.getPixelBounds(), paddedBounds = toBounds([pixelBounds.min.add(paddingTL), pixelBounds.max.subtract(paddingBR)]), paddedSize = paddedBounds.getSize();
+        if (!paddedBounds.contains(pixelPoint)) {
+          this._enforcingBounds = true;
+          var centerOffset = pixelPoint.subtract(paddedBounds.getCenter());
+          var offset2 = paddedBounds.extend(pixelPoint).getSize().subtract(paddedSize);
+          pixelCenter.x += centerOffset.x < 0 ? -offset2.x : offset2.x;
+          pixelCenter.y += centerOffset.y < 0 ? -offset2.y : offset2.y;
+          this.panTo(this.unproject(pixelCenter), options);
+          this._enforcingBounds = false;
+        }
+        return this;
+      },
+      // @method invalidateSize(options: Zoom/pan options): this
+      // Checks if the map container size changed and updates the map if so —
+      // call it after you've changed the map size dynamically, also animating
+      // pan by default. If `options.pan` is `false`, panning will not occur.
+      // If `options.debounceMoveend` is `true`, it will delay `moveend` event so
+      // that it doesn't happen often even if the method is called many
+      // times in a row.
+      // @alternative
+      // @method invalidateSize(animate: Boolean): this
+      // Checks if the map container size changed and updates the map if so —
+      // call it after you've changed the map size dynamically, also animating
+      // pan by default.
+      invalidateSize: function(options) {
+        if (!this._loaded) {
+          return this;
+        }
+        options = extend2({
+          animate: false,
+          pan: true
+        }, options === true ? { animate: true } : options);
+        var oldSize = this.getSize();
+        this._sizeChanged = true;
+        this._lastCenter = null;
+        var newSize = this.getSize(), oldCenter = oldSize.divideBy(2).round(), newCenter = newSize.divideBy(2).round(), offset2 = oldCenter.subtract(newCenter);
+        if (!offset2.x && !offset2.y) {
+          return this;
+        }
+        if (options.animate && options.pan) {
+          this.panBy(offset2);
+        } else {
+          if (options.pan) {
+            this._rawPanBy(offset2);
+          }
+          this.fire("move");
+          if (options.debounceMoveend) {
+            clearTimeout(this._sizeTimer);
+            this._sizeTimer = setTimeout(bind(this.fire, this, "moveend"), 200);
+          } else {
+            this.fire("moveend");
+          }
+        }
+        return this.fire("resize", {
+          oldSize,
+          newSize
+        });
+      },
+      // @section Methods for modifying map state
+      // @method stop(): this
+      // Stops the currently running `panTo` or `flyTo` animation, if any.
+      stop: function() {
+        this.setZoom(this._limitZoom(this._zoom));
+        if (!this.options.zoomSnap) {
+          this.fire("viewreset");
+        }
+        return this._stop();
+      },
+      // @section Geolocation methods
+      // @method locate(options?: Locate options): this
+      // Tries to locate the user using the Geolocation API, firing a [`locationfound`](#map-locationfound)
+      // event with location data on success or a [`locationerror`](#map-locationerror) event on failure,
+      // and optionally sets the map view to the user's location with respect to
+      // detection accuracy (or to the world view if geolocation failed).
+      // Note that, if your page doesn't use HTTPS, this method will fail in
+      // modern browsers ([Chrome 50 and newer](https://sites.google.com/a/chromium.org/dev/Home/chromium-security/deprecating-powerful-features-on-insecure-origins))
+      // See `Locate options` for more details.
+      locate: function(options) {
+        options = this._locateOptions = extend2({
+          timeout: 1e4,
+          watch: false
+          // setView: false
+          // maxZoom: <Number>
+          // maximumAge: 0
+          // enableHighAccuracy: false
+        }, options);
+        if (!("geolocation" in navigator)) {
+          this._handleGeolocationError({
+            code: 0,
+            message: "Geolocation not supported."
+          });
+          return this;
+        }
+        var onResponse = bind(this._handleGeolocationResponse, this), onError = bind(this._handleGeolocationError, this);
+        if (options.watch) {
+          this._locationWatchId = navigator.geolocation.watchPosition(onResponse, onError, options);
+        } else {
+          navigator.geolocation.getCurrentPosition(onResponse, onError, options);
+        }
+        return this;
+      },
+      // @method stopLocate(): this
+      // Stops watching location previously initiated by `map.locate({watch: true})`
+      // and aborts resetting the map view if map.locate was called with
+      // `{setView: true}`.
+      stopLocate: function() {
+        if (navigator.geolocation && navigator.geolocation.clearWatch) {
+          navigator.geolocation.clearWatch(this._locationWatchId);
+        }
+        if (this._locateOptions) {
+          this._locateOptions.setView = false;
+        }
+        return this;
+      },
+      _handleGeolocationError: function(error) {
+        if (!this._container._leaflet_id) {
+          return;
+        }
+        var c2 = error.code, message = error.message || (c2 === 1 ? "permission denied" : c2 === 2 ? "position unavailable" : "timeout");
+        if (this._locateOptions.setView && !this._loaded) {
+          this.fitWorld();
+        }
+        this.fire("locationerror", {
+          code: c2,
+          message: "Geolocation error: " + message + "."
+        });
+      },
+      _handleGeolocationResponse: function(pos) {
+        if (!this._container._leaflet_id) {
+          return;
+        }
+        var lat = pos.coords.latitude, lng = pos.coords.longitude, latlng = new LatLng(lat, lng), bounds = latlng.toBounds(pos.coords.accuracy * 2), options = this._locateOptions;
+        if (options.setView) {
+          var zoom2 = this.getBoundsZoom(bounds);
+          this.setView(latlng, options.maxZoom ? Math.min(zoom2, options.maxZoom) : zoom2);
+        }
+        var data = {
+          latlng,
+          bounds,
+          timestamp: pos.timestamp
+        };
+        for (var i2 in pos.coords) {
+          if (typeof pos.coords[i2] === "number") {
+            data[i2] = pos.coords[i2];
+          }
+        }
+        this.fire("locationfound", data);
+      },
+      // TODO Appropriate docs section?
+      // @section Other Methods
+      // @method addHandler(name: String, HandlerClass: Function): this
+      // Adds a new `Handler` to the map, given its name and constructor function.
+      addHandler: function(name, HandlerClass) {
+        if (!HandlerClass) {
+          return this;
+        }
+        var handler = this[name] = new HandlerClass(this);
+        this._handlers.push(handler);
+        if (this.options[name]) {
+          handler.enable();
+        }
+        return this;
+      },
+      // @method remove(): this
+      // Destroys the map and clears all related event listeners.
+      remove: function() {
+        this._initEvents(true);
+        if (this.options.maxBounds) {
+          this.off("moveend", this._panInsideMaxBounds);
+        }
+        if (this._containerId !== this._container._leaflet_id) {
+          throw new Error("Map container is being reused by another instance");
+        }
+        try {
+          delete this._container._leaflet_id;
+          delete this._containerId;
+        } catch (e3) {
+          this._container._leaflet_id = void 0;
+          this._containerId = void 0;
+        }
+        if (this._locationWatchId !== void 0) {
+          this.stopLocate();
+        }
+        this._stop();
+        remove(this._mapPane);
+        if (this._clearControlPos) {
+          this._clearControlPos();
+        }
+        if (this._resizeRequest) {
+          cancelAnimFrame(this._resizeRequest);
+          this._resizeRequest = null;
+        }
+        this._clearHandlers();
+        if (this._loaded) {
+          this.fire("unload");
+        }
+        var i2;
+        for (i2 in this._layers) {
+          this._layers[i2].remove();
+        }
+        for (i2 in this._panes) {
+          remove(this._panes[i2]);
+        }
+        this._layers = [];
+        this._panes = [];
+        delete this._mapPane;
+        delete this._renderer;
+        return this;
+      },
+      // @section Other Methods
+      // @method createPane(name: String, container?: HTMLElement): HTMLElement
+      // Creates a new [map pane](#map-pane) with the given name if it doesn't exist already,
+      // then returns it. The pane is created as a child of `container`, or
+      // as a child of the main map pane if not set.
+      createPane: function(name, container) {
+        var className = "leaflet-pane" + (name ? " leaflet-" + name.replace("Pane", "") + "-pane" : ""), pane = create$1("div", className, container || this._mapPane);
+        if (name) {
+          this._panes[name] = pane;
+        }
+        return pane;
+      },
+      // @section Methods for Getting Map State
+      // @method getCenter(): LatLng
+      // Returns the geographical center of the map view
+      getCenter: function() {
+        this._checkIfLoaded();
+        if (this._lastCenter && !this._moved()) {
+          return this._lastCenter.clone();
+        }
+        return this.layerPointToLatLng(this._getCenterLayerPoint());
+      },
+      // @method getZoom(): Number
+      // Returns the current zoom level of the map view
+      getZoom: function() {
+        return this._zoom;
+      },
+      // @method getBounds(): LatLngBounds
+      // Returns the geographical bounds visible in the current map view
+      getBounds: function() {
+        var bounds = this.getPixelBounds(), sw = this.unproject(bounds.getBottomLeft()), ne2 = this.unproject(bounds.getTopRight());
+        return new LatLngBounds(sw, ne2);
+      },
+      // @method getMinZoom(): Number
+      // Returns the minimum zoom level of the map (if set in the `minZoom` option of the map or of any layers), or `0` by default.
+      getMinZoom: function() {
+        return this.options.minZoom === void 0 ? this._layersMinZoom || 0 : this.options.minZoom;
+      },
+      // @method getMaxZoom(): Number
+      // Returns the maximum zoom level of the map (if set in the `maxZoom` option of the map or of any layers).
+      getMaxZoom: function() {
+        return this.options.maxZoom === void 0 ? this._layersMaxZoom === void 0 ? Infinity : this._layersMaxZoom : this.options.maxZoom;
+      },
+      // @method getBoundsZoom(bounds: LatLngBounds, inside?: Boolean, padding?: Point): Number
+      // Returns the maximum zoom level on which the given bounds fit to the map
+      // view in its entirety. If `inside` (optional) is set to `true`, the method
+      // instead returns the minimum zoom level on which the map view fits into
+      // the given bounds in its entirety.
+      getBoundsZoom: function(bounds, inside, padding) {
+        bounds = toLatLngBounds(bounds);
+        padding = toPoint(padding || [0, 0]);
+        var zoom2 = this.getZoom() || 0, min2 = this.getMinZoom(), max2 = this.getMaxZoom(), nw = bounds.getNorthWest(), se2 = bounds.getSouthEast(), size2 = this.getSize().subtract(padding), boundsSize = toBounds(this.project(se2, zoom2), this.project(nw, zoom2)).getSize(), snap = Browser.any3d ? this.options.zoomSnap : 1, scalex = size2.x / boundsSize.x, scaley = size2.y / boundsSize.y, scale3 = inside ? Math.max(scalex, scaley) : Math.min(scalex, scaley);
+        zoom2 = this.getScaleZoom(scale3, zoom2);
+        if (snap) {
+          zoom2 = Math.round(zoom2 / (snap / 100)) * (snap / 100);
+          zoom2 = inside ? Math.ceil(zoom2 / snap) * snap : Math.floor(zoom2 / snap) * snap;
+        }
+        return Math.max(min2, Math.min(max2, zoom2));
+      },
+      // @method getSize(): Point
+      // Returns the current size of the map container (in pixels).
+      getSize: function() {
+        if (!this._size || this._sizeChanged) {
+          this._size = new Point(
+            this._container.clientWidth || 0,
+            this._container.clientHeight || 0
+          );
+          this._sizeChanged = false;
+        }
+        return this._size.clone();
+      },
+      // @method getPixelBounds(): Bounds
+      // Returns the bounds of the current map view in projected pixel
+      // coordinates (sometimes useful in layer and overlay implementations).
+      getPixelBounds: function(center, zoom2) {
+        var topLeftPoint = this._getTopLeftPoint(center, zoom2);
+        return new Bounds(topLeftPoint, topLeftPoint.add(this.getSize()));
+      },
+      // TODO: Check semantics - isn't the pixel origin the 0,0 coord relative to
+      // the map pane? "left point of the map layer" can be confusing, specially
+      // since there can be negative offsets.
+      // @method getPixelOrigin(): Point
+      // Returns the projected pixel coordinates of the top left point of
+      // the map layer (useful in custom layer and overlay implementations).
+      getPixelOrigin: function() {
+        this._checkIfLoaded();
+        return this._pixelOrigin;
+      },
+      // @method getPixelWorldBounds(zoom?: Number): Bounds
+      // Returns the world's bounds in pixel coordinates for zoom level `zoom`.
+      // If `zoom` is omitted, the map's current zoom level is used.
+      getPixelWorldBounds: function(zoom2) {
+        return this.options.crs.getProjectedBounds(zoom2 === void 0 ? this.getZoom() : zoom2);
+      },
+      // @section Other Methods
+      // @method getPane(pane: String|HTMLElement): HTMLElement
+      // Returns a [map pane](#map-pane), given its name or its HTML element (its identity).
+      getPane: function(pane) {
+        return typeof pane === "string" ? this._panes[pane] : pane;
+      },
+      // @method getPanes(): Object
+      // Returns a plain object containing the names of all [panes](#map-pane) as keys and
+      // the panes as values.
+      getPanes: function() {
+        return this._panes;
+      },
+      // @method getContainer: HTMLElement
+      // Returns the HTML element that contains the map.
+      getContainer: function() {
+        return this._container;
+      },
+      // @section Conversion Methods
+      // @method getZoomScale(toZoom: Number, fromZoom: Number): Number
+      // Returns the scale factor to be applied to a map transition from zoom level
+      // `fromZoom` to `toZoom`. Used internally to help with zoom animations.
+      getZoomScale: function(toZoom, fromZoom) {
+        var crs = this.options.crs;
+        fromZoom = fromZoom === void 0 ? this._zoom : fromZoom;
+        return crs.scale(toZoom) / crs.scale(fromZoom);
+      },
+      // @method getScaleZoom(scale: Number, fromZoom: Number): Number
+      // Returns the zoom level that the map would end up at, if it is at `fromZoom`
+      // level and everything is scaled by a factor of `scale`. Inverse of
+      // [`getZoomScale`](#map-getZoomScale).
+      getScaleZoom: function(scale3, fromZoom) {
+        var crs = this.options.crs;
+        fromZoom = fromZoom === void 0 ? this._zoom : fromZoom;
+        var zoom2 = crs.zoom(scale3 * crs.scale(fromZoom));
+        return isNaN(zoom2) ? Infinity : zoom2;
+      },
+      // @method project(latlng: LatLng, zoom: Number): Point
+      // Projects a geographical coordinate `LatLng` according to the projection
+      // of the map's CRS, then scales it according to `zoom` and the CRS's
+      // `Transformation`. The result is pixel coordinate relative to
+      // the CRS origin.
+      project: function(latlng, zoom2) {
+        zoom2 = zoom2 === void 0 ? this._zoom : zoom2;
+        return this.options.crs.latLngToPoint(toLatLng(latlng), zoom2);
+      },
+      // @method unproject(point: Point, zoom: Number): LatLng
+      // Inverse of [`project`](#map-project).
+      unproject: function(point2, zoom2) {
+        zoom2 = zoom2 === void 0 ? this._zoom : zoom2;
+        return this.options.crs.pointToLatLng(toPoint(point2), zoom2);
+      },
+      // @method layerPointToLatLng(point: Point): LatLng
+      // Given a pixel coordinate relative to the [origin pixel](#map-getpixelorigin),
+      // returns the corresponding geographical coordinate (for the current zoom level).
+      layerPointToLatLng: function(point2) {
+        var projectedPoint = toPoint(point2).add(this.getPixelOrigin());
+        return this.unproject(projectedPoint);
+      },
+      // @method latLngToLayerPoint(latlng: LatLng): Point
+      // Given a geographical coordinate, returns the corresponding pixel coordinate
+      // relative to the [origin pixel](#map-getpixelorigin).
+      latLngToLayerPoint: function(latlng) {
+        var projectedPoint = this.project(toLatLng(latlng))._round();
+        return projectedPoint._subtract(this.getPixelOrigin());
+      },
+      // @method wrapLatLng(latlng: LatLng): LatLng
+      // Returns a `LatLng` where `lat` and `lng` has been wrapped according to the
+      // map's CRS's `wrapLat` and `wrapLng` properties, if they are outside the
+      // CRS's bounds.
+      // By default this means longitude is wrapped around the dateline so its
+      // value is between -180 and +180 degrees.
+      wrapLatLng: function(latlng) {
+        return this.options.crs.wrapLatLng(toLatLng(latlng));
+      },
+      // @method wrapLatLngBounds(bounds: LatLngBounds): LatLngBounds
+      // Returns a `LatLngBounds` with the same size as the given one, ensuring that
+      // its center is within the CRS's bounds.
+      // By default this means the center longitude is wrapped around the dateline so its
+      // value is between -180 and +180 degrees, and the majority of the bounds
+      // overlaps the CRS's bounds.
+      wrapLatLngBounds: function(latlng) {
+        return this.options.crs.wrapLatLngBounds(toLatLngBounds(latlng));
+      },
+      // @method distance(latlng1: LatLng, latlng2: LatLng): Number
+      // Returns the distance between two geographical coordinates according to
+      // the map's CRS. By default this measures distance in meters.
+      distance: function(latlng1, latlng2) {
+        return this.options.crs.distance(toLatLng(latlng1), toLatLng(latlng2));
+      },
+      // @method containerPointToLayerPoint(point: Point): Point
+      // Given a pixel coordinate relative to the map container, returns the corresponding
+      // pixel coordinate relative to the [origin pixel](#map-getpixelorigin).
+      containerPointToLayerPoint: function(point2) {
+        return toPoint(point2).subtract(this._getMapPanePos());
+      },
+      // @method layerPointToContainerPoint(point: Point): Point
+      // Given a pixel coordinate relative to the [origin pixel](#map-getpixelorigin),
+      // returns the corresponding pixel coordinate relative to the map container.
+      layerPointToContainerPoint: function(point2) {
+        return toPoint(point2).add(this._getMapPanePos());
+      },
+      // @method containerPointToLatLng(point: Point): LatLng
+      // Given a pixel coordinate relative to the map container, returns
+      // the corresponding geographical coordinate (for the current zoom level).
+      containerPointToLatLng: function(point2) {
+        var layerPoint = this.containerPointToLayerPoint(toPoint(point2));
+        return this.layerPointToLatLng(layerPoint);
+      },
+      // @method latLngToContainerPoint(latlng: LatLng): Point
+      // Given a geographical coordinate, returns the corresponding pixel coordinate
+      // relative to the map container.
+      latLngToContainerPoint: function(latlng) {
+        return this.layerPointToContainerPoint(this.latLngToLayerPoint(toLatLng(latlng)));
+      },
+      // @method mouseEventToContainerPoint(ev: MouseEvent): Point
+      // Given a MouseEvent object, returns the pixel coordinate relative to the
+      // map container where the event took place.
+      mouseEventToContainerPoint: function(e3) {
+        return getMousePosition(e3, this._container);
+      },
+      // @method mouseEventToLayerPoint(ev: MouseEvent): Point
+      // Given a MouseEvent object, returns the pixel coordinate relative to
+      // the [origin pixel](#map-getpixelorigin) where the event took place.
+      mouseEventToLayerPoint: function(e3) {
+        return this.containerPointToLayerPoint(this.mouseEventToContainerPoint(e3));
+      },
+      // @method mouseEventToLatLng(ev: MouseEvent): LatLng
+      // Given a MouseEvent object, returns geographical coordinate where the
+      // event took place.
+      mouseEventToLatLng: function(e3) {
+        return this.layerPointToLatLng(this.mouseEventToLayerPoint(e3));
+      },
+      // map initialization methods
+      _initContainer: function(id2) {
+        var container = this._container = get2(id2);
+        if (!container) {
+          throw new Error("Map container not found.");
+        } else if (container._leaflet_id) {
+          throw new Error("Map container is already initialized.");
+        }
+        on(container, "scroll", this._onScroll, this);
+        this._containerId = stamp(container);
+      },
+      _initLayout: function() {
+        var container = this._container;
+        this._fadeAnimated = this.options.fadeAnimation && Browser.any3d;
+        addClass(container, "leaflet-container" + (Browser.touch ? " leaflet-touch" : "") + (Browser.retina ? " leaflet-retina" : "") + (Browser.ielt9 ? " leaflet-oldie" : "") + (Browser.safari ? " leaflet-safari" : "") + (this._fadeAnimated ? " leaflet-fade-anim" : ""));
+        var position = getStyle(container, "position");
+        if (position !== "absolute" && position !== "relative" && position !== "fixed" && position !== "sticky") {
+          container.style.position = "relative";
+        }
+        this._initPanes();
+        if (this._initControlPos) {
+          this._initControlPos();
+        }
+      },
+      _initPanes: function() {
+        var panes = this._panes = {};
+        this._paneRenderers = {};
+        this._mapPane = this.createPane("mapPane", this._container);
+        setPosition(this._mapPane, new Point(0, 0));
+        this.createPane("tilePane");
+        this.createPane("overlayPane");
+        this.createPane("shadowPane");
+        this.createPane("markerPane");
+        this.createPane("tooltipPane");
+        this.createPane("popupPane");
+        if (!this.options.markerZoomAnimation) {
+          addClass(panes.markerPane, "leaflet-zoom-hide");
+          addClass(panes.shadowPane, "leaflet-zoom-hide");
+        }
+      },
+      // private methods that modify map state
+      // @section Map state change events
+      _resetView: function(center, zoom2, noMoveStart) {
+        setPosition(this._mapPane, new Point(0, 0));
+        var loading = !this._loaded;
+        this._loaded = true;
+        zoom2 = this._limitZoom(zoom2);
+        this.fire("viewprereset");
+        var zoomChanged = this._zoom !== zoom2;
+        this._moveStart(zoomChanged, noMoveStart)._move(center, zoom2)._moveEnd(zoomChanged);
+        this.fire("viewreset");
+        if (loading) {
+          this.fire("load");
+        }
+      },
+      _moveStart: function(zoomChanged, noMoveStart) {
+        if (zoomChanged) {
+          this.fire("zoomstart");
+        }
+        if (!noMoveStart) {
+          this.fire("movestart");
+        }
+        return this;
+      },
+      _move: function(center, zoom2, data, supressEvent) {
+        if (zoom2 === void 0) {
+          zoom2 = this._zoom;
+        }
+        var zoomChanged = this._zoom !== zoom2;
+        this._zoom = zoom2;
+        this._lastCenter = center;
+        this._pixelOrigin = this._getNewPixelOrigin(center);
+        if (!supressEvent) {
+          if (zoomChanged || data && data.pinch) {
+            this.fire("zoom", data);
+          }
+          this.fire("move", data);
+        } else if (data && data.pinch) {
+          this.fire("zoom", data);
+        }
+        return this;
+      },
+      _moveEnd: function(zoomChanged) {
+        if (zoomChanged) {
+          this.fire("zoomend");
+        }
+        return this.fire("moveend");
+      },
+      _stop: function() {
+        cancelAnimFrame(this._flyToFrame);
+        if (this._panAnim) {
+          this._panAnim.stop();
+        }
+        return this;
+      },
+      _rawPanBy: function(offset2) {
+        setPosition(this._mapPane, this._getMapPanePos().subtract(offset2));
+      },
+      _getZoomSpan: function() {
+        return this.getMaxZoom() - this.getMinZoom();
+      },
+      _panInsideMaxBounds: function() {
+        if (!this._enforcingBounds) {
+          this.panInsideBounds(this.options.maxBounds);
+        }
+      },
+      _checkIfLoaded: function() {
+        if (!this._loaded) {
+          throw new Error("Set map center and zoom first.");
+        }
+      },
+      // DOM event handling
+      // @section Interaction events
+      _initEvents: function(remove2) {
+        this._targets = {};
+        this._targets[stamp(this._container)] = this;
+        var onOff = remove2 ? off : on;
+        onOff(this._container, "click dblclick mousedown mouseup mouseover mouseout mousemove contextmenu keypress keydown keyup", this._handleDOMEvent, this);
+        if (this.options.trackResize) {
+          onOff(window, "resize", this._onResize, this);
+        }
+        if (Browser.any3d && this.options.transform3DLimit) {
+          (remove2 ? this.off : this.on).call(this, "moveend", this._onMoveEnd);
+        }
+      },
+      _onResize: function() {
+        cancelAnimFrame(this._resizeRequest);
+        this._resizeRequest = requestAnimFrame(
+          function() {
+            this.invalidateSize({ debounceMoveend: true });
+          },
+          this
+        );
+      },
+      _onScroll: function() {
+        this._container.scrollTop = 0;
+        this._container.scrollLeft = 0;
+      },
+      _onMoveEnd: function() {
+        var pos = this._getMapPanePos();
+        if (Math.max(Math.abs(pos.x), Math.abs(pos.y)) >= this.options.transform3DLimit) {
+          this._resetView(this.getCenter(), this.getZoom());
+        }
+      },
+      _findEventTargets: function(e3, type) {
+        var targets = [], target, isHover = type === "mouseout" || type === "mouseover", src = e3.target || e3.srcElement, dragging = false;
+        while (src) {
+          target = this._targets[stamp(src)];
+          if (target && (type === "click" || type === "preclick") && this._draggableMoved(target)) {
+            dragging = true;
+            break;
+          }
+          if (target && target.listens(type, true)) {
+            if (isHover && !isExternalTarget(src, e3)) {
+              break;
+            }
+            targets.push(target);
+            if (isHover) {
+              break;
+            }
+          }
+          if (src === this._container) {
+            break;
+          }
+          src = src.parentNode;
+        }
+        if (!targets.length && !dragging && !isHover && this.listens(type, true)) {
+          targets = [this];
+        }
+        return targets;
+      },
+      _isClickDisabled: function(el) {
+        while (el && el !== this._container) {
+          if (el["_leaflet_disable_click"]) {
+            return true;
+          }
+          el = el.parentNode;
+        }
+      },
+      _handleDOMEvent: function(e3) {
+        var el = e3.target || e3.srcElement;
+        if (!this._loaded || el["_leaflet_disable_events"] || e3.type === "click" && this._isClickDisabled(el)) {
+          return;
+        }
+        var type = e3.type;
+        if (type === "mousedown") {
+          preventOutline(el);
+        }
+        this._fireDOMEvent(e3, type);
+      },
+      _mouseEvents: ["click", "dblclick", "mouseover", "mouseout", "contextmenu"],
+      _fireDOMEvent: function(e3, type, canvasTargets) {
+        if (e3.type === "click") {
+          var synth = extend2({}, e3);
+          synth.type = "preclick";
+          this._fireDOMEvent(synth, synth.type, canvasTargets);
+        }
+        var targets = this._findEventTargets(e3, type);
+        if (canvasTargets) {
+          var filtered = [];
+          for (var i2 = 0; i2 < canvasTargets.length; i2++) {
+            if (canvasTargets[i2].listens(type, true)) {
+              filtered.push(canvasTargets[i2]);
+            }
+          }
+          targets = filtered.concat(targets);
+        }
+        if (!targets.length) {
+          return;
+        }
+        if (type === "contextmenu") {
+          preventDefault(e3);
+        }
+        var target = targets[0];
+        var data = {
+          originalEvent: e3
+        };
+        if (e3.type !== "keypress" && e3.type !== "keydown" && e3.type !== "keyup") {
+          var isMarker = target.getLatLng && (!target._radius || target._radius <= 10);
+          data.containerPoint = isMarker ? this.latLngToContainerPoint(target.getLatLng()) : this.mouseEventToContainerPoint(e3);
+          data.layerPoint = this.containerPointToLayerPoint(data.containerPoint);
+          data.latlng = isMarker ? target.getLatLng() : this.layerPointToLatLng(data.layerPoint);
+        }
+        for (i2 = 0; i2 < targets.length; i2++) {
+          targets[i2].fire(type, data, true);
+          if (data.originalEvent._stopped || targets[i2].options.bubblingMouseEvents === false && indexOf(this._mouseEvents, type) !== -1) {
+            return;
+          }
+        }
+      },
+      _draggableMoved: function(obj) {
+        obj = obj.dragging && obj.dragging.enabled() ? obj : this;
+        return obj.dragging && obj.dragging.moved() || this.boxZoom && this.boxZoom.moved();
+      },
+      _clearHandlers: function() {
+        for (var i2 = 0, len = this._handlers.length; i2 < len; i2++) {
+          this._handlers[i2].disable();
+        }
+      },
+      // @section Other Methods
+      // @method whenReady(fn: Function, context?: Object): this
+      // Runs the given function `fn` when the map gets initialized with
+      // a view (center and zoom) and at least one layer, or immediately
+      // if it's already initialized, optionally passing a function context.
+      whenReady: function(callback, context) {
+        if (this._loaded) {
+          callback.call(context || this, { target: this });
+        } else {
+          this.on("load", callback, context);
+        }
+        return this;
+      },
+      // private methods for getting map state
+      _getMapPanePos: function() {
+        return getPosition(this._mapPane) || new Point(0, 0);
+      },
+      _moved: function() {
+        var pos = this._getMapPanePos();
+        return pos && !pos.equals([0, 0]);
+      },
+      _getTopLeftPoint: function(center, zoom2) {
+        var pixelOrigin = center && zoom2 !== void 0 ? this._getNewPixelOrigin(center, zoom2) : this.getPixelOrigin();
+        return pixelOrigin.subtract(this._getMapPanePos());
+      },
+      _getNewPixelOrigin: function(center, zoom2) {
+        var viewHalf = this.getSize()._divideBy(2);
+        return this.project(center, zoom2)._subtract(viewHalf)._add(this._getMapPanePos())._round();
+      },
+      _latLngToNewLayerPoint: function(latlng, zoom2, center) {
+        var topLeft = this._getNewPixelOrigin(center, zoom2);
+        return this.project(latlng, zoom2)._subtract(topLeft);
+      },
+      _latLngBoundsToNewLayerBounds: function(latLngBounds, zoom2, center) {
+        var topLeft = this._getNewPixelOrigin(center, zoom2);
+        return toBounds([
+          this.project(latLngBounds.getSouthWest(), zoom2)._subtract(topLeft),
+          this.project(latLngBounds.getNorthWest(), zoom2)._subtract(topLeft),
+          this.project(latLngBounds.getSouthEast(), zoom2)._subtract(topLeft),
+          this.project(latLngBounds.getNorthEast(), zoom2)._subtract(topLeft)
+        ]);
+      },
+      // layer point of the current center
+      _getCenterLayerPoint: function() {
+        return this.containerPointToLayerPoint(this.getSize()._divideBy(2));
+      },
+      // offset of the specified place to the current center in pixels
+      _getCenterOffset: function(latlng) {
+        return this.latLngToLayerPoint(latlng).subtract(this._getCenterLayerPoint());
+      },
+      // adjust center for view to get inside bounds
+      _limitCenter: function(center, zoom2, bounds) {
+        if (!bounds) {
+          return center;
+        }
+        var centerPoint = this.project(center, zoom2), viewHalf = this.getSize().divideBy(2), viewBounds = new Bounds(centerPoint.subtract(viewHalf), centerPoint.add(viewHalf)), offset2 = this._getBoundsOffset(viewBounds, bounds, zoom2);
+        if (Math.abs(offset2.x) <= 1 && Math.abs(offset2.y) <= 1) {
+          return center;
+        }
+        return this.unproject(centerPoint.add(offset2), zoom2);
+      },
+      // adjust offset for view to get inside bounds
+      _limitOffset: function(offset2, bounds) {
+        if (!bounds) {
+          return offset2;
+        }
+        var viewBounds = this.getPixelBounds(), newBounds = new Bounds(viewBounds.min.add(offset2), viewBounds.max.add(offset2));
+        return offset2.add(this._getBoundsOffset(newBounds, bounds));
+      },
+      // returns offset needed for pxBounds to get inside maxBounds at a specified zoom
+      _getBoundsOffset: function(pxBounds, maxBounds, zoom2) {
+        var projectedMaxBounds = toBounds(
+          this.project(maxBounds.getNorthEast(), zoom2),
+          this.project(maxBounds.getSouthWest(), zoom2)
+        ), minOffset = projectedMaxBounds.min.subtract(pxBounds.min), maxOffset = projectedMaxBounds.max.subtract(pxBounds.max), dx = this._rebound(minOffset.x, -maxOffset.x), dy = this._rebound(minOffset.y, -maxOffset.y);
+        return new Point(dx, dy);
+      },
+      _rebound: function(left, right) {
+        return left + right > 0 ? Math.round(left - right) / 2 : Math.max(0, Math.ceil(left)) - Math.max(0, Math.floor(right));
+      },
+      _limitZoom: function(zoom2) {
+        var min2 = this.getMinZoom(), max2 = this.getMaxZoom(), snap = Browser.any3d ? this.options.zoomSnap : 1;
+        if (snap) {
+          zoom2 = Math.round(zoom2 / snap) * snap;
+        }
+        return Math.max(min2, Math.min(max2, zoom2));
+      },
+      _onPanTransitionStep: function() {
+        this.fire("move");
+      },
+      _onPanTransitionEnd: function() {
+        removeClass(this._mapPane, "leaflet-pan-anim");
+        this.fire("moveend");
+      },
+      _tryAnimatedPan: function(center, options) {
+        var offset2 = this._getCenterOffset(center)._trunc();
+        if ((options && options.animate) !== true && !this.getSize().contains(offset2)) {
+          return false;
+        }
+        this.panBy(offset2, options);
+        return true;
+      },
+      _createAnimProxy: function() {
+        var proxy = this._proxy = create$1("div", "leaflet-proxy leaflet-zoom-animated");
+        this._panes.mapPane.appendChild(proxy);
+        this.on("zoomanim", function(e3) {
+          var prop = TRANSFORM, transform2 = this._proxy.style[prop];
+          setTransform(this._proxy, this.project(e3.center, e3.zoom), this.getZoomScale(e3.zoom, 1));
+          if (transform2 === this._proxy.style[prop] && this._animatingZoom) {
+            this._onZoomTransitionEnd();
+          }
+        }, this);
+        this.on("load moveend", this._animMoveEnd, this);
+        this._on("unload", this._destroyAnimProxy, this);
+      },
+      _destroyAnimProxy: function() {
+        remove(this._proxy);
+        this.off("load moveend", this._animMoveEnd, this);
+        delete this._proxy;
+      },
+      _animMoveEnd: function() {
+        var c2 = this.getCenter(), z2 = this.getZoom();
+        setTransform(this._proxy, this.project(c2, z2), this.getZoomScale(z2, 1));
+      },
+      _catchTransitionEnd: function(e3) {
+        if (this._animatingZoom && e3.propertyName.indexOf("transform") >= 0) {
+          this._onZoomTransitionEnd();
+        }
+      },
+      _nothingToAnimate: function() {
+        return !this._container.getElementsByClassName("leaflet-zoom-animated").length;
+      },
+      _tryAnimatedZoom: function(center, zoom2, options) {
+        if (this._animatingZoom) {
+          return true;
+        }
+        options = options || {};
+        if (!this._zoomAnimated || options.animate === false || this._nothingToAnimate() || Math.abs(zoom2 - this._zoom) > this.options.zoomAnimationThreshold) {
+          return false;
+        }
+        var scale3 = this.getZoomScale(zoom2), offset2 = this._getCenterOffset(center)._divideBy(1 - 1 / scale3);
+        if (options.animate !== true && !this.getSize().contains(offset2)) {
+          return false;
+        }
+        requestAnimFrame(function() {
+          this._moveStart(true, options.noMoveStart || false)._animateZoom(center, zoom2, true);
+        }, this);
+        return true;
+      },
+      _animateZoom: function(center, zoom2, startAnim, noUpdate) {
+        if (!this._mapPane) {
+          return;
+        }
+        if (startAnim) {
+          this._animatingZoom = true;
+          this._animateToCenter = center;
+          this._animateToZoom = zoom2;
+          addClass(this._mapPane, "leaflet-zoom-anim");
+        }
+        this.fire("zoomanim", {
+          center,
+          zoom: zoom2,
+          noUpdate
+        });
+        if (!this._tempFireZoomEvent) {
+          this._tempFireZoomEvent = this._zoom !== this._animateToZoom;
+        }
+        this._move(this._animateToCenter, this._animateToZoom, void 0, true);
+        setTimeout(bind(this._onZoomTransitionEnd, this), 250);
+      },
+      _onZoomTransitionEnd: function() {
+        if (!this._animatingZoom) {
+          return;
+        }
+        if (this._mapPane) {
+          removeClass(this._mapPane, "leaflet-zoom-anim");
+        }
+        this._animatingZoom = false;
+        this._move(this._animateToCenter, this._animateToZoom, void 0, true);
+        if (this._tempFireZoomEvent) {
+          this.fire("zoom");
+        }
+        delete this._tempFireZoomEvent;
+        this.fire("move");
+        this._moveEnd(true);
+      }
+    });
+    function createMap(id2, options) {
+      return new Map2(id2, options);
+    }
+    var Control = Class.extend({
+      // @section
+      // @aka Control Options
+      options: {
+        // @option position: String = 'topright'
+        // The position of the control (one of the map corners). Possible values are `'topleft'`,
+        // `'topright'`, `'bottomleft'` or `'bottomright'`
+        position: "topright"
+      },
+      initialize: function(options) {
+        setOptions(this, options);
+      },
+      /* @section
+       * Classes extending L.Control will inherit the following methods:
+       *
+       * @method getPosition: string
+       * Returns the position of the control.
+       */
+      getPosition: function() {
+        return this.options.position;
+      },
+      // @method setPosition(position: string): this
+      // Sets the position of the control.
+      setPosition: function(position) {
+        var map2 = this._map;
+        if (map2) {
+          map2.removeControl(this);
+        }
+        this.options.position = position;
+        if (map2) {
+          map2.addControl(this);
+        }
+        return this;
+      },
+      // @method getContainer: HTMLElement
+      // Returns the HTMLElement that contains the control.
+      getContainer: function() {
+        return this._container;
+      },
+      // @method addTo(map: Map): this
+      // Adds the control to the given map.
+      addTo: function(map2) {
+        this.remove();
+        this._map = map2;
+        var container = this._container = this.onAdd(map2), pos = this.getPosition(), corner = map2._controlCorners[pos];
+        addClass(container, "leaflet-control");
+        if (pos.indexOf("bottom") !== -1) {
+          corner.insertBefore(container, corner.firstChild);
+        } else {
+          corner.appendChild(container);
+        }
+        this._map.on("unload", this.remove, this);
+        return this;
+      },
+      // @method remove: this
+      // Removes the control from the map it is currently active on.
+      remove: function() {
+        if (!this._map) {
+          return this;
+        }
+        remove(this._container);
+        if (this.onRemove) {
+          this.onRemove(this._map);
+        }
+        this._map.off("unload", this.remove, this);
+        this._map = null;
+        return this;
+      },
+      _refocusOnMap: function(e3) {
+        if (this._map && e3 && e3.screenX > 0 && e3.screenY > 0) {
+          this._map.getContainer().focus();
+        }
+      }
+    });
+    var control = function(options) {
+      return new Control(options);
+    };
+    Map2.include({
+      // @method addControl(control: Control): this
+      // Adds the given control to the map
+      addControl: function(control2) {
+        control2.addTo(this);
+        return this;
+      },
+      // @method removeControl(control: Control): this
+      // Removes the given control from the map
+      removeControl: function(control2) {
+        control2.remove();
+        return this;
+      },
+      _initControlPos: function() {
+        var corners = this._controlCorners = {}, l2 = "leaflet-", container = this._controlContainer = create$1("div", l2 + "control-container", this._container);
+        function createCorner(vSide, hSide) {
+          var className = l2 + vSide + " " + l2 + hSide;
+          corners[vSide + hSide] = create$1("div", className, container);
+        }
+        createCorner("top", "left");
+        createCorner("top", "right");
+        createCorner("bottom", "left");
+        createCorner("bottom", "right");
+      },
+      _clearControlPos: function() {
+        for (var i2 in this._controlCorners) {
+          remove(this._controlCorners[i2]);
+        }
+        remove(this._controlContainer);
+        delete this._controlCorners;
+        delete this._controlContainer;
+      }
+    });
+    var Layers = Control.extend({
+      // @section
+      // @aka Control.Layers options
+      options: {
+        // @option collapsed: Boolean = true
+        // If `true`, the control will be collapsed into an icon and expanded on mouse hover, touch, or keyboard activation.
+        collapsed: true,
+        position: "topright",
+        // @option autoZIndex: Boolean = true
+        // If `true`, the control will assign zIndexes in increasing order to all of its layers so that the order is preserved when switching them on/off.
+        autoZIndex: true,
+        // @option hideSingleBase: Boolean = false
+        // If `true`, the base layers in the control will be hidden when there is only one.
+        hideSingleBase: false,
+        // @option sortLayers: Boolean = false
+        // Whether to sort the layers. When `false`, layers will keep the order
+        // in which they were added to the control.
+        sortLayers: false,
+        // @option sortFunction: Function = *
+        // A [compare function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
+        // that will be used for sorting the layers, when `sortLayers` is `true`.
+        // The function receives both the `L.Layer` instances and their names, as in
+        // `sortFunction(layerA, layerB, nameA, nameB)`.
+        // By default, it sorts layers alphabetically by their name.
+        sortFunction: function(layerA, layerB, nameA, nameB) {
+          return nameA < nameB ? -1 : nameB < nameA ? 1 : 0;
+        }
+      },
+      initialize: function(baseLayers, overlays, options) {
+        setOptions(this, options);
+        this._layerControlInputs = [];
+        this._layers = [];
+        this._lastZIndex = 0;
+        this._handlingClick = false;
+        this._preventClick = false;
+        for (var i2 in baseLayers) {
+          this._addLayer(baseLayers[i2], i2);
+        }
+        for (i2 in overlays) {
+          this._addLayer(overlays[i2], i2, true);
+        }
+      },
+      onAdd: function(map2) {
+        this._initLayout();
+        this._update();
+        this._map = map2;
+        map2.on("zoomend", this._checkDisabledLayers, this);
+        for (var i2 = 0; i2 < this._layers.length; i2++) {
+          this._layers[i2].layer.on("add remove", this._onLayerChange, this);
+        }
+        return this._container;
+      },
+      addTo: function(map2) {
+        Control.prototype.addTo.call(this, map2);
+        return this._expandIfNotCollapsed();
+      },
+      onRemove: function() {
+        this._map.off("zoomend", this._checkDisabledLayers, this);
+        for (var i2 = 0; i2 < this._layers.length; i2++) {
+          this._layers[i2].layer.off("add remove", this._onLayerChange, this);
+        }
+      },
+      // @method addBaseLayer(layer: Layer, name: String): this
+      // Adds a base layer (radio button entry) with the given name to the control.
+      addBaseLayer: function(layer, name) {
+        this._addLayer(layer, name);
+        return this._map ? this._update() : this;
+      },
+      // @method addOverlay(layer: Layer, name: String): this
+      // Adds an overlay (checkbox entry) with the given name to the control.
+      addOverlay: function(layer, name) {
+        this._addLayer(layer, name, true);
+        return this._map ? this._update() : this;
+      },
+      // @method removeLayer(layer: Layer): this
+      // Remove the given layer from the control.
+      removeLayer: function(layer) {
+        layer.off("add remove", this._onLayerChange, this);
+        var obj = this._getLayer(stamp(layer));
+        if (obj) {
+          this._layers.splice(this._layers.indexOf(obj), 1);
+        }
+        return this._map ? this._update() : this;
+      },
+      // @method expand(): this
+      // Expand the control container if collapsed.
+      expand: function() {
+        addClass(this._container, "leaflet-control-layers-expanded");
+        this._section.style.height = null;
+        var acceptableHeight = this._map.getSize().y - (this._container.offsetTop + 50);
+        if (acceptableHeight < this._section.clientHeight) {
+          addClass(this._section, "leaflet-control-layers-scrollbar");
+          this._section.style.height = acceptableHeight + "px";
+        } else {
+          removeClass(this._section, "leaflet-control-layers-scrollbar");
+        }
+        this._checkDisabledLayers();
+        return this;
+      },
+      // @method collapse(): this
+      // Collapse the control container if expanded.
+      collapse: function() {
+        removeClass(this._container, "leaflet-control-layers-expanded");
+        return this;
+      },
+      _initLayout: function() {
+        var className = "leaflet-control-layers", container = this._container = create$1("div", className), collapsed = this.options.collapsed;
+        container.setAttribute("aria-haspopup", true);
+        disableClickPropagation(container);
+        disableScrollPropagation(container);
+        var section = this._section = create$1("section", className + "-list");
+        if (collapsed) {
+          this._map.on("click", this.collapse, this);
+          on(container, {
+            mouseenter: this._expandSafely,
+            mouseleave: this.collapse
+          }, this);
+        }
+        var link = this._layersLink = create$1("a", className + "-toggle", container);
+        link.href = "#";
+        link.title = "Layers";
+        link.setAttribute("role", "button");
+        on(link, {
+          keydown: function(e3) {
+            if (e3.keyCode === 13) {
+              this._expandSafely();
+            }
+          },
+          // Certain screen readers intercept the key event and instead send a click event
+          click: function(e3) {
+            preventDefault(e3);
+            this._expandSafely();
+          }
+        }, this);
+        if (!collapsed) {
+          this.expand();
+        }
+        this._baseLayersList = create$1("div", className + "-base", section);
+        this._separator = create$1("div", className + "-separator", section);
+        this._overlaysList = create$1("div", className + "-overlays", section);
+        container.appendChild(section);
+      },
+      _getLayer: function(id2) {
+        for (var i2 = 0; i2 < this._layers.length; i2++) {
+          if (this._layers[i2] && stamp(this._layers[i2].layer) === id2) {
+            return this._layers[i2];
+          }
+        }
+      },
+      _addLayer: function(layer, name, overlay) {
+        if (this._map) {
+          layer.on("add remove", this._onLayerChange, this);
+        }
+        this._layers.push({
+          layer,
+          name,
+          overlay
+        });
+        if (this.options.sortLayers) {
+          this._layers.sort(bind(function(a2, b2) {
+            return this.options.sortFunction(a2.layer, b2.layer, a2.name, b2.name);
+          }, this));
+        }
+        if (this.options.autoZIndex && layer.setZIndex) {
+          this._lastZIndex++;
+          layer.setZIndex(this._lastZIndex);
+        }
+        this._expandIfNotCollapsed();
+      },
+      _update: function() {
+        if (!this._container) {
+          return this;
+        }
+        empty(this._baseLayersList);
+        empty(this._overlaysList);
+        this._layerControlInputs = [];
+        var baseLayersPresent, overlaysPresent, i2, obj, baseLayersCount = 0;
+        for (i2 = 0; i2 < this._layers.length; i2++) {
+          obj = this._layers[i2];
+          this._addItem(obj);
+          overlaysPresent = overlaysPresent || obj.overlay;
+          baseLayersPresent = baseLayersPresent || !obj.overlay;
+          baseLayersCount += !obj.overlay ? 1 : 0;
+        }
+        if (this.options.hideSingleBase) {
+          baseLayersPresent = baseLayersPresent && baseLayersCount > 1;
+          this._baseLayersList.style.display = baseLayersPresent ? "" : "none";
+        }
+        this._separator.style.display = overlaysPresent && baseLayersPresent ? "" : "none";
+        return this;
+      },
+      _onLayerChange: function(e3) {
+        if (!this._handlingClick) {
+          this._update();
+        }
+        var obj = this._getLayer(stamp(e3.target));
+        var type = obj.overlay ? e3.type === "add" ? "overlayadd" : "overlayremove" : e3.type === "add" ? "baselayerchange" : null;
+        if (type) {
+          this._map.fire(type, obj);
+        }
+      },
+      // IE7 bugs out if you create a radio dynamically, so you have to do it this hacky way (see https://stackoverflow.com/a/119079)
+      _createRadioElement: function(name, checked) {
+        var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' + name + '"' + (checked ? ' checked="checked"' : "") + "/>";
+        var radioFragment = document.createElement("div");
+        radioFragment.innerHTML = radioHtml;
+        return radioFragment.firstChild;
+      },
+      _addItem: function(obj) {
+        var label = document.createElement("label"), checked = this._map.hasLayer(obj.layer), input;
+        if (obj.overlay) {
+          input = document.createElement("input");
+          input.type = "checkbox";
+          input.className = "leaflet-control-layers-selector";
+          input.defaultChecked = checked;
+        } else {
+          input = this._createRadioElement("leaflet-base-layers_" + stamp(this), checked);
+        }
+        this._layerControlInputs.push(input);
+        input.layerId = stamp(obj.layer);
+        on(input, "click", this._onInputClick, this);
+        var name = document.createElement("span");
+        name.innerHTML = " " + obj.name;
+        var holder = document.createElement("span");
+        label.appendChild(holder);
+        holder.appendChild(input);
+        holder.appendChild(name);
+        var container = obj.overlay ? this._overlaysList : this._baseLayersList;
+        container.appendChild(label);
+        this._checkDisabledLayers();
+        return label;
+      },
+      _onInputClick: function() {
+        if (this._preventClick) {
+          return;
+        }
+        var inputs = this._layerControlInputs, input, layer;
+        var addedLayers = [], removedLayers = [];
+        this._handlingClick = true;
+        for (var i2 = inputs.length - 1; i2 >= 0; i2--) {
+          input = inputs[i2];
+          layer = this._getLayer(input.layerId).layer;
+          if (input.checked) {
+            addedLayers.push(layer);
+          } else if (!input.checked) {
+            removedLayers.push(layer);
+          }
+        }
+        for (i2 = 0; i2 < removedLayers.length; i2++) {
+          if (this._map.hasLayer(removedLayers[i2])) {
+            this._map.removeLayer(removedLayers[i2]);
+          }
+        }
+        for (i2 = 0; i2 < addedLayers.length; i2++) {
+          if (!this._map.hasLayer(addedLayers[i2])) {
+            this._map.addLayer(addedLayers[i2]);
+          }
+        }
+        this._handlingClick = false;
+        this._refocusOnMap();
+      },
+      _checkDisabledLayers: function() {
+        var inputs = this._layerControlInputs, input, layer, zoom2 = this._map.getZoom();
+        for (var i2 = inputs.length - 1; i2 >= 0; i2--) {
+          input = inputs[i2];
+          layer = this._getLayer(input.layerId).layer;
+          input.disabled = layer.options.minZoom !== void 0 && zoom2 < layer.options.minZoom || layer.options.maxZoom !== void 0 && zoom2 > layer.options.maxZoom;
+        }
+      },
+      _expandIfNotCollapsed: function() {
+        if (this._map && !this.options.collapsed) {
+          this.expand();
+        }
+        return this;
+      },
+      _expandSafely: function() {
+        var section = this._section;
+        this._preventClick = true;
+        on(section, "click", preventDefault);
+        this.expand();
+        var that = this;
+        setTimeout(function() {
+          off(section, "click", preventDefault);
+          that._preventClick = false;
+        });
+      }
+    });
+    var layers = function(baseLayers, overlays, options) {
+      return new Layers(baseLayers, overlays, options);
+    };
+    var Zoom = Control.extend({
+      // @section
+      // @aka Control.Zoom options
+      options: {
+        position: "topleft",
+        // @option zoomInText: String = '<span aria-hidden="true">+</span>'
+        // The text set on the 'zoom in' button.
+        zoomInText: '<span aria-hidden="true">+</span>',
+        // @option zoomInTitle: String = 'Zoom in'
+        // The title set on the 'zoom in' button.
+        zoomInTitle: "Zoom in",
+        // @option zoomOutText: String = '<span aria-hidden="true">&#x2212;</span>'
+        // The text set on the 'zoom out' button.
+        zoomOutText: '<span aria-hidden="true">&#x2212;</span>',
+        // @option zoomOutTitle: String = 'Zoom out'
+        // The title set on the 'zoom out' button.
+        zoomOutTitle: "Zoom out"
+      },
+      onAdd: function(map2) {
+        var zoomName = "leaflet-control-zoom", container = create$1("div", zoomName + " leaflet-bar"), options = this.options;
+        this._zoomInButton = this._createButton(
+          options.zoomInText,
+          options.zoomInTitle,
+          zoomName + "-in",
+          container,
+          this._zoomIn
+        );
+        this._zoomOutButton = this._createButton(
+          options.zoomOutText,
+          options.zoomOutTitle,
+          zoomName + "-out",
+          container,
+          this._zoomOut
+        );
+        this._updateDisabled();
+        map2.on("zoomend zoomlevelschange", this._updateDisabled, this);
+        return container;
+      },
+      onRemove: function(map2) {
+        map2.off("zoomend zoomlevelschange", this._updateDisabled, this);
+      },
+      disable: function() {
+        this._disabled = true;
+        this._updateDisabled();
+        return this;
+      },
+      enable: function() {
+        this._disabled = false;
+        this._updateDisabled();
+        return this;
+      },
+      _zoomIn: function(e3) {
+        if (!this._disabled && this._map._zoom < this._map.getMaxZoom()) {
+          this._map.zoomIn(this._map.options.zoomDelta * (e3.shiftKey ? 3 : 1));
+        }
+      },
+      _zoomOut: function(e3) {
+        if (!this._disabled && this._map._zoom > this._map.getMinZoom()) {
+          this._map.zoomOut(this._map.options.zoomDelta * (e3.shiftKey ? 3 : 1));
+        }
+      },
+      _createButton: function(html, title, className, container, fn) {
+        var link = create$1("a", className, container);
+        link.innerHTML = html;
+        link.href = "#";
+        link.title = title;
+        link.setAttribute("role", "button");
+        link.setAttribute("aria-label", title);
+        disableClickPropagation(link);
+        on(link, "click", stop);
+        on(link, "click", fn, this);
+        on(link, "click", this._refocusOnMap, this);
+        return link;
+      },
+      _updateDisabled: function() {
+        var map2 = this._map, className = "leaflet-disabled";
+        removeClass(this._zoomInButton, className);
+        removeClass(this._zoomOutButton, className);
+        this._zoomInButton.setAttribute("aria-disabled", "false");
+        this._zoomOutButton.setAttribute("aria-disabled", "false");
+        if (this._disabled || map2._zoom === map2.getMinZoom()) {
+          addClass(this._zoomOutButton, className);
+          this._zoomOutButton.setAttribute("aria-disabled", "true");
+        }
+        if (this._disabled || map2._zoom === map2.getMaxZoom()) {
+          addClass(this._zoomInButton, className);
+          this._zoomInButton.setAttribute("aria-disabled", "true");
+        }
+      }
+    });
+    Map2.mergeOptions({
+      zoomControl: true
+    });
+    Map2.addInitHook(function() {
+      if (this.options.zoomControl) {
+        this.zoomControl = new Zoom();
+        this.addControl(this.zoomControl);
+      }
+    });
+    var zoom = function(options) {
+      return new Zoom(options);
+    };
+    var Scale = Control.extend({
+      // @section
+      // @aka Control.Scale options
+      options: {
+        position: "bottomleft",
+        // @option maxWidth: Number = 100
+        // Maximum width of the control in pixels. The width is set dynamically to show round values (e.g. 100, 200, 500).
+        maxWidth: 100,
+        // @option metric: Boolean = True
+        // Whether to show the metric scale line (m/km).
+        metric: true,
+        // @option imperial: Boolean = True
+        // Whether to show the imperial scale line (mi/ft).
+        imperial: true
+        // @option updateWhenIdle: Boolean = false
+        // If `true`, the control is updated on [`moveend`](#map-moveend), otherwise it's always up-to-date (updated on [`move`](#map-move)).
+      },
+      onAdd: function(map2) {
+        var className = "leaflet-control-scale", container = create$1("div", className), options = this.options;
+        this._addScales(options, className + "-line", container);
+        map2.on(options.updateWhenIdle ? "moveend" : "move", this._update, this);
+        map2.whenReady(this._update, this);
+        return container;
+      },
+      onRemove: function(map2) {
+        map2.off(this.options.updateWhenIdle ? "moveend" : "move", this._update, this);
+      },
+      _addScales: function(options, className, container) {
+        if (options.metric) {
+          this._mScale = create$1("div", className, container);
+        }
+        if (options.imperial) {
+          this._iScale = create$1("div", className, container);
+        }
+      },
+      _update: function() {
+        var map2 = this._map, y2 = map2.getSize().y / 2;
+        var maxMeters = map2.distance(
+          map2.containerPointToLatLng([0, y2]),
+          map2.containerPointToLatLng([this.options.maxWidth, y2])
+        );
+        this._updateScales(maxMeters);
+      },
+      _updateScales: function(maxMeters) {
+        if (this.options.metric && maxMeters) {
+          this._updateMetric(maxMeters);
+        }
+        if (this.options.imperial && maxMeters) {
+          this._updateImperial(maxMeters);
+        }
+      },
+      _updateMetric: function(maxMeters) {
+        var meters = this._getRoundNum(maxMeters), label = meters < 1e3 ? meters + " m" : meters / 1e3 + " km";
+        this._updateScale(this._mScale, label, meters / maxMeters);
+      },
+      _updateImperial: function(maxMeters) {
+        var maxFeet = maxMeters * 3.2808399, maxMiles, miles, feet;
+        if (maxFeet > 5280) {
+          maxMiles = maxFeet / 5280;
+          miles = this._getRoundNum(maxMiles);
+          this._updateScale(this._iScale, miles + " mi", miles / maxMiles);
+        } else {
+          feet = this._getRoundNum(maxFeet);
+          this._updateScale(this._iScale, feet + " ft", feet / maxFeet);
+        }
+      },
+      _updateScale: function(scale3, text2, ratio) {
+        scale3.style.width = Math.round(this.options.maxWidth * ratio) + "px";
+        scale3.innerHTML = text2;
+      },
+      _getRoundNum: function(num) {
+        var pow102 = Math.pow(10, (Math.floor(num) + "").length - 1), d2 = num / pow102;
+        d2 = d2 >= 10 ? 10 : d2 >= 5 ? 5 : d2 >= 3 ? 3 : d2 >= 2 ? 2 : 1;
+        return pow102 * d2;
+      }
+    });
+    var scale2 = function(options) {
+      return new Scale(options);
+    };
+    var ukrainianFlag = '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"/><path fill="#FFD500" d="M0 4h12v3H0z"/><path fill="#E0BC00" d="M0 7h12v1H0z"/></svg>';
+    var Attribution = Control.extend({
+      // @section
+      // @aka Control.Attribution options
+      options: {
+        position: "bottomright",
+        // @option prefix: String|false = 'Leaflet'
+        // The HTML text shown before the attributions. Pass `false` to disable.
+        prefix: '<a href="https://leafletjs.com" title="A JavaScript library for interactive maps">' + (Browser.inlineSvg ? ukrainianFlag + " " : "") + "Leaflet</a>"
+      },
+      initialize: function(options) {
+        setOptions(this, options);
+        this._attributions = {};
+      },
+      onAdd: function(map2) {
+        map2.attributionControl = this;
+        this._container = create$1("div", "leaflet-control-attribution");
+        disableClickPropagation(this._container);
+        for (var i2 in map2._layers) {
+          if (map2._layers[i2].getAttribution) {
+            this.addAttribution(map2._layers[i2].getAttribution());
+          }
+        }
+        this._update();
+        map2.on("layeradd", this._addAttribution, this);
+        return this._container;
+      },
+      onRemove: function(map2) {
+        map2.off("layeradd", this._addAttribution, this);
+      },
+      _addAttribution: function(ev) {
+        if (ev.layer.getAttribution) {
+          this.addAttribution(ev.layer.getAttribution());
+          ev.layer.once("remove", function() {
+            this.removeAttribution(ev.layer.getAttribution());
+          }, this);
+        }
+      },
+      // @method setPrefix(prefix: String|false): this
+      // The HTML text shown before the attributions. Pass `false` to disable.
+      setPrefix: function(prefix2) {
+        this.options.prefix = prefix2;
+        this._update();
+        return this;
+      },
+      // @method addAttribution(text: String): this
+      // Adds an attribution text (e.g. `'&copy; OpenStreetMap contributors'`).
+      addAttribution: function(text2) {
+        if (!text2) {
+          return this;
+        }
+        if (!this._attributions[text2]) {
+          this._attributions[text2] = 0;
+        }
+        this._attributions[text2]++;
+        this._update();
+        return this;
+      },
+      // @method removeAttribution(text: String): this
+      // Removes an attribution text.
+      removeAttribution: function(text2) {
+        if (!text2) {
+          return this;
+        }
+        if (this._attributions[text2]) {
+          this._attributions[text2]--;
+          this._update();
+        }
+        return this;
+      },
+      _update: function() {
+        if (!this._map) {
+          return;
+        }
+        var attribs = [];
+        for (var i2 in this._attributions) {
+          if (this._attributions[i2]) {
+            attribs.push(i2);
+          }
+        }
+        var prefixAndAttribs = [];
+        if (this.options.prefix) {
+          prefixAndAttribs.push(this.options.prefix);
+        }
+        if (attribs.length) {
+          prefixAndAttribs.push(attribs.join(", "));
+        }
+        this._container.innerHTML = prefixAndAttribs.join(' <span aria-hidden="true">|</span> ');
+      }
+    });
+    Map2.mergeOptions({
+      attributionControl: true
+    });
+    Map2.addInitHook(function() {
+      if (this.options.attributionControl) {
+        new Attribution().addTo(this);
+      }
+    });
+    var attribution = function(options) {
+      return new Attribution(options);
+    };
+    Control.Layers = Layers;
+    Control.Zoom = Zoom;
+    Control.Scale = Scale;
+    Control.Attribution = Attribution;
+    control.layers = layers;
+    control.zoom = zoom;
+    control.scale = scale2;
+    control.attribution = attribution;
+    var Handler = Class.extend({
+      initialize: function(map2) {
+        this._map = map2;
+      },
+      // @method enable(): this
+      // Enables the handler
+      enable: function() {
+        if (this._enabled) {
+          return this;
+        }
+        this._enabled = true;
+        this.addHooks();
+        return this;
+      },
+      // @method disable(): this
+      // Disables the handler
+      disable: function() {
+        if (!this._enabled) {
+          return this;
+        }
+        this._enabled = false;
+        this.removeHooks();
+        return this;
+      },
+      // @method enabled(): Boolean
+      // Returns `true` if the handler is enabled
+      enabled: function() {
+        return !!this._enabled;
+      }
+      // @section Extension methods
+      // Classes inheriting from `Handler` must implement the two following methods:
+      // @method addHooks()
+      // Called when the handler is enabled, should add event hooks.
+      // @method removeHooks()
+      // Called when the handler is disabled, should remove the event hooks added previously.
+    });
+    Handler.addTo = function(map2, name) {
+      map2.addHandler(name, this);
+      return this;
+    };
+    var Mixin = { Events };
+    var START = Browser.touch ? "touchstart mousedown" : "mousedown";
+    var Draggable = Evented.extend({
+      options: {
+        // @section
+        // @aka Draggable options
+        // @option clickTolerance: Number = 3
+        // The max number of pixels a user can shift the mouse pointer during a click
+        // for it to be considered a valid click (as opposed to a mouse drag).
+        clickTolerance: 3
+      },
+      // @constructor L.Draggable(el: HTMLElement, dragHandle?: HTMLElement, preventOutline?: Boolean, options?: Draggable options)
+      // Creates a `Draggable` object for moving `el` when you start dragging the `dragHandle` element (equals `el` itself by default).
+      initialize: function(element, dragStartTarget, preventOutline2, options) {
+        setOptions(this, options);
+        this._element = element;
+        this._dragStartTarget = dragStartTarget || element;
+        this._preventOutline = preventOutline2;
+      },
+      // @method enable()
+      // Enables the dragging ability
+      enable: function() {
+        if (this._enabled) {
+          return;
+        }
+        on(this._dragStartTarget, START, this._onDown, this);
+        this._enabled = true;
+      },
+      // @method disable()
+      // Disables the dragging ability
+      disable: function() {
+        if (!this._enabled) {
+          return;
+        }
+        if (Draggable._dragging === this) {
+          this.finishDrag(true);
+        }
+        off(this._dragStartTarget, START, this._onDown, this);
+        this._enabled = false;
+        this._moved = false;
+      },
+      _onDown: function(e3) {
+        if (!this._enabled) {
+          return;
+        }
+        this._moved = false;
+        if (hasClass(this._element, "leaflet-zoom-anim")) {
+          return;
+        }
+        if (e3.touches && e3.touches.length !== 1) {
+          if (Draggable._dragging === this) {
+            this.finishDrag();
+          }
+          return;
+        }
+        if (Draggable._dragging || e3.shiftKey || e3.which !== 1 && e3.button !== 1 && !e3.touches) {
+          return;
+        }
+        Draggable._dragging = this;
+        if (this._preventOutline) {
+          preventOutline(this._element);
+        }
+        disableImageDrag();
+        disableTextSelection();
+        if (this._moving) {
+          return;
+        }
+        this.fire("down");
+        var first = e3.touches ? e3.touches[0] : e3, sizedParent = getSizedParentNode(this._element);
+        this._startPoint = new Point(first.clientX, first.clientY);
+        this._startPos = getPosition(this._element);
+        this._parentScale = getScale2(sizedParent);
+        var mouseevent = e3.type === "mousedown";
+        on(document, mouseevent ? "mousemove" : "touchmove", this._onMove, this);
+        on(document, mouseevent ? "mouseup" : "touchend touchcancel", this._onUp, this);
+      },
+      _onMove: function(e3) {
+        if (!this._enabled) {
+          return;
+        }
+        if (e3.touches && e3.touches.length > 1) {
+          this._moved = true;
+          return;
+        }
+        var first = e3.touches && e3.touches.length === 1 ? e3.touches[0] : e3, offset2 = new Point(first.clientX, first.clientY)._subtract(this._startPoint);
+        if (!offset2.x && !offset2.y) {
+          return;
+        }
+        if (Math.abs(offset2.x) + Math.abs(offset2.y) < this.options.clickTolerance) {
+          return;
+        }
+        offset2.x /= this._parentScale.x;
+        offset2.y /= this._parentScale.y;
+        preventDefault(e3);
+        if (!this._moved) {
+          this.fire("dragstart");
+          this._moved = true;
+          addClass(document.body, "leaflet-dragging");
+          this._lastTarget = e3.target || e3.srcElement;
+          if (window.SVGElementInstance && this._lastTarget instanceof window.SVGElementInstance) {
+            this._lastTarget = this._lastTarget.correspondingUseElement;
+          }
+          addClass(this._lastTarget, "leaflet-drag-target");
+        }
+        this._newPos = this._startPos.add(offset2);
+        this._moving = true;
+        this._lastEvent = e3;
+        this._updatePosition();
+      },
+      _updatePosition: function() {
+        var e3 = { originalEvent: this._lastEvent };
+        this.fire("predrag", e3);
+        setPosition(this._element, this._newPos);
+        this.fire("drag", e3);
+      },
+      _onUp: function() {
+        if (!this._enabled) {
+          return;
+        }
+        this.finishDrag();
+      },
+      finishDrag: function(noInertia) {
+        removeClass(document.body, "leaflet-dragging");
+        if (this._lastTarget) {
+          removeClass(this._lastTarget, "leaflet-drag-target");
+          this._lastTarget = null;
+        }
+        off(document, "mousemove touchmove", this._onMove, this);
+        off(document, "mouseup touchend touchcancel", this._onUp, this);
+        enableImageDrag();
+        enableTextSelection();
+        var fireDragend = this._moved && this._moving;
+        this._moving = false;
+        Draggable._dragging = false;
+        if (fireDragend) {
+          this.fire("dragend", {
+            noInertia,
+            distance: this._newPos.distanceTo(this._startPos)
+          });
+        }
+      }
+    });
+    function clipPolygon(points, bounds, round2) {
+      var clippedPoints, edges = [1, 4, 2, 8], i2, j, k2, a2, b2, len, edge2, p2;
+      for (i2 = 0, len = points.length; i2 < len; i2++) {
+        points[i2]._code = _getBitCode(points[i2], bounds);
+      }
+      for (k2 = 0; k2 < 4; k2++) {
+        edge2 = edges[k2];
+        clippedPoints = [];
+        for (i2 = 0, len = points.length, j = len - 1; i2 < len; j = i2++) {
+          a2 = points[i2];
+          b2 = points[j];
+          if (!(a2._code & edge2)) {
+            if (b2._code & edge2) {
+              p2 = _getEdgeIntersection(b2, a2, edge2, bounds, round2);
+              p2._code = _getBitCode(p2, bounds);
+              clippedPoints.push(p2);
+            }
+            clippedPoints.push(a2);
+          } else if (!(b2._code & edge2)) {
+            p2 = _getEdgeIntersection(b2, a2, edge2, bounds, round2);
+            p2._code = _getBitCode(p2, bounds);
+            clippedPoints.push(p2);
+          }
+        }
+        points = clippedPoints;
+      }
+      return points;
+    }
+    function polygonCenter(latlngs, crs) {
+      var i2, j, p1, p2, f2, area, x2, y2, center;
+      if (!latlngs || latlngs.length === 0) {
+        throw new Error("latlngs not passed");
+      }
+      if (!isFlat(latlngs)) {
+        console.warn("latlngs are not flat! Only the first ring will be used");
+        latlngs = latlngs[0];
+      }
+      var centroidLatLng = toLatLng([0, 0]);
+      var bounds = toLatLngBounds(latlngs);
+      var areaBounds = bounds.getNorthWest().distanceTo(bounds.getSouthWest()) * bounds.getNorthEast().distanceTo(bounds.getNorthWest());
+      if (areaBounds < 1700) {
+        centroidLatLng = centroid(latlngs);
+      }
+      var len = latlngs.length;
+      var points = [];
+      for (i2 = 0; i2 < len; i2++) {
+        var latlng = toLatLng(latlngs[i2]);
+        points.push(crs.project(toLatLng([latlng.lat - centroidLatLng.lat, latlng.lng - centroidLatLng.lng])));
+      }
+      area = x2 = y2 = 0;
+      for (i2 = 0, j = len - 1; i2 < len; j = i2++) {
+        p1 = points[i2];
+        p2 = points[j];
+        f2 = p1.y * p2.x - p2.y * p1.x;
+        x2 += (p1.x + p2.x) * f2;
+        y2 += (p1.y + p2.y) * f2;
+        area += f2 * 3;
+      }
+      if (area === 0) {
+        center = points[0];
+      } else {
+        center = [x2 / area, y2 / area];
+      }
+      var latlngCenter = crs.unproject(toPoint(center));
+      return toLatLng([latlngCenter.lat + centroidLatLng.lat, latlngCenter.lng + centroidLatLng.lng]);
+    }
+    function centroid(coords) {
+      var latSum = 0;
+      var lngSum = 0;
+      var len = 0;
+      for (var i2 = 0; i2 < coords.length; i2++) {
+        var latlng = toLatLng(coords[i2]);
+        latSum += latlng.lat;
+        lngSum += latlng.lng;
+        len++;
+      }
+      return toLatLng([latSum / len, lngSum / len]);
+    }
+    var PolyUtil = {
+      __proto__: null,
+      clipPolygon,
+      polygonCenter,
+      centroid
+    };
+    function simplify(points, tolerance) {
+      if (!tolerance || !points.length) {
+        return points.slice();
+      }
+      var sqTolerance = tolerance * tolerance;
+      points = _reducePoints(points, sqTolerance);
+      points = _simplifyDP(points, sqTolerance);
+      return points;
+    }
+    function pointToSegmentDistance(p2, p1, p22) {
+      return Math.sqrt(_sqClosestPointOnSegment(p2, p1, p22, true));
+    }
+    function closestPointOnSegment(p2, p1, p22) {
+      return _sqClosestPointOnSegment(p2, p1, p22);
+    }
+    function _simplifyDP(points, sqTolerance) {
+      var len = points.length, ArrayConstructor = typeof Uint8Array !== "undefined" ? Uint8Array : Array, markers = new ArrayConstructor(len);
+      markers[0] = markers[len - 1] = 1;
+      _simplifyDPStep(points, markers, sqTolerance, 0, len - 1);
+      var i2, newPoints = [];
+      for (i2 = 0; i2 < len; i2++) {
+        if (markers[i2]) {
+          newPoints.push(points[i2]);
+        }
+      }
+      return newPoints;
+    }
+    function _simplifyDPStep(points, markers, sqTolerance, first, last2) {
+      var maxSqDist = 0, index3, i2, sqDist;
+      for (i2 = first + 1; i2 <= last2 - 1; i2++) {
+        sqDist = _sqClosestPointOnSegment(points[i2], points[first], points[last2], true);
+        if (sqDist > maxSqDist) {
+          index3 = i2;
+          maxSqDist = sqDist;
+        }
+      }
+      if (maxSqDist > sqTolerance) {
+        markers[index3] = 1;
+        _simplifyDPStep(points, markers, sqTolerance, first, index3);
+        _simplifyDPStep(points, markers, sqTolerance, index3, last2);
+      }
+    }
+    function _reducePoints(points, sqTolerance) {
+      var reducedPoints = [points[0]];
+      for (var i2 = 1, prev = 0, len = points.length; i2 < len; i2++) {
+        if (_sqDist(points[i2], points[prev]) > sqTolerance) {
+          reducedPoints.push(points[i2]);
+          prev = i2;
+        }
+      }
+      if (prev < len - 1) {
+        reducedPoints.push(points[len - 1]);
+      }
+      return reducedPoints;
+    }
+    var _lastCode;
+    function clipSegment(a2, b2, bounds, useLastCode, round2) {
+      var codeA = useLastCode ? _lastCode : _getBitCode(a2, bounds), codeB = _getBitCode(b2, bounds), codeOut, p2, newCode;
+      _lastCode = codeB;
+      while (true) {
+        if (!(codeA | codeB)) {
+          return [a2, b2];
+        }
+        if (codeA & codeB) {
+          return false;
+        }
+        codeOut = codeA || codeB;
+        p2 = _getEdgeIntersection(a2, b2, codeOut, bounds, round2);
+        newCode = _getBitCode(p2, bounds);
+        if (codeOut === codeA) {
+          a2 = p2;
+          codeA = newCode;
+        } else {
+          b2 = p2;
+          codeB = newCode;
+        }
+      }
+    }
+    function _getEdgeIntersection(a2, b2, code, bounds, round2) {
+      var dx = b2.x - a2.x, dy = b2.y - a2.y, min2 = bounds.min, max2 = bounds.max, x2, y2;
+      if (code & 8) {
+        x2 = a2.x + dx * (max2.y - a2.y) / dy;
+        y2 = max2.y;
+      } else if (code & 4) {
+        x2 = a2.x + dx * (min2.y - a2.y) / dy;
+        y2 = min2.y;
+      } else if (code & 2) {
+        x2 = max2.x;
+        y2 = a2.y + dy * (max2.x - a2.x) / dx;
+      } else if (code & 1) {
+        x2 = min2.x;
+        y2 = a2.y + dy * (min2.x - a2.x) / dx;
+      }
+      return new Point(x2, y2, round2);
+    }
+    function _getBitCode(p2, bounds) {
+      var code = 0;
+      if (p2.x < bounds.min.x) {
+        code |= 1;
+      } else if (p2.x > bounds.max.x) {
+        code |= 2;
+      }
+      if (p2.y < bounds.min.y) {
+        code |= 4;
+      } else if (p2.y > bounds.max.y) {
+        code |= 8;
+      }
+      return code;
+    }
+    function _sqDist(p1, p2) {
+      var dx = p2.x - p1.x, dy = p2.y - p1.y;
+      return dx * dx + dy * dy;
+    }
+    function _sqClosestPointOnSegment(p2, p1, p22, sqDist) {
+      var x2 = p1.x, y2 = p1.y, dx = p22.x - x2, dy = p22.y - y2, dot = dx * dx + dy * dy, t2;
+      if (dot > 0) {
+        t2 = ((p2.x - x2) * dx + (p2.y - y2) * dy) / dot;
+        if (t2 > 1) {
+          x2 = p22.x;
+          y2 = p22.y;
+        } else if (t2 > 0) {
+          x2 += dx * t2;
+          y2 += dy * t2;
+        }
+      }
+      dx = p2.x - x2;
+      dy = p2.y - y2;
+      return sqDist ? dx * dx + dy * dy : new Point(x2, y2);
+    }
+    function isFlat(latlngs) {
+      return !isArray2(latlngs[0]) || typeof latlngs[0][0] !== "object" && typeof latlngs[0][0] !== "undefined";
+    }
+    function _flat(latlngs) {
+      console.warn("Deprecated use of _flat, please use L.LineUtil.isFlat instead.");
+      return isFlat(latlngs);
+    }
+    function polylineCenter(latlngs, crs) {
+      var i2, halfDist, segDist, dist, p1, p2, ratio, center;
+      if (!latlngs || latlngs.length === 0) {
+        throw new Error("latlngs not passed");
+      }
+      if (!isFlat(latlngs)) {
+        console.warn("latlngs are not flat! Only the first ring will be used");
+        latlngs = latlngs[0];
+      }
+      var centroidLatLng = toLatLng([0, 0]);
+      var bounds = toLatLngBounds(latlngs);
+      var areaBounds = bounds.getNorthWest().distanceTo(bounds.getSouthWest()) * bounds.getNorthEast().distanceTo(bounds.getNorthWest());
+      if (areaBounds < 1700) {
+        centroidLatLng = centroid(latlngs);
+      }
+      var len = latlngs.length;
+      var points = [];
+      for (i2 = 0; i2 < len; i2++) {
+        var latlng = toLatLng(latlngs[i2]);
+        points.push(crs.project(toLatLng([latlng.lat - centroidLatLng.lat, latlng.lng - centroidLatLng.lng])));
+      }
+      for (i2 = 0, halfDist = 0; i2 < len - 1; i2++) {
+        halfDist += points[i2].distanceTo(points[i2 + 1]) / 2;
+      }
+      if (halfDist === 0) {
+        center = points[0];
+      } else {
+        for (i2 = 0, dist = 0; i2 < len - 1; i2++) {
+          p1 = points[i2];
+          p2 = points[i2 + 1];
+          segDist = p1.distanceTo(p2);
+          dist += segDist;
+          if (dist > halfDist) {
+            ratio = (dist - halfDist) / segDist;
+            center = [
+              p2.x - ratio * (p2.x - p1.x),
+              p2.y - ratio * (p2.y - p1.y)
+            ];
+            break;
+          }
+        }
+      }
+      var latlngCenter = crs.unproject(toPoint(center));
+      return toLatLng([latlngCenter.lat + centroidLatLng.lat, latlngCenter.lng + centroidLatLng.lng]);
+    }
+    var LineUtil = {
+      __proto__: null,
+      simplify,
+      pointToSegmentDistance,
+      closestPointOnSegment,
+      clipSegment,
+      _getEdgeIntersection,
+      _getBitCode,
+      _sqClosestPointOnSegment,
+      isFlat,
+      _flat,
+      polylineCenter
+    };
+    var LonLat = {
+      project: function(latlng) {
+        return new Point(latlng.lng, latlng.lat);
+      },
+      unproject: function(point2) {
+        return new LatLng(point2.y, point2.x);
+      },
+      bounds: new Bounds([-180, -90], [180, 90])
+    };
+    var Mercator = {
+      R: 6378137,
+      R_MINOR: 6356752314245179e-9,
+      bounds: new Bounds([-2003750834279e-5, -1549657073972e-5], [2003750834279e-5, 1876465623138e-5]),
+      project: function(latlng) {
+        var d2 = Math.PI / 180, r2 = this.R, y2 = latlng.lat * d2, tmp = this.R_MINOR / r2, e3 = Math.sqrt(1 - tmp * tmp), con = e3 * Math.sin(y2);
+        var ts = Math.tan(Math.PI / 4 - y2 / 2) / Math.pow((1 - con) / (1 + con), e3 / 2);
+        y2 = -r2 * Math.log(Math.max(ts, 1e-10));
+        return new Point(latlng.lng * d2 * r2, y2);
+      },
+      unproject: function(point2) {
+        var d2 = 180 / Math.PI, r2 = this.R, tmp = this.R_MINOR / r2, e3 = Math.sqrt(1 - tmp * tmp), ts = Math.exp(-point2.y / r2), phi = Math.PI / 2 - 2 * Math.atan(ts);
+        for (var i2 = 0, dphi = 0.1, con; i2 < 15 && Math.abs(dphi) > 1e-7; i2++) {
+          con = e3 * Math.sin(phi);
+          con = Math.pow((1 - con) / (1 + con), e3 / 2);
+          dphi = Math.PI / 2 - 2 * Math.atan(ts * con) - phi;
+          phi += dphi;
+        }
+        return new LatLng(phi * d2, point2.x * d2 / r2);
+      }
+    };
+    var index2 = {
+      __proto__: null,
+      LonLat,
+      Mercator,
+      SphericalMercator
+    };
+    var EPSG3395 = extend2({}, Earth, {
+      code: "EPSG:3395",
+      projection: Mercator,
+      transformation: function() {
+        var scale3 = 0.5 / (Math.PI * Mercator.R);
+        return toTransformation(scale3, 0.5, -scale3, 0.5);
+      }()
+    });
+    var EPSG4326 = extend2({}, Earth, {
+      code: "EPSG:4326",
+      projection: LonLat,
+      transformation: toTransformation(1 / 180, 1, -1 / 180, 0.5)
+    });
+    var Simple = extend2({}, CRS, {
+      projection: LonLat,
+      transformation: toTransformation(1, 0, -1, 0),
+      scale: function(zoom2) {
+        return Math.pow(2, zoom2);
+      },
+      zoom: function(scale3) {
+        return Math.log(scale3) / Math.LN2;
+      },
+      distance: function(latlng1, latlng2) {
+        var dx = latlng2.lng - latlng1.lng, dy = latlng2.lat - latlng1.lat;
+        return Math.sqrt(dx * dx + dy * dy);
+      },
+      infinite: true
+    });
+    CRS.Earth = Earth;
+    CRS.EPSG3395 = EPSG3395;
+    CRS.EPSG3857 = EPSG3857;
+    CRS.EPSG900913 = EPSG900913;
+    CRS.EPSG4326 = EPSG4326;
+    CRS.Simple = Simple;
+    var Layer2 = Evented.extend({
+      // Classes extending `L.Layer` will inherit the following options:
+      options: {
+        // @option pane: String = 'overlayPane'
+        // By default the layer will be added to the map's [overlay pane](#map-overlaypane). Overriding this option will cause the layer to be placed on another pane by default.
+        pane: "overlayPane",
+        // @option attribution: String = null
+        // String to be shown in the attribution control, e.g. "© OpenStreetMap contributors". It describes the layer data and is often a legal obligation towards copyright holders and tile providers.
+        attribution: null,
+        bubblingMouseEvents: true
+      },
+      /* @section
+       * Classes extending `L.Layer` will inherit the following methods:
+       *
+       * @method addTo(map: Map|LayerGroup): this
+       * Adds the layer to the given map or layer group.
+       */
+      addTo: function(map2) {
+        map2.addLayer(this);
+        return this;
+      },
+      // @method remove: this
+      // Removes the layer from the map it is currently active on.
+      remove: function() {
+        return this.removeFrom(this._map || this._mapToAdd);
+      },
+      // @method removeFrom(map: Map): this
+      // Removes the layer from the given map
+      //
+      // @alternative
+      // @method removeFrom(group: LayerGroup): this
+      // Removes the layer from the given `LayerGroup`
+      removeFrom: function(obj) {
+        if (obj) {
+          obj.removeLayer(this);
+        }
+        return this;
+      },
+      // @method getPane(name? : String): HTMLElement
+      // Returns the `HTMLElement` representing the named pane on the map. If `name` is omitted, returns the pane for this layer.
+      getPane: function(name) {
+        return this._map.getPane(name ? this.options[name] || name : this.options.pane);
+      },
+      addInteractiveTarget: function(targetEl) {
+        this._map._targets[stamp(targetEl)] = this;
+        return this;
+      },
+      removeInteractiveTarget: function(targetEl) {
+        delete this._map._targets[stamp(targetEl)];
+        return this;
+      },
+      // @method getAttribution: String
+      // Used by the `attribution control`, returns the [attribution option](#gridlayer-attribution).
+      getAttribution: function() {
+        return this.options.attribution;
+      },
+      _layerAdd: function(e3) {
+        var map2 = e3.target;
+        if (!map2.hasLayer(this)) {
+          return;
+        }
+        this._map = map2;
+        this._zoomAnimated = map2._zoomAnimated;
+        if (this.getEvents) {
+          var events = this.getEvents();
+          map2.on(events, this);
+          this.once("remove", function() {
+            map2.off(events, this);
+          }, this);
+        }
+        this.onAdd(map2);
+        this.fire("add");
+        map2.fire("layeradd", { layer: this });
+      }
+    });
+    Map2.include({
+      // @method addLayer(layer: Layer): this
+      // Adds the given layer to the map
+      addLayer: function(layer) {
+        if (!layer._layerAdd) {
+          throw new Error("The provided object is not a Layer.");
+        }
+        var id2 = stamp(layer);
+        if (this._layers[id2]) {
+          return this;
+        }
+        this._layers[id2] = layer;
+        layer._mapToAdd = this;
+        if (layer.beforeAdd) {
+          layer.beforeAdd(this);
+        }
+        this.whenReady(layer._layerAdd, layer);
+        return this;
+      },
+      // @method removeLayer(layer: Layer): this
+      // Removes the given layer from the map.
+      removeLayer: function(layer) {
+        var id2 = stamp(layer);
+        if (!this._layers[id2]) {
+          return this;
+        }
+        if (this._loaded) {
+          layer.onRemove(this);
+        }
+        delete this._layers[id2];
+        if (this._loaded) {
+          this.fire("layerremove", { layer });
+          layer.fire("remove");
+        }
+        layer._map = layer._mapToAdd = null;
+        return this;
+      },
+      // @method hasLayer(layer: Layer): Boolean
+      // Returns `true` if the given layer is currently added to the map
+      hasLayer: function(layer) {
+        return stamp(layer) in this._layers;
+      },
+      /* @method eachLayer(fn: Function, context?: Object): this
+       * Iterates over the layers of the map, optionally specifying context of the iterator function.
+       * ```
+       * map.eachLayer(function(layer){
+       *     layer.bindPopup('Hello');
+       * });
+       * ```
+       */
+      eachLayer: function(method, context) {
+        for (var i2 in this._layers) {
+          method.call(context, this._layers[i2]);
+        }
+        return this;
+      },
+      _addLayers: function(layers2) {
+        layers2 = layers2 ? isArray2(layers2) ? layers2 : [layers2] : [];
+        for (var i2 = 0, len = layers2.length; i2 < len; i2++) {
+          this.addLayer(layers2[i2]);
+        }
+      },
+      _addZoomLimit: function(layer) {
+        if (!isNaN(layer.options.maxZoom) || !isNaN(layer.options.minZoom)) {
+          this._zoomBoundLayers[stamp(layer)] = layer;
+          this._updateZoomLevels();
+        }
+      },
+      _removeZoomLimit: function(layer) {
+        var id2 = stamp(layer);
+        if (this._zoomBoundLayers[id2]) {
+          delete this._zoomBoundLayers[id2];
+          this._updateZoomLevels();
+        }
+      },
+      _updateZoomLevels: function() {
+        var minZoom = Infinity, maxZoom = -Infinity, oldZoomSpan = this._getZoomSpan();
+        for (var i2 in this._zoomBoundLayers) {
+          var options = this._zoomBoundLayers[i2].options;
+          minZoom = options.minZoom === void 0 ? minZoom : Math.min(minZoom, options.minZoom);
+          maxZoom = options.maxZoom === void 0 ? maxZoom : Math.max(maxZoom, options.maxZoom);
+        }
+        this._layersMaxZoom = maxZoom === -Infinity ? void 0 : maxZoom;
+        this._layersMinZoom = minZoom === Infinity ? void 0 : minZoom;
+        if (oldZoomSpan !== this._getZoomSpan()) {
+          this.fire("zoomlevelschange");
+        }
+        if (this.options.maxZoom === void 0 && this._layersMaxZoom && this.getZoom() > this._layersMaxZoom) {
+          this.setZoom(this._layersMaxZoom);
+        }
+        if (this.options.minZoom === void 0 && this._layersMinZoom && this.getZoom() < this._layersMinZoom) {
+          this.setZoom(this._layersMinZoom);
+        }
+      }
+    });
+    var LayerGroup = Layer2.extend({
+      initialize: function(layers2, options) {
+        setOptions(this, options);
+        this._layers = {};
+        var i2, len;
+        if (layers2) {
+          for (i2 = 0, len = layers2.length; i2 < len; i2++) {
+            this.addLayer(layers2[i2]);
+          }
+        }
+      },
+      // @method addLayer(layer: Layer): this
+      // Adds the given layer to the group.
+      addLayer: function(layer) {
+        var id2 = this.getLayerId(layer);
+        this._layers[id2] = layer;
+        if (this._map) {
+          this._map.addLayer(layer);
+        }
+        return this;
+      },
+      // @method removeLayer(layer: Layer): this
+      // Removes the given layer from the group.
+      // @alternative
+      // @method removeLayer(id: Number): this
+      // Removes the layer with the given internal ID from the group.
+      removeLayer: function(layer) {
+        var id2 = layer in this._layers ? layer : this.getLayerId(layer);
+        if (this._map && this._layers[id2]) {
+          this._map.removeLayer(this._layers[id2]);
+        }
+        delete this._layers[id2];
+        return this;
+      },
+      // @method hasLayer(layer: Layer): Boolean
+      // Returns `true` if the given layer is currently added to the group.
+      // @alternative
+      // @method hasLayer(id: Number): Boolean
+      // Returns `true` if the given internal ID is currently added to the group.
+      hasLayer: function(layer) {
+        var layerId = typeof layer === "number" ? layer : this.getLayerId(layer);
+        return layerId in this._layers;
+      },
+      // @method clearLayers(): this
+      // Removes all the layers from the group.
+      clearLayers: function() {
+        return this.eachLayer(this.removeLayer, this);
+      },
+      // @method invoke(methodName: String, …): this
+      // Calls `methodName` on every layer contained in this group, passing any
+      // additional parameters. Has no effect if the layers contained do not
+      // implement `methodName`.
+      invoke: function(methodName) {
+        var args = Array.prototype.slice.call(arguments, 1), i2, layer;
+        for (i2 in this._layers) {
+          layer = this._layers[i2];
+          if (layer[methodName]) {
+            layer[methodName].apply(layer, args);
+          }
+        }
+        return this;
+      },
+      onAdd: function(map2) {
+        this.eachLayer(map2.addLayer, map2);
+      },
+      onRemove: function(map2) {
+        this.eachLayer(map2.removeLayer, map2);
+      },
+      // @method eachLayer(fn: Function, context?: Object): this
+      // Iterates over the layers of the group, optionally specifying context of the iterator function.
+      // ```js
+      // group.eachLayer(function (layer) {
+      // 	layer.bindPopup('Hello');
+      // });
+      // ```
+      eachLayer: function(method, context) {
+        for (var i2 in this._layers) {
+          method.call(context, this._layers[i2]);
+        }
+        return this;
+      },
+      // @method getLayer(id: Number): Layer
+      // Returns the layer with the given internal ID.
+      getLayer: function(id2) {
+        return this._layers[id2];
+      },
+      // @method getLayers(): Layer[]
+      // Returns an array of all the layers added to the group.
+      getLayers: function() {
+        var layers2 = [];
+        this.eachLayer(layers2.push, layers2);
+        return layers2;
+      },
+      // @method setZIndex(zIndex: Number): this
+      // Calls `setZIndex` on every layer contained in this group, passing the z-index.
+      setZIndex: function(zIndex) {
+        return this.invoke("setZIndex", zIndex);
+      },
+      // @method getLayerId(layer: Layer): Number
+      // Returns the internal ID for a layer
+      getLayerId: function(layer) {
+        return stamp(layer);
+      }
+    });
+    var layerGroup = function(layers2, options) {
+      return new LayerGroup(layers2, options);
+    };
+    var FeatureGroup = LayerGroup.extend({
+      addLayer: function(layer) {
+        if (this.hasLayer(layer)) {
+          return this;
+        }
+        layer.addEventParent(this);
+        LayerGroup.prototype.addLayer.call(this, layer);
+        return this.fire("layeradd", { layer });
+      },
+      removeLayer: function(layer) {
+        if (!this.hasLayer(layer)) {
+          return this;
+        }
+        if (layer in this._layers) {
+          layer = this._layers[layer];
+        }
+        layer.removeEventParent(this);
+        LayerGroup.prototype.removeLayer.call(this, layer);
+        return this.fire("layerremove", { layer });
+      },
+      // @method setStyle(style: Path options): this
+      // Sets the given path options to each layer of the group that has a `setStyle` method.
+      setStyle: function(style3) {
+        return this.invoke("setStyle", style3);
+      },
+      // @method bringToFront(): this
+      // Brings the layer group to the top of all other layers
+      bringToFront: function() {
+        return this.invoke("bringToFront");
+      },
+      // @method bringToBack(): this
+      // Brings the layer group to the back of all other layers
+      bringToBack: function() {
+        return this.invoke("bringToBack");
+      },
+      // @method getBounds(): LatLngBounds
+      // Returns the LatLngBounds of the Feature Group (created from bounds and coordinates of its children).
+      getBounds: function() {
+        var bounds = new LatLngBounds();
+        for (var id2 in this._layers) {
+          var layer = this._layers[id2];
+          bounds.extend(layer.getBounds ? layer.getBounds() : layer.getLatLng());
+        }
+        return bounds;
+      }
+    });
+    var featureGroup = function(layers2, options) {
+      return new FeatureGroup(layers2, options);
+    };
+    var Icon2 = Class.extend({
+      /* @section
+       * @aka Icon options
+       *
+       * @option iconUrl: String = null
+       * **(required)** The URL to the icon image (absolute or relative to your script path).
+       *
+       * @option iconRetinaUrl: String = null
+       * The URL to a retina sized version of the icon image (absolute or relative to your
+       * script path). Used for Retina screen devices.
+       *
+       * @option iconSize: Point = null
+       * Size of the icon image in pixels.
+       *
+       * @option iconAnchor: Point = null
+       * The coordinates of the "tip" of the icon (relative to its top left corner). The icon
+       * will be aligned so that this point is at the marker's geographical location. Centered
+       * by default if size is specified, also can be set in CSS with negative margins.
+       *
+       * @option popupAnchor: Point = [0, 0]
+       * The coordinates of the point from which popups will "open", relative to the icon anchor.
+       *
+       * @option tooltipAnchor: Point = [0, 0]
+       * The coordinates of the point from which tooltips will "open", relative to the icon anchor.
+       *
+       * @option shadowUrl: String = null
+       * The URL to the icon shadow image. If not specified, no shadow image will be created.
+       *
+       * @option shadowRetinaUrl: String = null
+       *
+       * @option shadowSize: Point = null
+       * Size of the shadow image in pixels.
+       *
+       * @option shadowAnchor: Point = null
+       * The coordinates of the "tip" of the shadow (relative to its top left corner) (the same
+       * as iconAnchor if not specified).
+       *
+       * @option className: String = ''
+       * A custom class name to assign to both icon and shadow images. Empty by default.
+       */
+      options: {
+        popupAnchor: [0, 0],
+        tooltipAnchor: [0, 0],
+        // @option crossOrigin: Boolean|String = false
+        // Whether the crossOrigin attribute will be added to the tiles.
+        // If a String is provided, all tiles will have their crossOrigin attribute set to the String provided. This is needed if you want to access tile pixel data.
+        // Refer to [CORS Settings](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) for valid String values.
+        crossOrigin: false
+      },
+      initialize: function(options) {
+        setOptions(this, options);
+      },
+      // @method createIcon(oldIcon?: HTMLElement): HTMLElement
+      // Called internally when the icon has to be shown, returns a `<img>` HTML element
+      // styled according to the options.
+      createIcon: function(oldIcon) {
+        return this._createIcon("icon", oldIcon);
+      },
+      // @method createShadow(oldIcon?: HTMLElement): HTMLElement
+      // As `createIcon`, but for the shadow beneath it.
+      createShadow: function(oldIcon) {
+        return this._createIcon("shadow", oldIcon);
+      },
+      _createIcon: function(name, oldIcon) {
+        var src = this._getIconUrl(name);
+        if (!src) {
+          if (name === "icon") {
+            throw new Error("iconUrl not set in Icon options (see the docs).");
+          }
+          return null;
+        }
+        var img = this._createImg(src, oldIcon && oldIcon.tagName === "IMG" ? oldIcon : null);
+        this._setIconStyles(img, name);
+        if (this.options.crossOrigin || this.options.crossOrigin === "") {
+          img.crossOrigin = this.options.crossOrigin === true ? "" : this.options.crossOrigin;
+        }
+        return img;
+      },
+      _setIconStyles: function(img, name) {
+        var options = this.options;
+        var sizeOption = options[name + "Size"];
+        if (typeof sizeOption === "number") {
+          sizeOption = [sizeOption, sizeOption];
+        }
+        var size2 = toPoint(sizeOption), anchor = toPoint(name === "shadow" && options.shadowAnchor || options.iconAnchor || size2 && size2.divideBy(2, true));
+        img.className = "leaflet-marker-" + name + " " + (options.className || "");
+        if (anchor) {
+          img.style.marginLeft = -anchor.x + "px";
+          img.style.marginTop = -anchor.y + "px";
+        }
+        if (size2) {
+          img.style.width = size2.x + "px";
+          img.style.height = size2.y + "px";
+        }
+      },
+      _createImg: function(src, el) {
+        el = el || document.createElement("img");
+        el.src = src;
+        return el;
+      },
+      _getIconUrl: function(name) {
+        return Browser.retina && this.options[name + "RetinaUrl"] || this.options[name + "Url"];
+      }
+    });
+    function icon(options) {
+      return new Icon2(options);
+    }
+    var IconDefault = Icon2.extend({
+      options: {
+        iconUrl: "marker-icon.png",
+        iconRetinaUrl: "marker-icon-2x.png",
+        shadowUrl: "marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        tooltipAnchor: [16, -28],
+        shadowSize: [41, 41]
+      },
+      _getIconUrl: function(name) {
+        if (typeof IconDefault.imagePath !== "string") {
+          IconDefault.imagePath = this._detectIconPath();
+        }
+        return (this.options.imagePath || IconDefault.imagePath) + Icon2.prototype._getIconUrl.call(this, name);
+      },
+      _stripUrl: function(path) {
+        var strip = function(str, re2, idx) {
+          var match = re2.exec(str);
+          return match && match[idx];
+        };
+        path = strip(path, /^url\((['"])?(.+)\1\)$/, 2);
+        return path && strip(path, /^(.*)marker-icon\.png$/, 1);
+      },
+      _detectIconPath: function() {
+        var el = create$1("div", "leaflet-default-icon-path", document.body);
+        var path = getStyle(el, "background-image") || getStyle(el, "backgroundImage");
+        document.body.removeChild(el);
+        path = this._stripUrl(path);
+        if (path) {
+          return path;
+        }
+        var link = document.querySelector('link[href$="leaflet.css"]');
+        if (!link) {
+          return "";
+        }
+        return link.href.substring(0, link.href.length - "leaflet.css".length - 1);
+      }
+    });
+    var MarkerDrag = Handler.extend({
+      initialize: function(marker2) {
+        this._marker = marker2;
+      },
+      addHooks: function() {
+        var icon2 = this._marker._icon;
+        if (!this._draggable) {
+          this._draggable = new Draggable(icon2, icon2, true);
+        }
+        this._draggable.on({
+          dragstart: this._onDragStart,
+          predrag: this._onPreDrag,
+          drag: this._onDrag,
+          dragend: this._onDragEnd
+        }, this).enable();
+        addClass(icon2, "leaflet-marker-draggable");
+      },
+      removeHooks: function() {
+        this._draggable.off({
+          dragstart: this._onDragStart,
+          predrag: this._onPreDrag,
+          drag: this._onDrag,
+          dragend: this._onDragEnd
+        }, this).disable();
+        if (this._marker._icon) {
+          removeClass(this._marker._icon, "leaflet-marker-draggable");
+        }
+      },
+      moved: function() {
+        return this._draggable && this._draggable._moved;
+      },
+      _adjustPan: function(e3) {
+        var marker2 = this._marker, map2 = marker2._map, speed = this._marker.options.autoPanSpeed, padding = this._marker.options.autoPanPadding, iconPos = getPosition(marker2._icon), bounds = map2.getPixelBounds(), origin = map2.getPixelOrigin();
+        var panBounds = toBounds(
+          bounds.min._subtract(origin).add(padding),
+          bounds.max._subtract(origin).subtract(padding)
+        );
+        if (!panBounds.contains(iconPos)) {
+          var movement = toPoint(
+            (Math.max(panBounds.max.x, iconPos.x) - panBounds.max.x) / (bounds.max.x - panBounds.max.x) - (Math.min(panBounds.min.x, iconPos.x) - panBounds.min.x) / (bounds.min.x - panBounds.min.x),
+            (Math.max(panBounds.max.y, iconPos.y) - panBounds.max.y) / (bounds.max.y - panBounds.max.y) - (Math.min(panBounds.min.y, iconPos.y) - panBounds.min.y) / (bounds.min.y - panBounds.min.y)
+          ).multiplyBy(speed);
+          map2.panBy(movement, { animate: false });
+          this._draggable._newPos._add(movement);
+          this._draggable._startPos._add(movement);
+          setPosition(marker2._icon, this._draggable._newPos);
+          this._onDrag(e3);
+          this._panRequest = requestAnimFrame(this._adjustPan.bind(this, e3));
+        }
+      },
+      _onDragStart: function() {
+        this._oldLatLng = this._marker.getLatLng();
+        this._marker.closePopup && this._marker.closePopup();
+        this._marker.fire("movestart").fire("dragstart");
+      },
+      _onPreDrag: function(e3) {
+        if (this._marker.options.autoPan) {
+          cancelAnimFrame(this._panRequest);
+          this._panRequest = requestAnimFrame(this._adjustPan.bind(this, e3));
+        }
+      },
+      _onDrag: function(e3) {
+        var marker2 = this._marker, shadow = marker2._shadow, iconPos = getPosition(marker2._icon), latlng = marker2._map.layerPointToLatLng(iconPos);
+        if (shadow) {
+          setPosition(shadow, iconPos);
+        }
+        marker2._latlng = latlng;
+        e3.latlng = latlng;
+        e3.oldLatLng = this._oldLatLng;
+        marker2.fire("move", e3).fire("drag", e3);
+      },
+      _onDragEnd: function(e3) {
+        cancelAnimFrame(this._panRequest);
+        delete this._oldLatLng;
+        this._marker.fire("moveend").fire("dragend", e3);
+      }
+    });
+    var Marker2 = Layer2.extend({
+      // @section
+      // @aka Marker options
+      options: {
+        // @option icon: Icon = *
+        // Icon instance to use for rendering the marker.
+        // See [Icon documentation](#L.Icon) for details on how to customize the marker icon.
+        // If not specified, a common instance of `L.Icon.Default` is used.
+        icon: new IconDefault(),
+        // Option inherited from "Interactive layer" abstract class
+        interactive: true,
+        // @option keyboard: Boolean = true
+        // Whether the marker can be tabbed to with a keyboard and clicked by pressing enter.
+        keyboard: true,
+        // @option title: String = ''
+        // Text for the browser tooltip that appear on marker hover (no tooltip by default).
+        // [Useful for accessibility](https://leafletjs.com/examples/accessibility/#markers-must-be-labelled).
+        title: "",
+        // @option alt: String = 'Marker'
+        // Text for the `alt` attribute of the icon image.
+        // [Useful for accessibility](https://leafletjs.com/examples/accessibility/#markers-must-be-labelled).
+        alt: "Marker",
+        // @option zIndexOffset: Number = 0
+        // By default, marker images zIndex is set automatically based on its latitude. Use this option if you want to put the marker on top of all others (or below), specifying a high value like `1000` (or high negative value, respectively).
+        zIndexOffset: 0,
+        // @option opacity: Number = 1.0
+        // The opacity of the marker.
+        opacity: 1,
+        // @option riseOnHover: Boolean = false
+        // If `true`, the marker will get on top of others when you hover the mouse over it.
+        riseOnHover: false,
+        // @option riseOffset: Number = 250
+        // The z-index offset used for the `riseOnHover` feature.
+        riseOffset: 250,
+        // @option pane: String = 'markerPane'
+        // `Map pane` where the markers icon will be added.
+        pane: "markerPane",
+        // @option shadowPane: String = 'shadowPane'
+        // `Map pane` where the markers shadow will be added.
+        shadowPane: "shadowPane",
+        // @option bubblingMouseEvents: Boolean = false
+        // When `true`, a mouse event on this marker will trigger the same event on the map
+        // (unless [`L.DomEvent.stopPropagation`](#domevent-stoppropagation) is used).
+        bubblingMouseEvents: false,
+        // @option autoPanOnFocus: Boolean = true
+        // When `true`, the map will pan whenever the marker is focused (via
+        // e.g. pressing `tab` on the keyboard) to ensure the marker is
+        // visible within the map's bounds
+        autoPanOnFocus: true,
+        // @section Draggable marker options
+        // @option draggable: Boolean = false
+        // Whether the marker is draggable with mouse/touch or not.
+        draggable: false,
+        // @option autoPan: Boolean = false
+        // Whether to pan the map when dragging this marker near its edge or not.
+        autoPan: false,
+        // @option autoPanPadding: Point = Point(50, 50)
+        // Distance (in pixels to the left/right and to the top/bottom) of the
+        // map edge to start panning the map.
+        autoPanPadding: [50, 50],
+        // @option autoPanSpeed: Number = 10
+        // Number of pixels the map should pan by.
+        autoPanSpeed: 10
+      },
+      /* @section
+       *
+       * In addition to [shared layer methods](#Layer) like `addTo()` and `remove()` and [popup methods](#Popup) like bindPopup() you can also use the following methods:
+       */
+      initialize: function(latlng, options) {
+        setOptions(this, options);
+        this._latlng = toLatLng(latlng);
+      },
+      onAdd: function(map2) {
+        this._zoomAnimated = this._zoomAnimated && map2.options.markerZoomAnimation;
+        if (this._zoomAnimated) {
+          map2.on("zoomanim", this._animateZoom, this);
+        }
+        this._initIcon();
+        this.update();
+      },
+      onRemove: function(map2) {
+        if (this.dragging && this.dragging.enabled()) {
+          this.options.draggable = true;
+          this.dragging.removeHooks();
+        }
+        delete this.dragging;
+        if (this._zoomAnimated) {
+          map2.off("zoomanim", this._animateZoom, this);
+        }
+        this._removeIcon();
+        this._removeShadow();
+      },
+      getEvents: function() {
+        return {
+          zoom: this.update,
+          viewreset: this.update
+        };
+      },
+      // @method getLatLng: LatLng
+      // Returns the current geographical position of the marker.
+      getLatLng: function() {
+        return this._latlng;
+      },
+      // @method setLatLng(latlng: LatLng): this
+      // Changes the marker position to the given point.
+      setLatLng: function(latlng) {
+        var oldLatLng = this._latlng;
+        this._latlng = toLatLng(latlng);
+        this.update();
+        return this.fire("move", { oldLatLng, latlng: this._latlng });
+      },
+      // @method setZIndexOffset(offset: Number): this
+      // Changes the [zIndex offset](#marker-zindexoffset) of the marker.
+      setZIndexOffset: function(offset2) {
+        this.options.zIndexOffset = offset2;
+        return this.update();
+      },
+      // @method getIcon: Icon
+      // Returns the current icon used by the marker
+      getIcon: function() {
+        return this.options.icon;
+      },
+      // @method setIcon(icon: Icon): this
+      // Changes the marker icon.
+      setIcon: function(icon2) {
+        this.options.icon = icon2;
+        if (this._map) {
+          this._initIcon();
+          this.update();
+        }
+        if (this._popup) {
+          this.bindPopup(this._popup, this._popup.options);
+        }
+        return this;
+      },
+      getElement: function() {
+        return this._icon;
+      },
+      update: function() {
+        if (this._icon && this._map) {
+          var pos = this._map.latLngToLayerPoint(this._latlng).round();
+          this._setPos(pos);
+        }
+        return this;
+      },
+      _initIcon: function() {
+        var options = this.options, classToAdd = "leaflet-zoom-" + (this._zoomAnimated ? "animated" : "hide");
+        var icon2 = options.icon.createIcon(this._icon), addIcon = false;
+        if (icon2 !== this._icon) {
+          if (this._icon) {
+            this._removeIcon();
+          }
+          addIcon = true;
+          if (options.title) {
+            icon2.title = options.title;
+          }
+          if (icon2.tagName === "IMG") {
+            icon2.alt = options.alt || "";
+          }
+        }
+        addClass(icon2, classToAdd);
+        if (options.keyboard) {
+          icon2.tabIndex = "0";
+          icon2.setAttribute("role", "button");
+        }
+        this._icon = icon2;
+        if (options.riseOnHover) {
+          this.on({
+            mouseover: this._bringToFront,
+            mouseout: this._resetZIndex
+          });
+        }
+        if (this.options.autoPanOnFocus) {
+          on(icon2, "focus", this._panOnFocus, this);
+        }
+        var newShadow = options.icon.createShadow(this._shadow), addShadow = false;
+        if (newShadow !== this._shadow) {
+          this._removeShadow();
+          addShadow = true;
+        }
+        if (newShadow) {
+          addClass(newShadow, classToAdd);
+          newShadow.alt = "";
+        }
+        this._shadow = newShadow;
+        if (options.opacity < 1) {
+          this._updateOpacity();
+        }
+        if (addIcon) {
+          this.getPane().appendChild(this._icon);
+        }
+        this._initInteraction();
+        if (newShadow && addShadow) {
+          this.getPane(options.shadowPane).appendChild(this._shadow);
+        }
+      },
+      _removeIcon: function() {
+        if (this.options.riseOnHover) {
+          this.off({
+            mouseover: this._bringToFront,
+            mouseout: this._resetZIndex
+          });
+        }
+        if (this.options.autoPanOnFocus) {
+          off(this._icon, "focus", this._panOnFocus, this);
+        }
+        remove(this._icon);
+        this.removeInteractiveTarget(this._icon);
+        this._icon = null;
+      },
+      _removeShadow: function() {
+        if (this._shadow) {
+          remove(this._shadow);
+        }
+        this._shadow = null;
+      },
+      _setPos: function(pos) {
+        if (this._icon) {
+          setPosition(this._icon, pos);
+        }
+        if (this._shadow) {
+          setPosition(this._shadow, pos);
+        }
+        this._zIndex = pos.y + this.options.zIndexOffset;
+        this._resetZIndex();
+      },
+      _updateZIndex: function(offset2) {
+        if (this._icon) {
+          this._icon.style.zIndex = this._zIndex + offset2;
+        }
+      },
+      _animateZoom: function(opt) {
+        var pos = this._map._latLngToNewLayerPoint(this._latlng, opt.zoom, opt.center).round();
+        this._setPos(pos);
+      },
+      _initInteraction: function() {
+        if (!this.options.interactive) {
+          return;
+        }
+        addClass(this._icon, "leaflet-interactive");
+        this.addInteractiveTarget(this._icon);
+        if (MarkerDrag) {
+          var draggable = this.options.draggable;
+          if (this.dragging) {
+            draggable = this.dragging.enabled();
+            this.dragging.disable();
+          }
+          this.dragging = new MarkerDrag(this);
+          if (draggable) {
+            this.dragging.enable();
+          }
+        }
+      },
+      // @method setOpacity(opacity: Number): this
+      // Changes the opacity of the marker.
+      setOpacity: function(opacity) {
+        this.options.opacity = opacity;
+        if (this._map) {
+          this._updateOpacity();
+        }
+        return this;
+      },
+      _updateOpacity: function() {
+        var opacity = this.options.opacity;
+        if (this._icon) {
+          setOpacity(this._icon, opacity);
+        }
+        if (this._shadow) {
+          setOpacity(this._shadow, opacity);
+        }
+      },
+      _bringToFront: function() {
+        this._updateZIndex(this.options.riseOffset);
+      },
+      _resetZIndex: function() {
+        this._updateZIndex(0);
+      },
+      _panOnFocus: function() {
+        var map2 = this._map;
+        if (!map2) {
+          return;
+        }
+        var iconOpts = this.options.icon.options;
+        var size2 = iconOpts.iconSize ? toPoint(iconOpts.iconSize) : toPoint(0, 0);
+        var anchor = iconOpts.iconAnchor ? toPoint(iconOpts.iconAnchor) : toPoint(0, 0);
+        map2.panInside(this._latlng, {
+          paddingTopLeft: anchor,
+          paddingBottomRight: size2.subtract(anchor)
+        });
+      },
+      _getPopupAnchor: function() {
+        return this.options.icon.options.popupAnchor;
+      },
+      _getTooltipAnchor: function() {
+        return this.options.icon.options.tooltipAnchor;
+      }
+    });
+    function marker(latlng, options) {
+      return new Marker2(latlng, options);
+    }
+    var Path2 = Layer2.extend({
+      // @section
+      // @aka Path options
+      options: {
+        // @option stroke: Boolean = true
+        // Whether to draw stroke along the path. Set it to `false` to disable borders on polygons or circles.
+        stroke: true,
+        // @option color: String = '#3388ff'
+        // Stroke color
+        color: "#3388ff",
+        // @option weight: Number = 3
+        // Stroke width in pixels
+        weight: 3,
+        // @option opacity: Number = 1.0
+        // Stroke opacity
+        opacity: 1,
+        // @option lineCap: String= 'round'
+        // A string that defines [shape to be used at the end](https://developer.mozilla.org/docs/Web/SVG/Attribute/stroke-linecap) of the stroke.
+        lineCap: "round",
+        // @option lineJoin: String = 'round'
+        // A string that defines [shape to be used at the corners](https://developer.mozilla.org/docs/Web/SVG/Attribute/stroke-linejoin) of the stroke.
+        lineJoin: "round",
+        // @option dashArray: String = null
+        // A string that defines the stroke [dash pattern](https://developer.mozilla.org/docs/Web/SVG/Attribute/stroke-dasharray). Doesn't work on `Canvas`-powered layers in [some old browsers](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/setLineDash#Browser_compatibility).
+        dashArray: null,
+        // @option dashOffset: String = null
+        // A string that defines the [distance into the dash pattern to start the dash](https://developer.mozilla.org/docs/Web/SVG/Attribute/stroke-dashoffset). Doesn't work on `Canvas`-powered layers in [some old browsers](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/setLineDash#Browser_compatibility).
+        dashOffset: null,
+        // @option fill: Boolean = depends
+        // Whether to fill the path with color. Set it to `false` to disable filling on polygons or circles.
+        fill: false,
+        // @option fillColor: String = *
+        // Fill color. Defaults to the value of the [`color`](#path-color) option
+        fillColor: null,
+        // @option fillOpacity: Number = 0.2
+        // Fill opacity.
+        fillOpacity: 0.2,
+        // @option fillRule: String = 'evenodd'
+        // A string that defines [how the inside of a shape](https://developer.mozilla.org/docs/Web/SVG/Attribute/fill-rule) is determined.
+        fillRule: "evenodd",
+        // className: '',
+        // Option inherited from "Interactive layer" abstract class
+        interactive: true,
+        // @option bubblingMouseEvents: Boolean = true
+        // When `true`, a mouse event on this path will trigger the same event on the map
+        // (unless [`L.DomEvent.stopPropagation`](#domevent-stoppropagation) is used).
+        bubblingMouseEvents: true
+      },
+      beforeAdd: function(map2) {
+        this._renderer = map2.getRenderer(this);
+      },
+      onAdd: function() {
+        this._renderer._initPath(this);
+        this._reset();
+        this._renderer._addPath(this);
+      },
+      onRemove: function() {
+        this._renderer._removePath(this);
+      },
+      // @method redraw(): this
+      // Redraws the layer. Sometimes useful after you changed the coordinates that the path uses.
+      redraw: function() {
+        if (this._map) {
+          this._renderer._updatePath(this);
+        }
+        return this;
+      },
+      // @method setStyle(style: Path options): this
+      // Changes the appearance of a Path based on the options in the `Path options` object.
+      setStyle: function(style3) {
+        setOptions(this, style3);
+        if (this._renderer) {
+          this._renderer._updateStyle(this);
+          if (this.options.stroke && style3 && Object.prototype.hasOwnProperty.call(style3, "weight")) {
+            this._updateBounds();
+          }
+        }
+        return this;
+      },
+      // @method bringToFront(): this
+      // Brings the layer to the top of all path layers.
+      bringToFront: function() {
+        if (this._renderer) {
+          this._renderer._bringToFront(this);
+        }
+        return this;
+      },
+      // @method bringToBack(): this
+      // Brings the layer to the bottom of all path layers.
+      bringToBack: function() {
+        if (this._renderer) {
+          this._renderer._bringToBack(this);
+        }
+        return this;
+      },
+      getElement: function() {
+        return this._path;
+      },
+      _reset: function() {
+        this._project();
+        this._update();
+      },
+      _clickTolerance: function() {
+        return (this.options.stroke ? this.options.weight / 2 : 0) + (this._renderer.options.tolerance || 0);
+      }
+    });
+    var CircleMarker = Path2.extend({
+      // @section
+      // @aka CircleMarker options
+      options: {
+        fill: true,
+        // @option radius: Number = 10
+        // Radius of the circle marker, in pixels
+        radius: 10
+      },
+      initialize: function(latlng, options) {
+        setOptions(this, options);
+        this._latlng = toLatLng(latlng);
+        this._radius = this.options.radius;
+      },
+      // @method setLatLng(latLng: LatLng): this
+      // Sets the position of a circle marker to a new location.
+      setLatLng: function(latlng) {
+        var oldLatLng = this._latlng;
+        this._latlng = toLatLng(latlng);
+        this.redraw();
+        return this.fire("move", { oldLatLng, latlng: this._latlng });
+      },
+      // @method getLatLng(): LatLng
+      // Returns the current geographical position of the circle marker
+      getLatLng: function() {
+        return this._latlng;
+      },
+      // @method setRadius(radius: Number): this
+      // Sets the radius of a circle marker. Units are in pixels.
+      setRadius: function(radius) {
+        this.options.radius = this._radius = radius;
+        return this.redraw();
+      },
+      // @method getRadius(): Number
+      // Returns the current radius of the circle
+      getRadius: function() {
+        return this._radius;
+      },
+      setStyle: function(options) {
+        var radius = options && options.radius || this._radius;
+        Path2.prototype.setStyle.call(this, options);
+        this.setRadius(radius);
+        return this;
+      },
+      _project: function() {
+        this._point = this._map.latLngToLayerPoint(this._latlng);
+        this._updateBounds();
+      },
+      _updateBounds: function() {
+        var r2 = this._radius, r22 = this._radiusY || r2, w = this._clickTolerance(), p2 = [r2 + w, r22 + w];
+        this._pxBounds = new Bounds(this._point.subtract(p2), this._point.add(p2));
+      },
+      _update: function() {
+        if (this._map) {
+          this._updatePath();
+        }
+      },
+      _updatePath: function() {
+        this._renderer._updateCircle(this);
+      },
+      _empty: function() {
+        return this._radius && !this._renderer._bounds.intersects(this._pxBounds);
+      },
+      // Needed by the `Canvas` renderer for interactivity
+      _containsPoint: function(p2) {
+        return p2.distanceTo(this._point) <= this._radius + this._clickTolerance();
+      }
+    });
+    function circleMarker(latlng, options) {
+      return new CircleMarker(latlng, options);
+    }
+    var Circle = CircleMarker.extend({
+      initialize: function(latlng, options, legacyOptions) {
+        if (typeof options === "number") {
+          options = extend2({}, legacyOptions, { radius: options });
+        }
+        setOptions(this, options);
+        this._latlng = toLatLng(latlng);
+        if (isNaN(this.options.radius)) {
+          throw new Error("Circle radius cannot be NaN");
+        }
+        this._mRadius = this.options.radius;
+      },
+      // @method setRadius(radius: Number): this
+      // Sets the radius of a circle. Units are in meters.
+      setRadius: function(radius) {
+        this._mRadius = radius;
+        return this.redraw();
+      },
+      // @method getRadius(): Number
+      // Returns the current radius of a circle. Units are in meters.
+      getRadius: function() {
+        return this._mRadius;
+      },
+      // @method getBounds(): LatLngBounds
+      // Returns the `LatLngBounds` of the path.
+      getBounds: function() {
+        var half = [this._radius, this._radiusY || this._radius];
+        return new LatLngBounds(
+          this._map.layerPointToLatLng(this._point.subtract(half)),
+          this._map.layerPointToLatLng(this._point.add(half))
+        );
+      },
+      setStyle: Path2.prototype.setStyle,
+      _project: function() {
+        var lng = this._latlng.lng, lat = this._latlng.lat, map2 = this._map, crs = map2.options.crs;
+        if (crs.distance === Earth.distance) {
+          var d2 = Math.PI / 180, latR = this._mRadius / Earth.R / d2, top = map2.project([lat + latR, lng]), bottom = map2.project([lat - latR, lng]), p2 = top.add(bottom).divideBy(2), lat2 = map2.unproject(p2).lat, lngR = Math.acos((Math.cos(latR * d2) - Math.sin(lat * d2) * Math.sin(lat2 * d2)) / (Math.cos(lat * d2) * Math.cos(lat2 * d2))) / d2;
+          if (isNaN(lngR) || lngR === 0) {
+            lngR = latR / Math.cos(Math.PI / 180 * lat);
+          }
+          this._point = p2.subtract(map2.getPixelOrigin());
+          this._radius = isNaN(lngR) ? 0 : p2.x - map2.project([lat2, lng - lngR]).x;
+          this._radiusY = p2.y - top.y;
+        } else {
+          var latlng2 = crs.unproject(crs.project(this._latlng).subtract([this._mRadius, 0]));
+          this._point = map2.latLngToLayerPoint(this._latlng);
+          this._radius = this._point.x - map2.latLngToLayerPoint(latlng2).x;
+        }
+        this._updateBounds();
+      }
+    });
+    function circle(latlng, options, legacyOptions) {
+      return new Circle(latlng, options, legacyOptions);
+    }
+    var Polyline = Path2.extend({
+      // @section
+      // @aka Polyline options
+      options: {
+        // @option smoothFactor: Number = 1.0
+        // How much to simplify the polyline on each zoom level. More means
+        // better performance and smoother look, and less means more accurate representation.
+        smoothFactor: 1,
+        // @option noClip: Boolean = false
+        // Disable polyline clipping.
+        noClip: false
+      },
+      initialize: function(latlngs, options) {
+        setOptions(this, options);
+        this._setLatLngs(latlngs);
+      },
+      // @method getLatLngs(): LatLng[]
+      // Returns an array of the points in the path, or nested arrays of points in case of multi-polyline.
+      getLatLngs: function() {
+        return this._latlngs;
+      },
+      // @method setLatLngs(latlngs: LatLng[]): this
+      // Replaces all the points in the polyline with the given array of geographical points.
+      setLatLngs: function(latlngs) {
+        this._setLatLngs(latlngs);
+        return this.redraw();
+      },
+      // @method isEmpty(): Boolean
+      // Returns `true` if the Polyline has no LatLngs.
+      isEmpty: function() {
+        return !this._latlngs.length;
+      },
+      // @method closestLayerPoint(p: Point): Point
+      // Returns the point closest to `p` on the Polyline.
+      closestLayerPoint: function(p2) {
+        var minDistance = Infinity, minPoint = null, closest = _sqClosestPointOnSegment, p1, p22;
+        for (var j = 0, jLen = this._parts.length; j < jLen; j++) {
+          var points = this._parts[j];
+          for (var i2 = 1, len = points.length; i2 < len; i2++) {
+            p1 = points[i2 - 1];
+            p22 = points[i2];
+            var sqDist = closest(p2, p1, p22, true);
+            if (sqDist < minDistance) {
+              minDistance = sqDist;
+              minPoint = closest(p2, p1, p22);
+            }
+          }
+        }
+        if (minPoint) {
+          minPoint.distance = Math.sqrt(minDistance);
+        }
+        return minPoint;
+      },
+      // @method getCenter(): LatLng
+      // Returns the center ([centroid](https://en.wikipedia.org/wiki/Centroid)) of the polyline.
+      getCenter: function() {
+        if (!this._map) {
+          throw new Error("Must add layer to map before using getCenter()");
+        }
+        return polylineCenter(this._defaultShape(), this._map.options.crs);
+      },
+      // @method getBounds(): LatLngBounds
+      // Returns the `LatLngBounds` of the path.
+      getBounds: function() {
+        return this._bounds;
+      },
+      // @method addLatLng(latlng: LatLng, latlngs?: LatLng[]): this
+      // Adds a given point to the polyline. By default, adds to the first ring of
+      // the polyline in case of a multi-polyline, but can be overridden by passing
+      // a specific ring as a LatLng array (that you can earlier access with [`getLatLngs`](#polyline-getlatlngs)).
+      addLatLng: function(latlng, latlngs) {
+        latlngs = latlngs || this._defaultShape();
+        latlng = toLatLng(latlng);
+        latlngs.push(latlng);
+        this._bounds.extend(latlng);
+        return this.redraw();
+      },
+      _setLatLngs: function(latlngs) {
+        this._bounds = new LatLngBounds();
+        this._latlngs = this._convertLatLngs(latlngs);
+      },
+      _defaultShape: function() {
+        return isFlat(this._latlngs) ? this._latlngs : this._latlngs[0];
+      },
+      // recursively convert latlngs input into actual LatLng instances; calculate bounds along the way
+      _convertLatLngs: function(latlngs) {
+        var result = [], flat = isFlat(latlngs);
+        for (var i2 = 0, len = latlngs.length; i2 < len; i2++) {
+          if (flat) {
+            result[i2] = toLatLng(latlngs[i2]);
+            this._bounds.extend(result[i2]);
+          } else {
+            result[i2] = this._convertLatLngs(latlngs[i2]);
+          }
+        }
+        return result;
+      },
+      _project: function() {
+        var pxBounds = new Bounds();
+        this._rings = [];
+        this._projectLatlngs(this._latlngs, this._rings, pxBounds);
+        if (this._bounds.isValid() && pxBounds.isValid()) {
+          this._rawPxBounds = pxBounds;
+          this._updateBounds();
+        }
+      },
+      _updateBounds: function() {
+        var w = this._clickTolerance(), p2 = new Point(w, w);
+        if (!this._rawPxBounds) {
+          return;
+        }
+        this._pxBounds = new Bounds([
+          this._rawPxBounds.min.subtract(p2),
+          this._rawPxBounds.max.add(p2)
+        ]);
+      },
+      // recursively turns latlngs into a set of rings with projected coordinates
+      _projectLatlngs: function(latlngs, result, projectedBounds) {
+        var flat = latlngs[0] instanceof LatLng, len = latlngs.length, i2, ring;
+        if (flat) {
+          ring = [];
+          for (i2 = 0; i2 < len; i2++) {
+            ring[i2] = this._map.latLngToLayerPoint(latlngs[i2]);
+            projectedBounds.extend(ring[i2]);
+          }
+          result.push(ring);
+        } else {
+          for (i2 = 0; i2 < len; i2++) {
+            this._projectLatlngs(latlngs[i2], result, projectedBounds);
+          }
+        }
+      },
+      // clip polyline by renderer bounds so that we have less to render for performance
+      _clipPoints: function() {
+        var bounds = this._renderer._bounds;
+        this._parts = [];
+        if (!this._pxBounds || !this._pxBounds.intersects(bounds)) {
+          return;
+        }
+        if (this.options.noClip) {
+          this._parts = this._rings;
+          return;
+        }
+        var parts = this._parts, i2, j, k2, len, len2, segment, points;
+        for (i2 = 0, k2 = 0, len = this._rings.length; i2 < len; i2++) {
+          points = this._rings[i2];
+          for (j = 0, len2 = points.length; j < len2 - 1; j++) {
+            segment = clipSegment(points[j], points[j + 1], bounds, j, true);
+            if (!segment) {
+              continue;
+            }
+            parts[k2] = parts[k2] || [];
+            parts[k2].push(segment[0]);
+            if (segment[1] !== points[j + 1] || j === len2 - 2) {
+              parts[k2].push(segment[1]);
+              k2++;
+            }
+          }
+        }
+      },
+      // simplify each clipped part of the polyline for performance
+      _simplifyPoints: function() {
+        var parts = this._parts, tolerance = this.options.smoothFactor;
+        for (var i2 = 0, len = parts.length; i2 < len; i2++) {
+          parts[i2] = simplify(parts[i2], tolerance);
+        }
+      },
+      _update: function() {
+        if (!this._map) {
+          return;
+        }
+        this._clipPoints();
+        this._simplifyPoints();
+        this._updatePath();
+      },
+      _updatePath: function() {
+        this._renderer._updatePoly(this);
+      },
+      // Needed by the `Canvas` renderer for interactivity
+      _containsPoint: function(p2, closed) {
+        var i2, j, k2, len, len2, part, w = this._clickTolerance();
+        if (!this._pxBounds || !this._pxBounds.contains(p2)) {
+          return false;
+        }
+        for (i2 = 0, len = this._parts.length; i2 < len; i2++) {
+          part = this._parts[i2];
+          for (j = 0, len2 = part.length, k2 = len2 - 1; j < len2; k2 = j++) {
+            if (!closed && j === 0) {
+              continue;
+            }
+            if (pointToSegmentDistance(p2, part[k2], part[j]) <= w) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+    });
+    function polyline(latlngs, options) {
+      return new Polyline(latlngs, options);
+    }
+    Polyline._flat = _flat;
+    var Polygon3 = Polyline.extend({
+      options: {
+        fill: true
+      },
+      isEmpty: function() {
+        return !this._latlngs.length || !this._latlngs[0].length;
+      },
+      // @method getCenter(): LatLng
+      // Returns the center ([centroid](http://en.wikipedia.org/wiki/Centroid)) of the Polygon.
+      getCenter: function() {
+        if (!this._map) {
+          throw new Error("Must add layer to map before using getCenter()");
+        }
+        return polygonCenter(this._defaultShape(), this._map.options.crs);
+      },
+      _convertLatLngs: function(latlngs) {
+        var result = Polyline.prototype._convertLatLngs.call(this, latlngs), len = result.length;
+        if (len >= 2 && result[0] instanceof LatLng && result[0].equals(result[len - 1])) {
+          result.pop();
+        }
+        return result;
+      },
+      _setLatLngs: function(latlngs) {
+        Polyline.prototype._setLatLngs.call(this, latlngs);
+        if (isFlat(this._latlngs)) {
+          this._latlngs = [this._latlngs];
+        }
+      },
+      _defaultShape: function() {
+        return isFlat(this._latlngs[0]) ? this._latlngs[0] : this._latlngs[0][0];
+      },
+      _clipPoints: function() {
+        var bounds = this._renderer._bounds, w = this.options.weight, p2 = new Point(w, w);
+        bounds = new Bounds(bounds.min.subtract(p2), bounds.max.add(p2));
+        this._parts = [];
+        if (!this._pxBounds || !this._pxBounds.intersects(bounds)) {
+          return;
+        }
+        if (this.options.noClip) {
+          this._parts = this._rings;
+          return;
+        }
+        for (var i2 = 0, len = this._rings.length, clipped; i2 < len; i2++) {
+          clipped = clipPolygon(this._rings[i2], bounds, true);
+          if (clipped.length) {
+            this._parts.push(clipped);
+          }
+        }
+      },
+      _updatePath: function() {
+        this._renderer._updatePoly(this, true);
+      },
+      // Needed by the `Canvas` renderer for interactivity
+      _containsPoint: function(p2) {
+        var inside = false, part, p1, p22, i2, j, k2, len, len2;
+        if (!this._pxBounds || !this._pxBounds.contains(p2)) {
+          return false;
+        }
+        for (i2 = 0, len = this._parts.length; i2 < len; i2++) {
+          part = this._parts[i2];
+          for (j = 0, len2 = part.length, k2 = len2 - 1; j < len2; k2 = j++) {
+            p1 = part[j];
+            p22 = part[k2];
+            if (p1.y > p2.y !== p22.y > p2.y && p2.x < (p22.x - p1.x) * (p2.y - p1.y) / (p22.y - p1.y) + p1.x) {
+              inside = !inside;
+            }
+          }
+        }
+        return inside || Polyline.prototype._containsPoint.call(this, p2, true);
+      }
+    });
+    function polygon(latlngs, options) {
+      return new Polygon3(latlngs, options);
+    }
+    var GeoJSON = FeatureGroup.extend({
+      /* @section
+       * @aka GeoJSON options
+       *
+       * @option pointToLayer: Function = *
+       * A `Function` defining how GeoJSON points spawn Leaflet layers. It is internally
+       * called when data is added, passing the GeoJSON point feature and its `LatLng`.
+       * The default is to spawn a default `Marker`:
+       * ```js
+       * function(geoJsonPoint, latlng) {
+       * 	return L.marker(latlng);
+       * }
+       * ```
+       *
+       * @option style: Function = *
+       * A `Function` defining the `Path options` for styling GeoJSON lines and polygons,
+       * called internally when data is added.
+       * The default value is to not override any defaults:
+       * ```js
+       * function (geoJsonFeature) {
+       * 	return {}
+       * }
+       * ```
+       *
+       * @option onEachFeature: Function = *
+       * A `Function` that will be called once for each created `Feature`, after it has
+       * been created and styled. Useful for attaching events and popups to features.
+       * The default is to do nothing with the newly created layers:
+       * ```js
+       * function (feature, layer) {}
+       * ```
+       *
+       * @option filter: Function = *
+       * A `Function` that will be used to decide whether to include a feature or not.
+       * The default is to include all features:
+       * ```js
+       * function (geoJsonFeature) {
+       * 	return true;
+       * }
+       * ```
+       * Note: dynamically changing the `filter` option will have effect only on newly
+       * added data. It will _not_ re-evaluate already included features.
+       *
+       * @option coordsToLatLng: Function = *
+       * A `Function` that will be used for converting GeoJSON coordinates to `LatLng`s.
+       * The default is the `coordsToLatLng` static method.
+       *
+       * @option markersInheritOptions: Boolean = false
+       * Whether default Markers for "Point" type Features inherit from group options.
+       */
+      initialize: function(geojson, options) {
+        setOptions(this, options);
+        this._layers = {};
+        if (geojson) {
+          this.addData(geojson);
+        }
+      },
+      // @method addData( <GeoJSON> data ): this
+      // Adds a GeoJSON object to the layer.
+      addData: function(geojson) {
+        var features = isArray2(geojson) ? geojson : geojson.features, i2, len, feature;
+        if (features) {
+          for (i2 = 0, len = features.length; i2 < len; i2++) {
+            feature = features[i2];
+            if (feature.geometries || feature.geometry || feature.features || feature.coordinates) {
+              this.addData(feature);
+            }
+          }
+          return this;
+        }
+        var options = this.options;
+        if (options.filter && !options.filter(geojson)) {
+          return this;
+        }
+        var layer = geometryToLayer(geojson, options);
+        if (!layer) {
+          return this;
+        }
+        layer.feature = asFeature(geojson);
+        layer.defaultOptions = layer.options;
+        this.resetStyle(layer);
+        if (options.onEachFeature) {
+          options.onEachFeature(geojson, layer);
+        }
+        return this.addLayer(layer);
+      },
+      // @method resetStyle( <Path> layer? ): this
+      // Resets the given vector layer's style to the original GeoJSON style, useful for resetting style after hover events.
+      // If `layer` is omitted, the style of all features in the current layer is reset.
+      resetStyle: function(layer) {
+        if (layer === void 0) {
+          return this.eachLayer(this.resetStyle, this);
+        }
+        layer.options = extend2({}, layer.defaultOptions);
+        this._setLayerStyle(layer, this.options.style);
+        return this;
+      },
+      // @method setStyle( <Function> style ): this
+      // Changes styles of GeoJSON vector layers with the given style function.
+      setStyle: function(style3) {
+        return this.eachLayer(function(layer) {
+          this._setLayerStyle(layer, style3);
+        }, this);
+      },
+      _setLayerStyle: function(layer, style3) {
+        if (layer.setStyle) {
+          if (typeof style3 === "function") {
+            style3 = style3(layer.feature);
+          }
+          layer.setStyle(style3);
+        }
+      }
+    });
+    function geometryToLayer(geojson, options) {
+      var geometry = geojson.type === "Feature" ? geojson.geometry : geojson, coords = geometry ? geometry.coordinates : null, layers2 = [], pointToLayer = options && options.pointToLayer, _coordsToLatLng = options && options.coordsToLatLng || coordsToLatLng, latlng, latlngs, i2, len;
+      if (!coords && !geometry) {
+        return null;
+      }
+      switch (geometry.type) {
+        case "Point":
+          latlng = _coordsToLatLng(coords);
+          return _pointToLayer(pointToLayer, geojson, latlng, options);
+        case "MultiPoint":
+          for (i2 = 0, len = coords.length; i2 < len; i2++) {
+            latlng = _coordsToLatLng(coords[i2]);
+            layers2.push(_pointToLayer(pointToLayer, geojson, latlng, options));
+          }
+          return new FeatureGroup(layers2);
+        case "LineString":
+        case "MultiLineString":
+          latlngs = coordsToLatLngs(coords, geometry.type === "LineString" ? 0 : 1, _coordsToLatLng);
+          return new Polyline(latlngs, options);
+        case "Polygon":
+        case "MultiPolygon":
+          latlngs = coordsToLatLngs(coords, geometry.type === "Polygon" ? 1 : 2, _coordsToLatLng);
+          return new Polygon3(latlngs, options);
+        case "GeometryCollection":
+          for (i2 = 0, len = geometry.geometries.length; i2 < len; i2++) {
+            var geoLayer = geometryToLayer({
+              geometry: geometry.geometries[i2],
+              type: "Feature",
+              properties: geojson.properties
+            }, options);
+            if (geoLayer) {
+              layers2.push(geoLayer);
+            }
+          }
+          return new FeatureGroup(layers2);
+        case "FeatureCollection":
+          for (i2 = 0, len = geometry.features.length; i2 < len; i2++) {
+            var featureLayer = geometryToLayer(geometry.features[i2], options);
+            if (featureLayer) {
+              layers2.push(featureLayer);
+            }
+          }
+          return new FeatureGroup(layers2);
+        default:
+          throw new Error("Invalid GeoJSON object.");
+      }
+    }
+    function _pointToLayer(pointToLayerFn, geojson, latlng, options) {
+      return pointToLayerFn ? pointToLayerFn(geojson, latlng) : new Marker2(latlng, options && options.markersInheritOptions && options);
+    }
+    function coordsToLatLng(coords) {
+      return new LatLng(coords[1], coords[0], coords[2]);
+    }
+    function coordsToLatLngs(coords, levelsDeep, _coordsToLatLng) {
+      var latlngs = [];
+      for (var i2 = 0, len = coords.length, latlng; i2 < len; i2++) {
+        latlng = levelsDeep ? coordsToLatLngs(coords[i2], levelsDeep - 1, _coordsToLatLng) : (_coordsToLatLng || coordsToLatLng)(coords[i2]);
+        latlngs.push(latlng);
+      }
+      return latlngs;
+    }
+    function latLngToCoords(latlng, precision) {
+      latlng = toLatLng(latlng);
+      return latlng.alt !== void 0 ? [formatNum(latlng.lng, precision), formatNum(latlng.lat, precision), formatNum(latlng.alt, precision)] : [formatNum(latlng.lng, precision), formatNum(latlng.lat, precision)];
+    }
+    function latLngsToCoords(latlngs, levelsDeep, closed, precision) {
+      var coords = [];
+      for (var i2 = 0, len = latlngs.length; i2 < len; i2++) {
+        coords.push(levelsDeep ? latLngsToCoords(latlngs[i2], isFlat(latlngs[i2]) ? 0 : levelsDeep - 1, closed, precision) : latLngToCoords(latlngs[i2], precision));
+      }
+      if (!levelsDeep && closed && coords.length > 0) {
+        coords.push(coords[0].slice());
+      }
+      return coords;
+    }
+    function getFeature(layer, newGeometry) {
+      return layer.feature ? extend2({}, layer.feature, { geometry: newGeometry }) : asFeature(newGeometry);
+    }
+    function asFeature(geojson) {
+      if (geojson.type === "Feature" || geojson.type === "FeatureCollection") {
+        return geojson;
+      }
+      return {
+        type: "Feature",
+        properties: {},
+        geometry: geojson
+      };
+    }
+    var PointToGeoJSON = {
+      toGeoJSON: function(precision) {
+        return getFeature(this, {
+          type: "Point",
+          coordinates: latLngToCoords(this.getLatLng(), precision)
+        });
+      }
+    };
+    Marker2.include(PointToGeoJSON);
+    Circle.include(PointToGeoJSON);
+    CircleMarker.include(PointToGeoJSON);
+    Polyline.include({
+      toGeoJSON: function(precision) {
+        var multi = !isFlat(this._latlngs);
+        var coords = latLngsToCoords(this._latlngs, multi ? 1 : 0, false, precision);
+        return getFeature(this, {
+          type: (multi ? "Multi" : "") + "LineString",
+          coordinates: coords
+        });
+      }
+    });
+    Polygon3.include({
+      toGeoJSON: function(precision) {
+        var holes = !isFlat(this._latlngs), multi = holes && !isFlat(this._latlngs[0]);
+        var coords = latLngsToCoords(this._latlngs, multi ? 2 : holes ? 1 : 0, true, precision);
+        if (!holes) {
+          coords = [coords];
+        }
+        return getFeature(this, {
+          type: (multi ? "Multi" : "") + "Polygon",
+          coordinates: coords
+        });
+      }
+    });
+    LayerGroup.include({
+      toMultiPoint: function(precision) {
+        var coords = [];
+        this.eachLayer(function(layer) {
+          coords.push(layer.toGeoJSON(precision).geometry.coordinates);
+        });
+        return getFeature(this, {
+          type: "MultiPoint",
+          coordinates: coords
+        });
+      },
+      // @method toGeoJSON(precision?: Number|false): Object
+      // Coordinates values are rounded with [`formatNum`](#util-formatnum) function with given `precision`.
+      // Returns a [`GeoJSON`](https://en.wikipedia.org/wiki/GeoJSON) representation of the layer group (as a GeoJSON `FeatureCollection`, `GeometryCollection`, or `MultiPoint`).
+      toGeoJSON: function(precision) {
+        var type = this.feature && this.feature.geometry && this.feature.geometry.type;
+        if (type === "MultiPoint") {
+          return this.toMultiPoint(precision);
+        }
+        var isGeometryCollection = type === "GeometryCollection", jsons = [];
+        this.eachLayer(function(layer) {
+          if (layer.toGeoJSON) {
+            var json = layer.toGeoJSON(precision);
+            if (isGeometryCollection) {
+              jsons.push(json.geometry);
+            } else {
+              var feature = asFeature(json);
+              if (feature.type === "FeatureCollection") {
+                jsons.push.apply(jsons, feature.features);
+              } else {
+                jsons.push(feature);
+              }
+            }
+          }
+        });
+        if (isGeometryCollection) {
+          return getFeature(this, {
+            geometries: jsons,
+            type: "GeometryCollection"
+          });
+        }
+        return {
+          type: "FeatureCollection",
+          features: jsons
+        };
+      }
+    });
+    function geoJSON(geojson, options) {
+      return new GeoJSON(geojson, options);
+    }
+    var geoJson = geoJSON;
+    var ImageOverlay = Layer2.extend({
+      // @section
+      // @aka ImageOverlay options
+      options: {
+        // @option opacity: Number = 1.0
+        // The opacity of the image overlay.
+        opacity: 1,
+        // @option alt: String = ''
+        // Text for the `alt` attribute of the image (useful for accessibility).
+        alt: "",
+        // @option interactive: Boolean = false
+        // If `true`, the image overlay will emit [mouse events](#interactive-layer) when clicked or hovered.
+        interactive: false,
+        // @option crossOrigin: Boolean|String = false
+        // Whether the crossOrigin attribute will be added to the image.
+        // If a String is provided, the image will have its crossOrigin attribute set to the String provided. This is needed if you want to access image pixel data.
+        // Refer to [CORS Settings](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) for valid String values.
+        crossOrigin: false,
+        // @option errorOverlayUrl: String = ''
+        // URL to the overlay image to show in place of the overlay that failed to load.
+        errorOverlayUrl: "",
+        // @option zIndex: Number = 1
+        // The explicit [zIndex](https://developer.mozilla.org/docs/Web/CSS/CSS_Positioning/Understanding_z_index) of the overlay layer.
+        zIndex: 1,
+        // @option className: String = ''
+        // A custom class name to assign to the image. Empty by default.
+        className: ""
+      },
+      initialize: function(url, bounds, options) {
+        this._url = url;
+        this._bounds = toLatLngBounds(bounds);
+        setOptions(this, options);
+      },
+      onAdd: function() {
+        if (!this._image) {
+          this._initImage();
+          if (this.options.opacity < 1) {
+            this._updateOpacity();
+          }
+        }
+        if (this.options.interactive) {
+          addClass(this._image, "leaflet-interactive");
+          this.addInteractiveTarget(this._image);
+        }
+        this.getPane().appendChild(this._image);
+        this._reset();
+      },
+      onRemove: function() {
+        remove(this._image);
+        if (this.options.interactive) {
+          this.removeInteractiveTarget(this._image);
+        }
+      },
+      // @method setOpacity(opacity: Number): this
+      // Sets the opacity of the overlay.
+      setOpacity: function(opacity) {
+        this.options.opacity = opacity;
+        if (this._image) {
+          this._updateOpacity();
+        }
+        return this;
+      },
+      setStyle: function(styleOpts) {
+        if (styleOpts.opacity) {
+          this.setOpacity(styleOpts.opacity);
+        }
+        return this;
+      },
+      // @method bringToFront(): this
+      // Brings the layer to the top of all overlays.
+      bringToFront: function() {
+        if (this._map) {
+          toFront(this._image);
+        }
+        return this;
+      },
+      // @method bringToBack(): this
+      // Brings the layer to the bottom of all overlays.
+      bringToBack: function() {
+        if (this._map) {
+          toBack(this._image);
+        }
+        return this;
+      },
+      // @method setUrl(url: String): this
+      // Changes the URL of the image.
+      setUrl: function(url) {
+        this._url = url;
+        if (this._image) {
+          this._image.src = url;
+        }
+        return this;
+      },
+      // @method setBounds(bounds: LatLngBounds): this
+      // Update the bounds that this ImageOverlay covers
+      setBounds: function(bounds) {
+        this._bounds = toLatLngBounds(bounds);
+        if (this._map) {
+          this._reset();
+        }
+        return this;
+      },
+      getEvents: function() {
+        var events = {
+          zoom: this._reset,
+          viewreset: this._reset
+        };
+        if (this._zoomAnimated) {
+          events.zoomanim = this._animateZoom;
+        }
+        return events;
+      },
+      // @method setZIndex(value: Number): this
+      // Changes the [zIndex](#imageoverlay-zindex) of the image overlay.
+      setZIndex: function(value) {
+        this.options.zIndex = value;
+        this._updateZIndex();
+        return this;
+      },
+      // @method getBounds(): LatLngBounds
+      // Get the bounds that this ImageOverlay covers
+      getBounds: function() {
+        return this._bounds;
+      },
+      // @method getElement(): HTMLElement
+      // Returns the instance of [`HTMLImageElement`](https://developer.mozilla.org/docs/Web/API/HTMLImageElement)
+      // used by this overlay.
+      getElement: function() {
+        return this._image;
+      },
+      _initImage: function() {
+        var wasElementSupplied = this._url.tagName === "IMG";
+        var img = this._image = wasElementSupplied ? this._url : create$1("img");
+        addClass(img, "leaflet-image-layer");
+        if (this._zoomAnimated) {
+          addClass(img, "leaflet-zoom-animated");
+        }
+        if (this.options.className) {
+          addClass(img, this.options.className);
+        }
+        img.onselectstart = falseFn;
+        img.onmousemove = falseFn;
+        img.onload = bind(this.fire, this, "load");
+        img.onerror = bind(this._overlayOnError, this, "error");
+        if (this.options.crossOrigin || this.options.crossOrigin === "") {
+          img.crossOrigin = this.options.crossOrigin === true ? "" : this.options.crossOrigin;
+        }
+        if (this.options.zIndex) {
+          this._updateZIndex();
+        }
+        if (wasElementSupplied) {
+          this._url = img.src;
+          return;
+        }
+        img.src = this._url;
+        img.alt = this.options.alt;
+      },
+      _animateZoom: function(e3) {
+        var scale3 = this._map.getZoomScale(e3.zoom), offset2 = this._map._latLngBoundsToNewLayerBounds(this._bounds, e3.zoom, e3.center).min;
+        setTransform(this._image, offset2, scale3);
+      },
+      _reset: function() {
+        var image = this._image, bounds = new Bounds(
+          this._map.latLngToLayerPoint(this._bounds.getNorthWest()),
+          this._map.latLngToLayerPoint(this._bounds.getSouthEast())
+        ), size2 = bounds.getSize();
+        setPosition(image, bounds.min);
+        image.style.width = size2.x + "px";
+        image.style.height = size2.y + "px";
+      },
+      _updateOpacity: function() {
+        setOpacity(this._image, this.options.opacity);
+      },
+      _updateZIndex: function() {
+        if (this._image && this.options.zIndex !== void 0 && this.options.zIndex !== null) {
+          this._image.style.zIndex = this.options.zIndex;
+        }
+      },
+      _overlayOnError: function() {
+        this.fire("error");
+        var errorUrl = this.options.errorOverlayUrl;
+        if (errorUrl && this._url !== errorUrl) {
+          this._url = errorUrl;
+          this._image.src = errorUrl;
+        }
+      },
+      // @method getCenter(): LatLng
+      // Returns the center of the ImageOverlay.
+      getCenter: function() {
+        return this._bounds.getCenter();
+      }
+    });
+    var imageOverlay = function(url, bounds, options) {
+      return new ImageOverlay(url, bounds, options);
+    };
+    var VideoOverlay = ImageOverlay.extend({
+      // @section
+      // @aka VideoOverlay options
+      options: {
+        // @option autoplay: Boolean = true
+        // Whether the video starts playing automatically when loaded.
+        // On some browsers autoplay will only work with `muted: true`
+        autoplay: true,
+        // @option loop: Boolean = true
+        // Whether the video will loop back to the beginning when played.
+        loop: true,
+        // @option keepAspectRatio: Boolean = true
+        // Whether the video will save aspect ratio after the projection.
+        // Relevant for supported browsers. See [browser compatibility](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit)
+        keepAspectRatio: true,
+        // @option muted: Boolean = false
+        // Whether the video starts on mute when loaded.
+        muted: false,
+        // @option playsInline: Boolean = true
+        // Mobile browsers will play the video right where it is instead of open it up in fullscreen mode.
+        playsInline: true
+      },
+      _initImage: function() {
+        var wasElementSupplied = this._url.tagName === "VIDEO";
+        var vid = this._image = wasElementSupplied ? this._url : create$1("video");
+        addClass(vid, "leaflet-image-layer");
+        if (this._zoomAnimated) {
+          addClass(vid, "leaflet-zoom-animated");
+        }
+        if (this.options.className) {
+          addClass(vid, this.options.className);
+        }
+        vid.onselectstart = falseFn;
+        vid.onmousemove = falseFn;
+        vid.onloadeddata = bind(this.fire, this, "load");
+        if (wasElementSupplied) {
+          var sourceElements = vid.getElementsByTagName("source");
+          var sources = [];
+          for (var j = 0; j < sourceElements.length; j++) {
+            sources.push(sourceElements[j].src);
+          }
+          this._url = sourceElements.length > 0 ? sources : [vid.src];
+          return;
+        }
+        if (!isArray2(this._url)) {
+          this._url = [this._url];
+        }
+        if (!this.options.keepAspectRatio && Object.prototype.hasOwnProperty.call(vid.style, "objectFit")) {
+          vid.style["objectFit"] = "fill";
+        }
+        vid.autoplay = !!this.options.autoplay;
+        vid.loop = !!this.options.loop;
+        vid.muted = !!this.options.muted;
+        vid.playsInline = !!this.options.playsInline;
+        for (var i2 = 0; i2 < this._url.length; i2++) {
+          var source = create$1("source");
+          source.src = this._url[i2];
+          vid.appendChild(source);
+        }
+      }
+      // @method getElement(): HTMLVideoElement
+      // Returns the instance of [`HTMLVideoElement`](https://developer.mozilla.org/docs/Web/API/HTMLVideoElement)
+      // used by this overlay.
+    });
+    function videoOverlay(video, bounds, options) {
+      return new VideoOverlay(video, bounds, options);
+    }
+    var SVGOverlay = ImageOverlay.extend({
+      _initImage: function() {
+        var el = this._image = this._url;
+        addClass(el, "leaflet-image-layer");
+        if (this._zoomAnimated) {
+          addClass(el, "leaflet-zoom-animated");
+        }
+        if (this.options.className) {
+          addClass(el, this.options.className);
+        }
+        el.onselectstart = falseFn;
+        el.onmousemove = falseFn;
+      }
+      // @method getElement(): SVGElement
+      // Returns the instance of [`SVGElement`](https://developer.mozilla.org/docs/Web/API/SVGElement)
+      // used by this overlay.
+    });
+    function svgOverlay(el, bounds, options) {
+      return new SVGOverlay(el, bounds, options);
+    }
+    var DivOverlay = Layer2.extend({
+      // @section
+      // @aka DivOverlay options
+      options: {
+        // @option interactive: Boolean = false
+        // If true, the popup/tooltip will listen to the mouse events.
+        interactive: false,
+        // @option offset: Point = Point(0, 0)
+        // The offset of the overlay position.
+        offset: [0, 0],
+        // @option className: String = ''
+        // A custom CSS class name to assign to the overlay.
+        className: "",
+        // @option pane: String = undefined
+        // `Map pane` where the overlay will be added.
+        pane: void 0,
+        // @option content: String|HTMLElement|Function = ''
+        // Sets the HTML content of the overlay while initializing. If a function is passed the source layer will be
+        // passed to the function. The function should return a `String` or `HTMLElement` to be used in the overlay.
+        content: ""
+      },
+      initialize: function(options, source) {
+        if (options && (options instanceof LatLng || isArray2(options))) {
+          this._latlng = toLatLng(options);
+          setOptions(this, source);
+        } else {
+          setOptions(this, options);
+          this._source = source;
+        }
+        if (this.options.content) {
+          this._content = this.options.content;
+        }
+      },
+      // @method openOn(map: Map): this
+      // Adds the overlay to the map.
+      // Alternative to `map.openPopup(popup)`/`.openTooltip(tooltip)`.
+      openOn: function(map2) {
+        map2 = arguments.length ? map2 : this._source._map;
+        if (!map2.hasLayer(this)) {
+          map2.addLayer(this);
+        }
+        return this;
+      },
+      // @method close(): this
+      // Closes the overlay.
+      // Alternative to `map.closePopup(popup)`/`.closeTooltip(tooltip)`
+      // and `layer.closePopup()`/`.closeTooltip()`.
+      close: function() {
+        if (this._map) {
+          this._map.removeLayer(this);
+        }
+        return this;
+      },
+      // @method toggle(layer?: Layer): this
+      // Opens or closes the overlay bound to layer depending on its current state.
+      // Argument may be omitted only for overlay bound to layer.
+      // Alternative to `layer.togglePopup()`/`.toggleTooltip()`.
+      toggle: function(layer) {
+        if (this._map) {
+          this.close();
+        } else {
+          if (arguments.length) {
+            this._source = layer;
+          } else {
+            layer = this._source;
+          }
+          this._prepareOpen();
+          this.openOn(layer._map);
+        }
+        return this;
+      },
+      onAdd: function(map2) {
+        this._zoomAnimated = map2._zoomAnimated;
+        if (!this._container) {
+          this._initLayout();
+        }
+        if (map2._fadeAnimated) {
+          setOpacity(this._container, 0);
+        }
+        clearTimeout(this._removeTimeout);
+        this.getPane().appendChild(this._container);
+        this.update();
+        if (map2._fadeAnimated) {
+          setOpacity(this._container, 1);
+        }
+        this.bringToFront();
+        if (this.options.interactive) {
+          addClass(this._container, "leaflet-interactive");
+          this.addInteractiveTarget(this._container);
+        }
+      },
+      onRemove: function(map2) {
+        if (map2._fadeAnimated) {
+          setOpacity(this._container, 0);
+          this._removeTimeout = setTimeout(bind(remove, void 0, this._container), 200);
+        } else {
+          remove(this._container);
+        }
+        if (this.options.interactive) {
+          removeClass(this._container, "leaflet-interactive");
+          this.removeInteractiveTarget(this._container);
+        }
+      },
+      // @namespace DivOverlay
+      // @method getLatLng: LatLng
+      // Returns the geographical point of the overlay.
+      getLatLng: function() {
+        return this._latlng;
+      },
+      // @method setLatLng(latlng: LatLng): this
+      // Sets the geographical point where the overlay will open.
+      setLatLng: function(latlng) {
+        this._latlng = toLatLng(latlng);
+        if (this._map) {
+          this._updatePosition();
+          this._adjustPan();
+        }
+        return this;
+      },
+      // @method getContent: String|HTMLElement
+      // Returns the content of the overlay.
+      getContent: function() {
+        return this._content;
+      },
+      // @method setContent(htmlContent: String|HTMLElement|Function): this
+      // Sets the HTML content of the overlay. If a function is passed the source layer will be passed to the function.
+      // The function should return a `String` or `HTMLElement` to be used in the overlay.
+      setContent: function(content) {
+        this._content = content;
+        this.update();
+        return this;
+      },
+      // @method getElement: String|HTMLElement
+      // Returns the HTML container of the overlay.
+      getElement: function() {
+        return this._container;
+      },
+      // @method update: null
+      // Updates the overlay content, layout and position. Useful for updating the overlay after something inside changed, e.g. image loaded.
+      update: function() {
+        if (!this._map) {
+          return;
+        }
+        this._container.style.visibility = "hidden";
+        this._updateContent();
+        this._updateLayout();
+        this._updatePosition();
+        this._container.style.visibility = "";
+        this._adjustPan();
+      },
+      getEvents: function() {
+        var events = {
+          zoom: this._updatePosition,
+          viewreset: this._updatePosition
+        };
+        if (this._zoomAnimated) {
+          events.zoomanim = this._animateZoom;
+        }
+        return events;
+      },
+      // @method isOpen: Boolean
+      // Returns `true` when the overlay is visible on the map.
+      isOpen: function() {
+        return !!this._map && this._map.hasLayer(this);
+      },
+      // @method bringToFront: this
+      // Brings this overlay in front of other overlays (in the same map pane).
+      bringToFront: function() {
+        if (this._map) {
+          toFront(this._container);
+        }
+        return this;
+      },
+      // @method bringToBack: this
+      // Brings this overlay to the back of other overlays (in the same map pane).
+      bringToBack: function() {
+        if (this._map) {
+          toBack(this._container);
+        }
+        return this;
+      },
+      // prepare bound overlay to open: update latlng pos / content source (for FeatureGroup)
+      _prepareOpen: function(latlng) {
+        var source = this._source;
+        if (!source._map) {
+          return false;
+        }
+        if (source instanceof FeatureGroup) {
+          source = null;
+          var layers2 = this._source._layers;
+          for (var id2 in layers2) {
+            if (layers2[id2]._map) {
+              source = layers2[id2];
+              break;
+            }
+          }
+          if (!source) {
+            return false;
+          }
+          this._source = source;
+        }
+        if (!latlng) {
+          if (source.getCenter) {
+            latlng = source.getCenter();
+          } else if (source.getLatLng) {
+            latlng = source.getLatLng();
+          } else if (source.getBounds) {
+            latlng = source.getBounds().getCenter();
+          } else {
+            throw new Error("Unable to get source layer LatLng.");
+          }
+        }
+        this.setLatLng(latlng);
+        if (this._map) {
+          this.update();
+        }
+        return true;
+      },
+      _updateContent: function() {
+        if (!this._content) {
+          return;
+        }
+        var node = this._contentNode;
+        var content = typeof this._content === "function" ? this._content(this._source || this) : this._content;
+        if (typeof content === "string") {
+          node.innerHTML = content;
+        } else {
+          while (node.hasChildNodes()) {
+            node.removeChild(node.firstChild);
+          }
+          node.appendChild(content);
+        }
+        this.fire("contentupdate");
+      },
+      _updatePosition: function() {
+        if (!this._map) {
+          return;
+        }
+        var pos = this._map.latLngToLayerPoint(this._latlng), offset2 = toPoint(this.options.offset), anchor = this._getAnchor();
+        if (this._zoomAnimated) {
+          setPosition(this._container, pos.add(anchor));
+        } else {
+          offset2 = offset2.add(pos).add(anchor);
+        }
+        var bottom = this._containerBottom = -offset2.y, left = this._containerLeft = -Math.round(this._containerWidth / 2) + offset2.x;
+        this._container.style.bottom = bottom + "px";
+        this._container.style.left = left + "px";
+      },
+      _getAnchor: function() {
+        return [0, 0];
+      }
+    });
+    Map2.include({
+      _initOverlay: function(OverlayClass, content, latlng, options) {
+        var overlay = content;
+        if (!(overlay instanceof OverlayClass)) {
+          overlay = new OverlayClass(options).setContent(content);
+        }
+        if (latlng) {
+          overlay.setLatLng(latlng);
+        }
+        return overlay;
+      }
+    });
+    Layer2.include({
+      _initOverlay: function(OverlayClass, old, content, options) {
+        var overlay = content;
+        if (overlay instanceof OverlayClass) {
+          setOptions(overlay, options);
+          overlay._source = this;
+        } else {
+          overlay = old && !options ? old : new OverlayClass(options, this);
+          overlay.setContent(content);
+        }
+        return overlay;
+      }
+    });
+    var Popup = DivOverlay.extend({
+      // @section
+      // @aka Popup options
+      options: {
+        // @option pane: String = 'popupPane'
+        // `Map pane` where the popup will be added.
+        pane: "popupPane",
+        // @option offset: Point = Point(0, 7)
+        // The offset of the popup position.
+        offset: [0, 7],
+        // @option maxWidth: Number = 300
+        // Max width of the popup, in pixels.
+        maxWidth: 300,
+        // @option minWidth: Number = 50
+        // Min width of the popup, in pixels.
+        minWidth: 50,
+        // @option maxHeight: Number = null
+        // If set, creates a scrollable container of the given height
+        // inside a popup if its content exceeds it.
+        // The scrollable container can be styled using the
+        // `leaflet-popup-scrolled` CSS class selector.
+        maxHeight: null,
+        // @option autoPan: Boolean = true
+        // Set it to `false` if you don't want the map to do panning animation
+        // to fit the opened popup.
+        autoPan: true,
+        // @option autoPanPaddingTopLeft: Point = null
+        // The margin between the popup and the top left corner of the map
+        // view after autopanning was performed.
+        autoPanPaddingTopLeft: null,
+        // @option autoPanPaddingBottomRight: Point = null
+        // The margin between the popup and the bottom right corner of the map
+        // view after autopanning was performed.
+        autoPanPaddingBottomRight: null,
+        // @option autoPanPadding: Point = Point(5, 5)
+        // Equivalent of setting both top left and bottom right autopan padding to the same value.
+        autoPanPadding: [5, 5],
+        // @option keepInView: Boolean = false
+        // Set it to `true` if you want to prevent users from panning the popup
+        // off of the screen while it is open.
+        keepInView: false,
+        // @option closeButton: Boolean = true
+        // Controls the presence of a close button in the popup.
+        closeButton: true,
+        // @option autoClose: Boolean = true
+        // Set it to `false` if you want to override the default behavior of
+        // the popup closing when another popup is opened.
+        autoClose: true,
+        // @option closeOnEscapeKey: Boolean = true
+        // Set it to `false` if you want to override the default behavior of
+        // the ESC key for closing of the popup.
+        closeOnEscapeKey: true,
+        // @option closeOnClick: Boolean = *
+        // Set it if you want to override the default behavior of the popup closing when user clicks
+        // on the map. Defaults to the map's [`closePopupOnClick`](#map-closepopuponclick) option.
+        // @option className: String = ''
+        // A custom CSS class name to assign to the popup.
+        className: ""
+      },
+      // @namespace Popup
+      // @method openOn(map: Map): this
+      // Alternative to `map.openPopup(popup)`.
+      // Adds the popup to the map and closes the previous one.
+      openOn: function(map2) {
+        map2 = arguments.length ? map2 : this._source._map;
+        if (!map2.hasLayer(this) && map2._popup && map2._popup.options.autoClose) {
+          map2.removeLayer(map2._popup);
+        }
+        map2._popup = this;
+        return DivOverlay.prototype.openOn.call(this, map2);
+      },
+      onAdd: function(map2) {
+        DivOverlay.prototype.onAdd.call(this, map2);
+        map2.fire("popupopen", { popup: this });
+        if (this._source) {
+          this._source.fire("popupopen", { popup: this }, true);
+          if (!(this._source instanceof Path2)) {
+            this._source.on("preclick", stopPropagation);
+          }
+        }
+      },
+      onRemove: function(map2) {
+        DivOverlay.prototype.onRemove.call(this, map2);
+        map2.fire("popupclose", { popup: this });
+        if (this._source) {
+          this._source.fire("popupclose", { popup: this }, true);
+          if (!(this._source instanceof Path2)) {
+            this._source.off("preclick", stopPropagation);
+          }
+        }
+      },
+      getEvents: function() {
+        var events = DivOverlay.prototype.getEvents.call(this);
+        if (this.options.closeOnClick !== void 0 ? this.options.closeOnClick : this._map.options.closePopupOnClick) {
+          events.preclick = this.close;
+        }
+        if (this.options.keepInView) {
+          events.moveend = this._adjustPan;
+        }
+        return events;
+      },
+      _initLayout: function() {
+        var prefix2 = "leaflet-popup", container = this._container = create$1(
+          "div",
+          prefix2 + " " + (this.options.className || "") + " leaflet-zoom-animated"
+        );
+        var wrapper = this._wrapper = create$1("div", prefix2 + "-content-wrapper", container);
+        this._contentNode = create$1("div", prefix2 + "-content", wrapper);
+        disableClickPropagation(container);
+        disableScrollPropagation(this._contentNode);
+        on(container, "contextmenu", stopPropagation);
+        this._tipContainer = create$1("div", prefix2 + "-tip-container", container);
+        this._tip = create$1("div", prefix2 + "-tip", this._tipContainer);
+        if (this.options.closeButton) {
+          var closeButton = this._closeButton = create$1("a", prefix2 + "-close-button", container);
+          closeButton.setAttribute("role", "button");
+          closeButton.setAttribute("aria-label", "Close popup");
+          closeButton.href = "#close";
+          closeButton.innerHTML = '<span aria-hidden="true">&#215;</span>';
+          on(closeButton, "click", function(ev) {
+            preventDefault(ev);
+            this.close();
+          }, this);
+        }
+      },
+      _updateLayout: function() {
+        var container = this._contentNode, style3 = container.style;
+        style3.width = "";
+        style3.whiteSpace = "nowrap";
+        var width = container.offsetWidth;
+        width = Math.min(width, this.options.maxWidth);
+        width = Math.max(width, this.options.minWidth);
+        style3.width = width + 1 + "px";
+        style3.whiteSpace = "";
+        style3.height = "";
+        var height = container.offsetHeight, maxHeight = this.options.maxHeight, scrolledClass = "leaflet-popup-scrolled";
+        if (maxHeight && height > maxHeight) {
+          style3.height = maxHeight + "px";
+          addClass(container, scrolledClass);
+        } else {
+          removeClass(container, scrolledClass);
+        }
+        this._containerWidth = this._container.offsetWidth;
+      },
+      _animateZoom: function(e3) {
+        var pos = this._map._latLngToNewLayerPoint(this._latlng, e3.zoom, e3.center), anchor = this._getAnchor();
+        setPosition(this._container, pos.add(anchor));
+      },
+      _adjustPan: function() {
+        if (!this.options.autoPan) {
+          return;
+        }
+        if (this._map._panAnim) {
+          this._map._panAnim.stop();
+        }
+        if (this._autopanning) {
+          this._autopanning = false;
+          return;
+        }
+        var map2 = this._map, marginBottom = parseInt(getStyle(this._container, "marginBottom"), 10) || 0, containerHeight = this._container.offsetHeight + marginBottom, containerWidth = this._containerWidth, layerPos = new Point(this._containerLeft, -containerHeight - this._containerBottom);
+        layerPos._add(getPosition(this._container));
+        var containerPos = map2.layerPointToContainerPoint(layerPos), padding = toPoint(this.options.autoPanPadding), paddingTL = toPoint(this.options.autoPanPaddingTopLeft || padding), paddingBR = toPoint(this.options.autoPanPaddingBottomRight || padding), size2 = map2.getSize(), dx = 0, dy = 0;
+        if (containerPos.x + containerWidth + paddingBR.x > size2.x) {
+          dx = containerPos.x + containerWidth - size2.x + paddingBR.x;
+        }
+        if (containerPos.x - dx - paddingTL.x < 0) {
+          dx = containerPos.x - paddingTL.x;
+        }
+        if (containerPos.y + containerHeight + paddingBR.y > size2.y) {
+          dy = containerPos.y + containerHeight - size2.y + paddingBR.y;
+        }
+        if (containerPos.y - dy - paddingTL.y < 0) {
+          dy = containerPos.y - paddingTL.y;
+        }
+        if (dx || dy) {
+          if (this.options.keepInView) {
+            this._autopanning = true;
+          }
+          map2.fire("autopanstart").panBy([dx, dy]);
+        }
+      },
+      _getAnchor: function() {
+        return toPoint(this._source && this._source._getPopupAnchor ? this._source._getPopupAnchor() : [0, 0]);
+      }
+    });
+    var popup = function(options, source) {
+      return new Popup(options, source);
+    };
+    Map2.mergeOptions({
+      closePopupOnClick: true
+    });
+    Map2.include({
+      // @method openPopup(popup: Popup): this
+      // Opens the specified popup while closing the previously opened (to make sure only one is opened at one time for usability).
+      // @alternative
+      // @method openPopup(content: String|HTMLElement, latlng: LatLng, options?: Popup options): this
+      // Creates a popup with the specified content and options and opens it in the given point on a map.
+      openPopup: function(popup2, latlng, options) {
+        this._initOverlay(Popup, popup2, latlng, options).openOn(this);
+        return this;
+      },
+      // @method closePopup(popup?: Popup): this
+      // Closes the popup previously opened with [openPopup](#map-openpopup) (or the given one).
+      closePopup: function(popup2) {
+        popup2 = arguments.length ? popup2 : this._popup;
+        if (popup2) {
+          popup2.close();
+        }
+        return this;
+      }
+    });
+    Layer2.include({
+      // @method bindPopup(content: String|HTMLElement|Function|Popup, options?: Popup options): this
+      // Binds a popup to the layer with the passed `content` and sets up the
+      // necessary event listeners. If a `Function` is passed it will receive
+      // the layer as the first argument and should return a `String` or `HTMLElement`.
+      bindPopup: function(content, options) {
+        this._popup = this._initOverlay(Popup, this._popup, content, options);
+        if (!this._popupHandlersAdded) {
+          this.on({
+            click: this._openPopup,
+            keypress: this._onKeyPress,
+            remove: this.closePopup,
+            move: this._movePopup
+          });
+          this._popupHandlersAdded = true;
+        }
+        return this;
+      },
+      // @method unbindPopup(): this
+      // Removes the popup previously bound with `bindPopup`.
+      unbindPopup: function() {
+        if (this._popup) {
+          this.off({
+            click: this._openPopup,
+            keypress: this._onKeyPress,
+            remove: this.closePopup,
+            move: this._movePopup
+          });
+          this._popupHandlersAdded = false;
+          this._popup = null;
+        }
+        return this;
+      },
+      // @method openPopup(latlng?: LatLng): this
+      // Opens the bound popup at the specified `latlng` or at the default popup anchor if no `latlng` is passed.
+      openPopup: function(latlng) {
+        if (this._popup) {
+          if (!(this instanceof FeatureGroup)) {
+            this._popup._source = this;
+          }
+          if (this._popup._prepareOpen(latlng || this._latlng)) {
+            this._popup.openOn(this._map);
+          }
+        }
+        return this;
+      },
+      // @method closePopup(): this
+      // Closes the popup bound to this layer if it is open.
+      closePopup: function() {
+        if (this._popup) {
+          this._popup.close();
+        }
+        return this;
+      },
+      // @method togglePopup(): this
+      // Opens or closes the popup bound to this layer depending on its current state.
+      togglePopup: function() {
+        if (this._popup) {
+          this._popup.toggle(this);
+        }
+        return this;
+      },
+      // @method isPopupOpen(): boolean
+      // Returns `true` if the popup bound to this layer is currently open.
+      isPopupOpen: function() {
+        return this._popup ? this._popup.isOpen() : false;
+      },
+      // @method setPopupContent(content: String|HTMLElement|Popup): this
+      // Sets the content of the popup bound to this layer.
+      setPopupContent: function(content) {
+        if (this._popup) {
+          this._popup.setContent(content);
+        }
+        return this;
+      },
+      // @method getPopup(): Popup
+      // Returns the popup bound to this layer.
+      getPopup: function() {
+        return this._popup;
+      },
+      _openPopup: function(e3) {
+        if (!this._popup || !this._map) {
+          return;
+        }
+        stop(e3);
+        var target = e3.layer || e3.target;
+        if (this._popup._source === target && !(target instanceof Path2)) {
+          if (this._map.hasLayer(this._popup)) {
+            this.closePopup();
+          } else {
+            this.openPopup(e3.latlng);
+          }
+          return;
+        }
+        this._popup._source = target;
+        this.openPopup(e3.latlng);
+      },
+      _movePopup: function(e3) {
+        this._popup.setLatLng(e3.latlng);
+      },
+      _onKeyPress: function(e3) {
+        if (e3.originalEvent.keyCode === 13) {
+          this._openPopup(e3);
+        }
+      }
+    });
+    var Tooltip2 = DivOverlay.extend({
+      // @section
+      // @aka Tooltip options
+      options: {
+        // @option pane: String = 'tooltipPane'
+        // `Map pane` where the tooltip will be added.
+        pane: "tooltipPane",
+        // @option offset: Point = Point(0, 0)
+        // Optional offset of the tooltip position.
+        offset: [0, 0],
+        // @option direction: String = 'auto'
+        // Direction where to open the tooltip. Possible values are: `right`, `left`,
+        // `top`, `bottom`, `center`, `auto`.
+        // `auto` will dynamically switch between `right` and `left` according to the tooltip
+        // position on the map.
+        direction: "auto",
+        // @option permanent: Boolean = false
+        // Whether to open the tooltip permanently or only on mouseover.
+        permanent: false,
+        // @option sticky: Boolean = false
+        // If true, the tooltip will follow the mouse instead of being fixed at the feature center.
+        sticky: false,
+        // @option opacity: Number = 0.9
+        // Tooltip container opacity.
+        opacity: 0.9
+      },
+      onAdd: function(map2) {
+        DivOverlay.prototype.onAdd.call(this, map2);
+        this.setOpacity(this.options.opacity);
+        map2.fire("tooltipopen", { tooltip: this });
+        if (this._source) {
+          this.addEventParent(this._source);
+          this._source.fire("tooltipopen", { tooltip: this }, true);
+        }
+      },
+      onRemove: function(map2) {
+        DivOverlay.prototype.onRemove.call(this, map2);
+        map2.fire("tooltipclose", { tooltip: this });
+        if (this._source) {
+          this.removeEventParent(this._source);
+          this._source.fire("tooltipclose", { tooltip: this }, true);
+        }
+      },
+      getEvents: function() {
+        var events = DivOverlay.prototype.getEvents.call(this);
+        if (!this.options.permanent) {
+          events.preclick = this.close;
+        }
+        return events;
+      },
+      _initLayout: function() {
+        var prefix2 = "leaflet-tooltip", className = prefix2 + " " + (this.options.className || "") + " leaflet-zoom-" + (this._zoomAnimated ? "animated" : "hide");
+        this._contentNode = this._container = create$1("div", className);
+        this._container.setAttribute("role", "tooltip");
+        this._container.setAttribute("id", "leaflet-tooltip-" + stamp(this));
+      },
+      _updateLayout: function() {
+      },
+      _adjustPan: function() {
+      },
+      _setPosition: function(pos) {
+        var subX, subY, map2 = this._map, container = this._container, centerPoint = map2.latLngToContainerPoint(map2.getCenter()), tooltipPoint = map2.layerPointToContainerPoint(pos), direction = this.options.direction, tooltipWidth = container.offsetWidth, tooltipHeight = container.offsetHeight, offset2 = toPoint(this.options.offset), anchor = this._getAnchor();
+        if (direction === "top") {
+          subX = tooltipWidth / 2;
+          subY = tooltipHeight;
+        } else if (direction === "bottom") {
+          subX = tooltipWidth / 2;
+          subY = 0;
+        } else if (direction === "center") {
+          subX = tooltipWidth / 2;
+          subY = tooltipHeight / 2;
+        } else if (direction === "right") {
+          subX = 0;
+          subY = tooltipHeight / 2;
+        } else if (direction === "left") {
+          subX = tooltipWidth;
+          subY = tooltipHeight / 2;
+        } else if (tooltipPoint.x < centerPoint.x) {
+          direction = "right";
+          subX = 0;
+          subY = tooltipHeight / 2;
+        } else {
+          direction = "left";
+          subX = tooltipWidth + (offset2.x + anchor.x) * 2;
+          subY = tooltipHeight / 2;
+        }
+        pos = pos.subtract(toPoint(subX, subY, true)).add(offset2).add(anchor);
+        removeClass(container, "leaflet-tooltip-right");
+        removeClass(container, "leaflet-tooltip-left");
+        removeClass(container, "leaflet-tooltip-top");
+        removeClass(container, "leaflet-tooltip-bottom");
+        addClass(container, "leaflet-tooltip-" + direction);
+        setPosition(container, pos);
+      },
+      _updatePosition: function() {
+        var pos = this._map.latLngToLayerPoint(this._latlng);
+        this._setPosition(pos);
+      },
+      setOpacity: function(opacity) {
+        this.options.opacity = opacity;
+        if (this._container) {
+          setOpacity(this._container, opacity);
+        }
+      },
+      _animateZoom: function(e3) {
+        var pos = this._map._latLngToNewLayerPoint(this._latlng, e3.zoom, e3.center);
+        this._setPosition(pos);
+      },
+      _getAnchor: function() {
+        return toPoint(this._source && this._source._getTooltipAnchor && !this.options.sticky ? this._source._getTooltipAnchor() : [0, 0]);
+      }
+    });
+    var tooltip = function(options, source) {
+      return new Tooltip2(options, source);
+    };
+    Map2.include({
+      // @method openTooltip(tooltip: Tooltip): this
+      // Opens the specified tooltip.
+      // @alternative
+      // @method openTooltip(content: String|HTMLElement, latlng: LatLng, options?: Tooltip options): this
+      // Creates a tooltip with the specified content and options and open it.
+      openTooltip: function(tooltip2, latlng, options) {
+        this._initOverlay(Tooltip2, tooltip2, latlng, options).openOn(this);
+        return this;
+      },
+      // @method closeTooltip(tooltip: Tooltip): this
+      // Closes the tooltip given as parameter.
+      closeTooltip: function(tooltip2) {
+        tooltip2.close();
+        return this;
+      }
+    });
+    Layer2.include({
+      // @method bindTooltip(content: String|HTMLElement|Function|Tooltip, options?: Tooltip options): this
+      // Binds a tooltip to the layer with the passed `content` and sets up the
+      // necessary event listeners. If a `Function` is passed it will receive
+      // the layer as the first argument and should return a `String` or `HTMLElement`.
+      bindTooltip: function(content, options) {
+        if (this._tooltip && this.isTooltipOpen()) {
+          this.unbindTooltip();
+        }
+        this._tooltip = this._initOverlay(Tooltip2, this._tooltip, content, options);
+        this._initTooltipInteractions();
+        if (this._tooltip.options.permanent && this._map && this._map.hasLayer(this)) {
+          this.openTooltip();
+        }
+        return this;
+      },
+      // @method unbindTooltip(): this
+      // Removes the tooltip previously bound with `bindTooltip`.
+      unbindTooltip: function() {
+        if (this._tooltip) {
+          this._initTooltipInteractions(true);
+          this.closeTooltip();
+          this._tooltip = null;
+        }
+        return this;
+      },
+      _initTooltipInteractions: function(remove2) {
+        if (!remove2 && this._tooltipHandlersAdded) {
+          return;
+        }
+        var onOff = remove2 ? "off" : "on", events = {
+          remove: this.closeTooltip,
+          move: this._moveTooltip
+        };
+        if (!this._tooltip.options.permanent) {
+          events.mouseover = this._openTooltip;
+          events.mouseout = this.closeTooltip;
+          events.click = this._openTooltip;
+          if (this._map) {
+            this._addFocusListeners();
+          } else {
+            events.add = this._addFocusListeners;
+          }
+        } else {
+          events.add = this._openTooltip;
+        }
+        if (this._tooltip.options.sticky) {
+          events.mousemove = this._moveTooltip;
+        }
+        this[onOff](events);
+        this._tooltipHandlersAdded = !remove2;
+      },
+      // @method openTooltip(latlng?: LatLng): this
+      // Opens the bound tooltip at the specified `latlng` or at the default tooltip anchor if no `latlng` is passed.
+      openTooltip: function(latlng) {
+        if (this._tooltip) {
+          if (!(this instanceof FeatureGroup)) {
+            this._tooltip._source = this;
+          }
+          if (this._tooltip._prepareOpen(latlng)) {
+            this._tooltip.openOn(this._map);
+            if (this.getElement) {
+              this._setAriaDescribedByOnLayer(this);
+            } else if (this.eachLayer) {
+              this.eachLayer(this._setAriaDescribedByOnLayer, this);
+            }
+          }
+        }
+        return this;
+      },
+      // @method closeTooltip(): this
+      // Closes the tooltip bound to this layer if it is open.
+      closeTooltip: function() {
+        if (this._tooltip) {
+          return this._tooltip.close();
+        }
+      },
+      // @method toggleTooltip(): this
+      // Opens or closes the tooltip bound to this layer depending on its current state.
+      toggleTooltip: function() {
+        if (this._tooltip) {
+          this._tooltip.toggle(this);
+        }
+        return this;
+      },
+      // @method isTooltipOpen(): boolean
+      // Returns `true` if the tooltip bound to this layer is currently open.
+      isTooltipOpen: function() {
+        return this._tooltip.isOpen();
+      },
+      // @method setTooltipContent(content: String|HTMLElement|Tooltip): this
+      // Sets the content of the tooltip bound to this layer.
+      setTooltipContent: function(content) {
+        if (this._tooltip) {
+          this._tooltip.setContent(content);
+        }
+        return this;
+      },
+      // @method getTooltip(): Tooltip
+      // Returns the tooltip bound to this layer.
+      getTooltip: function() {
+        return this._tooltip;
+      },
+      _addFocusListeners: function() {
+        if (this.getElement) {
+          this._addFocusListenersOnLayer(this);
+        } else if (this.eachLayer) {
+          this.eachLayer(this._addFocusListenersOnLayer, this);
+        }
+      },
+      _addFocusListenersOnLayer: function(layer) {
+        var el = typeof layer.getElement === "function" && layer.getElement();
+        if (el) {
+          on(el, "focus", function() {
+            this._tooltip._source = layer;
+            this.openTooltip();
+          }, this);
+          on(el, "blur", this.closeTooltip, this);
+        }
+      },
+      _setAriaDescribedByOnLayer: function(layer) {
+        var el = typeof layer.getElement === "function" && layer.getElement();
+        if (el) {
+          el.setAttribute("aria-describedby", this._tooltip._container.id);
+        }
+      },
+      _openTooltip: function(e3) {
+        if (!this._tooltip || !this._map) {
+          return;
+        }
+        if (this._map.dragging && this._map.dragging.moving() && !this._openOnceFlag) {
+          this._openOnceFlag = true;
+          var that = this;
+          this._map.once("moveend", function() {
+            that._openOnceFlag = false;
+            that._openTooltip(e3);
+          });
+          return;
+        }
+        this._tooltip._source = e3.layer || e3.target;
+        this.openTooltip(this._tooltip.options.sticky ? e3.latlng : void 0);
+      },
+      _moveTooltip: function(e3) {
+        var latlng = e3.latlng, containerPoint, layerPoint;
+        if (this._tooltip.options.sticky && e3.originalEvent) {
+          containerPoint = this._map.mouseEventToContainerPoint(e3.originalEvent);
+          layerPoint = this._map.containerPointToLayerPoint(containerPoint);
+          latlng = this._map.layerPointToLatLng(layerPoint);
+        }
+        this._tooltip.setLatLng(latlng);
+      }
+    });
+    var DivIcon = Icon2.extend({
+      options: {
+        // @section
+        // @aka DivIcon options
+        iconSize: [12, 12],
+        // also can be set through CSS
+        // iconAnchor: (Point),
+        // popupAnchor: (Point),
+        // @option html: String|HTMLElement = ''
+        // Custom HTML code to put inside the div element, empty by default. Alternatively,
+        // an instance of `HTMLElement`.
+        html: false,
+        // @option bgPos: Point = [0, 0]
+        // Optional relative position of the background, in pixels
+        bgPos: null,
+        className: "leaflet-div-icon"
+      },
+      createIcon: function(oldIcon) {
+        var div = oldIcon && oldIcon.tagName === "DIV" ? oldIcon : document.createElement("div"), options = this.options;
+        if (options.html instanceof Element) {
+          empty(div);
+          div.appendChild(options.html);
+        } else {
+          div.innerHTML = options.html !== false ? options.html : "";
+        }
+        if (options.bgPos) {
+          var bgPos = toPoint(options.bgPos);
+          div.style.backgroundPosition = -bgPos.x + "px " + -bgPos.y + "px";
+        }
+        this._setIconStyles(div, "icon");
+        return div;
+      },
+      createShadow: function() {
+        return null;
+      }
+    });
+    function divIcon(options) {
+      return new DivIcon(options);
+    }
+    Icon2.Default = IconDefault;
+    var GridLayer = Layer2.extend({
+      // @section
+      // @aka GridLayer options
+      options: {
+        // @option tileSize: Number|Point = 256
+        // Width and height of tiles in the grid. Use a number if width and height are equal, or `L.point(width, height)` otherwise.
+        tileSize: 256,
+        // @option opacity: Number = 1.0
+        // Opacity of the tiles. Can be used in the `createTile()` function.
+        opacity: 1,
+        // @option updateWhenIdle: Boolean = (depends)
+        // Load new tiles only when panning ends.
+        // `true` by default on mobile browsers, in order to avoid too many requests and keep smooth navigation.
+        // `false` otherwise in order to display new tiles _during_ panning, since it is easy to pan outside the
+        // [`keepBuffer`](#gridlayer-keepbuffer) option in desktop browsers.
+        updateWhenIdle: Browser.mobile,
+        // @option updateWhenZooming: Boolean = true
+        // By default, a smooth zoom animation (during a [touch zoom](#map-touchzoom) or a [`flyTo()`](#map-flyto)) will update grid layers every integer zoom level. Setting this option to `false` will update the grid layer only when the smooth animation ends.
+        updateWhenZooming: true,
+        // @option updateInterval: Number = 200
+        // Tiles will not update more than once every `updateInterval` milliseconds when panning.
+        updateInterval: 200,
+        // @option zIndex: Number = 1
+        // The explicit zIndex of the tile layer.
+        zIndex: 1,
+        // @option bounds: LatLngBounds = undefined
+        // If set, tiles will only be loaded inside the set `LatLngBounds`.
+        bounds: null,
+        // @option minZoom: Number = 0
+        // The minimum zoom level down to which this layer will be displayed (inclusive).
+        minZoom: 0,
+        // @option maxZoom: Number = undefined
+        // The maximum zoom level up to which this layer will be displayed (inclusive).
+        maxZoom: void 0,
+        // @option maxNativeZoom: Number = undefined
+        // Maximum zoom number the tile source has available. If it is specified,
+        // the tiles on all zoom levels higher than `maxNativeZoom` will be loaded
+        // from `maxNativeZoom` level and auto-scaled.
+        maxNativeZoom: void 0,
+        // @option minNativeZoom: Number = undefined
+        // Minimum zoom number the tile source has available. If it is specified,
+        // the tiles on all zoom levels lower than `minNativeZoom` will be loaded
+        // from `minNativeZoom` level and auto-scaled.
+        minNativeZoom: void 0,
+        // @option noWrap: Boolean = false
+        // Whether the layer is wrapped around the antimeridian. If `true`, the
+        // GridLayer will only be displayed once at low zoom levels. Has no
+        // effect when the [map CRS](#map-crs) doesn't wrap around. Can be used
+        // in combination with [`bounds`](#gridlayer-bounds) to prevent requesting
+        // tiles outside the CRS limits.
+        noWrap: false,
+        // @option pane: String = 'tilePane'
+        // `Map pane` where the grid layer will be added.
+        pane: "tilePane",
+        // @option className: String = ''
+        // A custom class name to assign to the tile layer. Empty by default.
+        className: "",
+        // @option keepBuffer: Number = 2
+        // When panning the map, keep this many rows and columns of tiles before unloading them.
+        keepBuffer: 2
+      },
+      initialize: function(options) {
+        setOptions(this, options);
+      },
+      onAdd: function() {
+        this._initContainer();
+        this._levels = {};
+        this._tiles = {};
+        this._resetView();
+      },
+      beforeAdd: function(map2) {
+        map2._addZoomLimit(this);
+      },
+      onRemove: function(map2) {
+        this._removeAllTiles();
+        remove(this._container);
+        map2._removeZoomLimit(this);
+        this._container = null;
+        this._tileZoom = void 0;
+      },
+      // @method bringToFront: this
+      // Brings the tile layer to the top of all tile layers.
+      bringToFront: function() {
+        if (this._map) {
+          toFront(this._container);
+          this._setAutoZIndex(Math.max);
+        }
+        return this;
+      },
+      // @method bringToBack: this
+      // Brings the tile layer to the bottom of all tile layers.
+      bringToBack: function() {
+        if (this._map) {
+          toBack(this._container);
+          this._setAutoZIndex(Math.min);
+        }
+        return this;
+      },
+      // @method getContainer: HTMLElement
+      // Returns the HTML element that contains the tiles for this layer.
+      getContainer: function() {
+        return this._container;
+      },
+      // @method setOpacity(opacity: Number): this
+      // Changes the [opacity](#gridlayer-opacity) of the grid layer.
+      setOpacity: function(opacity) {
+        this.options.opacity = opacity;
+        this._updateOpacity();
+        return this;
+      },
+      // @method setZIndex(zIndex: Number): this
+      // Changes the [zIndex](#gridlayer-zindex) of the grid layer.
+      setZIndex: function(zIndex) {
+        this.options.zIndex = zIndex;
+        this._updateZIndex();
+        return this;
+      },
+      // @method isLoading: Boolean
+      // Returns `true` if any tile in the grid layer has not finished loading.
+      isLoading: function() {
+        return this._loading;
+      },
+      // @method redraw: this
+      // Causes the layer to clear all the tiles and request them again.
+      redraw: function() {
+        if (this._map) {
+          this._removeAllTiles();
+          var tileZoom = this._clampZoom(this._map.getZoom());
+          if (tileZoom !== this._tileZoom) {
+            this._tileZoom = tileZoom;
+            this._updateLevels();
+          }
+          this._update();
+        }
+        return this;
+      },
+      getEvents: function() {
+        var events = {
+          viewprereset: this._invalidateAll,
+          viewreset: this._resetView,
+          zoom: this._resetView,
+          moveend: this._onMoveEnd
+        };
+        if (!this.options.updateWhenIdle) {
+          if (!this._onMove) {
+            this._onMove = throttle2(this._onMoveEnd, this.options.updateInterval, this);
+          }
+          events.move = this._onMove;
+        }
+        if (this._zoomAnimated) {
+          events.zoomanim = this._animateZoom;
+        }
+        return events;
+      },
+      // @section Extension methods
+      // Layers extending `GridLayer` shall reimplement the following method.
+      // @method createTile(coords: Object, done?: Function): HTMLElement
+      // Called only internally, must be overridden by classes extending `GridLayer`.
+      // Returns the `HTMLElement` corresponding to the given `coords`. If the `done` callback
+      // is specified, it must be called when the tile has finished loading and drawing.
+      createTile: function() {
+        return document.createElement("div");
+      },
+      // @section
+      // @method getTileSize: Point
+      // Normalizes the [tileSize option](#gridlayer-tilesize) into a point. Used by the `createTile()` method.
+      getTileSize: function() {
+        var s2 = this.options.tileSize;
+        return s2 instanceof Point ? s2 : new Point(s2, s2);
+      },
+      _updateZIndex: function() {
+        if (this._container && this.options.zIndex !== void 0 && this.options.zIndex !== null) {
+          this._container.style.zIndex = this.options.zIndex;
+        }
+      },
+      _setAutoZIndex: function(compare) {
+        var layers2 = this.getPane().children, edgeZIndex = -compare(-Infinity, Infinity);
+        for (var i2 = 0, len = layers2.length, zIndex; i2 < len; i2++) {
+          zIndex = layers2[i2].style.zIndex;
+          if (layers2[i2] !== this._container && zIndex) {
+            edgeZIndex = compare(edgeZIndex, +zIndex);
+          }
+        }
+        if (isFinite(edgeZIndex)) {
+          this.options.zIndex = edgeZIndex + compare(-1, 1);
+          this._updateZIndex();
+        }
+      },
+      _updateOpacity: function() {
+        if (!this._map) {
+          return;
+        }
+        if (Browser.ielt9) {
+          return;
+        }
+        setOpacity(this._container, this.options.opacity);
+        var now2 = +/* @__PURE__ */ new Date(), nextFrame = false, willPrune = false;
+        for (var key in this._tiles) {
+          var tile = this._tiles[key];
+          if (!tile.current || !tile.loaded) {
+            continue;
+          }
+          var fade = Math.min(1, (now2 - tile.loaded) / 200);
+          setOpacity(tile.el, fade);
+          if (fade < 1) {
+            nextFrame = true;
+          } else {
+            if (tile.active) {
+              willPrune = true;
+            } else {
+              this._onOpaqueTile(tile);
+            }
+            tile.active = true;
+          }
+        }
+        if (willPrune && !this._noPrune) {
+          this._pruneTiles();
+        }
+        if (nextFrame) {
+          cancelAnimFrame(this._fadeFrame);
+          this._fadeFrame = requestAnimFrame(this._updateOpacity, this);
+        }
+      },
+      _onOpaqueTile: falseFn,
+      _initContainer: function() {
+        if (this._container) {
+          return;
+        }
+        this._container = create$1("div", "leaflet-layer " + (this.options.className || ""));
+        this._updateZIndex();
+        if (this.options.opacity < 1) {
+          this._updateOpacity();
+        }
+        this.getPane().appendChild(this._container);
+      },
+      _updateLevels: function() {
+        var zoom2 = this._tileZoom, maxZoom = this.options.maxZoom;
+        if (zoom2 === void 0) {
+          return void 0;
+        }
+        for (var z2 in this._levels) {
+          z2 = Number(z2);
+          if (this._levels[z2].el.children.length || z2 === zoom2) {
+            this._levels[z2].el.style.zIndex = maxZoom - Math.abs(zoom2 - z2);
+            this._onUpdateLevel(z2);
+          } else {
+            remove(this._levels[z2].el);
+            this._removeTilesAtZoom(z2);
+            this._onRemoveLevel(z2);
+            delete this._levels[z2];
+          }
+        }
+        var level = this._levels[zoom2], map2 = this._map;
+        if (!level) {
+          level = this._levels[zoom2] = {};
+          level.el = create$1("div", "leaflet-tile-container leaflet-zoom-animated", this._container);
+          level.el.style.zIndex = maxZoom;
+          level.origin = map2.project(map2.unproject(map2.getPixelOrigin()), zoom2).round();
+          level.zoom = zoom2;
+          this._setZoomTransform(level, map2.getCenter(), map2.getZoom());
+          falseFn(level.el.offsetWidth);
+          this._onCreateLevel(level);
+        }
+        this._level = level;
+        return level;
+      },
+      _onUpdateLevel: falseFn,
+      _onRemoveLevel: falseFn,
+      _onCreateLevel: falseFn,
+      _pruneTiles: function() {
+        if (!this._map) {
+          return;
+        }
+        var key, tile;
+        var zoom2 = this._map.getZoom();
+        if (zoom2 > this.options.maxZoom || zoom2 < this.options.minZoom) {
+          this._removeAllTiles();
+          return;
+        }
+        for (key in this._tiles) {
+          tile = this._tiles[key];
+          tile.retain = tile.current;
+        }
+        for (key in this._tiles) {
+          tile = this._tiles[key];
+          if (tile.current && !tile.active) {
+            var coords = tile.coords;
+            if (!this._retainParent(coords.x, coords.y, coords.z, coords.z - 5)) {
+              this._retainChildren(coords.x, coords.y, coords.z, coords.z + 2);
+            }
+          }
+        }
+        for (key in this._tiles) {
+          if (!this._tiles[key].retain) {
+            this._removeTile(key);
+          }
+        }
+      },
+      _removeTilesAtZoom: function(zoom2) {
+        for (var key in this._tiles) {
+          if (this._tiles[key].coords.z !== zoom2) {
+            continue;
+          }
+          this._removeTile(key);
+        }
+      },
+      _removeAllTiles: function() {
+        for (var key in this._tiles) {
+          this._removeTile(key);
+        }
+      },
+      _invalidateAll: function() {
+        for (var z2 in this._levels) {
+          remove(this._levels[z2].el);
+          this._onRemoveLevel(Number(z2));
+          delete this._levels[z2];
+        }
+        this._removeAllTiles();
+        this._tileZoom = void 0;
+      },
+      _retainParent: function(x2, y2, z2, minZoom) {
+        var x22 = Math.floor(x2 / 2), y22 = Math.floor(y2 / 2), z22 = z2 - 1, coords2 = new Point(+x22, +y22);
+        coords2.z = +z22;
+        var key = this._tileCoordsToKey(coords2), tile = this._tiles[key];
+        if (tile && tile.active) {
+          tile.retain = true;
+          return true;
+        } else if (tile && tile.loaded) {
+          tile.retain = true;
+        }
+        if (z22 > minZoom) {
+          return this._retainParent(x22, y22, z22, minZoom);
+        }
+        return false;
+      },
+      _retainChildren: function(x2, y2, z2, maxZoom) {
+        for (var i2 = 2 * x2; i2 < 2 * x2 + 2; i2++) {
+          for (var j = 2 * y2; j < 2 * y2 + 2; j++) {
+            var coords = new Point(i2, j);
+            coords.z = z2 + 1;
+            var key = this._tileCoordsToKey(coords), tile = this._tiles[key];
+            if (tile && tile.active) {
+              tile.retain = true;
+              continue;
+            } else if (tile && tile.loaded) {
+              tile.retain = true;
+            }
+            if (z2 + 1 < maxZoom) {
+              this._retainChildren(i2, j, z2 + 1, maxZoom);
+            }
+          }
+        }
+      },
+      _resetView: function(e3) {
+        var animating = e3 && (e3.pinch || e3.flyTo);
+        this._setView(this._map.getCenter(), this._map.getZoom(), animating, animating);
+      },
+      _animateZoom: function(e3) {
+        this._setView(e3.center, e3.zoom, true, e3.noUpdate);
+      },
+      _clampZoom: function(zoom2) {
+        var options = this.options;
+        if (void 0 !== options.minNativeZoom && zoom2 < options.minNativeZoom) {
+          return options.minNativeZoom;
+        }
+        if (void 0 !== options.maxNativeZoom && options.maxNativeZoom < zoom2) {
+          return options.maxNativeZoom;
+        }
+        return zoom2;
+      },
+      _setView: function(center, zoom2, noPrune, noUpdate) {
+        var tileZoom = Math.round(zoom2);
+        if (this.options.maxZoom !== void 0 && tileZoom > this.options.maxZoom || this.options.minZoom !== void 0 && tileZoom < this.options.minZoom) {
+          tileZoom = void 0;
+        } else {
+          tileZoom = this._clampZoom(tileZoom);
+        }
+        var tileZoomChanged = this.options.updateWhenZooming && tileZoom !== this._tileZoom;
+        if (!noUpdate || tileZoomChanged) {
+          this._tileZoom = tileZoom;
+          if (this._abortLoading) {
+            this._abortLoading();
+          }
+          this._updateLevels();
+          this._resetGrid();
+          if (tileZoom !== void 0) {
+            this._update(center);
+          }
+          if (!noPrune) {
+            this._pruneTiles();
+          }
+          this._noPrune = !!noPrune;
+        }
+        this._setZoomTransforms(center, zoom2);
+      },
+      _setZoomTransforms: function(center, zoom2) {
+        for (var i2 in this._levels) {
+          this._setZoomTransform(this._levels[i2], center, zoom2);
+        }
+      },
+      _setZoomTransform: function(level, center, zoom2) {
+        var scale3 = this._map.getZoomScale(zoom2, level.zoom), translate = level.origin.multiplyBy(scale3).subtract(this._map._getNewPixelOrigin(center, zoom2)).round();
+        if (Browser.any3d) {
+          setTransform(level.el, translate, scale3);
+        } else {
+          setPosition(level.el, translate);
+        }
+      },
+      _resetGrid: function() {
+        var map2 = this._map, crs = map2.options.crs, tileSize = this._tileSize = this.getTileSize(), tileZoom = this._tileZoom;
+        var bounds = this._map.getPixelWorldBounds(this._tileZoom);
+        if (bounds) {
+          this._globalTileRange = this._pxBoundsToTileRange(bounds);
+        }
+        this._wrapX = crs.wrapLng && !this.options.noWrap && [
+          Math.floor(map2.project([0, crs.wrapLng[0]], tileZoom).x / tileSize.x),
+          Math.ceil(map2.project([0, crs.wrapLng[1]], tileZoom).x / tileSize.y)
+        ];
+        this._wrapY = crs.wrapLat && !this.options.noWrap && [
+          Math.floor(map2.project([crs.wrapLat[0], 0], tileZoom).y / tileSize.x),
+          Math.ceil(map2.project([crs.wrapLat[1], 0], tileZoom).y / tileSize.y)
+        ];
+      },
+      _onMoveEnd: function() {
+        if (!this._map || this._map._animatingZoom) {
+          return;
+        }
+        this._update();
+      },
+      _getTiledPixelBounds: function(center) {
+        var map2 = this._map, mapZoom = map2._animatingZoom ? Math.max(map2._animateToZoom, map2.getZoom()) : map2.getZoom(), scale3 = map2.getZoomScale(mapZoom, this._tileZoom), pixelCenter = map2.project(center, this._tileZoom).floor(), halfSize = map2.getSize().divideBy(scale3 * 2);
+        return new Bounds(pixelCenter.subtract(halfSize), pixelCenter.add(halfSize));
+      },
+      // Private method to load tiles in the grid's active zoom level according to map bounds
+      _update: function(center) {
+        var map2 = this._map;
+        if (!map2) {
+          return;
+        }
+        var zoom2 = this._clampZoom(map2.getZoom());
+        if (center === void 0) {
+          center = map2.getCenter();
+        }
+        if (this._tileZoom === void 0) {
+          return;
+        }
+        var pixelBounds = this._getTiledPixelBounds(center), tileRange = this._pxBoundsToTileRange(pixelBounds), tileCenter = tileRange.getCenter(), queue = [], margin = this.options.keepBuffer, noPruneRange = new Bounds(
+          tileRange.getBottomLeft().subtract([margin, -margin]),
+          tileRange.getTopRight().add([margin, -margin])
+        );
+        if (!(isFinite(tileRange.min.x) && isFinite(tileRange.min.y) && isFinite(tileRange.max.x) && isFinite(tileRange.max.y))) {
+          throw new Error("Attempted to load an infinite number of tiles");
+        }
+        for (var key in this._tiles) {
+          var c2 = this._tiles[key].coords;
+          if (c2.z !== this._tileZoom || !noPruneRange.contains(new Point(c2.x, c2.y))) {
+            this._tiles[key].current = false;
+          }
+        }
+        if (Math.abs(zoom2 - this._tileZoom) > 1) {
+          this._setView(center, zoom2);
+          return;
+        }
+        for (var j = tileRange.min.y; j <= tileRange.max.y; j++) {
+          for (var i2 = tileRange.min.x; i2 <= tileRange.max.x; i2++) {
+            var coords = new Point(i2, j);
+            coords.z = this._tileZoom;
+            if (!this._isValidTile(coords)) {
+              continue;
+            }
+            var tile = this._tiles[this._tileCoordsToKey(coords)];
+            if (tile) {
+              tile.current = true;
+            } else {
+              queue.push(coords);
+            }
+          }
+        }
+        queue.sort(function(a2, b2) {
+          return a2.distanceTo(tileCenter) - b2.distanceTo(tileCenter);
+        });
+        if (queue.length !== 0) {
+          if (!this._loading) {
+            this._loading = true;
+            this.fire("loading");
+          }
+          var fragment = document.createDocumentFragment();
+          for (i2 = 0; i2 < queue.length; i2++) {
+            this._addTile(queue[i2], fragment);
+          }
+          this._level.el.appendChild(fragment);
+        }
+      },
+      _isValidTile: function(coords) {
+        var crs = this._map.options.crs;
+        if (!crs.infinite) {
+          var bounds = this._globalTileRange;
+          if (!crs.wrapLng && (coords.x < bounds.min.x || coords.x > bounds.max.x) || !crs.wrapLat && (coords.y < bounds.min.y || coords.y > bounds.max.y)) {
+            return false;
+          }
+        }
+        if (!this.options.bounds) {
+          return true;
+        }
+        var tileBounds = this._tileCoordsToBounds(coords);
+        return toLatLngBounds(this.options.bounds).overlaps(tileBounds);
+      },
+      _keyToBounds: function(key) {
+        return this._tileCoordsToBounds(this._keyToTileCoords(key));
+      },
+      _tileCoordsToNwSe: function(coords) {
+        var map2 = this._map, tileSize = this.getTileSize(), nwPoint = coords.scaleBy(tileSize), sePoint = nwPoint.add(tileSize), nw = map2.unproject(nwPoint, coords.z), se2 = map2.unproject(sePoint, coords.z);
+        return [nw, se2];
+      },
+      // converts tile coordinates to its geographical bounds
+      _tileCoordsToBounds: function(coords) {
+        var bp = this._tileCoordsToNwSe(coords), bounds = new LatLngBounds(bp[0], bp[1]);
+        if (!this.options.noWrap) {
+          bounds = this._map.wrapLatLngBounds(bounds);
+        }
+        return bounds;
+      },
+      // converts tile coordinates to key for the tile cache
+      _tileCoordsToKey: function(coords) {
+        return coords.x + ":" + coords.y + ":" + coords.z;
+      },
+      // converts tile cache key to coordinates
+      _keyToTileCoords: function(key) {
+        var k2 = key.split(":"), coords = new Point(+k2[0], +k2[1]);
+        coords.z = +k2[2];
+        return coords;
+      },
+      _removeTile: function(key) {
+        var tile = this._tiles[key];
+        if (!tile) {
+          return;
+        }
+        remove(tile.el);
+        delete this._tiles[key];
+        this.fire("tileunload", {
+          tile: tile.el,
+          coords: this._keyToTileCoords(key)
+        });
+      },
+      _initTile: function(tile) {
+        addClass(tile, "leaflet-tile");
+        var tileSize = this.getTileSize();
+        tile.style.width = tileSize.x + "px";
+        tile.style.height = tileSize.y + "px";
+        tile.onselectstart = falseFn;
+        tile.onmousemove = falseFn;
+        if (Browser.ielt9 && this.options.opacity < 1) {
+          setOpacity(tile, this.options.opacity);
+        }
+      },
+      _addTile: function(coords, container) {
+        var tilePos = this._getTilePos(coords), key = this._tileCoordsToKey(coords);
+        var tile = this.createTile(this._wrapCoords(coords), bind(this._tileReady, this, coords));
+        this._initTile(tile);
+        if (this.createTile.length < 2) {
+          requestAnimFrame(bind(this._tileReady, this, coords, null, tile));
+        }
+        setPosition(tile, tilePos);
+        this._tiles[key] = {
+          el: tile,
+          coords,
+          current: true
+        };
+        container.appendChild(tile);
+        this.fire("tileloadstart", {
+          tile,
+          coords
+        });
+      },
+      _tileReady: function(coords, err, tile) {
+        if (err) {
+          this.fire("tileerror", {
+            error: err,
+            tile,
+            coords
+          });
+        }
+        var key = this._tileCoordsToKey(coords);
+        tile = this._tiles[key];
+        if (!tile) {
+          return;
+        }
+        tile.loaded = +/* @__PURE__ */ new Date();
+        if (this._map._fadeAnimated) {
+          setOpacity(tile.el, 0);
+          cancelAnimFrame(this._fadeFrame);
+          this._fadeFrame = requestAnimFrame(this._updateOpacity, this);
+        } else {
+          tile.active = true;
+          this._pruneTiles();
+        }
+        if (!err) {
+          addClass(tile.el, "leaflet-tile-loaded");
+          this.fire("tileload", {
+            tile: tile.el,
+            coords
+          });
+        }
+        if (this._noTilesToLoad()) {
+          this._loading = false;
+          this.fire("load");
+          if (Browser.ielt9 || !this._map._fadeAnimated) {
+            requestAnimFrame(this._pruneTiles, this);
+          } else {
+            setTimeout(bind(this._pruneTiles, this), 250);
+          }
+        }
+      },
+      _getTilePos: function(coords) {
+        return coords.scaleBy(this.getTileSize()).subtract(this._level.origin);
+      },
+      _wrapCoords: function(coords) {
+        var newCoords = new Point(
+          this._wrapX ? wrapNum(coords.x, this._wrapX) : coords.x,
+          this._wrapY ? wrapNum(coords.y, this._wrapY) : coords.y
+        );
+        newCoords.z = coords.z;
+        return newCoords;
+      },
+      _pxBoundsToTileRange: function(bounds) {
+        var tileSize = this.getTileSize();
+        return new Bounds(
+          bounds.min.unscaleBy(tileSize).floor(),
+          bounds.max.unscaleBy(tileSize).ceil().subtract([1, 1])
+        );
+      },
+      _noTilesToLoad: function() {
+        for (var key in this._tiles) {
+          if (!this._tiles[key].loaded) {
+            return false;
+          }
+        }
+        return true;
+      }
+    });
+    function gridLayer(options) {
+      return new GridLayer(options);
+    }
+    var TileLayer2 = GridLayer.extend({
+      // @section
+      // @aka TileLayer options
+      options: {
+        // @option minZoom: Number = 0
+        // The minimum zoom level down to which this layer will be displayed (inclusive).
+        minZoom: 0,
+        // @option maxZoom: Number = 18
+        // The maximum zoom level up to which this layer will be displayed (inclusive).
+        maxZoom: 18,
+        // @option subdomains: String|String[] = 'abc'
+        // Subdomains of the tile service. Can be passed in the form of one string (where each letter is a subdomain name) or an array of strings.
+        subdomains: "abc",
+        // @option errorTileUrl: String = ''
+        // URL to the tile image to show in place of the tile that failed to load.
+        errorTileUrl: "",
+        // @option zoomOffset: Number = 0
+        // The zoom number used in tile URLs will be offset with this value.
+        zoomOffset: 0,
+        // @option tms: Boolean = false
+        // If `true`, inverses Y axis numbering for tiles (turn this on for [TMS](https://en.wikipedia.org/wiki/Tile_Map_Service) services).
+        tms: false,
+        // @option zoomReverse: Boolean = false
+        // If set to true, the zoom number used in tile URLs will be reversed (`maxZoom - zoom` instead of `zoom`)
+        zoomReverse: false,
+        // @option detectRetina: Boolean = false
+        // If `true` and user is on a retina display, it will request four tiles of half the specified size and a bigger zoom level in place of one to utilize the high resolution.
+        detectRetina: false,
+        // @option crossOrigin: Boolean|String = false
+        // Whether the crossOrigin attribute will be added to the tiles.
+        // If a String is provided, all tiles will have their crossOrigin attribute set to the String provided. This is needed if you want to access tile pixel data.
+        // Refer to [CORS Settings](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) for valid String values.
+        crossOrigin: false,
+        // @option referrerPolicy: Boolean|String = false
+        // Whether the referrerPolicy attribute will be added to the tiles.
+        // If a String is provided, all tiles will have their referrerPolicy attribute set to the String provided.
+        // This may be needed if your map's rendering context has a strict default but your tile provider expects a valid referrer
+        // (e.g. to validate an API token).
+        // Refer to [HTMLImageElement.referrerPolicy](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/referrerPolicy) for valid String values.
+        referrerPolicy: false
+      },
+      initialize: function(url, options) {
+        this._url = url;
+        options = setOptions(this, options);
+        if (options.detectRetina && Browser.retina && options.maxZoom > 0) {
+          options.tileSize = Math.floor(options.tileSize / 2);
+          if (!options.zoomReverse) {
+            options.zoomOffset++;
+            options.maxZoom = Math.max(options.minZoom, options.maxZoom - 1);
+          } else {
+            options.zoomOffset--;
+            options.minZoom = Math.min(options.maxZoom, options.minZoom + 1);
+          }
+          options.minZoom = Math.max(0, options.minZoom);
+        } else if (!options.zoomReverse) {
+          options.maxZoom = Math.max(options.minZoom, options.maxZoom);
+        } else {
+          options.minZoom = Math.min(options.maxZoom, options.minZoom);
+        }
+        if (typeof options.subdomains === "string") {
+          options.subdomains = options.subdomains.split("");
+        }
+        this.on("tileunload", this._onTileRemove);
+      },
+      // @method setUrl(url: String, noRedraw?: Boolean): this
+      // Updates the layer's URL template and redraws it (unless `noRedraw` is set to `true`).
+      // If the URL does not change, the layer will not be redrawn unless
+      // the noRedraw parameter is set to false.
+      setUrl: function(url, noRedraw) {
+        if (this._url === url && noRedraw === void 0) {
+          noRedraw = true;
+        }
+        this._url = url;
+        if (!noRedraw) {
+          this.redraw();
+        }
+        return this;
+      },
+      // @method createTile(coords: Object, done?: Function): HTMLElement
+      // Called only internally, overrides GridLayer's [`createTile()`](#gridlayer-createtile)
+      // to return an `<img>` HTML element with the appropriate image URL given `coords`. The `done`
+      // callback is called when the tile has been loaded.
+      createTile: function(coords, done) {
+        var tile = document.createElement("img");
+        on(tile, "load", bind(this._tileOnLoad, this, done, tile));
+        on(tile, "error", bind(this._tileOnError, this, done, tile));
+        if (this.options.crossOrigin || this.options.crossOrigin === "") {
+          tile.crossOrigin = this.options.crossOrigin === true ? "" : this.options.crossOrigin;
+        }
+        if (typeof this.options.referrerPolicy === "string") {
+          tile.referrerPolicy = this.options.referrerPolicy;
+        }
+        tile.alt = "";
+        tile.src = this.getTileUrl(coords);
+        return tile;
+      },
+      // @section Extension methods
+      // @uninheritable
+      // Layers extending `TileLayer` might reimplement the following method.
+      // @method getTileUrl(coords: Object): String
+      // Called only internally, returns the URL for a tile given its coordinates.
+      // Classes extending `TileLayer` can override this function to provide custom tile URL naming schemes.
+      getTileUrl: function(coords) {
+        var data = {
+          r: Browser.retina ? "@2x" : "",
+          s: this._getSubdomain(coords),
+          x: coords.x,
+          y: coords.y,
+          z: this._getZoomForUrl()
+        };
+        if (this._map && !this._map.options.crs.infinite) {
+          var invertedY = this._globalTileRange.max.y - coords.y;
+          if (this.options.tms) {
+            data["y"] = invertedY;
+          }
+          data["-y"] = invertedY;
+        }
+        return template(this._url, extend2(data, this.options));
+      },
+      _tileOnLoad: function(done, tile) {
+        if (Browser.ielt9) {
+          setTimeout(bind(done, this, null, tile), 0);
+        } else {
+          done(null, tile);
+        }
+      },
+      _tileOnError: function(done, tile, e3) {
+        var errorUrl = this.options.errorTileUrl;
+        if (errorUrl && tile.getAttribute("src") !== errorUrl) {
+          tile.src = errorUrl;
+        }
+        done(e3, tile);
+      },
+      _onTileRemove: function(e3) {
+        e3.tile.onload = null;
+      },
+      _getZoomForUrl: function() {
+        var zoom2 = this._tileZoom, maxZoom = this.options.maxZoom, zoomReverse = this.options.zoomReverse, zoomOffset = this.options.zoomOffset;
+        if (zoomReverse) {
+          zoom2 = maxZoom - zoom2;
+        }
+        return zoom2 + zoomOffset;
+      },
+      _getSubdomain: function(tilePoint) {
+        var index3 = Math.abs(tilePoint.x + tilePoint.y) % this.options.subdomains.length;
+        return this.options.subdomains[index3];
+      },
+      // stops loading all tiles in the background layer
+      _abortLoading: function() {
+        var i2, tile;
+        for (i2 in this._tiles) {
+          if (this._tiles[i2].coords.z !== this._tileZoom) {
+            tile = this._tiles[i2].el;
+            tile.onload = falseFn;
+            tile.onerror = falseFn;
+            if (!tile.complete) {
+              tile.src = emptyImageUrl;
+              var coords = this._tiles[i2].coords;
+              remove(tile);
+              delete this._tiles[i2];
+              this.fire("tileabort", {
+                tile,
+                coords
+              });
+            }
+          }
+        }
+      },
+      _removeTile: function(key) {
+        var tile = this._tiles[key];
+        if (!tile) {
+          return;
+        }
+        tile.el.setAttribute("src", emptyImageUrl);
+        return GridLayer.prototype._removeTile.call(this, key);
+      },
+      _tileReady: function(coords, err, tile) {
+        if (!this._map || tile && tile.getAttribute("src") === emptyImageUrl) {
+          return;
+        }
+        return GridLayer.prototype._tileReady.call(this, coords, err, tile);
+      }
+    });
+    function tileLayer(url, options) {
+      return new TileLayer2(url, options);
+    }
+    var TileLayerWMS = TileLayer2.extend({
+      // @section
+      // @aka TileLayer.WMS options
+      // If any custom options not documented here are used, they will be sent to the
+      // WMS server as extra parameters in each request URL. This can be useful for
+      // [non-standard vendor WMS parameters](https://docs.geoserver.org/stable/en/user/services/wms/vendor.html).
+      defaultWmsParams: {
+        service: "WMS",
+        request: "GetMap",
+        // @option layers: String = ''
+        // **(required)** Comma-separated list of WMS layers to show.
+        layers: "",
+        // @option styles: String = ''
+        // Comma-separated list of WMS styles.
+        styles: "",
+        // @option format: String = 'image/jpeg'
+        // WMS image format (use `'image/png'` for layers with transparency).
+        format: "image/jpeg",
+        // @option transparent: Boolean = false
+        // If `true`, the WMS service will return images with transparency.
+        transparent: false,
+        // @option version: String = '1.1.1'
+        // Version of the WMS service to use
+        version: "1.1.1"
+      },
+      options: {
+        // @option crs: CRS = null
+        // Coordinate Reference System to use for the WMS requests, defaults to
+        // map CRS. Don't change this if you're not sure what it means.
+        crs: null,
+        // @option uppercase: Boolean = false
+        // If `true`, WMS request parameter keys will be uppercase.
+        uppercase: false
+      },
+      initialize: function(url, options) {
+        this._url = url;
+        var wmsParams = extend2({}, this.defaultWmsParams);
+        for (var i2 in options) {
+          if (!(i2 in this.options)) {
+            wmsParams[i2] = options[i2];
+          }
+        }
+        options = setOptions(this, options);
+        var realRetina = options.detectRetina && Browser.retina ? 2 : 1;
+        var tileSize = this.getTileSize();
+        wmsParams.width = tileSize.x * realRetina;
+        wmsParams.height = tileSize.y * realRetina;
+        this.wmsParams = wmsParams;
+      },
+      onAdd: function(map2) {
+        this._crs = this.options.crs || map2.options.crs;
+        this._wmsVersion = parseFloat(this.wmsParams.version);
+        var projectionKey = this._wmsVersion >= 1.3 ? "crs" : "srs";
+        this.wmsParams[projectionKey] = this._crs.code;
+        TileLayer2.prototype.onAdd.call(this, map2);
+      },
+      getTileUrl: function(coords) {
+        var tileBounds = this._tileCoordsToNwSe(coords), crs = this._crs, bounds = toBounds(crs.project(tileBounds[0]), crs.project(tileBounds[1])), min2 = bounds.min, max2 = bounds.max, bbox = (this._wmsVersion >= 1.3 && this._crs === EPSG4326 ? [min2.y, min2.x, max2.y, max2.x] : [min2.x, min2.y, max2.x, max2.y]).join(","), url = TileLayer2.prototype.getTileUrl.call(this, coords);
+        return url + getParamString(this.wmsParams, url, this.options.uppercase) + (this.options.uppercase ? "&BBOX=" : "&bbox=") + bbox;
+      },
+      // @method setParams(params: Object, noRedraw?: Boolean): this
+      // Merges an object with the new parameters and re-requests tiles on the current screen (unless `noRedraw` was set to true).
+      setParams: function(params, noRedraw) {
+        extend2(this.wmsParams, params);
+        if (!noRedraw) {
+          this.redraw();
+        }
+        return this;
+      }
+    });
+    function tileLayerWMS(url, options) {
+      return new TileLayerWMS(url, options);
+    }
+    TileLayer2.WMS = TileLayerWMS;
+    tileLayer.wms = tileLayerWMS;
+    var Renderer = Layer2.extend({
+      // @section
+      // @aka Renderer options
+      options: {
+        // @option padding: Number = 0.1
+        // How much to extend the clip area around the map view (relative to its size)
+        // e.g. 0.1 would be 10% of map view in each direction
+        padding: 0.1
+      },
+      initialize: function(options) {
+        setOptions(this, options);
+        stamp(this);
+        this._layers = this._layers || {};
+      },
+      onAdd: function() {
+        if (!this._container) {
+          this._initContainer();
+          addClass(this._container, "leaflet-zoom-animated");
+        }
+        this.getPane().appendChild(this._container);
+        this._update();
+        this.on("update", this._updatePaths, this);
+      },
+      onRemove: function() {
+        this.off("update", this._updatePaths, this);
+        this._destroyContainer();
+      },
+      getEvents: function() {
+        var events = {
+          viewreset: this._reset,
+          zoom: this._onZoom,
+          moveend: this._update,
+          zoomend: this._onZoomEnd
+        };
+        if (this._zoomAnimated) {
+          events.zoomanim = this._onAnimZoom;
+        }
+        return events;
+      },
+      _onAnimZoom: function(ev) {
+        this._updateTransform(ev.center, ev.zoom);
+      },
+      _onZoom: function() {
+        this._updateTransform(this._map.getCenter(), this._map.getZoom());
+      },
+      _updateTransform: function(center, zoom2) {
+        var scale3 = this._map.getZoomScale(zoom2, this._zoom), viewHalf = this._map.getSize().multiplyBy(0.5 + this.options.padding), currentCenterPoint = this._map.project(this._center, zoom2), topLeftOffset = viewHalf.multiplyBy(-scale3).add(currentCenterPoint).subtract(this._map._getNewPixelOrigin(center, zoom2));
+        if (Browser.any3d) {
+          setTransform(this._container, topLeftOffset, scale3);
+        } else {
+          setPosition(this._container, topLeftOffset);
+        }
+      },
+      _reset: function() {
+        this._update();
+        this._updateTransform(this._center, this._zoom);
+        for (var id2 in this._layers) {
+          this._layers[id2]._reset();
+        }
+      },
+      _onZoomEnd: function() {
+        for (var id2 in this._layers) {
+          this._layers[id2]._project();
+        }
+      },
+      _updatePaths: function() {
+        for (var id2 in this._layers) {
+          this._layers[id2]._update();
+        }
+      },
+      _update: function() {
+        var p2 = this.options.padding, size2 = this._map.getSize(), min2 = this._map.containerPointToLayerPoint(size2.multiplyBy(-p2)).round();
+        this._bounds = new Bounds(min2, min2.add(size2.multiplyBy(1 + p2 * 2)).round());
+        this._center = this._map.getCenter();
+        this._zoom = this._map.getZoom();
+      }
+    });
+    var Canvas = Renderer.extend({
+      // @section
+      // @aka Canvas options
+      options: {
+        // @option tolerance: Number = 0
+        // How much to extend the click tolerance around a path/object on the map.
+        tolerance: 0
+      },
+      getEvents: function() {
+        var events = Renderer.prototype.getEvents.call(this);
+        events.viewprereset = this._onViewPreReset;
+        return events;
+      },
+      _onViewPreReset: function() {
+        this._postponeUpdatePaths = true;
+      },
+      onAdd: function() {
+        Renderer.prototype.onAdd.call(this);
+        this._draw();
+      },
+      _initContainer: function() {
+        var container = this._container = document.createElement("canvas");
+        on(container, "mousemove", this._onMouseMove, this);
+        on(container, "click dblclick mousedown mouseup contextmenu", this._onClick, this);
+        on(container, "mouseout", this._handleMouseOut, this);
+        container["_leaflet_disable_events"] = true;
+        this._ctx = container.getContext("2d");
+      },
+      _destroyContainer: function() {
+        cancelAnimFrame(this._redrawRequest);
+        delete this._ctx;
+        remove(this._container);
+        off(this._container);
+        delete this._container;
+      },
+      _updatePaths: function() {
+        if (this._postponeUpdatePaths) {
+          return;
+        }
+        var layer;
+        this._redrawBounds = null;
+        for (var id2 in this._layers) {
+          layer = this._layers[id2];
+          layer._update();
+        }
+        this._redraw();
+      },
+      _update: function() {
+        if (this._map._animatingZoom && this._bounds) {
+          return;
+        }
+        Renderer.prototype._update.call(this);
+        var b2 = this._bounds, container = this._container, size2 = b2.getSize(), m2 = Browser.retina ? 2 : 1;
+        setPosition(container, b2.min);
+        container.width = m2 * size2.x;
+        container.height = m2 * size2.y;
+        container.style.width = size2.x + "px";
+        container.style.height = size2.y + "px";
+        if (Browser.retina) {
+          this._ctx.scale(2, 2);
+        }
+        this._ctx.translate(-b2.min.x, -b2.min.y);
+        this.fire("update");
+      },
+      _reset: function() {
+        Renderer.prototype._reset.call(this);
+        if (this._postponeUpdatePaths) {
+          this._postponeUpdatePaths = false;
+          this._updatePaths();
+        }
+      },
+      _initPath: function(layer) {
+        this._updateDashArray(layer);
+        this._layers[stamp(layer)] = layer;
+        var order = layer._order = {
+          layer,
+          prev: this._drawLast,
+          next: null
+        };
+        if (this._drawLast) {
+          this._drawLast.next = order;
+        }
+        this._drawLast = order;
+        this._drawFirst = this._drawFirst || this._drawLast;
+      },
+      _addPath: function(layer) {
+        this._requestRedraw(layer);
+      },
+      _removePath: function(layer) {
+        var order = layer._order;
+        var next = order.next;
+        var prev = order.prev;
+        if (next) {
+          next.prev = prev;
+        } else {
+          this._drawLast = prev;
+        }
+        if (prev) {
+          prev.next = next;
+        } else {
+          this._drawFirst = next;
+        }
+        delete layer._order;
+        delete this._layers[stamp(layer)];
+        this._requestRedraw(layer);
+      },
+      _updatePath: function(layer) {
+        this._extendRedrawBounds(layer);
+        layer._project();
+        layer._update();
+        this._requestRedraw(layer);
+      },
+      _updateStyle: function(layer) {
+        this._updateDashArray(layer);
+        this._requestRedraw(layer);
+      },
+      _updateDashArray: function(layer) {
+        if (typeof layer.options.dashArray === "string") {
+          var parts = layer.options.dashArray.split(/[, ]+/), dashArray = [], dashValue, i2;
+          for (i2 = 0; i2 < parts.length; i2++) {
+            dashValue = Number(parts[i2]);
+            if (isNaN(dashValue)) {
+              return;
+            }
+            dashArray.push(dashValue);
+          }
+          layer.options._dashArray = dashArray;
+        } else {
+          layer.options._dashArray = layer.options.dashArray;
+        }
+      },
+      _requestRedraw: function(layer) {
+        if (!this._map) {
+          return;
+        }
+        this._extendRedrawBounds(layer);
+        this._redrawRequest = this._redrawRequest || requestAnimFrame(this._redraw, this);
+      },
+      _extendRedrawBounds: function(layer) {
+        if (layer._pxBounds) {
+          var padding = (layer.options.weight || 0) + 1;
+          this._redrawBounds = this._redrawBounds || new Bounds();
+          this._redrawBounds.extend(layer._pxBounds.min.subtract([padding, padding]));
+          this._redrawBounds.extend(layer._pxBounds.max.add([padding, padding]));
+        }
+      },
+      _redraw: function() {
+        this._redrawRequest = null;
+        if (this._redrawBounds) {
+          this._redrawBounds.min._floor();
+          this._redrawBounds.max._ceil();
+        }
+        this._clear();
+        this._draw();
+        this._redrawBounds = null;
+      },
+      _clear: function() {
+        var bounds = this._redrawBounds;
+        if (bounds) {
+          var size2 = bounds.getSize();
+          this._ctx.clearRect(bounds.min.x, bounds.min.y, size2.x, size2.y);
+        } else {
+          this._ctx.save();
+          this._ctx.setTransform(1, 0, 0, 1, 0, 0);
+          this._ctx.clearRect(0, 0, this._container.width, this._container.height);
+          this._ctx.restore();
+        }
+      },
+      _draw: function() {
+        var layer, bounds = this._redrawBounds;
+        this._ctx.save();
+        if (bounds) {
+          var size2 = bounds.getSize();
+          this._ctx.beginPath();
+          this._ctx.rect(bounds.min.x, bounds.min.y, size2.x, size2.y);
+          this._ctx.clip();
+        }
+        this._drawing = true;
+        for (var order = this._drawFirst; order; order = order.next) {
+          layer = order.layer;
+          if (!bounds || layer._pxBounds && layer._pxBounds.intersects(bounds)) {
+            layer._updatePath();
+          }
+        }
+        this._drawing = false;
+        this._ctx.restore();
+      },
+      _updatePoly: function(layer, closed) {
+        if (!this._drawing) {
+          return;
+        }
+        var i2, j, len2, p2, parts = layer._parts, len = parts.length, ctx = this._ctx;
+        if (!len) {
+          return;
+        }
+        ctx.beginPath();
+        for (i2 = 0; i2 < len; i2++) {
+          for (j = 0, len2 = parts[i2].length; j < len2; j++) {
+            p2 = parts[i2][j];
+            ctx[j ? "lineTo" : "moveTo"](p2.x, p2.y);
+          }
+          if (closed) {
+            ctx.closePath();
+          }
+        }
+        this._fillStroke(ctx, layer);
+      },
+      _updateCircle: function(layer) {
+        if (!this._drawing || layer._empty()) {
+          return;
+        }
+        var p2 = layer._point, ctx = this._ctx, r2 = Math.max(Math.round(layer._radius), 1), s2 = (Math.max(Math.round(layer._radiusY), 1) || r2) / r2;
+        if (s2 !== 1) {
+          ctx.save();
+          ctx.scale(1, s2);
+        }
+        ctx.beginPath();
+        ctx.arc(p2.x, p2.y / s2, r2, 0, Math.PI * 2, false);
+        if (s2 !== 1) {
+          ctx.restore();
+        }
+        this._fillStroke(ctx, layer);
+      },
+      _fillStroke: function(ctx, layer) {
+        var options = layer.options;
+        if (options.fill) {
+          ctx.globalAlpha = options.fillOpacity;
+          ctx.fillStyle = options.fillColor || options.color;
+          ctx.fill(options.fillRule || "evenodd");
+        }
+        if (options.stroke && options.weight !== 0) {
+          if (ctx.setLineDash) {
+            ctx.setLineDash(layer.options && layer.options._dashArray || []);
+          }
+          ctx.globalAlpha = options.opacity;
+          ctx.lineWidth = options.weight;
+          ctx.strokeStyle = options.color;
+          ctx.lineCap = options.lineCap;
+          ctx.lineJoin = options.lineJoin;
+          ctx.stroke();
+        }
+      },
+      // Canvas obviously doesn't have mouse events for individual drawn objects,
+      // so we emulate that by calculating what's under the mouse on mousemove/click manually
+      _onClick: function(e3) {
+        var point2 = this._map.mouseEventToLayerPoint(e3), layer, clickedLayer;
+        for (var order = this._drawFirst; order; order = order.next) {
+          layer = order.layer;
+          if (layer.options.interactive && layer._containsPoint(point2)) {
+            if (!(e3.type === "click" || e3.type === "preclick") || !this._map._draggableMoved(layer)) {
+              clickedLayer = layer;
+            }
+          }
+        }
+        this._fireEvent(clickedLayer ? [clickedLayer] : false, e3);
+      },
+      _onMouseMove: function(e3) {
+        if (!this._map || this._map.dragging.moving() || this._map._animatingZoom) {
+          return;
+        }
+        var point2 = this._map.mouseEventToLayerPoint(e3);
+        this._handleMouseHover(e3, point2);
+      },
+      _handleMouseOut: function(e3) {
+        var layer = this._hoveredLayer;
+        if (layer) {
+          removeClass(this._container, "leaflet-interactive");
+          this._fireEvent([layer], e3, "mouseout");
+          this._hoveredLayer = null;
+          this._mouseHoverThrottled = false;
+        }
+      },
+      _handleMouseHover: function(e3, point2) {
+        if (this._mouseHoverThrottled) {
+          return;
+        }
+        var layer, candidateHoveredLayer;
+        for (var order = this._drawFirst; order; order = order.next) {
+          layer = order.layer;
+          if (layer.options.interactive && layer._containsPoint(point2)) {
+            candidateHoveredLayer = layer;
+          }
+        }
+        if (candidateHoveredLayer !== this._hoveredLayer) {
+          this._handleMouseOut(e3);
+          if (candidateHoveredLayer) {
+            addClass(this._container, "leaflet-interactive");
+            this._fireEvent([candidateHoveredLayer], e3, "mouseover");
+            this._hoveredLayer = candidateHoveredLayer;
+          }
+        }
+        this._fireEvent(this._hoveredLayer ? [this._hoveredLayer] : false, e3);
+        this._mouseHoverThrottled = true;
+        setTimeout(bind(function() {
+          this._mouseHoverThrottled = false;
+        }, this), 32);
+      },
+      _fireEvent: function(layers2, e3, type) {
+        this._map._fireDOMEvent(e3, type || e3.type, layers2);
+      },
+      _bringToFront: function(layer) {
+        var order = layer._order;
+        if (!order) {
+          return;
+        }
+        var next = order.next;
+        var prev = order.prev;
+        if (next) {
+          next.prev = prev;
+        } else {
+          return;
+        }
+        if (prev) {
+          prev.next = next;
+        } else if (next) {
+          this._drawFirst = next;
+        }
+        order.prev = this._drawLast;
+        this._drawLast.next = order;
+        order.next = null;
+        this._drawLast = order;
+        this._requestRedraw(layer);
+      },
+      _bringToBack: function(layer) {
+        var order = layer._order;
+        if (!order) {
+          return;
+        }
+        var next = order.next;
+        var prev = order.prev;
+        if (prev) {
+          prev.next = next;
+        } else {
+          return;
+        }
+        if (next) {
+          next.prev = prev;
+        } else if (prev) {
+          this._drawLast = prev;
+        }
+        order.prev = null;
+        order.next = this._drawFirst;
+        this._drawFirst.prev = order;
+        this._drawFirst = order;
+        this._requestRedraw(layer);
+      }
+    });
+    function canvas(options) {
+      return Browser.canvas ? new Canvas(options) : null;
+    }
+    var vmlCreate = function() {
+      try {
+        document.namespaces.add("lvml", "urn:schemas-microsoft-com:vml");
+        return function(name) {
+          return document.createElement("<lvml:" + name + ' class="lvml">');
+        };
+      } catch (e3) {
+      }
+      return function(name) {
+        return document.createElement("<" + name + ' xmlns="urn:schemas-microsoft.com:vml" class="lvml">');
+      };
+    }();
+    var vmlMixin = {
+      _initContainer: function() {
+        this._container = create$1("div", "leaflet-vml-container");
+      },
+      _update: function() {
+        if (this._map._animatingZoom) {
+          return;
+        }
+        Renderer.prototype._update.call(this);
+        this.fire("update");
+      },
+      _initPath: function(layer) {
+        var container = layer._container = vmlCreate("shape");
+        addClass(container, "leaflet-vml-shape " + (this.options.className || ""));
+        container.coordsize = "1 1";
+        layer._path = vmlCreate("path");
+        container.appendChild(layer._path);
+        this._updateStyle(layer);
+        this._layers[stamp(layer)] = layer;
+      },
+      _addPath: function(layer) {
+        var container = layer._container;
+        this._container.appendChild(container);
+        if (layer.options.interactive) {
+          layer.addInteractiveTarget(container);
+        }
+      },
+      _removePath: function(layer) {
+        var container = layer._container;
+        remove(container);
+        layer.removeInteractiveTarget(container);
+        delete this._layers[stamp(layer)];
+      },
+      _updateStyle: function(layer) {
+        var stroke = layer._stroke, fill = layer._fill, options = layer.options, container = layer._container;
+        container.stroked = !!options.stroke;
+        container.filled = !!options.fill;
+        if (options.stroke) {
+          if (!stroke) {
+            stroke = layer._stroke = vmlCreate("stroke");
+          }
+          container.appendChild(stroke);
+          stroke.weight = options.weight + "px";
+          stroke.color = options.color;
+          stroke.opacity = options.opacity;
+          if (options.dashArray) {
+            stroke.dashStyle = isArray2(options.dashArray) ? options.dashArray.join(" ") : options.dashArray.replace(/( *, *)/g, " ");
+          } else {
+            stroke.dashStyle = "";
+          }
+          stroke.endcap = options.lineCap.replace("butt", "flat");
+          stroke.joinstyle = options.lineJoin;
+        } else if (stroke) {
+          container.removeChild(stroke);
+          layer._stroke = null;
+        }
+        if (options.fill) {
+          if (!fill) {
+            fill = layer._fill = vmlCreate("fill");
+          }
+          container.appendChild(fill);
+          fill.color = options.fillColor || options.color;
+          fill.opacity = options.fillOpacity;
+        } else if (fill) {
+          container.removeChild(fill);
+          layer._fill = null;
+        }
+      },
+      _updateCircle: function(layer) {
+        var p2 = layer._point.round(), r2 = Math.round(layer._radius), r22 = Math.round(layer._radiusY || r2);
+        this._setPath(layer, layer._empty() ? "M0 0" : "AL " + p2.x + "," + p2.y + " " + r2 + "," + r22 + " 0," + 65535 * 360);
+      },
+      _setPath: function(layer, path) {
+        layer._path.v = path;
+      },
+      _bringToFront: function(layer) {
+        toFront(layer._container);
+      },
+      _bringToBack: function(layer) {
+        toBack(layer._container);
+      }
+    };
+    var create2 = Browser.vml ? vmlCreate : svgCreate;
+    var SVG = Renderer.extend({
+      _initContainer: function() {
+        this._container = create2("svg");
+        this._container.setAttribute("pointer-events", "none");
+        this._rootGroup = create2("g");
+        this._container.appendChild(this._rootGroup);
+      },
+      _destroyContainer: function() {
+        remove(this._container);
+        off(this._container);
+        delete this._container;
+        delete this._rootGroup;
+        delete this._svgSize;
+      },
+      _update: function() {
+        if (this._map._animatingZoom && this._bounds) {
+          return;
+        }
+        Renderer.prototype._update.call(this);
+        var b2 = this._bounds, size2 = b2.getSize(), container = this._container;
+        if (!this._svgSize || !this._svgSize.equals(size2)) {
+          this._svgSize = size2;
+          container.setAttribute("width", size2.x);
+          container.setAttribute("height", size2.y);
+        }
+        setPosition(container, b2.min);
+        container.setAttribute("viewBox", [b2.min.x, b2.min.y, size2.x, size2.y].join(" "));
+        this.fire("update");
+      },
+      // methods below are called by vector layers implementations
+      _initPath: function(layer) {
+        var path = layer._path = create2("path");
+        if (layer.options.className) {
+          addClass(path, layer.options.className);
+        }
+        if (layer.options.interactive) {
+          addClass(path, "leaflet-interactive");
+        }
+        this._updateStyle(layer);
+        this._layers[stamp(layer)] = layer;
+      },
+      _addPath: function(layer) {
+        if (!this._rootGroup) {
+          this._initContainer();
+        }
+        this._rootGroup.appendChild(layer._path);
+        layer.addInteractiveTarget(layer._path);
+      },
+      _removePath: function(layer) {
+        remove(layer._path);
+        layer.removeInteractiveTarget(layer._path);
+        delete this._layers[stamp(layer)];
+      },
+      _updatePath: function(layer) {
+        layer._project();
+        layer._update();
+      },
+      _updateStyle: function(layer) {
+        var path = layer._path, options = layer.options;
+        if (!path) {
+          return;
+        }
+        if (options.stroke) {
+          path.setAttribute("stroke", options.color);
+          path.setAttribute("stroke-opacity", options.opacity);
+          path.setAttribute("stroke-width", options.weight);
+          path.setAttribute("stroke-linecap", options.lineCap);
+          path.setAttribute("stroke-linejoin", options.lineJoin);
+          if (options.dashArray) {
+            path.setAttribute("stroke-dasharray", options.dashArray);
+          } else {
+            path.removeAttribute("stroke-dasharray");
+          }
+          if (options.dashOffset) {
+            path.setAttribute("stroke-dashoffset", options.dashOffset);
+          } else {
+            path.removeAttribute("stroke-dashoffset");
+          }
+        } else {
+          path.setAttribute("stroke", "none");
+        }
+        if (options.fill) {
+          path.setAttribute("fill", options.fillColor || options.color);
+          path.setAttribute("fill-opacity", options.fillOpacity);
+          path.setAttribute("fill-rule", options.fillRule || "evenodd");
+        } else {
+          path.setAttribute("fill", "none");
+        }
+      },
+      _updatePoly: function(layer, closed) {
+        this._setPath(layer, pointsToPath(layer._parts, closed));
+      },
+      _updateCircle: function(layer) {
+        var p2 = layer._point, r2 = Math.max(Math.round(layer._radius), 1), r22 = Math.max(Math.round(layer._radiusY), 1) || r2, arc = "a" + r2 + "," + r22 + " 0 1,0 ";
+        var d2 = layer._empty() ? "M0 0" : "M" + (p2.x - r2) + "," + p2.y + arc + r2 * 2 + ",0 " + arc + -r2 * 2 + ",0 ";
+        this._setPath(layer, d2);
+      },
+      _setPath: function(layer, path) {
+        layer._path.setAttribute("d", path);
+      },
+      // SVG does not have the concept of zIndex so we resort to changing the DOM order of elements
+      _bringToFront: function(layer) {
+        toFront(layer._path);
+      },
+      _bringToBack: function(layer) {
+        toBack(layer._path);
+      }
+    });
+    if (Browser.vml) {
+      SVG.include(vmlMixin);
+    }
+    function svg(options) {
+      return Browser.svg || Browser.vml ? new SVG(options) : null;
+    }
+    Map2.include({
+      // @namespace Map; @method getRenderer(layer: Path): Renderer
+      // Returns the instance of `Renderer` that should be used to render the given
+      // `Path`. It will ensure that the `renderer` options of the map and paths
+      // are respected, and that the renderers do exist on the map.
+      getRenderer: function(layer) {
+        var renderer = layer.options.renderer || this._getPaneRenderer(layer.options.pane) || this.options.renderer || this._renderer;
+        if (!renderer) {
+          renderer = this._renderer = this._createRenderer();
+        }
+        if (!this.hasLayer(renderer)) {
+          this.addLayer(renderer);
+        }
+        return renderer;
+      },
+      _getPaneRenderer: function(name) {
+        if (name === "overlayPane" || name === void 0) {
+          return false;
+        }
+        var renderer = this._paneRenderers[name];
+        if (renderer === void 0) {
+          renderer = this._createRenderer({ pane: name });
+          this._paneRenderers[name] = renderer;
+        }
+        return renderer;
+      },
+      _createRenderer: function(options) {
+        return this.options.preferCanvas && canvas(options) || svg(options);
+      }
+    });
+    var Rectangle3 = Polygon3.extend({
+      initialize: function(latLngBounds, options) {
+        Polygon3.prototype.initialize.call(this, this._boundsToLatLngs(latLngBounds), options);
+      },
+      // @method setBounds(latLngBounds: LatLngBounds): this
+      // Redraws the rectangle with the passed bounds.
+      setBounds: function(latLngBounds) {
+        return this.setLatLngs(this._boundsToLatLngs(latLngBounds));
+      },
+      _boundsToLatLngs: function(latLngBounds) {
+        latLngBounds = toLatLngBounds(latLngBounds);
+        return [
+          latLngBounds.getSouthWest(),
+          latLngBounds.getNorthWest(),
+          latLngBounds.getNorthEast(),
+          latLngBounds.getSouthEast()
+        ];
+      }
+    });
+    function rectangle(latLngBounds, options) {
+      return new Rectangle3(latLngBounds, options);
+    }
+    SVG.create = create2;
+    SVG.pointsToPath = pointsToPath;
+    GeoJSON.geometryToLayer = geometryToLayer;
+    GeoJSON.coordsToLatLng = coordsToLatLng;
+    GeoJSON.coordsToLatLngs = coordsToLatLngs;
+    GeoJSON.latLngToCoords = latLngToCoords;
+    GeoJSON.latLngsToCoords = latLngsToCoords;
+    GeoJSON.getFeature = getFeature;
+    GeoJSON.asFeature = asFeature;
+    Map2.mergeOptions({
+      // @option boxZoom: Boolean = true
+      // Whether the map can be zoomed to a rectangular area specified by
+      // dragging the mouse while pressing the shift key.
+      boxZoom: true
+    });
+    var BoxZoom = Handler.extend({
+      initialize: function(map2) {
+        this._map = map2;
+        this._container = map2._container;
+        this._pane = map2._panes.overlayPane;
+        this._resetStateTimeout = 0;
+        map2.on("unload", this._destroy, this);
+      },
+      addHooks: function() {
+        on(this._container, "mousedown", this._onMouseDown, this);
+      },
+      removeHooks: function() {
+        off(this._container, "mousedown", this._onMouseDown, this);
+      },
+      moved: function() {
+        return this._moved;
+      },
+      _destroy: function() {
+        remove(this._pane);
+        delete this._pane;
+      },
+      _resetState: function() {
+        this._resetStateTimeout = 0;
+        this._moved = false;
+      },
+      _clearDeferredResetState: function() {
+        if (this._resetStateTimeout !== 0) {
+          clearTimeout(this._resetStateTimeout);
+          this._resetStateTimeout = 0;
+        }
+      },
+      _onMouseDown: function(e3) {
+        if (!e3.shiftKey || e3.which !== 1 && e3.button !== 1) {
+          return false;
+        }
+        this._clearDeferredResetState();
+        this._resetState();
+        disableTextSelection();
+        disableImageDrag();
+        this._startPoint = this._map.mouseEventToContainerPoint(e3);
+        on(document, {
+          contextmenu: stop,
+          mousemove: this._onMouseMove,
+          mouseup: this._onMouseUp,
+          keydown: this._onKeyDown
+        }, this);
+      },
+      _onMouseMove: function(e3) {
+        if (!this._moved) {
+          this._moved = true;
+          this._box = create$1("div", "leaflet-zoom-box", this._container);
+          addClass(this._container, "leaflet-crosshair");
+          this._map.fire("boxzoomstart");
+        }
+        this._point = this._map.mouseEventToContainerPoint(e3);
+        var bounds = new Bounds(this._point, this._startPoint), size2 = bounds.getSize();
+        setPosition(this._box, bounds.min);
+        this._box.style.width = size2.x + "px";
+        this._box.style.height = size2.y + "px";
+      },
+      _finish: function() {
+        if (this._moved) {
+          remove(this._box);
+          removeClass(this._container, "leaflet-crosshair");
+        }
+        enableTextSelection();
+        enableImageDrag();
+        off(document, {
+          contextmenu: stop,
+          mousemove: this._onMouseMove,
+          mouseup: this._onMouseUp,
+          keydown: this._onKeyDown
+        }, this);
+      },
+      _onMouseUp: function(e3) {
+        if (e3.which !== 1 && e3.button !== 1) {
+          return;
+        }
+        this._finish();
+        if (!this._moved) {
+          return;
+        }
+        this._clearDeferredResetState();
+        this._resetStateTimeout = setTimeout(bind(this._resetState, this), 0);
+        var bounds = new LatLngBounds(
+          this._map.containerPointToLatLng(this._startPoint),
+          this._map.containerPointToLatLng(this._point)
+        );
+        this._map.fitBounds(bounds).fire("boxzoomend", { boxZoomBounds: bounds });
+      },
+      _onKeyDown: function(e3) {
+        if (e3.keyCode === 27) {
+          this._finish();
+          this._clearDeferredResetState();
+          this._resetState();
+        }
+      }
+    });
+    Map2.addInitHook("addHandler", "boxZoom", BoxZoom);
+    Map2.mergeOptions({
+      // @option doubleClickZoom: Boolean|String = true
+      // Whether the map can be zoomed in by double clicking on it and
+      // zoomed out by double clicking while holding shift. If passed
+      // `'center'`, double-click zoom will zoom to the center of the
+      //  view regardless of where the mouse was.
+      doubleClickZoom: true
+    });
+    var DoubleClickZoom = Handler.extend({
+      addHooks: function() {
+        this._map.on("dblclick", this._onDoubleClick, this);
+      },
+      removeHooks: function() {
+        this._map.off("dblclick", this._onDoubleClick, this);
+      },
+      _onDoubleClick: function(e3) {
+        var map2 = this._map, oldZoom = map2.getZoom(), delta = map2.options.zoomDelta, zoom2 = e3.originalEvent.shiftKey ? oldZoom - delta : oldZoom + delta;
+        if (map2.options.doubleClickZoom === "center") {
+          map2.setZoom(zoom2);
+        } else {
+          map2.setZoomAround(e3.containerPoint, zoom2);
+        }
+      }
+    });
+    Map2.addInitHook("addHandler", "doubleClickZoom", DoubleClickZoom);
+    Map2.mergeOptions({
+      // @option dragging: Boolean = true
+      // Whether the map is draggable with mouse/touch or not.
+      dragging: true,
+      // @section Panning Inertia Options
+      // @option inertia: Boolean = *
+      // If enabled, panning of the map will have an inertia effect where
+      // the map builds momentum while dragging and continues moving in
+      // the same direction for some time. Feels especially nice on touch
+      // devices. Enabled by default.
+      inertia: true,
+      // @option inertiaDeceleration: Number = 3000
+      // The rate with which the inertial movement slows down, in pixels/second².
+      inertiaDeceleration: 3400,
+      // px/s^2
+      // @option inertiaMaxSpeed: Number = Infinity
+      // Max speed of the inertial movement, in pixels/second.
+      inertiaMaxSpeed: Infinity,
+      // px/s
+      // @option easeLinearity: Number = 0.2
+      easeLinearity: 0.2,
+      // TODO refactor, move to CRS
+      // @option worldCopyJump: Boolean = false
+      // With this option enabled, the map tracks when you pan to another "copy"
+      // of the world and seamlessly jumps to the original one so that all overlays
+      // like markers and vector layers are still visible.
+      worldCopyJump: false,
+      // @option maxBoundsViscosity: Number = 0.0
+      // If `maxBounds` is set, this option will control how solid the bounds
+      // are when dragging the map around. The default value of `0.0` allows the
+      // user to drag outside the bounds at normal speed, higher values will
+      // slow down map dragging outside bounds, and `1.0` makes the bounds fully
+      // solid, preventing the user from dragging outside the bounds.
+      maxBoundsViscosity: 0
+    });
+    var Drag = Handler.extend({
+      addHooks: function() {
+        if (!this._draggable) {
+          var map2 = this._map;
+          this._draggable = new Draggable(map2._mapPane, map2._container);
+          this._draggable.on({
+            dragstart: this._onDragStart,
+            drag: this._onDrag,
+            dragend: this._onDragEnd
+          }, this);
+          this._draggable.on("predrag", this._onPreDragLimit, this);
+          if (map2.options.worldCopyJump) {
+            this._draggable.on("predrag", this._onPreDragWrap, this);
+            map2.on("zoomend", this._onZoomEnd, this);
+            map2.whenReady(this._onZoomEnd, this);
+          }
+        }
+        addClass(this._map._container, "leaflet-grab leaflet-touch-drag");
+        this._draggable.enable();
+        this._positions = [];
+        this._times = [];
+      },
+      removeHooks: function() {
+        removeClass(this._map._container, "leaflet-grab");
+        removeClass(this._map._container, "leaflet-touch-drag");
+        this._draggable.disable();
+      },
+      moved: function() {
+        return this._draggable && this._draggable._moved;
+      },
+      moving: function() {
+        return this._draggable && this._draggable._moving;
+      },
+      _onDragStart: function() {
+        var map2 = this._map;
+        map2._stop();
+        if (this._map.options.maxBounds && this._map.options.maxBoundsViscosity) {
+          var bounds = toLatLngBounds(this._map.options.maxBounds);
+          this._offsetLimit = toBounds(
+            this._map.latLngToContainerPoint(bounds.getNorthWest()).multiplyBy(-1),
+            this._map.latLngToContainerPoint(bounds.getSouthEast()).multiplyBy(-1).add(this._map.getSize())
+          );
+          this._viscosity = Math.min(1, Math.max(0, this._map.options.maxBoundsViscosity));
+        } else {
+          this._offsetLimit = null;
+        }
+        map2.fire("movestart").fire("dragstart");
+        if (map2.options.inertia) {
+          this._positions = [];
+          this._times = [];
+        }
+      },
+      _onDrag: function(e3) {
+        if (this._map.options.inertia) {
+          var time2 = this._lastTime = +/* @__PURE__ */ new Date(), pos = this._lastPos = this._draggable._absPos || this._draggable._newPos;
+          this._positions.push(pos);
+          this._times.push(time2);
+          this._prunePositions(time2);
+        }
+        this._map.fire("move", e3).fire("drag", e3);
+      },
+      _prunePositions: function(time2) {
+        while (this._positions.length > 1 && time2 - this._times[0] > 50) {
+          this._positions.shift();
+          this._times.shift();
+        }
+      },
+      _onZoomEnd: function() {
+        var pxCenter = this._map.getSize().divideBy(2), pxWorldCenter = this._map.latLngToLayerPoint([0, 0]);
+        this._initialWorldOffset = pxWorldCenter.subtract(pxCenter).x;
+        this._worldWidth = this._map.getPixelWorldBounds().getSize().x;
+      },
+      _viscousLimit: function(value, threshold2) {
+        return value - (value - threshold2) * this._viscosity;
+      },
+      _onPreDragLimit: function() {
+        if (!this._viscosity || !this._offsetLimit) {
+          return;
+        }
+        var offset2 = this._draggable._newPos.subtract(this._draggable._startPos);
+        var limit = this._offsetLimit;
+        if (offset2.x < limit.min.x) {
+          offset2.x = this._viscousLimit(offset2.x, limit.min.x);
+        }
+        if (offset2.y < limit.min.y) {
+          offset2.y = this._viscousLimit(offset2.y, limit.min.y);
+        }
+        if (offset2.x > limit.max.x) {
+          offset2.x = this._viscousLimit(offset2.x, limit.max.x);
+        }
+        if (offset2.y > limit.max.y) {
+          offset2.y = this._viscousLimit(offset2.y, limit.max.y);
+        }
+        this._draggable._newPos = this._draggable._startPos.add(offset2);
+      },
+      _onPreDragWrap: function() {
+        var worldWidth = this._worldWidth, halfWidth = Math.round(worldWidth / 2), dx = this._initialWorldOffset, x2 = this._draggable._newPos.x, newX1 = (x2 - halfWidth + dx) % worldWidth + halfWidth - dx, newX2 = (x2 + halfWidth + dx) % worldWidth - halfWidth - dx, newX = Math.abs(newX1 + dx) < Math.abs(newX2 + dx) ? newX1 : newX2;
+        this._draggable._absPos = this._draggable._newPos.clone();
+        this._draggable._newPos.x = newX;
+      },
+      _onDragEnd: function(e3) {
+        var map2 = this._map, options = map2.options, noInertia = !options.inertia || e3.noInertia || this._times.length < 2;
+        map2.fire("dragend", e3);
+        if (noInertia) {
+          map2.fire("moveend");
+        } else {
+          this._prunePositions(+/* @__PURE__ */ new Date());
+          var direction = this._lastPos.subtract(this._positions[0]), duration2 = (this._lastTime - this._times[0]) / 1e3, ease2 = options.easeLinearity, speedVector = direction.multiplyBy(ease2 / duration2), speed = speedVector.distanceTo([0, 0]), limitedSpeed = Math.min(options.inertiaMaxSpeed, speed), limitedSpeedVector = speedVector.multiplyBy(limitedSpeed / speed), decelerationDuration = limitedSpeed / (options.inertiaDeceleration * ease2), offset2 = limitedSpeedVector.multiplyBy(-decelerationDuration / 2).round();
+          if (!offset2.x && !offset2.y) {
+            map2.fire("moveend");
+          } else {
+            offset2 = map2._limitOffset(offset2, map2.options.maxBounds);
+            requestAnimFrame(function() {
+              map2.panBy(offset2, {
+                duration: decelerationDuration,
+                easeLinearity: ease2,
+                noMoveStart: true,
+                animate: true
+              });
+            });
+          }
+        }
+      }
+    });
+    Map2.addInitHook("addHandler", "dragging", Drag);
+    Map2.mergeOptions({
+      // @option keyboard: Boolean = true
+      // Makes the map focusable and allows users to navigate the map with keyboard
+      // arrows and `+`/`-` keys.
+      keyboard: true,
+      // @option keyboardPanDelta: Number = 80
+      // Amount of pixels to pan when pressing an arrow key.
+      keyboardPanDelta: 80
+    });
+    var Keyboard = Handler.extend({
+      keyCodes: {
+        left: [37],
+        right: [39],
+        down: [40],
+        up: [38],
+        zoomIn: [187, 107, 61, 171],
+        zoomOut: [189, 109, 54, 173]
+      },
+      initialize: function(map2) {
+        this._map = map2;
+        this._setPanDelta(map2.options.keyboardPanDelta);
+        this._setZoomDelta(map2.options.zoomDelta);
+      },
+      addHooks: function() {
+        var container = this._map._container;
+        if (container.tabIndex <= 0) {
+          container.tabIndex = "0";
+        }
+        on(container, {
+          focus: this._onFocus,
+          blur: this._onBlur,
+          mousedown: this._onMouseDown
+        }, this);
+        this._map.on({
+          focus: this._addHooks,
+          blur: this._removeHooks
+        }, this);
+      },
+      removeHooks: function() {
+        this._removeHooks();
+        off(this._map._container, {
+          focus: this._onFocus,
+          blur: this._onBlur,
+          mousedown: this._onMouseDown
+        }, this);
+        this._map.off({
+          focus: this._addHooks,
+          blur: this._removeHooks
+        }, this);
+      },
+      _onMouseDown: function() {
+        if (this._focused) {
+          return;
+        }
+        var body = document.body, docEl = document.documentElement, top = body.scrollTop || docEl.scrollTop, left = body.scrollLeft || docEl.scrollLeft;
+        this._map._container.focus();
+        window.scrollTo(left, top);
+      },
+      _onFocus: function() {
+        this._focused = true;
+        this._map.fire("focus");
+      },
+      _onBlur: function() {
+        this._focused = false;
+        this._map.fire("blur");
+      },
+      _setPanDelta: function(panDelta) {
+        var keys2 = this._panKeys = {}, codes = this.keyCodes, i2, len;
+        for (i2 = 0, len = codes.left.length; i2 < len; i2++) {
+          keys2[codes.left[i2]] = [-1 * panDelta, 0];
+        }
+        for (i2 = 0, len = codes.right.length; i2 < len; i2++) {
+          keys2[codes.right[i2]] = [panDelta, 0];
+        }
+        for (i2 = 0, len = codes.down.length; i2 < len; i2++) {
+          keys2[codes.down[i2]] = [0, panDelta];
+        }
+        for (i2 = 0, len = codes.up.length; i2 < len; i2++) {
+          keys2[codes.up[i2]] = [0, -1 * panDelta];
+        }
+      },
+      _setZoomDelta: function(zoomDelta) {
+        var keys2 = this._zoomKeys = {}, codes = this.keyCodes, i2, len;
+        for (i2 = 0, len = codes.zoomIn.length; i2 < len; i2++) {
+          keys2[codes.zoomIn[i2]] = zoomDelta;
+        }
+        for (i2 = 0, len = codes.zoomOut.length; i2 < len; i2++) {
+          keys2[codes.zoomOut[i2]] = -zoomDelta;
+        }
+      },
+      _addHooks: function() {
+        on(document, "keydown", this._onKeyDown, this);
+      },
+      _removeHooks: function() {
+        off(document, "keydown", this._onKeyDown, this);
+      },
+      _onKeyDown: function(e3) {
+        if (e3.altKey || e3.ctrlKey || e3.metaKey) {
+          return;
+        }
+        var key = e3.keyCode, map2 = this._map, offset2;
+        if (key in this._panKeys) {
+          if (!map2._panAnim || !map2._panAnim._inProgress) {
+            offset2 = this._panKeys[key];
+            if (e3.shiftKey) {
+              offset2 = toPoint(offset2).multiplyBy(3);
+            }
+            if (map2.options.maxBounds) {
+              offset2 = map2._limitOffset(toPoint(offset2), map2.options.maxBounds);
+            }
+            if (map2.options.worldCopyJump) {
+              var newLatLng = map2.wrapLatLng(map2.unproject(map2.project(map2.getCenter()).add(offset2)));
+              map2.panTo(newLatLng);
+            } else {
+              map2.panBy(offset2);
+            }
+          }
+        } else if (key in this._zoomKeys) {
+          map2.setZoom(map2.getZoom() + (e3.shiftKey ? 3 : 1) * this._zoomKeys[key]);
+        } else if (key === 27 && map2._popup && map2._popup.options.closeOnEscapeKey) {
+          map2.closePopup();
+        } else {
+          return;
+        }
+        stop(e3);
+      }
+    });
+    Map2.addInitHook("addHandler", "keyboard", Keyboard);
+    Map2.mergeOptions({
+      // @section Mouse wheel options
+      // @option scrollWheelZoom: Boolean|String = true
+      // Whether the map can be zoomed by using the mouse wheel. If passed `'center'`,
+      // it will zoom to the center of the view regardless of where the mouse was.
+      scrollWheelZoom: true,
+      // @option wheelDebounceTime: Number = 40
+      // Limits the rate at which a wheel can fire (in milliseconds). By default
+      // user can't zoom via wheel more often than once per 40 ms.
+      wheelDebounceTime: 40,
+      // @option wheelPxPerZoomLevel: Number = 60
+      // How many scroll pixels (as reported by [L.DomEvent.getWheelDelta](#domevent-getwheeldelta))
+      // mean a change of one full zoom level. Smaller values will make wheel-zooming
+      // faster (and vice versa).
+      wheelPxPerZoomLevel: 60
+    });
+    var ScrollWheelZoom = Handler.extend({
+      addHooks: function() {
+        on(this._map._container, "wheel", this._onWheelScroll, this);
+        this._delta = 0;
+      },
+      removeHooks: function() {
+        off(this._map._container, "wheel", this._onWheelScroll, this);
+      },
+      _onWheelScroll: function(e3) {
+        var delta = getWheelDelta(e3);
+        var debounce2 = this._map.options.wheelDebounceTime;
+        this._delta += delta;
+        this._lastMousePos = this._map.mouseEventToContainerPoint(e3);
+        if (!this._startTime) {
+          this._startTime = +/* @__PURE__ */ new Date();
+        }
+        var left = Math.max(debounce2 - (+/* @__PURE__ */ new Date() - this._startTime), 0);
+        clearTimeout(this._timer);
+        this._timer = setTimeout(bind(this._performZoom, this), left);
+        stop(e3);
+      },
+      _performZoom: function() {
+        var map2 = this._map, zoom2 = map2.getZoom(), snap = this._map.options.zoomSnap || 0;
+        map2._stop();
+        var d2 = this._delta / (this._map.options.wheelPxPerZoomLevel * 4), d3 = 4 * Math.log(2 / (1 + Math.exp(-Math.abs(d2)))) / Math.LN2, d4 = snap ? Math.ceil(d3 / snap) * snap : d3, delta = map2._limitZoom(zoom2 + (this._delta > 0 ? d4 : -d4)) - zoom2;
+        this._delta = 0;
+        this._startTime = null;
+        if (!delta) {
+          return;
+        }
+        if (map2.options.scrollWheelZoom === "center") {
+          map2.setZoom(zoom2 + delta);
+        } else {
+          map2.setZoomAround(this._lastMousePos, zoom2 + delta);
+        }
+      }
+    });
+    Map2.addInitHook("addHandler", "scrollWheelZoom", ScrollWheelZoom);
+    var tapHoldDelay = 600;
+    Map2.mergeOptions({
+      // @section Touch interaction options
+      // @option tapHold: Boolean
+      // Enables simulation of `contextmenu` event, default is `true` for mobile Safari.
+      tapHold: Browser.touchNative && Browser.safari && Browser.mobile,
+      // @option tapTolerance: Number = 15
+      // The max number of pixels a user can shift his finger during touch
+      // for it to be considered a valid tap.
+      tapTolerance: 15
+    });
+    var TapHold = Handler.extend({
+      addHooks: function() {
+        on(this._map._container, "touchstart", this._onDown, this);
+      },
+      removeHooks: function() {
+        off(this._map._container, "touchstart", this._onDown, this);
+      },
+      _onDown: function(e3) {
+        clearTimeout(this._holdTimeout);
+        if (e3.touches.length !== 1) {
+          return;
+        }
+        var first = e3.touches[0];
+        this._startPos = this._newPos = new Point(first.clientX, first.clientY);
+        this._holdTimeout = setTimeout(bind(function() {
+          this._cancel();
+          if (!this._isTapValid()) {
+            return;
+          }
+          on(document, "touchend", preventDefault);
+          on(document, "touchend touchcancel", this._cancelClickPrevent);
+          this._simulateEvent("contextmenu", first);
+        }, this), tapHoldDelay);
+        on(document, "touchend touchcancel contextmenu", this._cancel, this);
+        on(document, "touchmove", this._onMove, this);
+      },
+      _cancelClickPrevent: function cancelClickPrevent() {
+        off(document, "touchend", preventDefault);
+        off(document, "touchend touchcancel", cancelClickPrevent);
+      },
+      _cancel: function() {
+        clearTimeout(this._holdTimeout);
+        off(document, "touchend touchcancel contextmenu", this._cancel, this);
+        off(document, "touchmove", this._onMove, this);
+      },
+      _onMove: function(e3) {
+        var first = e3.touches[0];
+        this._newPos = new Point(first.clientX, first.clientY);
+      },
+      _isTapValid: function() {
+        return this._newPos.distanceTo(this._startPos) <= this._map.options.tapTolerance;
+      },
+      _simulateEvent: function(type, e3) {
+        var simulatedEvent = new MouseEvent(type, {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+          // detail: 1,
+          screenX: e3.screenX,
+          screenY: e3.screenY,
+          clientX: e3.clientX,
+          clientY: e3.clientY
+          // button: 2,
+          // buttons: 2
+        });
+        simulatedEvent._simulated = true;
+        e3.target.dispatchEvent(simulatedEvent);
+      }
+    });
+    Map2.addInitHook("addHandler", "tapHold", TapHold);
+    Map2.mergeOptions({
+      // @section Touch interaction options
+      // @option touchZoom: Boolean|String = *
+      // Whether the map can be zoomed by touch-dragging with two fingers. If
+      // passed `'center'`, it will zoom to the center of the view regardless of
+      // where the touch events (fingers) were. Enabled for touch-capable web
+      // browsers.
+      touchZoom: Browser.touch,
+      // @option bounceAtZoomLimits: Boolean = true
+      // Set it to false if you don't want the map to zoom beyond min/max zoom
+      // and then bounce back when pinch-zooming.
+      bounceAtZoomLimits: true
+    });
+    var TouchZoom = Handler.extend({
+      addHooks: function() {
+        addClass(this._map._container, "leaflet-touch-zoom");
+        on(this._map._container, "touchstart", this._onTouchStart, this);
+      },
+      removeHooks: function() {
+        removeClass(this._map._container, "leaflet-touch-zoom");
+        off(this._map._container, "touchstart", this._onTouchStart, this);
+      },
+      _onTouchStart: function(e3) {
+        var map2 = this._map;
+        if (!e3.touches || e3.touches.length !== 2 || map2._animatingZoom || this._zooming) {
+          return;
+        }
+        var p1 = map2.mouseEventToContainerPoint(e3.touches[0]), p2 = map2.mouseEventToContainerPoint(e3.touches[1]);
+        this._centerPoint = map2.getSize()._divideBy(2);
+        this._startLatLng = map2.containerPointToLatLng(this._centerPoint);
+        if (map2.options.touchZoom !== "center") {
+          this._pinchStartLatLng = map2.containerPointToLatLng(p1.add(p2)._divideBy(2));
+        }
+        this._startDist = p1.distanceTo(p2);
+        this._startZoom = map2.getZoom();
+        this._moved = false;
+        this._zooming = true;
+        map2._stop();
+        on(document, "touchmove", this._onTouchMove, this);
+        on(document, "touchend touchcancel", this._onTouchEnd, this);
+        preventDefault(e3);
+      },
+      _onTouchMove: function(e3) {
+        if (!e3.touches || e3.touches.length !== 2 || !this._zooming) {
+          return;
+        }
+        var map2 = this._map, p1 = map2.mouseEventToContainerPoint(e3.touches[0]), p2 = map2.mouseEventToContainerPoint(e3.touches[1]), scale3 = p1.distanceTo(p2) / this._startDist;
+        this._zoom = map2.getScaleZoom(scale3, this._startZoom);
+        if (!map2.options.bounceAtZoomLimits && (this._zoom < map2.getMinZoom() && scale3 < 1 || this._zoom > map2.getMaxZoom() && scale3 > 1)) {
+          this._zoom = map2._limitZoom(this._zoom);
+        }
+        if (map2.options.touchZoom === "center") {
+          this._center = this._startLatLng;
+          if (scale3 === 1) {
+            return;
+          }
+        } else {
+          var delta = p1._add(p2)._divideBy(2)._subtract(this._centerPoint);
+          if (scale3 === 1 && delta.x === 0 && delta.y === 0) {
+            return;
+          }
+          this._center = map2.unproject(map2.project(this._pinchStartLatLng, this._zoom).subtract(delta), this._zoom);
+        }
+        if (!this._moved) {
+          map2._moveStart(true, false);
+          this._moved = true;
+        }
+        cancelAnimFrame(this._animRequest);
+        var moveFn = bind(map2._move, map2, this._center, this._zoom, { pinch: true, round: false }, void 0);
+        this._animRequest = requestAnimFrame(moveFn, this, true);
+        preventDefault(e3);
+      },
+      _onTouchEnd: function() {
+        if (!this._moved || !this._zooming) {
+          this._zooming = false;
+          return;
+        }
+        this._zooming = false;
+        cancelAnimFrame(this._animRequest);
+        off(document, "touchmove", this._onTouchMove, this);
+        off(document, "touchend touchcancel", this._onTouchEnd, this);
+        if (this._map.options.zoomAnimation) {
+          this._map._animateZoom(this._center, this._map._limitZoom(this._zoom), true, this._map.options.zoomSnap);
+        } else {
+          this._map._resetView(this._center, this._map._limitZoom(this._zoom));
+        }
+      }
+    });
+    Map2.addInitHook("addHandler", "touchZoom", TouchZoom);
+    Map2.BoxZoom = BoxZoom;
+    Map2.DoubleClickZoom = DoubleClickZoom;
+    Map2.Drag = Drag;
+    Map2.Keyboard = Keyboard;
+    Map2.ScrollWheelZoom = ScrollWheelZoom;
+    Map2.TapHold = TapHold;
+    Map2.TouchZoom = TouchZoom;
+    exports$12.Bounds = Bounds;
+    exports$12.Browser = Browser;
+    exports$12.CRS = CRS;
+    exports$12.Canvas = Canvas;
+    exports$12.Circle = Circle;
+    exports$12.CircleMarker = CircleMarker;
+    exports$12.Class = Class;
+    exports$12.Control = Control;
+    exports$12.DivIcon = DivIcon;
+    exports$12.DivOverlay = DivOverlay;
+    exports$12.DomEvent = DomEvent;
+    exports$12.DomUtil = DomUtil;
+    exports$12.Draggable = Draggable;
+    exports$12.Evented = Evented;
+    exports$12.FeatureGroup = FeatureGroup;
+    exports$12.GeoJSON = GeoJSON;
+    exports$12.GridLayer = GridLayer;
+    exports$12.Handler = Handler;
+    exports$12.Icon = Icon2;
+    exports$12.ImageOverlay = ImageOverlay;
+    exports$12.LatLng = LatLng;
+    exports$12.LatLngBounds = LatLngBounds;
+    exports$12.Layer = Layer2;
+    exports$12.LayerGroup = LayerGroup;
+    exports$12.LineUtil = LineUtil;
+    exports$12.Map = Map2;
+    exports$12.Marker = Marker2;
+    exports$12.Mixin = Mixin;
+    exports$12.Path = Path2;
+    exports$12.Point = Point;
+    exports$12.PolyUtil = PolyUtil;
+    exports$12.Polygon = Polygon3;
+    exports$12.Polyline = Polyline;
+    exports$12.Popup = Popup;
+    exports$12.PosAnimation = PosAnimation;
+    exports$12.Projection = index2;
+    exports$12.Rectangle = Rectangle3;
+    exports$12.Renderer = Renderer;
+    exports$12.SVG = SVG;
+    exports$12.SVGOverlay = SVGOverlay;
+    exports$12.TileLayer = TileLayer2;
+    exports$12.Tooltip = Tooltip2;
+    exports$12.Transformation = Transformation;
+    exports$12.Util = Util;
+    exports$12.VideoOverlay = VideoOverlay;
+    exports$12.bind = bind;
+    exports$12.bounds = toBounds;
+    exports$12.canvas = canvas;
+    exports$12.circle = circle;
+    exports$12.circleMarker = circleMarker;
+    exports$12.control = control;
+    exports$12.divIcon = divIcon;
+    exports$12.extend = extend2;
+    exports$12.featureGroup = featureGroup;
+    exports$12.geoJSON = geoJSON;
+    exports$12.geoJson = geoJson;
+    exports$12.gridLayer = gridLayer;
+    exports$12.icon = icon;
+    exports$12.imageOverlay = imageOverlay;
+    exports$12.latLng = toLatLng;
+    exports$12.latLngBounds = toLatLngBounds;
+    exports$12.layerGroup = layerGroup;
+    exports$12.map = createMap;
+    exports$12.marker = marker;
+    exports$12.point = toPoint;
+    exports$12.polygon = polygon;
+    exports$12.polyline = polyline;
+    exports$12.popup = popup;
+    exports$12.rectangle = rectangle;
+    exports$12.setOptions = setOptions;
+    exports$12.stamp = stamp;
+    exports$12.svg = svg;
+    exports$12.svgOverlay = svgOverlay;
+    exports$12.tileLayer = tileLayer;
+    exports$12.tooltip = tooltip;
+    exports$12.transformation = toTransformation;
+    exports$12.version = version2;
+    exports$12.videoOverlay = videoOverlay;
+    var oldL = window.L;
+    exports$12.noConflict = function() {
+      window.L = oldL;
+      return this;
+    };
+    window.L = exports$12;
+  });
+})(leafletSrc, leafletSrc.exports);
+var leafletSrcExports = leafletSrc.exports;
+const L$1 = /* @__PURE__ */ getDefaultExportFromCjs(leafletSrcExports);
+function useAttribution(map2, attribution) {
+  const attributionRef = reactExports.useRef(attribution);
+  reactExports.useEffect(function updateAttribution() {
+    if (attribution !== attributionRef.current && map2.attributionControl != null) {
+      if (attributionRef.current != null) {
+        map2.attributionControl.removeAttribution(attributionRef.current);
+      }
+      if (attribution != null) {
+        map2.attributionControl.addAttribution(attribution);
+      }
+    }
+    attributionRef.current = attribution;
+  }, [
+    map2,
+    attribution
+  ]);
+}
+const CONTEXT_VERSION = 1;
+function createLeafletContext(map2) {
+  return Object.freeze({
+    __version: CONTEXT_VERSION,
+    map: map2
+  });
+}
+function extendContext(source, extra) {
+  return Object.freeze({
+    ...source,
+    ...extra
+  });
+}
+const LeafletContext = reactExports.createContext(null);
+function useLeafletContext() {
+  const context = reactExports.use(LeafletContext);
+  if (context == null) {
+    throw new Error("No context provided: useLeafletContext() can only be used in a descendant of <MapContainer>");
+  }
+  return context;
+}
+function createContainerComponent(useElement) {
+  function ContainerComponent(props, forwardedRef) {
+    const { instance, context } = useElement(props).current;
+    reactExports.useImperativeHandle(forwardedRef, () => instance);
+    const { children } = props;
+    return children == null ? null : /* @__PURE__ */ React$4.createElement(LeafletContext, {
+      value: context
+    }, children);
+  }
+  return /* @__PURE__ */ reactExports.forwardRef(ContainerComponent);
+}
+function createLeafComponent(useElement) {
+  function LeafComponent(props, forwardedRef) {
+    const { instance } = useElement(props).current;
+    reactExports.useImperativeHandle(forwardedRef, () => instance);
+    return null;
+  }
+  return /* @__PURE__ */ reactExports.forwardRef(LeafComponent);
+}
+function useEventHandlers(element, eventHandlers) {
+  const eventHandlersRef = reactExports.useRef(void 0);
+  reactExports.useEffect(function addEventHandlers() {
+    if (eventHandlers != null) {
+      element.instance.on(eventHandlers);
+    }
+    eventHandlersRef.current = eventHandlers;
+    return function removeEventHandlers() {
+      if (eventHandlersRef.current != null) {
+        element.instance.off(eventHandlersRef.current);
+      }
+      eventHandlersRef.current = null;
+    };
+  }, [
+    element,
+    eventHandlers
+  ]);
+}
+function withPane(props, context) {
+  const pane = props.pane ?? context.pane;
+  return pane ? {
+    ...props,
+    pane
+  } : props;
+}
+function createElementObject(instance, context, container) {
+  return Object.freeze({
+    instance,
+    context,
+    container
+  });
+}
+function createElementHook(createElement, updateElement) {
+  if (updateElement == null) {
+    return function useImmutableLeafletElement(props, context) {
+      const elementRef = reactExports.useRef(void 0);
+      if (!elementRef.current) elementRef.current = createElement(props, context);
+      return elementRef;
+    };
+  }
+  return function useMutableLeafletElement(props, context) {
+    const elementRef = reactExports.useRef(void 0);
+    if (!elementRef.current) elementRef.current = createElement(props, context);
+    const propsRef = reactExports.useRef(props);
+    const { instance } = elementRef.current;
+    reactExports.useEffect(function updateElementProps() {
+      if (propsRef.current !== props) {
+        updateElement(instance, props, propsRef.current);
+        propsRef.current = props;
+      }
+    }, [
+      instance,
+      props,
+      updateElement
+    ]);
+    return elementRef;
+  };
+}
+function useLayerLifecycle(element, context) {
+  reactExports.useEffect(function addLayer() {
+    const container = context.layerContainer ?? context.map;
+    container.addLayer(element.instance);
+    return function removeLayer() {
+      var _a3;
+      (_a3 = context.layerContainer) == null ? void 0 : _a3.removeLayer(element.instance);
+      context.map.removeLayer(element.instance);
+    };
+  }, [
+    context,
+    element
+  ]);
+}
+function createLayerHook(useElement) {
+  return function useLayer(props) {
+    const context = useLeafletContext();
+    const elementRef = useElement(withPane(props, context), context);
+    useAttribution(context.map, props.attribution);
+    useEventHandlers(elementRef.current, props.eventHandlers);
+    useLayerLifecycle(elementRef.current, context);
+    return elementRef;
+  };
+}
+function createLayerComponent(createElement, updateElement) {
+  const useElement = createElementHook(createElement, updateElement);
+  const useLayer = createLayerHook(useElement);
+  return createContainerComponent(useLayer);
+}
+function createTileLayerComponent(createElement, updateElement) {
+  const useElement = createElementHook(createElement, updateElement);
+  const useLayer = createLayerHook(useElement);
+  return createLeafComponent(useLayer);
+}
+function updateGridLayer(layer, props, prevProps) {
+  const { opacity, zIndex } = props;
+  if (opacity != null && opacity !== prevProps.opacity) {
+    layer.setOpacity(opacity);
+  }
+  if (zIndex != null && zIndex !== prevProps.zIndex) {
+    layer.setZIndex(zIndex);
+  }
+}
+function useMap() {
+  return useLeafletContext().map;
+}
+function useMapEvents(handlers) {
+  const map2 = useMap();
+  reactExports.useEffect(function addMapEventHandlers() {
+    map2.on(handlers);
+    return function removeMapEventHandlers() {
+      map2.off(handlers);
+    };
+  }, [
+    map2,
+    handlers
+  ]);
+  return map2;
+}
+function MapContainerComponent({ bounds, boundsOptions, center, children, className, id: id2, placeholder, style: style2, whenReady, zoom, ...options }, forwardedRef) {
+  const [props] = reactExports.useState({
+    className,
+    id: id2,
+    style: style2
+  });
+  const [context, setContext] = reactExports.useState(null);
+  const mapInstanceRef = reactExports.useRef(void 0);
+  reactExports.useImperativeHandle(forwardedRef, () => (context == null ? void 0 : context.map) ?? null, [
+    context
+  ]);
+  const mapRef = reactExports.useCallback((node) => {
+    if (node !== null && !mapInstanceRef.current) {
+      const map2 = new leafletSrcExports.Map(node, options);
+      mapInstanceRef.current = map2;
+      if (center != null && zoom != null) {
+        map2.setView(center, zoom);
+      } else if (bounds != null) {
+        map2.fitBounds(bounds, boundsOptions);
+      }
+      if (whenReady != null) {
+        map2.whenReady(whenReady);
+      }
+      setContext(createLeafletContext(map2));
+    }
+  }, []);
+  reactExports.useEffect(() => {
+    return () => {
+      context == null ? void 0 : context.map.remove();
+    };
+  }, [
+    context
+  ]);
+  const contents = context ? /* @__PURE__ */ React$4.createElement(LeafletContext, {
+    value: context
+  }, children) : placeholder ?? null;
+  return /* @__PURE__ */ React$4.createElement("div", {
+    ...props,
+    ref: mapRef
+  }, contents);
+}
+const MapContainer = /* @__PURE__ */ reactExports.forwardRef(MapContainerComponent);
+const Marker = createLayerComponent(function createMarker({ position, ...options }, ctx) {
+  const marker = new leafletSrcExports.Marker(position, options);
+  return createElementObject(marker, extendContext(ctx, {
+    overlayContainer: marker
+  }));
+}, function updateMarker(marker, props, prevProps) {
+  if (props.position !== prevProps.position) {
+    marker.setLatLng(props.position);
+  }
+  if (props.icon != null && props.icon !== prevProps.icon) {
+    marker.setIcon(props.icon);
+  }
+  if (props.zIndexOffset != null && props.zIndexOffset !== prevProps.zIndexOffset) {
+    marker.setZIndexOffset(props.zIndexOffset);
+  }
+  if (props.opacity != null && props.opacity !== prevProps.opacity) {
+    marker.setOpacity(props.opacity);
+  }
+  if (marker.dragging != null && props.draggable !== prevProps.draggable) {
+    if (props.draggable === true) {
+      marker.dragging.enable();
+    } else {
+      marker.dragging.disable();
+    }
+  }
+});
+const TileLayer = createTileLayerComponent(function createTileLayer({ url, ...options }, context) {
+  const layer = new leafletSrcExports.TileLayer(url, withPane(options, context));
+  return createElementObject(layer, context);
+}, function updateTileLayer(layer, props, prevProps) {
+  updateGridLayer(layer, props, prevProps);
+  const { url } = props;
+  if (url != null && url !== prevProps.url) {
+    layer.setUrl(url);
+  }
+});
+const iconRetinaUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAABSCAMAAAAhFXfZAAAC91BMVEVMaXEzeak2f7I4g7g3g7cua5gzeKg8hJo3grY4g7c3grU0gLI2frE0daAubJc2gbQwd6QzeKk2gLMtd5sxdKIua5g1frA2f7IydaM0e6w2fq41fK01eqo3grgubJgta5cxdKI1f7AydaQydaMxc6EubJgvbJkwcZ4ubZkwcJwubZgubJcydqUydKIxapgubJctbJcubZcubJcvbJYubJcvbZkubJctbJctbZcubJg2f7AubJcrbZcubJcubJcua5g3grY0fq8ubJcubJdEkdEwhsw6i88vhswuhcsuhMtBjMgthMsrg8srgss6is8qgcs8i9A9iMYtg8spgcoogMo7hcMngMonf8olfso4gr8kfck5iM8jfMk4iM8he8k1fro7itAgesk2hs8eecgzfLcofssdeMg0hc4cd8g2hcsxeLQbdsgZdcgxeLImfcszhM0vda4xgckzhM4xg84wf8Yxgs4udKsvfcQucqhUndROmdM1fK0wcZ8vb5w0eqpQm9MzeKhXoNVcpdYydKNWn9VZotVKltJFjsIwcJ1Rms9OlslLmtH///8+kc9epdYzd6dbo9VHkMM2f7FHmNBClM8ydqVcpNY9hro3gLM9hLczealQmcw3fa46f7A8gLMxc6I3eagyc6FIldJMl9JSnNRSntNNl9JPnNJFi75UnM9ZodVKksg8kM45jc09e6ZHltFBk883gbRBh7pDk9EwcaBzn784g7dKkcY2i81Om9M7j85Llc81is09g7Q4grY/j9A0eqxKmdFFltBEjcXf6fFImdBCiLxJl9FGlNFBi78yiMxVndEvbpo6js74+vx+psPP3+o/ks5HkcpGmNCjwdZCkNDM3ehYoNJEls+lxNkxh8xHks0+jdC1zd5Lg6r+/v/H2ufz9/o3jM3t8/edvdM/k89Th61OiLBSjbZklbaTt9BfptdjmL1AicBHj8hGk9FAgK1dkLNTjLRekrdClc/k7fM0icy0y9tgp9c4jc2NtM9Dlc8zicxeXZn3AAAAQ3RSTlMAHDdTb4yPA+LtnEQmC4L2EmHqB7XA0d0sr478x4/Yd5i1zOfyPkf1sLVq4Nh3FvjxopQ2/STNuFzUwFIwxKaejILpIBEV9wAABhVJREFUeF6s1NdyFEcYBeBeoQIhRAkLlRDGrhIgY3BJL8CVeKzuyXFzzjkn5ZxzzuScg3PO8cKzu70JkO0LfxdTU//pM9vTu7Xgf6KqOVTb9X7toRrVEfBf1HTVjZccrT/2by1VV928Yty9ZbVuucdz90frG8DBjl9pVApbOstvmMuvVgaNXSfAAd6pGxpy6yxf5ph43pS/4f3uoaGm2rdu72S9xzOvMymkZFq/ptDrk90mhW7e4zl7HLzhxGWPR20xmSxJ/VqldG5m9XhaVOA1DadsNh3Pu5L2N6QtPO/32JpqQBVVk20oy/Pi2s23WEvyfHbe1thadVQttvm7Llf65gGmXK67XtupyoM7HQhmXdLS8oGWJNeOJ3C5fG5XCEJnkez3/oFdsvgJ4l2ANZwhrJKk/7OSXa+3Vw2WJMlKnGkobouYk6T0TyX30klOUnTD9HJ5qpckL3EW/w4XF3Xd0FGywXUrstrclVsqz5Pd/sXFYyDnPdrLcQODmGOK47IZb4CmibmMn+MYRzFZ5jg33ZL/EJrWcszHmANy3ARBK/IXtciJy8VsitPSdE3uuHxzougojcUdr8/32atnz/ev3f/K5wtpxUTpcaI45zusVDpYtZi+jg0oU9b3x74h7+n9ABvYEZeKaVq0sh0AtLKsFtqNBdeT0MrSzwwlq9+x6xAO4tgOtSzbCjrNQQiNvQUbUEubvzBUeGw26yDCsRHCoLkTHDa7IdOLIThs/gHvChszh2CimE8peRs47cxANI0lYNB5y1DljpOF0IhzBDPOZnDOqYYbeGKECbPzWnXludPphw5c2YBq5zlwXphIbO4VDCZ0gnPfUO1TwZoYwAs2ExPCedAu9DAjfQUjzITQb3jNj0KG2Sgt6BHaQUdYzWz+XmBktOHwanXjaSTcwwziBcuMOtwBmqPrTOxFQR/DRKKPqyur0aiW6cULYsx6tBm0jXpR/AUWR6HRq9WVW6MRhIq5jLyjbaCTDCijyYJNpCajdyobP/eTw0iexBAKkJ3gA5KcQb2zBXsIBckn+xVv8jkZSaEFHE+jFEleAEfayRU0MouNoBmB/L50Ai/HSLIHxcrpCvnhSQAuakKp2C/YbCylJjXRVy/z3+Kv/RrNcCo+WUzlVEhzKffnTQnxeN9fWF88fiNCUdSTsaufaChKWInHeysygfpIqagoakW+vV20J8uyl6TyNKEZWV4oRSPyCkWpgOLSbkCObT8o2r6tlG58HQquf6O0v50tB7JM7F4EORd2dx/K0w/KHsVkLPaoYrwgP/y7krr3SSMA4zj+OBgmjYkxcdIJQyQRKgg2viX9Hddi9UBb29LrKR7CVVEEEXWojUkXNyfTNDE14W9gbHJNuhjDettN3ZvbOvdOqCD3Jp/9l+/wJE+9PkYGjx/fqkys3S2rMozM/o2106rfMUINo6hVqz+eu/hd1c4xTg0TAfy5kV+4UG6+IthHTU9woWmxuKNbTfuCSfovBCxq7EtHqvYL4Sm6F8GVxsSXHMQ07TOi1DKtZxjWaaIyi4CXWjxPccUw8WVbMYY5wxC1mzEyXMJWkllpRloi+Kkoq69sxBTlElF6aAxYUbjXNlhlDZilDnM4U5SlN5biRsRHnbx3mbeWjEh4mEyiuJDl5XcWVmX5GvNkFgLWZM5qwsop4/AWfLhU1cR7k1VVvcYCWRkOI6Xy5gmnphCYIkvzuNYzHzosq2oNk2RtSs8khfUOfHIDgR6ysYBaMpl4uEgk2U/oJTs9AaTSwma7dT69geAE2ZpEjUsn2ieJNHeKfrI3EcAGJ2ZaNgVuC8EBctCLc57P5u5led6IOBkIYkuQMrmmjChs4VkfOerHqSBkPzZlhe06RslZ3zMjk2sscqKwY0RcjKK+LWbzd7KiHhkncs/siFJ+V5eXxD34B8nVuJEpGJNmxN2gH3vSvp7J70tF+D1Ej8qUJD1TkErAND2GZwTFg/LubvmgiBG3SOvdlsqFQrkEzJCL1rstlnVFROixZoDDSuXQFHESwVGlcuQcMb/b42NgjLowh5MTDFE3vNB5qStRIErdCQEh6pLPR92anSUb/wAIhldAaDMpGgAAAABJRU5ErkJggg==";
+const iconUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAApCAYAAADAk4LOAAAFgUlEQVR4Aa1XA5BjWRTN2oW17d3YaZtr2962HUzbDNpjszW24mRt28p47v7zq/bXZtrp/lWnXr337j3nPCe85NcypgSFdugCpW5YoDAMRaIMqRi6aKq5E3YqDQO3qAwjVWrD8Ncq/RBpykd8oZUb/kaJutow8r1aP9II0WmLKLIsJyv1w/kqw9Ch2MYdB++12Onxee/QMwvf4/Dk/Lfp/i4nxTXtOoQ4pW5Aj7wpici1A9erdAN2OH64x8OSP9j3Ft3b7aWkTg/Fm91siTra0f9on5sQr9INejH6CUUUpavjFNq1B+Oadhxmnfa8RfEmN8VNAsQhPqF55xHkMzz3jSmChWU6f7/XZKNH+9+hBLOHYozuKQPxyMPUKkrX/K0uWnfFaJGS1QPRtZsOPtr3NsW0uyh6NNCOkU3Yz+bXbT3I8G3xE5EXLXtCXbbqwCO9zPQYPRTZ5vIDXD7U+w7rFDEoUUf7ibHIR4y6bLVPXrz8JVZEql13trxwue/uDivd3fkWRbS6/IA2bID4uk0UpF1N8qLlbBlXs4Ee7HLTfV1j54APvODnSfOWBqtKVvjgLKzF5YdEk5ewRkGlK0i33Eofffc7HT56jD7/6U+qH3Cx7SBLNntH5YIPvODnyfIXZYRVDPqgHtLs5ABHD3YzLuespb7t79FY34DjMwrVrcTuwlT55YMPvOBnRrJ4VXTdNnYug5ucHLBjEpt30701A3Ts+HEa73u6dT3FNWwflY86eMHPk+Yu+i6pzUpRrW7SNDg5JHR4KapmM5Wv2E8Tfcb1HoqqHMHU+uWDD7zg54mz5/2BSnizi9T1Dg4QQXLToGNCkb6tb1NU+QAlGr1++eADrzhn/u8Q2YZhQVlZ5+CAOtqfbhmaUCS1ezNFVm2imDbPmPng5wmz+gwh+oHDce0eUtQ6OGDIyR0uUhUsoO3vfDmmgOezH0mZN59x7MBi++WDL1g/eEiU3avlidO671bkLfwbw5XV2P8Pzo0ydy4t2/0eu33xYSOMOD8hTf4CrBtGMSoXfPLchX+J0ruSePw3LZeK0juPJbYzrhkH0io7B3k164hiGvawhOKMLkrQLyVpZg8rHFW7E2uHOL888IBPlNZ1FPzstSJM694fWr6RwpvcJK60+0HCILTBzZLFNdtAzJaohze60T8qBzyh5ZuOg5e7uwQppofEmf2++DYvmySqGBuKaicF1blQjhuHdvCIMvp8whTTfZzI7RldpwtSzL+F1+wkdZ2TBOW2gIF88PBTzD/gpeREAMEbxnJcaJHNHrpzji0gQCS6hdkEeYt9DF/2qPcEC8RM28Hwmr3sdNyht00byAut2k3gufWNtgtOEOFGUwcXWNDbdNbpgBGxEvKkOQsxivJx33iow0Vw5S6SVTrpVq11ysA2Rp7gTfPfktc6zhtXBBC+adRLshf6sG2RfHPZ5EAc4sVZ83yCN00Fk/4kggu40ZTvIEm5g24qtU4KjBrx/BTTH8ifVASAG7gKrnWxJDcU7x8X6Ecczhm3o6YicvsLXWfh3Ch1W0k8x0nXF+0fFxgt4phz8QvypiwCCFKMqXCnqXExjq10beH+UUA7+nG6mdG/Pu0f3LgFcGrl2s0kNNjpmoJ9o4B29CMO8dMT4Q5ox8uitF6fqsrJOr8qnwNbRzv6hSnG5wP+64C7h9lp30hKNtKdWjtdkbuPA19nJ7Tz3zR/ibgARbhb4AlhavcBebmTHcFl2fvYEnW0ox9xMxKBS8btJ+KiEbq9zA4RthQXDhPa0T9TEe69gWupwc6uBUphquXgf+/FrIjweHQS4/pduMe5ERUMHUd9xv8ZR98CxkS4F2n3EUrUZ10EYNw7BWm9x1GiPssi3GgiGRDKWRYZfXlON+dfNbM+GgIwYdwAAAAASUVORK5CYII=";
+const shadowUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAQAAAACach9AAACMUlEQVR4Ae3ShY7jQBAE0Aoz/f9/HTMzhg1zrdKUrJbdx+Kd2nD8VNudfsL/Th///dyQN2TH6f3y/BGpC379rV+S+qqetBOxImNQXL8JCAr2V4iMQXHGNJxeCfZXhSRBcQMfvkOWUdtfzlLgAENmZDcmo2TVmt8OSM2eXxBp3DjHSMFutqS7SbmemzBiR+xpKCNUIRkdkkYxhAkyGoBvyQFEJEefwSmmvBfJuJ6aKqKWnAkvGZOaZXTUgFqYULWNSHUckZuR1HIIimUExutRxwzOLROIG4vKmCKQt364mIlhSyzAf1m9lHZHJZrlAOMMztRRiKimp/rpdJDc9Awry5xTZCte7FHtuS8wJgeYGrex28xNTd086Dik7vUMscQOa8y4DoGtCCSkAKlNwpgNtphjrC6MIHUkR6YWxxs6Sc5xqn222mmCRFzIt8lEdKx+ikCtg91qS2WpwVfBelJCiQJwvzixfI9cxZQWgiSJelKnwBElKYtDOb2MFbhmUigbReQBV0Cg4+qMXSxXSyGUn4UbF8l+7qdSGnTC0XLCmahIgUHLhLOhpVCtw4CzYXvLQWQbJNmxoCsOKAxSgBJno75avolkRw8iIAFcsdc02e9iyCd8tHwmeSSoKTowIgvscSGZUOA7PuCN5b2BX9mQM7S0wYhMNU74zgsPBj3HU7wguAfnxxjFQGBE6pwN+GjME9zHY7zGp8wVxMShYX9NXvEWD3HbwJf4giO4CFIQxXScH1/TM+04kkBiAAAAAElFTkSuQmCC";
+delete L$1.Icon.Default.prototype._getIconUrl;
+L$1.Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl });
+const DEFAULT_CENTER$1 = [20.5937, 78.9629];
+const DEFAULT_ZOOM$1 = 5;
+const SELECTED_ZOOM$1 = 13;
+const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
+function RecenterOnChange$1({
+  lat,
+  lng,
+  zoom
+}) {
+  const map2 = useMap();
+  const hasCenteredOnce = reactExports.useRef(false);
+  reactExports.useEffect(() => {
+    if (lat == null || lng == null) return;
+    map2.setView([lat, lng], zoom, { animate: hasCenteredOnce.current });
+    hasCenteredOnce.current = true;
+  }, [lat, lng]);
+  return null;
+}
+function ClickToPlaceMarker$1({
+  onSelect
+}) {
+  useMapEvents({
+    click(e3) {
+      onSelect(e3.latlng.lat, e3.latlng.lng);
+    }
+  });
+  return null;
+}
+function CityLocationPicker() {
+  const { setValue, watch } = useFormContext();
+  const lat = watch("lat");
+  const lng = watch("lng");
+  const [query, setQuery] = reactExports.useState("");
+  const [results, setResults] = reactExports.useState([]);
+  const [isSearching, setIsSearching] = reactExports.useState(false);
+  const [showResults, setShowResults] = reactExports.useState(false);
+  const debounceRef = reactExports.useRef(null);
+  const containerRef = reactExports.useRef(null);
+  reactExports.useEffect(() => {
+    const handleClickOutside = (e3) => {
+      if (containerRef.current && !containerRef.current.contains(e3.target)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  const runSearch = reactExports.useCallback(async (value) => {
+    if (!value.trim()) {
+      setResults([]);
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const response = await fetch(
+        `${NOMINATIM_URL}?format=json&q=${encodeURIComponent(value)}&limit=5`,
+        { headers: { Accept: "application/json" } }
+      );
+      if (!response.ok) throw new Error("Location search failed");
+      const data = await response.json();
+      setResults(data);
+      setShowResults(true);
+    } catch {
+      setResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+  const handleQueryChange = (value) => {
+    setQuery(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => runSearch(value), 500);
+  };
+  const selectCoordinates = (nextLat, nextLng) => {
+    setValue("lat", nextLat, { shouldDirty: true, shouldValidate: true });
+    setValue("lng", nextLng, { shouldDirty: true, shouldValidate: true });
+  };
+  const handleSelectResult = (result) => {
+    selectCoordinates(parseFloat(result.lat), parseFloat(result.lon));
+    setQuery(result.display_name);
+    setResults([]);
+    setShowResults(false);
+  };
+  const hasLocation = lat != null && lng != null;
+  const center = hasLocation ? [lat, lng] : DEFAULT_CENTER$1;
+  const zoom = hasLocation ? SELECTED_ZOOM$1 : DEFAULT_ZOOM$1;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-sm font-medium leading-none", children: "Location" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: containerRef, className: "relative", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "text",
+            value: query,
+            onChange: (e3) => handleQueryChange(e3.target.value),
+            onFocus: () => results.length > 0 && setShowResults(true),
+            placeholder: "Search for a location...",
+            className: "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-9 pr-9 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          }
+        ),
+        isSearching && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" })
+      ] }),
+      showResults && results.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "absolute z-[1000] mt-1 max-h-56 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md", children: results.map((result) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          type: "button",
+          onClick: () => handleSelectResult(result),
+          className: "flex w-full items-start gap-2 px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(MapPin, { className: "mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "line-clamp-2", children: result.display_name })
+          ]
+        }
+      ) }, result.place_id)) })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-md border", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      MapContainer,
+      {
+        center,
+        zoom,
+        style: { height: "420px", width: "100%" },
+        scrollWheelZoom: false,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            TileLayer,
+            {
+              attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(RecenterOnChange$1, { lat, lng, zoom: SELECTED_ZOOM$1 }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ClickToPlaceMarker$1, { onSelect: selectCoordinates }),
+          hasLocation && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Marker,
+            {
+              position: [lat, lng],
+              draggable: true,
+              eventHandlers: {
+                dragend: (e3) => {
+                  const position = e3.target.getLatLng();
+                  selectCoordinates(position.lat, position.lng);
+                }
+              }
+            }
+          )
+        ]
+      }
+    ) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: hasLocation ? `Selected: ${lat.toFixed(6)}, ${lng.toFixed(6)} — drag the marker or click the map to adjust.` : "Search for an address or click the map to set the location." })
   ] });
 }
 function CitiesPage() {
@@ -52924,7 +63415,9 @@ function CitiesPage() {
   const methods = useForm({
     defaultValues: {
       name: "",
-      status: "active"
+      status: "active",
+      lat: null,
+      lng: null
     }
   });
   const { handleSubmit, reset } = methods;
@@ -52953,7 +63446,9 @@ function CitiesPage() {
     setEditingCity(null);
     reset({
       name: "",
-      status: "active"
+      status: "active",
+      lat: null,
+      lng: null
     });
     setIsModalOpen(true);
   };
@@ -52961,7 +63456,9 @@ function CitiesPage() {
     setEditingCity(city);
     reset({
       name: city.name,
-      status: city.status
+      status: city.status,
+      lat: city.lat ?? null,
+      lng: city.lng ?? null
     });
     setIsModalOpen(true);
   };
@@ -52974,14 +63471,18 @@ function CitiesPage() {
       if (editingCity) {
         await cityService.updateCity(editingCity.id, {
           name: data.name,
-          status: data.status
+          status: data.status,
+          lat: data.lat,
+          lng: data.lng
         });
         alert2.removeAlert(loadingId);
         alert2.success("City updated successfully");
       } else {
         await cityService.createCity({
           name: data.name,
-          status: data.status
+          status: data.status,
+          lat: data.lat,
+          lng: data.lng
         });
         alert2.removeAlert(loadingId);
         alert2.success("City created successfully");
@@ -53032,8 +63533,8 @@ function CitiesPage() {
     },
     {
       id: "actions",
-      header: "Actions",
-      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+      header: () => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-right", children: "Actions" }),
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 justify-end", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.CITIES_EDIT, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           Button,
           {
@@ -53067,15 +63568,32 @@ function CitiesPage() {
         ] }) })
       }
     ),
-    isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center py-12", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-muted-foreground", children: "Loading cities..." }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
-      DataTable,
-      {
-        columns: columns2,
-        data: cities,
-        emptyMessage: "No cities found"
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isModalOpen, onOpenChange: setIsModalOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-lg", children: [
+    isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center py-12", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-muted-foreground", children: "Loading cities..." }) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "cities-table-wrapper", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `
+            .cities-table-wrapper table {
+              table-layout: auto !important;
+            }
+            .cities-table-wrapper th:has(button:only-child),
+            .cities-table-wrapper th:has(div) {
+              width: auto !important;
+            }
+            .cities-table-wrapper th:last-child {
+              text-align: right;
+            }
+            .cities-table-wrapper td:last-child {
+              text-align: right;
+            }
+          ` }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        DataTable,
+        {
+          columns: columns2,
+          data: cities,
+          emptyMessage: "No cities found"
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isModalOpen, onOpenChange: setIsModalOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-3xl max-h-[90vh] overflow-y-auto", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: editingCity ? "Edit City" : "Add City" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(FormProvider, { ...methods, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit(onSubmit), className: "space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -53097,6 +63615,7 @@ function CitiesPage() {
             ]
           }
         ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CityLocationPicker, {}),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2 pt-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Button,
@@ -68019,9 +78538,9 @@ var PolarRadiusAxis = /* @__PURE__ */ function(_PureComponent) {
   }, {
     key: "getTickTextAnchor",
     value: function getTickTextAnchor() {
-      var orientation = this.props.orientation;
+      var orientation2 = this.props.orientation;
       var textAnchor;
-      switch (orientation) {
+      switch (orientation2) {
         case "left":
           textAnchor = "end";
           break;
@@ -68302,10 +78821,10 @@ var PolarAngleAxis = /* @__PURE__ */ function(_PureComponent) {
        *                  (x2, y2): The end point close to axis
        */
       function getTickLineCoord(data) {
-        var _this$props = this.props, cx2 = _this$props.cx, cy = _this$props.cy, radius = _this$props.radius, orientation = _this$props.orientation, tickSize = _this$props.tickSize;
+        var _this$props = this.props, cx2 = _this$props.cx, cy = _this$props.cy, radius = _this$props.radius, orientation2 = _this$props.orientation, tickSize = _this$props.tickSize;
         var tickLineSize = tickSize || 8;
         var p1 = polarToCartesian(cx2, cy, radius, data.coordinate);
-        var p2 = polarToCartesian(cx2, cy, radius + (orientation === "inner" ? -1 : 1) * tickLineSize, data.coordinate);
+        var p2 = polarToCartesian(cx2, cy, radius + (orientation2 === "inner" ? -1 : 1) * tickLineSize, data.coordinate);
         return {
           x1: p1.x,
           y1: p1.y,
@@ -68322,13 +78841,13 @@ var PolarAngleAxis = /* @__PURE__ */ function(_PureComponent) {
   }, {
     key: "getTickTextAnchor",
     value: function getTickTextAnchor(data) {
-      var orientation = this.props.orientation;
+      var orientation2 = this.props.orientation;
       var cos2 = Math.cos(-data.coordinate * RADIAN);
       var textAnchor;
       if (cos2 > eps) {
-        textAnchor = orientation === "outer" ? "start" : "end";
+        textAnchor = orientation2 === "outer" ? "start" : "end";
       } else if (cos2 < -eps) {
-        textAnchor = orientation === "outer" ? "end" : "start";
+        textAnchor = orientation2 === "outer" ? "end" : "start";
       } else {
         textAnchor = "middle";
       }
@@ -71016,8 +81535,8 @@ var formatAxisMap2 = function formatAxisMap3(props, axisMap, offset2, axisType, 
   var hasBar = !!findChildByType(children, Bar);
   return ids.reduce(function(result, id2) {
     var axis = axisMap[id2];
-    var orientation = axis.orientation, domain = axis.domain, _axis$padding = axis.padding, padding = _axis$padding === void 0 ? {} : _axis$padding, mirror = axis.mirror, reversed = axis.reversed;
-    var offsetKey = "".concat(orientation).concat(mirror ? "Mirror" : "");
+    var orientation2 = axis.orientation, domain = axis.domain, _axis$padding = axis.padding, padding = _axis$padding === void 0 ? {} : _axis$padding, mirror = axis.mirror, reversed = axis.reversed;
+    var offsetKey = "".concat(orientation2).concat(mirror ? "Mirror" : "");
     var calculatedPadding, range3, x2, y2, needSpace;
     if (axis.type === "number" && (axis.padding === "gap" || axis.padding === "no-gap")) {
       var diff = domain[1] - domain[0];
@@ -71058,11 +81577,11 @@ var formatAxisMap2 = function formatAxisMap3(props, axisMap, offset2, axisType, 
       realScaleType
     }));
     if (axisType === "xAxis") {
-      needSpace = orientation === "top" && !mirror || orientation === "bottom" && mirror;
+      needSpace = orientation2 === "top" && !mirror || orientation2 === "bottom" && mirror;
       x2 = offset2.left;
       y2 = steps[offsetKey] - needSpace * axis.height;
     } else if (axisType === "yAxis") {
-      needSpace = orientation === "left" && !mirror || orientation === "right" && mirror;
+      needSpace = orientation2 === "left" && !mirror || orientation2 === "right" && mirror;
       x2 = steps[offsetKey] - needSpace * axis.width;
       y2 = offset2.top;
     }
@@ -72298,7 +82817,7 @@ function getTicksStart(sign2, boundaries, getTickSize, ticks2, minTickGap, prese
   return result;
 }
 function getTicks(props, fontSize, letterSpacing) {
-  var tick = props.tick, ticks2 = props.ticks, viewBox = props.viewBox, minTickGap = props.minTickGap, orientation = props.orientation, interval = props.interval, tickFormatter = props.tickFormatter, unit2 = props.unit, angle = props.angle;
+  var tick = props.tick, ticks2 = props.ticks, viewBox = props.viewBox, minTickGap = props.minTickGap, orientation2 = props.orientation, interval = props.interval, tickFormatter = props.tickFormatter, unit2 = props.unit, angle = props.angle;
   if (!ticks2 || !ticks2.length || !tick) {
     return [];
   }
@@ -72306,7 +82825,7 @@ function getTicks(props, fontSize, letterSpacing) {
     return getNumberIntervalTicks(ticks2, typeof interval === "number" && isNumber(interval) ? interval : 0);
   }
   var candidates = [];
-  var sizeKey = orientation === "top" || orientation === "bottom" ? "width" : "height";
+  var sizeKey = orientation2 === "top" || orientation2 === "bottom" ? "width" : "height";
   var unitSize = unit2 && sizeKey === "width" ? getStringSize(unit2, {
     fontSize,
     letterSpacing
@@ -72540,12 +83059,12 @@ var CartesianAxis = /* @__PURE__ */ function(_Component) {
   }, {
     key: "getTickLineCoord",
     value: function getTickLineCoord(data) {
-      var _this$props2 = this.props, x2 = _this$props2.x, y2 = _this$props2.y, width = _this$props2.width, height = _this$props2.height, orientation = _this$props2.orientation, tickSize = _this$props2.tickSize, mirror = _this$props2.mirror, tickMargin = _this$props2.tickMargin;
+      var _this$props2 = this.props, x2 = _this$props2.x, y2 = _this$props2.y, width = _this$props2.width, height = _this$props2.height, orientation2 = _this$props2.orientation, tickSize = _this$props2.tickSize, mirror = _this$props2.mirror, tickMargin = _this$props2.tickMargin;
       var x1, x22, y1, y22, tx, ty;
       var sign2 = mirror ? -1 : 1;
       var finalTickSize = data.tickSize || tickSize;
       var tickCoord = isNumber(data.tickCoord) ? data.tickCoord : data.coordinate;
-      switch (orientation) {
+      switch (orientation2) {
         case "top":
           x1 = x22 = data.coordinate;
           y22 = y2 + +!mirror * height;
@@ -72591,9 +83110,9 @@ var CartesianAxis = /* @__PURE__ */ function(_Component) {
   }, {
     key: "getTickTextAnchor",
     value: function getTickTextAnchor() {
-      var _this$props3 = this.props, orientation = _this$props3.orientation, mirror = _this$props3.mirror;
+      var _this$props3 = this.props, orientation2 = _this$props3.orientation, mirror = _this$props3.mirror;
       var textAnchor;
-      switch (orientation) {
+      switch (orientation2) {
         case "left":
           textAnchor = mirror ? "start" : "end";
           break;
@@ -72609,9 +83128,9 @@ var CartesianAxis = /* @__PURE__ */ function(_Component) {
   }, {
     key: "getTickVerticalAnchor",
     value: function getTickVerticalAnchor() {
-      var _this$props4 = this.props, orientation = _this$props4.orientation, mirror = _this$props4.mirror;
+      var _this$props4 = this.props, orientation2 = _this$props4.orientation, mirror = _this$props4.mirror;
       var verticalAnchor = "end";
-      switch (orientation) {
+      switch (orientation2) {
         case "left":
         case "right":
           verticalAnchor = "middle";
@@ -72628,12 +83147,12 @@ var CartesianAxis = /* @__PURE__ */ function(_Component) {
   }, {
     key: "renderAxisLine",
     value: function renderAxisLine() {
-      var _this$props5 = this.props, x2 = _this$props5.x, y2 = _this$props5.y, width = _this$props5.width, height = _this$props5.height, orientation = _this$props5.orientation, mirror = _this$props5.mirror, axisLine = _this$props5.axisLine;
+      var _this$props5 = this.props, x2 = _this$props5.x, y2 = _this$props5.y, width = _this$props5.width, height = _this$props5.height, orientation2 = _this$props5.orientation, mirror = _this$props5.mirror, axisLine = _this$props5.axisLine;
       var props = _objectSpread$4(_objectSpread$4(_objectSpread$4({}, filterProps(this.props, false)), filterProps(axisLine, false)), {}, {
         fill: "none"
       });
-      if (orientation === "top" || orientation === "bottom") {
-        var needHeight = +(orientation === "top" && !mirror || orientation === "bottom" && mirror);
+      if (orientation2 === "top" || orientation2 === "bottom") {
+        var needHeight = +(orientation2 === "top" && !mirror || orientation2 === "bottom" && mirror);
         props = _objectSpread$4(_objectSpread$4({}, props), {}, {
           x1: x2,
           y1: y2 + needHeight * height,
@@ -72641,7 +83160,7 @@ var CartesianAxis = /* @__PURE__ */ function(_Component) {
           y2: y2 + needHeight * height
         });
       } else {
-        var needWidth = +(orientation === "left" && !mirror || orientation === "right" && mirror);
+        var needWidth = +(orientation2 === "left" && !mirror || orientation2 === "right" && mirror);
         props = _objectSpread$4(_objectSpread$4({}, props), {}, {
           x1: x2 + needWidth * width,
           y1: y2,
@@ -75187,9 +85706,9 @@ var calculateOffset = function calculateOffset2(_ref5, prevLegendBBox) {
   var legendItem = findChildByType(children, Legend);
   var offsetH = Object.keys(yAxisMap).reduce(function(result, id2) {
     var entry = yAxisMap[id2];
-    var orientation = entry.orientation;
+    var orientation2 = entry.orientation;
     if (!entry.mirror && !entry.hide) {
-      return _objectSpread(_objectSpread({}, result), {}, _defineProperty({}, orientation, result[orientation] + entry.width));
+      return _objectSpread(_objectSpread({}, result), {}, _defineProperty({}, orientation2, result[orientation2] + entry.width));
     }
     return result;
   }, {
@@ -75198,9 +85717,9 @@ var calculateOffset = function calculateOffset2(_ref5, prevLegendBBox) {
   });
   var offsetV = Object.keys(xAxisMap).reduce(function(result, id2) {
     var entry = xAxisMap[id2];
-    var orientation = entry.orientation;
+    var orientation2 = entry.orientation;
     if (!entry.mirror && !entry.hide) {
-      return _objectSpread(_objectSpread({}, result), {}, _defineProperty({}, orientation, get$2(result, "".concat(orientation)) + entry.height));
+      return _objectSpread(_objectSpread({}, result), {}, _defineProperty({}, orientation2, get$2(result, "".concat(orientation2)) + entry.height));
     }
     return result;
   }, {
@@ -77806,7 +88325,7 @@ function OrdersPage() {
     )
   ] });
 }
-const API_BASE = "http://localhost:9020";
+const API_BASE = "https://bikanerapi.codeeratech.in";
 function ProductsPage() {
   const {
     isLoading,
@@ -77998,15 +88517,22 @@ function ProductsPage() {
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "h-4 w-4" })
           }
         ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.PRODUCTS_DELETE, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          PermissionGuard,
           {
-            variant: "ghost",
-            size: "icon",
-            onClick: () => handleDelete(row.original),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4 text-destructive" })
+            permission: PERMISSIONS.PRODUCTS_DELETE,
+            hideOnDenied: true,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "ghost",
+                size: "icon",
+                onClick: () => handleDelete(row.original),
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4 text-destructive" })
+              }
+            )
           }
-        ) })
+        )
       ] })
     }
   ];
@@ -78016,17 +88542,10 @@ function ProductsPage() {
     label: c2.name
   }));
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      PageHeader,
-      {
-        title: "Products",
-        description: "Manage your product catalog",
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.PRODUCTS_CREATE, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openAddModal, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "h-4 w-4 mr-2" }),
-          "Add Product"
-        ] }) })
-      }
-    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(PageHeader, { title: "Products", description: "Manage your product catalog", children: /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.PRODUCTS_CREATE, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openAddModal, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "h-4 w-4 mr-2" }),
+      "Add Product"
+    ] }) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 flex-wrap", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "input",
@@ -78060,14 +88579,7 @@ function ProductsPage() {
           ]
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Button,
-        {
-          variant: "outline",
-          onClick: () => fetchProducts(),
-          children: "Search"
-        }
-      )
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", onClick: () => fetchProducts(), children: "Search" })
     ] }),
     isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center py-12", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-muted-foreground", children: "Loading products..." }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
       DataTable,
@@ -78109,15 +88621,7 @@ function ProductsPage() {
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-3 gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            FormInput,
-            {
-              name: "mrp",
-              label: "MRP",
-              type: "number",
-              step: "0.01"
-            }
-          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FormInput, { name: "mrp", label: "MRP", type: "number", step: "0.01" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             FormInput,
             {
@@ -78141,7 +88645,7 @@ function ProductsPage() {
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             FormInput,
             {
-              name: "Unit Value",
+              name: "unitValue",
               label: "Unit Value",
               type: "number",
               step: "0.01"
@@ -78155,14 +88659,7 @@ function ProductsPage() {
               placeholder: "kg, ltr, pcs"
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            FormInput,
-            {
-              name: "stock",
-              label: "Stock",
-              type: "number"
-            }
-          )
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FormInput, { name: "stock", label: "Stock", type: "number" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           FormInput,
@@ -78244,7 +88741,7 @@ var Tabs$1 = reactExports.forwardRef(
       value: valueProp,
       onValueChange,
       defaultValue,
-      orientation = "horizontal",
+      orientation: orientation2 = "horizontal",
       dir,
       activationMode = "automatic",
       ...tabsProps
@@ -78263,14 +88760,14 @@ var Tabs$1 = reactExports.forwardRef(
         baseId: useId(),
         value,
         onValueChange: setValue,
-        orientation,
+        orientation: orientation2,
         dir: direction,
         activationMode,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           Primitive$1.div,
           {
             dir: direction,
-            "data-orientation": orientation,
+            "data-orientation": orientation2,
             ...tabsProps,
             ref: forwardedRef
           }
@@ -81801,6 +92298,290 @@ function WalletPage() {
     )
   ] });
 }
+delete L$1.Icon.Default.prototype._getIconUrl;
+L$1.Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl });
+const DEFAULT_CENTER = [20.5937, 78.9629];
+const DEFAULT_ZOOM = 5;
+const SELECTED_ZOOM = 14;
+const SEARCH_DEBOUNCE_MS = 500;
+const CITY_SEARCH_RADIUS_DEGREES = 0.35;
+const NOMINATIM_SEARCH_URL = "https://nominatim.openstreetmap.org/search";
+const NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse";
+function extractAreaLabel(result) {
+  var _a3;
+  const explicitName = (_a3 = result.namedetails) == null ? void 0 : _a3.name;
+  if (explicitName) return explicitName;
+  const address = result.address;
+  const candidate = (address == null ? void 0 : address.suburb) || (address == null ? void 0 : address.neighbourhood) || (address == null ? void 0 : address.quarter) || (address == null ? void 0 : address.residential) || (address == null ? void 0 : address.road) || (address == null ? void 0 : address.city_district) || (address == null ? void 0 : address.village) || (address == null ? void 0 : address.town);
+  if (candidate) return candidate;
+  return result.display_name.split(",")[0].trim();
+}
+function resultBelongsToCity(result, cityName) {
+  var _a3, _b2, _c2, _d2, _e2, _f2;
+  const normalizedCity = cityName.trim().toLowerCase();
+  if (!normalizedCity) return true;
+  const candidates = [
+    (_a3 = result.address) == null ? void 0 : _a3.city,
+    (_b2 = result.address) == null ? void 0 : _b2.town,
+    (_c2 = result.address) == null ? void 0 : _c2.village,
+    (_d2 = result.address) == null ? void 0 : _d2.county,
+    (_e2 = result.address) == null ? void 0 : _e2.state_district,
+    (_f2 = result.address) == null ? void 0 : _f2.suburb
+  ].filter((value) => Boolean(value));
+  const matchesAddress = candidates.some(
+    (value) => value.toLowerCase().includes(normalizedCity) || normalizedCity.includes(value.toLowerCase())
+  );
+  if (matchesAddress) return true;
+  return result.display_name.toLowerCase().includes(normalizedCity);
+}
+async function reverseGeocode(lat, lng) {
+  try {
+    const params = new URLSearchParams({
+      format: "json",
+      lat: String(lat),
+      lon: String(lng),
+      addressdetails: "1",
+      namedetails: "1"
+    });
+    const response = await fetch(`${NOMINATIM_REVERSE_URL}?${params.toString()}`, {
+      headers: { Accept: "application/json" }
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return extractAreaLabel(data);
+  } catch {
+    return null;
+  }
+}
+function RecenterOnChange({
+  lat,
+  lng,
+  zoom
+}) {
+  const map2 = useMap();
+  const hasCenteredOnce = reactExports.useRef(false);
+  reactExports.useEffect(() => {
+    if (lat == null || lng == null) return;
+    map2.setView([lat, lng], zoom, { animate: hasCenteredOnce.current });
+    hasCenteredOnce.current = true;
+  }, [lat, lng]);
+  return null;
+}
+function ClickToPlaceMarker({
+  onSelect
+}) {
+  useMapEvents({
+    click(e3) {
+      onSelect(e3.latlng.lat, e3.latlng.lng);
+    }
+  });
+  return null;
+}
+function ZoneLocationPicker({ cities }) {
+  const { setValue, watch, getValues } = useFormContext();
+  const cityId = watch("cityId");
+  const lat = watch("lat");
+  const lng = watch("lng");
+  const selectedCity = cities.find((city) => city.id === cityId) ?? null;
+  const [query, setQuery] = reactExports.useState(() => getValues("locationLabel") ?? "");
+  const [results, setResults] = reactExports.useState([]);
+  const [isSearching, setIsSearching] = reactExports.useState(false);
+  const [showResults, setShowResults] = reactExports.useState(false);
+  const [isReverseGeocoding, setIsReverseGeocoding] = reactExports.useState(false);
+  const debounceRef = reactExports.useRef(null);
+  const searchRequestId = reactExports.useRef(0);
+  const reverseGeocodeRequestId = reactExports.useRef(0);
+  const containerRef = reactExports.useRef(null);
+  const isInitialRun = reactExports.useRef(true);
+  const prevCityId = reactExports.useRef(void 0);
+  reactExports.useEffect(() => {
+    const handleClickOutside = (e3) => {
+      if (containerRef.current && !containerRef.current.contains(e3.target)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  reactExports.useEffect(() => {
+    if (!cityId) return;
+    const city = cities.find((c2) => c2.id === cityId);
+    if (!city || city.lat == null || city.lng == null) return;
+    if (isInitialRun.current) {
+      isInitialRun.current = false;
+      prevCityId.current = cityId;
+      if (lat == null || lng == null) {
+        setValue("lat", city.lat, { shouldDirty: false });
+        setValue("lng", city.lng, { shouldDirty: false });
+      } else if (!query) {
+        reverseGeocode(lat, lng).then((label) => {
+          if (label) {
+            setQuery(label);
+            setValue("locationLabel", label, { shouldDirty: false });
+          }
+        });
+      }
+      return;
+    }
+    if (prevCityId.current !== cityId) {
+      prevCityId.current = cityId;
+      setValue("lat", city.lat, { shouldDirty: true, shouldValidate: true });
+      setValue("lng", city.lng, { shouldDirty: true, shouldValidate: true });
+      setValue("locationLabel", "", { shouldDirty: true });
+      setQuery("");
+      setResults([]);
+      setShowResults(false);
+    }
+  }, [cityId, cities]);
+  const runSearch = reactExports.useCallback(async (value, city) => {
+    if (!value.trim()) {
+      setResults([]);
+      return;
+    }
+    const requestId = ++searchRequestId.current;
+    setIsSearching(true);
+    try {
+      const structuredQuery = `${value}, ${city.name}, India`;
+      const params = new URLSearchParams({
+        format: "json",
+        addressdetails: "1",
+        namedetails: "1",
+        limit: "6",
+        q: structuredQuery
+      });
+      if (city.lat != null && city.lng != null) {
+        const left = city.lng - CITY_SEARCH_RADIUS_DEGREES;
+        const right = city.lng + CITY_SEARCH_RADIUS_DEGREES;
+        const top = city.lat + CITY_SEARCH_RADIUS_DEGREES;
+        const bottom = city.lat - CITY_SEARCH_RADIUS_DEGREES;
+        params.set("viewbox", `${left},${top},${right},${bottom}`);
+        params.set("bounded", "1");
+      }
+      const response = await fetch(`${NOMINATIM_SEARCH_URL}?${params.toString()}`, {
+        headers: { Accept: "application/json" }
+      });
+      if (!response.ok) throw new Error("Search failed");
+      const data = await response.json();
+      if (requestId !== searchRequestId.current) return;
+      const scoped = data.filter((result) => resultBelongsToCity(result, city.name));
+      setResults(scoped);
+      setShowResults(true);
+    } catch {
+      if (requestId === searchRequestId.current) setResults([]);
+    } finally {
+      if (requestId === searchRequestId.current) setIsSearching(false);
+    }
+  }, []);
+  const handleQueryChange = (value) => {
+    setQuery(value);
+    if (!selectedCity) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => runSearch(value, selectedCity), SEARCH_DEBOUNCE_MS);
+  };
+  const handleSelectResult = (result) => {
+    const nextLat = parseFloat(result.lat);
+    const nextLng = parseFloat(result.lon);
+    const label = extractAreaLabel(result);
+    setValue("lat", nextLat, { shouldDirty: true, shouldValidate: true });
+    setValue("lng", nextLng, { shouldDirty: true, shouldValidate: true });
+    setValue("locationLabel", label, { shouldDirty: true });
+    setQuery(label);
+    setResults([]);
+    setShowResults(false);
+    const currentName = getValues("name");
+    if (!currentName || !currentName.trim()) {
+      setValue("name", label, { shouldDirty: true, shouldValidate: true });
+    }
+  };
+  const handleManualPositionChange = (nextLat, nextLng) => {
+    setValue("lat", nextLat, { shouldDirty: true, shouldValidate: true });
+    setValue("lng", nextLng, { shouldDirty: true, shouldValidate: true });
+    const requestId = ++reverseGeocodeRequestId.current;
+    setIsReverseGeocoding(true);
+    reverseGeocode(nextLat, nextLng).then((label) => {
+      if (requestId !== reverseGeocodeRequestId.current) return;
+      setIsReverseGeocoding(false);
+      if (label) {
+        setQuery(label);
+        setValue("locationLabel", label, { shouldDirty: true });
+      }
+    });
+  };
+  const hasLocation = lat != null && lng != null;
+  const center = hasLocation ? [lat, lng] : (selectedCity == null ? void 0 : selectedCity.lat) != null && (selectedCity == null ? void 0 : selectedCity.lng) != null ? [selectedCity.lat, selectedCity.lng] : DEFAULT_CENTER;
+  const zoom = hasLocation || selectedCity ? SELECTED_ZOOM : DEFAULT_ZOOM;
+  const helperText = !cityId ? "Select a city above to search for a zone or area." : isReverseGeocoding ? "Detecting the nearest area..." : hasLocation ? `Selected: ${lat.toFixed(6)}, ${lng.toFixed(6)} — drag the marker or click the map to adjust.` : "Search for an area above, or click the map to set the location.";
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-sm font-medium leading-none", children: "Search Zone / Area" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: containerRef, className: "relative", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "text",
+            value: query,
+            onChange: (e3) => handleQueryChange(e3.target.value),
+            onFocus: () => results.length > 0 && setShowResults(true),
+            disabled: !cityId,
+            placeholder: cityId ? "Search for a sector, locality, or area..." : "Select a city first",
+            className: "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-9 pr-9 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          }
+        ),
+        isSearching && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" })
+      ] }),
+      showResults && results.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "absolute z-[1200] mt-1 max-h-56 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md", children: results.map((result) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          type: "button",
+          onClick: () => handleSelectResult(result),
+          className: "flex w-full items-start gap-2 px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(MapPin, { className: "mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex flex-col", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium", children: extractAreaLabel(result) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "line-clamp-1 text-xs text-muted-foreground", children: result.display_name })
+            ] })
+          ]
+        }
+      ) }, result.place_id)) })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-md border", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      MapContainer,
+      {
+        center,
+        zoom,
+        style: { height: "420px", width: "100%" },
+        scrollWheelZoom: false,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            TileLayer,
+            {
+              attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(RecenterOnChange, { lat, lng, zoom: SELECTED_ZOOM }),
+          cityId && /* @__PURE__ */ jsxRuntimeExports.jsx(ClickToPlaceMarker, { onSelect: handleManualPositionChange }),
+          hasLocation && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Marker,
+            {
+              position: [lat, lng],
+              draggable: true,
+              eventHandlers: {
+                dragend: (e3) => {
+                  const position = e3.target.getLatLng();
+                  handleManualPositionChange(position.lat, position.lng);
+                }
+              }
+            }
+          )
+        ]
+      }
+    ) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: helperText })
+  ] });
+}
 function ZonesPage() {
   const alert2 = useAlert();
   const [zones, setZones] = reactExports.useState([]);
@@ -81809,18 +92590,27 @@ function ZonesPage() {
   const [isModalOpen, setIsModalOpen] = reactExports.useState(false);
   const [editingZone, setEditingZone] = reactExports.useState(null);
   const [isSubmitting, setIsSubmitting] = reactExports.useState(false);
+  const [cities, setCities] = reactExports.useState([]);
+  const [isCitiesLoading, setIsCitiesLoading] = reactExports.useState(false);
   const methods = useForm({
     defaultValues: {
       name: "",
       description: "",
       deliveryCharge: "",
       minimumOrderAmount: "",
-      status: "active"
+      status: "active",
+      cityId: "",
+      lat: null,
+      lng: null,
+      locationLabel: ""
     }
   });
   const { handleSubmit, reset } = methods;
   reactExports.useEffect(() => {
     fetchZones();
+  }, []);
+  reactExports.useEffect(() => {
+    fetchCities();
   }, []);
   const fetchZones = async () => {
     setIsLoading(true);
@@ -81835,6 +92625,18 @@ function ZonesPage() {
       setIsLoading(false);
     }
   };
+  const fetchCities = async () => {
+    setIsCitiesLoading(true);
+    try {
+      const response = await cityService.getCities({ page: 1, pageSize: 100 });
+      setCities(response.data);
+    } catch (err) {
+      const apiError = err;
+      alert2.error(apiError.message || "Failed to fetch cities");
+    } finally {
+      setIsCitiesLoading(false);
+    }
+  };
   const openAddModal = () => {
     setEditingZone(null);
     reset({
@@ -81842,18 +92644,27 @@ function ZonesPage() {
       description: "",
       deliveryCharge: "",
       minimumOrderAmount: "",
-      status: "active"
+      status: "active",
+      cityId: "",
+      lat: null,
+      lng: null,
+      locationLabel: ""
     });
     setIsModalOpen(true);
   };
   const openEditModal = (zone) => {
+    var _a3;
     setEditingZone(zone);
     reset({
       name: zone.name,
       description: zone.description || "",
       deliveryCharge: zone.deliveryCharge.toString(),
       minimumOrderAmount: zone.minimumOrderAmount.toString(),
-      status: zone.status
+      status: zone.status,
+      cityId: ((_a3 = zone.cityId) == null ? void 0 : _a3._id) ?? "",
+      lat: zone.lat ?? null,
+      lng: zone.lng ?? null,
+      locationLabel: zone.locationLabel ?? ""
     });
     setIsModalOpen(true);
   };
@@ -81865,7 +92676,11 @@ function ZonesPage() {
         description: data.description,
         deliveryCharge: Number.parseFloat(data.deliveryCharge),
         minimumOrderAmount: Number.parseFloat(data.minimumOrderAmount),
-        status: data.status
+        status: data.status,
+        cityId: data.cityId || null,
+        lat: data.lat,
+        lng: data.lng,
+        locationLabel: data.locationLabel
       };
       if (editingZone) {
         await zoneService.updateZone(editingZone.id, zoneData);
@@ -81904,6 +92719,14 @@ function ZonesPage() {
           row.original.description && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: row.original.description })
         ] })
       ] })
+    },
+    {
+      accessorKey: "city",
+      header: "City",
+      cell: ({ row }) => {
+        var _a3;
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: ((_a3 = row.original.cityId) == null ? void 0 : _a3.name) ?? "-" });
+      }
     },
     {
       accessorKey: "deliveryCharge",
@@ -81974,7 +92797,7 @@ function ZonesPage() {
         emptyMessage: "No zones found"
       }
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isModalOpen, onOpenChange: setIsModalOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-lg", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isModalOpen, onOpenChange: setIsModalOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-3xl max-h-[90vh] overflow-y-auto", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: editingZone ? "Edit Zone" : "Add Zone" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(FormProvider, { ...methods, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit(onSubmit), className: "space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -82011,6 +92834,19 @@ function ZonesPage() {
             type: "number"
           }
         ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          FormSelect,
+          {
+            name: "cityId",
+            label: "City",
+            options: cities.map((city) => ({
+              value: city.id,
+              label: city.name
+            })),
+            placeholder: isCitiesLoading ? "Loading cities..." : "Select a city"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ZoneLocationPicker, { cities }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           FormSelect,
           {
@@ -82146,6 +92982,11 @@ const productsRoute = createRoute({
   path: "/products",
   component: ProductsPage
 });
+const bannersRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: "/banners",
+  component: BannersPage
+});
 const rolesRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "/roles",
@@ -82228,6 +93069,7 @@ const routeTree = rootRoute.addChildren([
       citiesRoute,
       zonesRoute,
       productsRoute,
+      bannersRoute,
       ordersRoute,
       normalOrdersRoute,
       bulkOrdersRoute,
