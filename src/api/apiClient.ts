@@ -15,26 +15,26 @@ function transformMongoResponse<T>(data: any): T {
   if (!data) return data;
 
   if (Array.isArray(data)) {
-    return data.map(item => transformMongoResponse(item)) as T;
+    return data.map((item) => transformMongoResponse(item)) as T;
   }
 
-  if (typeof data === 'object' && data !== null) {
+  if (typeof data === "object" && data !== null) {
     const transformed: any = {};
-    
+
     for (const [key, value] of Object.entries(data)) {
-      if (key === '_id') {
+      if (key === "_id") {
         transformed.id = value;
-      } else if (key === 'isActive' && !('status' in data)) {
+      } else if (key === "isActive" && !("status" in data)) {
         // Transform isActive to status for frontend
-        transformed.status = value ? 'active' : 'inactive';
+        transformed.status = value ? "active" : "inactive";
         transformed[key] = value;
-      } else if (typeof value === 'object' && value !== null) {
+      } else if (typeof value === "object" && value !== null) {
         transformed[key] = transformMongoResponse(value);
       } else {
         transformed[key] = value;
       }
     }
-    
+
     return transformed as T;
   }
 
@@ -58,7 +58,10 @@ class ApiClient {
    */
   private buildHeaders(customHeaders?: HeadersInit): HeadersInit {
     const token = this.getAuthToken();
-    const headers: Record<string, string> = { ...this.baseHeaders } as Record<string, string>;
+    const headers: Record<string, string> = { ...this.baseHeaders } as Record<
+      string,
+      string
+    >;
 
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
@@ -114,8 +117,11 @@ class ApiClient {
       }
 
       // Handle unauthorized
-      if (response.status === 401) {
+      if (response.status === 401 && !response.url.includes("/login")) {
         localStorage.removeItem("authToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+
         window.location.href = "/login";
       }
 
@@ -128,18 +134,18 @@ class ApiClient {
 
     if (isJson) {
       const jsonData = await response.json();
-      
+
       // Transform MongoDB response: extract nested data and transform _id to id
-      if (jsonData && typeof jsonData === 'object') {
+      if (jsonData && typeof jsonData === "object") {
         // Check if response has nested data structure
-        if ('data' in jsonData) {
+        if ("data" in jsonData) {
           jsonData.data = transformMongoResponse(jsonData.data);
         } else {
           // Transform entire response if no nested structure
           return transformMongoResponse<T>(jsonData);
         }
       }
-      
+
       return jsonData;
     }
 
@@ -253,7 +259,7 @@ class ApiClient {
     url: string,
     formData: FormData,
     onProgress?: (progress: number) => void,
-    method: 'POST' | 'PUT' = 'POST',
+    method: "POST" | "PUT" = "POST",
   ): Promise<T> {
     const token = this.getAuthToken();
     const headers: HeadersInit = {};
@@ -370,7 +376,7 @@ export const upload = <T = unknown>(
   url: string,
   formData: FormData,
   onProgress?: (progress: number) => void,
-  method?: 'POST' | 'PUT',
+  method?: "POST" | "PUT",
 ): Promise<T> => apiClient.upload<T>(url, formData, onProgress, method);
 
 // Export the client instance for token management
