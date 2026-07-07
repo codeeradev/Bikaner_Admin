@@ -25520,8 +25520,9 @@ class ApiClient {
       } else {
         error.message = await response.text();
       }
-      if (response.status === 401) {
+      if (response.status === 401 && !response.url.includes("/login")) {
         localStorage.removeItem("authToken");
+        localStorage.removeItem("user");
         window.location.href = "/login";
       }
       throw error;
@@ -25689,14 +25690,13 @@ const patch = (url, data, options) => apiClient.patch(url, data, options);
 const del = (url, options) => apiClient.delete(url, options);
 const upload = (url, formData, onProgress, method) => apiClient.upload(url, formData, onProgress, method);
 const BASE_URL = (
-  // import.meta.env.VITE_API_BASE_URL || "http://localhost:9020";
+  // "http://localhost:9020";
   "https://bikanerapi.codeeratech.in"
 );
 const ENDPOINTS = {
   // Authentication
   LOGIN: `${BASE_URL}/auth/login`,
   LOGOUT: `${BASE_URL}/auth/logout`,
-  REFRESH_TOKEN: `${BASE_URL}/auth/refresh`,
   PROFILE: `${BASE_URL}/auth/profile`,
   // Permissions
   GET_PERMISSIONS: `${BASE_URL}/permissions`,
@@ -25802,7 +25802,6 @@ const authService = {
       if (response.token) {
         console.log("🌐 AuthService: Storing token and user data...");
         apiClient.setAuthToken(response.token);
-        localStorage.setItem("refreshToken", response.refreshToken);
         localStorage.setItem("user", JSON.stringify(response.user));
         console.log("🌐 AuthService: Token stored successfully");
       }
@@ -25820,26 +25819,8 @@ const authService = {
       await post(ENDPOINTS.LOGOUT);
     } finally {
       apiClient.removeAuthToken();
-      localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
     }
-  },
-  /**
-   * Refresh authentication token
-   */
-  async refreshToken() {
-    const refreshToken = localStorage.getItem("refreshToken");
-    if (!refreshToken) {
-      throw new Error("No refresh token available");
-    }
-    const response = await post(ENDPOINTS.REFRESH_TOKEN, {
-      refreshToken
-    });
-    if (response.token) {
-      apiClient.setAuthToken(response.token);
-      localStorage.setItem("refreshToken", response.refreshToken);
-    }
-    return response;
   },
   /**
    * Check if user is authenticated
@@ -27150,44 +27131,66 @@ const useUIStore = create((set2) => ({
   })),
   setIsLoading: (loading) => set2({ isLoading: loading })
 }));
-function ConfirmDialog() {
+function ConfirmDialog({
+  open: propOpen,
+  onOpenChange: propOnOpenChange,
+  title: propTitle,
+  description: propDescription,
+  onConfirm: propOnConfirm
+} = {}) {
   const { dialog, hideDialog } = useUIStore();
-  const handleConfirm = () => {
-    var _a3;
-    (_a3 = dialog.onConfirm) == null ? void 0 : _a3.call(dialog);
-    hideDialog();
-  };
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    AlertDialog,
-    {
-      open: dialog.isOpen,
-      onOpenChange: (open) => !open && hideDialog(),
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogContent, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogTitle, { children: dialog.title }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogDescription, { children: dialog.description })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogFooter, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            AlertDialogCancel,
-            {
-              onClick: hideDialog,
-              "data-ocid": "dialog.cancel_button",
-              children: "Cancel"
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            AlertDialogAction,
-            {
-              onClick: handleConfirm,
-              "data-ocid": "dialog.confirm_button",
-              children: "Confirm"
-            }
-          )
-        ] })
-      ] })
+  const isOpen = propOpen !== void 0 ? propOpen : dialog.isOpen;
+  const title = propTitle !== void 0 ? propTitle : dialog.title;
+  const description = propDescription !== void 0 ? propDescription : dialog.description;
+  const onConfirm = propOnConfirm !== void 0 ? propOnConfirm : dialog.onConfirm;
+  const handleOpenChange = (open) => {
+    if (propOnOpenChange) {
+      propOnOpenChange(open);
+    } else if (!open) {
+      hideDialog();
     }
-  );
+  };
+  const handleConfirm = async () => {
+    if (onConfirm) {
+      await onConfirm();
+    }
+    if (propOnOpenChange) {
+      propOnOpenChange(false);
+    } else {
+      hideDialog();
+    }
+  };
+  const handleCancel = () => {
+    if (propOnOpenChange) {
+      propOnOpenChange(false);
+    } else {
+      hideDialog();
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialog, { open: isOpen, onOpenChange: handleOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogContent, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogTitle, { children: title }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogDescription, { children: description })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogFooter, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AlertDialogCancel,
+        {
+          onClick: handleCancel,
+          "data-ocid": "dialog.cancel_button",
+          children: "Cancel"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AlertDialogAction,
+        {
+          onClick: handleConfirm,
+          "data-ocid": "dialog.confirm_button",
+          children: "Confirm"
+        }
+      )
+    ] })
+  ] }) });
 }
 var M$1 = (e3, i2, s2, u2, m2, a2, l2, h2) => {
   let d2 = document.documentElement, w = ["light", "dark"];
@@ -91648,17 +91651,17 @@ function UsersPage() {
     try {
       const [staffRes, rolesRes, citiesRes, zonesRes] = await Promise.all([
         staffService.getStaff(),
-        roleService.getRoles({ limit: 100 }),
-        cityService.getCities({ limit: 100 }),
-        zoneService.getZones({ limit: 100 })
+        roleService.getRoles({ page: 1, limit: 100 }),
+        cityService.getCities({ page: 1, pageSize: 100 }),
+        zoneService.getZones({ page: 1, pageSize: 100 })
       ]);
       if (staffRes.success) setStaff(staffRes.data);
       if (rolesRes.success) {
         const nonAdminRoles = rolesRes.data.filter((role) => role.name !== "Admin");
         setRoles(nonAdminRoles);
       }
-      if (citiesRes.success) setCities(citiesRes.data);
-      if (zonesRes.success) setZones(zonesRes.data);
+      setCities(citiesRes.data);
+      setZones(zonesRes.data);
     } catch (error) {
       console.error("Failed to load data:", error);
     } finally {
@@ -91817,15 +91820,17 @@ function UsersPage() {
       accessorKey: "status",
       key: "status",
       label: "Status",
-      render: (staffMember) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: staffMember.status === "active" ? "success" : "secondary", children: staffMember.status })
+      render: (staffMember) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: staffMember.status === "active" ? "default" : "secondary", children: staffMember.status })
     },
     {
       accessorKey: "actions",
       key: "actions",
       label: "Actions",
       render: (staffMember) => {
-        var _a3;
+        var _a3, _b2;
         const isAdmin22 = ((_a3 = staffMember.role) == null ? void 0 : _a3.name) === "Admin";
+        const isFranchise = ((_b2 = staffMember.role) == null ? void 0 : _b2.name) === "Franchise";
+        const isProtectedRole = isAdmin22 || isFranchise;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.USERS_EDIT, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             Button,
@@ -91833,7 +91838,7 @@ function UsersPage() {
               variant: "ghost",
               size: "sm",
               onClick: () => staffMember.status === "active" ? handleToggleStatus(staffMember.id) : handleToggleStatus(staffMember.id),
-              disabled: isAdmin22,
+              disabled: isProtectedRole,
               children: staffMember.status === "active" ? /* @__PURE__ */ jsxRuntimeExports.jsx(UserX, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(UserCheck, { className: "h-4 w-4" })
             }
           ) }),
@@ -91843,7 +91848,7 @@ function UsersPage() {
               variant: "ghost",
               size: "sm",
               onClick: () => handleEdit(staffMember),
-              disabled: isAdmin22,
+              disabled: isProtectedRole,
               children: /* @__PURE__ */ jsxRuntimeExports.jsx(SquarePen, { className: "h-4 w-4" })
             }
           ) }),
@@ -91856,7 +91861,7 @@ function UsersPage() {
                 setDeletingId(staffMember.id);
                 setIsDeleteDialogOpen(true);
               },
-              disabled: isAdmin22,
+              disabled: isProtectedRole,
               children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4" })
             }
           ) })

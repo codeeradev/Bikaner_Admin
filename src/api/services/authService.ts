@@ -10,7 +10,6 @@ export interface LoginResponse {
   success: boolean;
   message?: string;
   token: string;
-  refreshToken: string;
   user: {
     id: string;
     email: string;
@@ -22,11 +21,6 @@ export interface LoginResponse {
     permissions: string[];
     status: string;
   };
-}
-
-export interface RefreshTokenResponse {
-  token: string;
-  refreshToken: string;
 }
 
 export const authService = {
@@ -46,7 +40,6 @@ export const authService = {
       if (response.token) {
         console.log("🌐 AuthService: Storing token and user data...");
         apiClient.setAuthToken(response.token);
-        localStorage.setItem("refreshToken", response.refreshToken);
         localStorage.setItem("user", JSON.stringify(response.user));
         console.log("🌐 AuthService: Token stored successfully");
       }
@@ -65,34 +58,10 @@ export const authService = {
     try {
       await post<void>(ENDPOINTS.LOGOUT);
     } finally {
-      // Clear tokens and user data regardless of API response
+      // Clear token and user data regardless of API response
       apiClient.removeAuthToken();
-      localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
     }
-  },
-
-  /**
-   * Refresh authentication token
-   */
-  async refreshToken(): Promise<RefreshTokenResponse> {
-    const refreshToken = localStorage.getItem("refreshToken");
-
-    if (!refreshToken) {
-      throw new Error("No refresh token available");
-    }
-
-    const response = await post<RefreshTokenResponse>(ENDPOINTS.REFRESH_TOKEN, {
-      refreshToken,
-    });
-
-    // Update the stored token
-    if (response.token) {
-      apiClient.setAuthToken(response.token);
-      localStorage.setItem("refreshToken", response.refreshToken);
-    }
-
-    return response;
   },
 
   /**

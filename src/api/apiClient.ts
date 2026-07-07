@@ -119,7 +119,6 @@ class ApiClient {
       // Handle unauthorized
       if (response.status === 401 && !response.url.includes("/login")) {
         localStorage.removeItem("authToken");
-        localStorage.removeItem("refreshToken");
         localStorage.removeItem("user");
 
         window.location.href = "/login";

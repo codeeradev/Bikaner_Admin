@@ -87,9 +87,9 @@ export function UsersPage() {
     try {
       const [staffRes, rolesRes, citiesRes, zonesRes] = await Promise.all([
         staffService.getStaff(),
-        roleService.getRoles({ limit: 100 }),
-        cityService.getCities({ limit: 100 }),
-        zoneService.getZones({ limit: 100 }),
+        roleService.getRoles({ page: 1, limit: 100 }),
+        cityService.getCities({ page: 1, pageSize: 100 }),
+        zoneService.getZones({ page: 1, pageSize: 100 }),
       ]);
 
       if (staffRes.success) setStaff(staffRes.data);
@@ -98,8 +98,8 @@ export function UsersPage() {
         const nonAdminRoles = rolesRes.data.filter(role => role.name !== "Admin");
         setRoles(nonAdminRoles);
       }
-      if (citiesRes.success) setCities(citiesRes.data);
-      if (zonesRes.success) setZones(zonesRes.data);
+      setCities(citiesRes.data);
+      setZones(zonesRes.data);
     } catch (error) {
       console.error("Failed to load data:", error);
     } finally {
@@ -284,7 +284,7 @@ export function UsersPage() {
       key: "status",
       label: "Status",
       render: (staffMember: Staff) => (
-        <Badge variant={staffMember.status === "active" ? "success" : "secondary"}>
+        <Badge variant={staffMember.status === "active" ? "default" : "secondary"}>
           {staffMember.status}
         </Badge>
       ),
@@ -294,8 +294,10 @@ export function UsersPage() {
       key: "actions",
       label: "Actions",
       render: (staffMember: Staff) => {
-        // Don't allow editing/deleting admin users
+        // Don't allow editing/deleting admin users and franchise users
         const isAdmin = staffMember.role?.name === "Admin";
+        const isFranchise = staffMember.role?.name === "Franchise";
+        const isProtectedRole = isAdmin || isFranchise;
 
         return (
           <div className="flex items-center gap-2">
@@ -308,7 +310,7 @@ export function UsersPage() {
                     ? handleToggleStatus(staffMember.id)
                     : handleToggleStatus(staffMember.id)
                 }
-                disabled={isAdmin}
+                disabled={isProtectedRole}
               >
                 {staffMember.status === "active" ? (
                   <UserX className="h-4 w-4" />
@@ -323,7 +325,7 @@ export function UsersPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleEdit(staffMember)}
-                disabled={isAdmin}
+                disabled={isProtectedRole}
               >
                 <Edit className="h-4 w-4" />
               </Button>
@@ -337,7 +339,7 @@ export function UsersPage() {
                   setDeletingId(staffMember.id);
                   setIsDeleteDialogOpen(true);
                 }}
-                disabled={isAdmin}
+                disabled={isProtectedRole}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
