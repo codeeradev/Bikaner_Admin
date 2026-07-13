@@ -1,8 +1,8 @@
 // Base URL for API - Update this with your actual backend URL
-const BASE_URL =
-  // "http://localhost:9020";
+const BASE_URL 
+// = "http://localhost:9020";
 
-  "https://bikanerapi.codeeratech.in";
+= "https://bikanerapi.codeeratech.in";
 export const ENDPOINTS = {
   // Authentication
   LOGIN: `${BASE_URL}/auth/login`,
@@ -62,6 +62,7 @@ export const ENDPOINTS = {
   CREATE_ORDER: `${BASE_URL}/orders`,
   UPDATE_ORDER: (id: string) => `${BASE_URL}/orders/${id}`,
   UPDATE_ORDER_STATUS: (id: string) => `${BASE_URL}/orders/${id}/status`,
+  CANCEL_ORDER: (id: string) => `${BASE_URL}/orders/${id}/cancel`,
 
   // Normal Orders
   GET_NORMAL_ORDERS: `${BASE_URL}/orders/normal`,
@@ -70,6 +71,13 @@ export const ENDPOINTS = {
   // Bulk Orders
   GET_BULK_ORDERS: `${BASE_URL}/orders/bulk`,
   GET_BULK_ORDER: (id: string) => `${BASE_URL}/orders/bulk/${id}`,
+
+  // Seller Approvals
+  GET_SELLER_APPLICATIONS: `${BASE_URL}/seller-applications`,
+  APPROVE_SELLER_APPLICATION: (id: string) =>
+    `${BASE_URL}/seller-applications/${id}/approve`,
+  REJECT_SELLER_APPLICATION: (id: string) =>
+    `${BASE_URL}/seller-applications/${id}/reject`,
 
   // Franchise
   GET_FRANCHISES: `${BASE_URL}/franchises`,

@@ -1,6 +1,6 @@
-import { get, post, put, del, patch, upload } from "../apiClient";
-import { ENDPOINTS } from "../endpoints";
 import type { Staff } from "@/types";
+import { del, get, patch, post, put, upload } from "../apiClient";
+import { ENDPOINTS } from "../endpoints";
 
 export interface CreateStaffDto {
   roleId: string;
@@ -74,7 +74,7 @@ export const staffService = {
   async createStaff(data: CreateStaffDto): Promise<StaffResponse> {
     if (data.profileImage) {
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
+      for (const [key, value] of Object.entries(data)) {
         if (value !== undefined && value !== null) {
           if (Array.isArray(value)) {
             formData.append(key, JSON.stringify(value));
@@ -84,7 +84,7 @@ export const staffService = {
             formData.append(key, String(value));
           }
         }
-      });
+      }
 
       return upload<StaffResponse>(ENDPOINTS.CREATE_USER, formData);
     }
@@ -98,7 +98,7 @@ export const staffService = {
   async updateStaff(id: string, data: UpdateStaffDto): Promise<StaffResponse> {
     if (data.profileImage) {
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
+      for (const [key, value] of Object.entries(data)) {
         if (value !== undefined && value !== null) {
           if (Array.isArray(value)) {
             formData.append(key, JSON.stringify(value));
@@ -108,11 +108,14 @@ export const staffService = {
             formData.append(key, String(value));
           }
         }
-      });
+      }
 
-      return upload<StaffResponse>(ENDPOINTS.UPDATE_USER(id), formData, {
-        method: "PUT",
-      });
+      return upload<StaffResponse>(
+        ENDPOINTS.UPDATE_USER(id),
+        formData,
+        undefined,
+        "PUT",
+      );
     }
 
     return put<StaffResponse>(ENDPOINTS.UPDATE_USER(id), data);
@@ -122,10 +125,10 @@ export const staffService = {
    * Delete staff member
    */
   async deleteStaff(
-    id: string
+    id: string,
   ): Promise<{ success: boolean; message: string }> {
     return del<{ success: boolean; message: string }>(
-      ENDPOINTS.DELETE_USER(id)
+      ENDPOINTS.DELETE_USER(id),
     );
   },
 

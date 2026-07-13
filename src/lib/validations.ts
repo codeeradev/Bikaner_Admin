@@ -30,6 +30,11 @@ export const categorySchema = z.object({
 
 export type CategoryFormData = z.infer<typeof categorySchema>;
 
+const nutritionEntrySchema = z.object({
+  value: z.coerce.number().min(0, "Value must be 0 or greater"),
+  unit: z.string().min(1, "Unit is required"),
+});
+
 export const productSchema = z.object({
   name: z
     .string()
@@ -48,6 +53,8 @@ export const productSchema = z.object({
   isFeatured: z.boolean().optional(),
   status: z.enum(["active", "inactive"]),
   image: z.any().optional(),
+  nutritionValues: z.record(nutritionEntrySchema).optional(),
+  ingredients: z.array(z.string().min(1, "Ingredient cannot be empty")).optional(),
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;

@@ -4451,6 +4451,10 @@ video {
     display: flex;
   }
 
+  .sm\:w-44 {
+    width: 11rem;
+  }
+
   .sm\:w-48 {
     width: 12rem;
   }

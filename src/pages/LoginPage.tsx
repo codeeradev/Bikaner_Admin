@@ -14,7 +14,7 @@ import { type LoginFormData, loginSchema } from "@/lib/validations";
 import { useAuthStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
-import { Eye, EyeOff, Loader2, Store } from "lucide-react";
+import { Eye, EyeOff, Loader2, Cookie } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -32,11 +32,11 @@ export function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "9999999999",
-      password: "admin123",
-      rememberMe: false,
-    },
+    // defaultValues: {
+    //   email: "9999999999",
+    //   password: "admin123",
+    //   rememberMe: false,
+    // },
   });
 
   // Log validation errors when they occur
@@ -85,11 +85,11 @@ export function LoginPage() {
         <Card className="border-border/50 shadow-elevated">
           <CardHeader className="space-y-4 text-center pb-6">
             <div className="mx-auto h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
-              <Store className="h-6 w-6 text-primary-foreground" />
+              <Cookie className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
               <CardTitle className="text-2xl font-bold">
-                Franchise Admin
+                Bikaner Admin
               </CardTitle>
               <CardDescription className="mt-1">
                 Sign in to your account
@@ -121,7 +121,7 @@ export function LoginPage() {
                 )}
                 {!errors.email && (
                   <p className="text-xs text-muted-foreground">
-                    Use your 10-digit mobile number (e.g., 9999999999)
+                    Use your 10-digit mobile number
                   </p>
                 )}
               </div>
@@ -169,13 +169,13 @@ export function LoginPage() {
                     Remember me
                   </Label>
                 </div>
-                <button
+                {/* <button
                   type="button"
                   className="text-sm text-primary hover:underline"
                   data-ocid="login.forgot_password"
                 >
                   Forgot password?
-                </button>
+                </button> */}
               </div>
 
               <Button
@@ -194,10 +194,6 @@ export function LoginPage() {
                 )}
               </Button>
             </form>
-
-            <div className="mt-4 text-center text-xs text-muted-foreground">
-              Demo credentials: 9999999999 / admin123
-            </div>
           </CardContent>
         </Card>
       </motion.div>

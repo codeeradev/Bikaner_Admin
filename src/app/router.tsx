@@ -15,6 +15,7 @@ import { ProductsPage } from "@/pages/ProductsPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { RegisteredFranchisePage } from "@/pages/RegisteredFranchisePage";
 import { RolesPage } from "@/pages/RolesPage";
+import { SellerApprovalsPage } from "@/pages/SellerApprovalsPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { ThemePage } from "@/pages/ThemePage";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
@@ -141,6 +142,12 @@ const bulkOrdersRoute = createRoute({
   component: BulkOrdersPage,
 });
 
+const sellerApprovalsRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: "/approvals/sellers",
+  component: SellerApprovalsPage,
+});
+
 const franchiseRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "/franchise",
@@ -199,6 +206,7 @@ const routeTree = rootRoute.addChildren([
       ordersRoute,
       normalOrdersRoute,
       bulkOrdersRoute,
+      sellerApprovalsRoute,
       franchiseRoute,
       registeredFranchiseRoute,
       franchiseRequestsRoute,

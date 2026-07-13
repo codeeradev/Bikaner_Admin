@@ -22260,11 +22260,46 @@ const createLucideIcon = (iconName, iconNode) => {
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$12 = [
+const __iconNode$15 = [
   ["path", { d: "M17 7 7 17", key: "15tmo1" }],
   ["path", { d: "M17 17H7V7", key: "1org7z" }]
 ];
-const ArrowDownLeft = createLucideIcon("arrow-down-left", __iconNode$12);
+const ArrowDownLeft = createLucideIcon("arrow-down-left", __iconNode$15);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$14 = [
+  ["path", { d: "M12 5v14", key: "s699le" }],
+  ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
+];
+const ArrowDown = createLucideIcon("arrow-down", __iconNode$14);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$13 = [
+  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
+  ["path", { d: "M19 12H5", key: "x3x0zl" }]
+];
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$13);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$12 = [
+  ["path", { d: "m21 16-4 4-4-4", key: "f6ql7i" }],
+  ["path", { d: "M17 20V4", key: "1ejh1v" }],
+  ["path", { d: "m3 8 4-4 4 4", key: "11wl7u" }],
+  ["path", { d: "M7 4v16", key: "1glfcx" }]
+];
+const ArrowUpDown = createLucideIcon("arrow-up-down", __iconNode$12);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22272,10 +22307,10 @@ const ArrowDownLeft = createLucideIcon("arrow-down-left", __iconNode$12);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$11 = [
-  ["path", { d: "M12 5v14", key: "s699le" }],
-  ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
+  ["path", { d: "M7 7h10v10", key: "1tivn9" }],
+  ["path", { d: "M7 17 17 7", key: "1vkiza" }]
 ];
-const ArrowDown = createLucideIcon("arrow-down", __iconNode$11);
+const ArrowUpRight = createLucideIcon("arrow-up-right", __iconNode$11);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22283,10 +22318,10 @@ const ArrowDown = createLucideIcon("arrow-down", __iconNode$11);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$10 = [
-  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
-  ["path", { d: "M19 12H5", key: "x3x0zl" }]
+  ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
+  ["path", { d: "M12 19V5", key: "x0mq9r" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$10);
+const ArrowUp = createLucideIcon("arrow-up", __iconNode$10);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22294,41 +22329,6 @@ const ArrowLeft = createLucideIcon("arrow-left", __iconNode$10);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$$ = [
-  ["path", { d: "m21 16-4 4-4-4", key: "f6ql7i" }],
-  ["path", { d: "M17 20V4", key: "1ejh1v" }],
-  ["path", { d: "m3 8 4-4 4 4", key: "11wl7u" }],
-  ["path", { d: "M7 4v16", key: "1glfcx" }]
-];
-const ArrowUpDown = createLucideIcon("arrow-up-down", __iconNode$$);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$_ = [
-  ["path", { d: "M7 7h10v10", key: "1tivn9" }],
-  ["path", { d: "M7 17 17 7", key: "1vkiza" }]
-];
-const ArrowUpRight = createLucideIcon("arrow-up-right", __iconNode$_);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$Z = [
-  ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
-  ["path", { d: "M12 19V5", key: "x0mq9r" }]
-];
-const ArrowUp = createLucideIcon("arrow-up", __iconNode$Z);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$Y = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   [
     "path",
@@ -22338,14 +22338,14 @@ const __iconNode$Y = [
     }
   ]
 ];
-const Bell = createLucideIcon("bell", __iconNode$Y);
+const Bell = createLucideIcon("bell", __iconNode$$);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$X = [
+const __iconNode$_ = [
   ["path", { d: "M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z", key: "1b4qmf" }],
   ["path", { d: "M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2", key: "i71pzd" }],
   ["path", { d: "M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2", key: "10jefs" }],
@@ -22354,14 +22354,14 @@ const __iconNode$X = [
   ["path", { d: "M10 14h4", key: "kelpxr" }],
   ["path", { d: "M10 18h4", key: "1ulq68" }]
 ];
-const Building2 = createLucideIcon("building-2", __iconNode$X);
+const Building2 = createLucideIcon("building-2", __iconNode$_);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$W = [
+const __iconNode$Z = [
   [
     "path",
     {
@@ -22371,60 +22371,93 @@ const __iconNode$W = [
   ],
   ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
 ];
-const Camera = createLucideIcon("camera", __iconNode$W);
+const Camera = createLucideIcon("camera", __iconNode$Z);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$V = [
+const __iconNode$Y = [
   ["path", { d: "M3 3v16a2 2 0 0 0 2 2h16", key: "c24i48" }],
   ["path", { d: "M18 17V9", key: "2bz60n" }],
   ["path", { d: "M13 17V5", key: "1frdt8" }],
   ["path", { d: "M8 17v-3", key: "17ska0" }]
 ];
-const ChartColumn = createLucideIcon("chart-column", __iconNode$V);
+const ChartColumn = createLucideIcon("chart-column", __iconNode$Y);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$U = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$U);
+const __iconNode$X = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$X);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$T = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("chevron-down", __iconNode$T);
+const __iconNode$W = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("chevron-down", __iconNode$W);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$S = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-const ChevronLeft = createLucideIcon("chevron-left", __iconNode$S);
+const __iconNode$V = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+const ChevronLeft = createLucideIcon("chevron-left", __iconNode$V);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$R = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("chevron-right", __iconNode$R);
+const __iconNode$U = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+const ChevronRight = createLucideIcon("chevron-right", __iconNode$U);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$Q = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-const ChevronUp = createLucideIcon("chevron-up", __iconNode$Q);
+const __iconNode$T = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+const ChevronUp = createLucideIcon("chevron-up", __iconNode$T);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$S = [
+  ["path", { d: "m11 17-5-5 5-5", key: "13zhaf" }],
+  ["path", { d: "m18 17-5-5 5-5", key: "h8a8et" }]
+];
+const ChevronsLeft = createLucideIcon("chevrons-left", __iconNode$S);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$R = [
+  ["path", { d: "m6 17 5-5-5-5", key: "xnjwq" }],
+  ["path", { d: "m13 17 5-5-5-5", key: "17xmmf" }]
+];
+const ChevronsRight = createLucideIcon("chevrons-right", __iconNode$R);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$Q = [
+  ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
+  ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+];
+const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$Q);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22432,10 +22465,10 @@ const ChevronUp = createLucideIcon("chevron-up", __iconNode$Q);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$P = [
-  ["path", { d: "m11 17-5-5 5-5", key: "13zhaf" }],
-  ["path", { d: "m18 17-5-5 5-5", key: "h8a8et" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ];
-const ChevronsLeft = createLucideIcon("chevrons-left", __iconNode$P);
+const CircleCheck = createLucideIcon("circle-check", __iconNode$P);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22443,10 +22476,11 @@ const ChevronsLeft = createLucideIcon("chevrons-left", __iconNode$P);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$O = [
-  ["path", { d: "m6 17 5-5-5-5", key: "xnjwq" }],
-  ["path", { d: "m13 17 5-5-5-5", key: "17xmmf" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
+  ["path", { d: "M12 17h.01", key: "p32p05" }]
 ];
-const ChevronsRight = createLucideIcon("chevrons-right", __iconNode$O);
+const CircleHelp = createLucideIcon("circle-help", __iconNode$O);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22454,10 +22488,11 @@ const ChevronsRight = createLucideIcon("chevrons-right", __iconNode$O);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$N = [
-  ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
-  ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["line", { x1: "10", x2: "10", y1: "15", y2: "9", key: "c1nkhi" }],
+  ["line", { x1: "14", x2: "14", y1: "15", y2: "9", key: "h65svq" }]
 ];
-const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$N);
+const CirclePause = createLucideIcon("circle-pause", __iconNode$N);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22466,9 +22501,9 @@ const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$N);
  */
 const __iconNode$M = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+  ["polygon", { points: "10 8 16 12 10 16 10 8", key: "1cimsy" }]
 ];
-const CircleCheck = createLucideIcon("circle-check", __iconNode$M);
+const CirclePlay = createLucideIcon("circle-play", __iconNode$M);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22477,10 +22512,10 @@ const CircleCheck = createLucideIcon("circle-check", __iconNode$M);
  */
 const __iconNode$L = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
-  ["path", { d: "M12 17h.01", key: "p32p05" }]
+  ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
+  ["path", { d: "m9 9 6 6", key: "z0biqf" }]
 ];
-const CircleHelp = createLucideIcon("circle-help", __iconNode$L);
+const CircleX = createLucideIcon("circle-x", __iconNode$L);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22488,41 +22523,6 @@ const CircleHelp = createLucideIcon("circle-help", __iconNode$L);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$K = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["line", { x1: "10", x2: "10", y1: "15", y2: "9", key: "c1nkhi" }],
-  ["line", { x1: "14", x2: "14", y1: "15", y2: "9", key: "h65svq" }]
-];
-const CirclePause = createLucideIcon("circle-pause", __iconNode$K);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$J = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["polygon", { points: "10 8 16 12 10 16 10 8", key: "1cimsy" }]
-];
-const CirclePlay = createLucideIcon("circle-play", __iconNode$J);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$I = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
-  ["path", { d: "m9 9 6 6", key: "z0biqf" }]
-];
-const CircleX = createLucideIcon("circle-x", __iconNode$I);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$H = [
   ["path", { d: "M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5", key: "laymnq" }],
   ["path", { d: "M8.5 8.5v.01", key: "ue8clq" }],
   ["path", { d: "M16 15.5v.01", key: "14dtrp" }],
@@ -22530,7 +22530,41 @@ const __iconNode$H = [
   ["path", { d: "M11 17v.01", key: "1hyl5a" }],
   ["path", { d: "M7 14v.01", key: "uct60s" }]
 ];
-const Cookie = createLucideIcon("cookie", __iconNode$H);
+const Cookie = createLucideIcon("cookie", __iconNode$K);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$J = [
+  ["rect", { width: "20", height: "14", x: "2", y: "5", rx: "2", key: "ynyp8z" }],
+  ["line", { x1: "2", x2: "22", y1: "10", y2: "10", key: "1b3vmo" }]
+];
+const CreditCard = createLucideIcon("credit-card", __iconNode$J);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$I = [
+  ["line", { x1: "12", x2: "12", y1: "2", y2: "22", key: "7eqyqh" }],
+  ["path", { d: "M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6", key: "1b0p4s" }]
+];
+const DollarSign = createLucideIcon("dollar-sign", __iconNode$I);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$H = [
+  ["path", { d: "M12 15V3", key: "m9g1x1" }],
+  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
+  ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
+];
+const Download = createLucideIcon("download", __iconNode$H);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22538,40 +22572,6 @@ const Cookie = createLucideIcon("cookie", __iconNode$H);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$G = [
-  ["rect", { width: "20", height: "14", x: "2", y: "5", rx: "2", key: "ynyp8z" }],
-  ["line", { x1: "2", x2: "22", y1: "10", y2: "10", key: "1b3vmo" }]
-];
-const CreditCard = createLucideIcon("credit-card", __iconNode$G);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$F = [
-  ["line", { x1: "12", x2: "12", y1: "2", y2: "22", key: "7eqyqh" }],
-  ["path", { d: "M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6", key: "1b0p4s" }]
-];
-const DollarSign = createLucideIcon("dollar-sign", __iconNode$F);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$E = [
-  ["path", { d: "M12 15V3", key: "m9g1x1" }],
-  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
-  ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
-];
-const Download = createLucideIcon("download", __iconNode$E);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$D = [
   [
     "path",
     {
@@ -22589,14 +22589,14 @@ const __iconNode$D = [
   ],
   ["path", { d: "m2 2 20 20", key: "1ooewy" }]
 ];
-const EyeOff = createLucideIcon("eye-off", __iconNode$D);
+const EyeOff = createLucideIcon("eye-off", __iconNode$G);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$C = [
+const __iconNode$F = [
   [
     "path",
     {
@@ -22606,14 +22606,14 @@ const __iconNode$C = [
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Eye = createLucideIcon("eye", __iconNode$C);
+const Eye = createLucideIcon("eye", __iconNode$F);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$B = [
+const __iconNode$E = [
   ["path", { d: "M12 16h.01", key: "1drbdi" }],
   ["path", { d: "M16 16h.01", key: "1f9h7w" }],
   [
@@ -22625,14 +22625,28 @@ const __iconNode$B = [
   ],
   ["path", { d: "M8 16h.01", key: "18s6g9" }]
 ];
-const Factory = createLucideIcon("factory", __iconNode$B);
+const Factory = createLucideIcon("factory", __iconNode$E);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$A = [
+const __iconNode$D = [
+  ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
+  ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
+  ["path", { d: "M10 9H8", key: "b1mrlr" }],
+  ["path", { d: "M16 13H8", key: "t4e002" }],
+  ["path", { d: "M16 17H8", key: "z1uh3a" }]
+];
+const FileText = createLucideIcon("file-text", __iconNode$D);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$C = [
   [
     "path",
     {
@@ -22650,26 +22664,26 @@ const __iconNode$A = [
   ["path", { d: "M3 5a2 2 0 0 0 2 2h3", key: "f2jnh7" }],
   ["path", { d: "M3 3v13a2 2 0 0 0 2 2h3", key: "k8epm1" }]
 ];
-const FolderTree = createLucideIcon("folder-tree", __iconNode$A);
+const FolderTree = createLucideIcon("folder-tree", __iconNode$C);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$z = [
+const __iconNode$B = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
   ["path", { d: "M2 12h20", key: "9i4pu4" }]
 ];
-const Globe = createLucideIcon("globe", __iconNode$z);
+const Globe = createLucideIcon("globe", __iconNode$B);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$y = [
+const __iconNode$A = [
   ["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8", key: "5wwlr5" }],
   [
     "path",
@@ -22679,7 +22693,33 @@ const __iconNode$y = [
     }
   ]
 ];
-const House = createLucideIcon("house", __iconNode$y);
+const House = createLucideIcon("house", __iconNode$A);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$z = [
+  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
+  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
+  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+];
+const Image$1 = createLucideIcon("image", __iconNode$z);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$y = [
+  ["path", { d: "M6 3h12", key: "ggurg9" }],
+  ["path", { d: "M6 8h12", key: "6g4wlu" }],
+  ["path", { d: "m6 13 8.5 8", key: "u1kupk" }],
+  ["path", { d: "M6 13h3", key: "wdp6ag" }],
+  ["path", { d: "M9 13c6.667 0 6.667-10 0-10", key: "1nkvk2" }]
+];
+const IndianRupee = createLucideIcon("indian-rupee", __iconNode$y);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22687,11 +22727,11 @@ const House = createLucideIcon("house", __iconNode$y);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$x = [
-  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
-  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
-  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 16v-4", key: "1dtifu" }],
+  ["path", { d: "M12 8h.01", key: "e9boi3" }]
 ];
-const Image$1 = createLucideIcon("image", __iconNode$x);
+const Info = createLucideIcon("info", __iconNode$x);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22699,25 +22739,20 @@ const Image$1 = createLucideIcon("image", __iconNode$x);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$w = [
-  ["path", { d: "M6 3h12", key: "ggurg9" }],
-  ["path", { d: "M6 8h12", key: "6g4wlu" }],
-  ["path", { d: "m6 13 8.5 8", key: "u1kupk" }],
-  ["path", { d: "M6 13h3", key: "wdp6ag" }],
-  ["path", { d: "M9 13c6.667 0 6.667-10 0-10", key: "1nkvk2" }]
+  ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
+  ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
+  ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
+  ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
 ];
-const IndianRupee = createLucideIcon("indian-rupee", __iconNode$w);
+const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$w);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$v = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M12 16v-4", key: "1dtifu" }],
-  ["path", { d: "M12 8h.01", key: "e9boi3" }]
-];
-const Info = createLucideIcon("info", __iconNode$v);
+const __iconNode$v = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+const LoaderCircle = createLucideIcon("loader-circle", __iconNode$v);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22725,39 +22760,18 @@ const Info = createLucideIcon("info", __iconNode$v);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$u = [
-  ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
-  ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
-  ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
-  ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
-];
-const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$u);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$t = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-const LoaderCircle = createLucideIcon("loader-circle", __iconNode$t);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$s = [
   ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
   ["path", { d: "M21 12H9", key: "dn1m92" }],
   ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
 ];
-const LogOut = createLucideIcon("log-out", __iconNode$s);
+const LogOut = createLucideIcon("log-out", __iconNode$u);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$r = [
+const __iconNode$t = [
   [
     "path",
     {
@@ -22767,14 +22781,14 @@ const __iconNode$r = [
   ],
   ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }]
 ];
-const MapPin = createLucideIcon("map-pin", __iconNode$r);
+const MapPin = createLucideIcon("map-pin", __iconNode$t);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$q = [
+const __iconNode$s = [
   [
     "path",
     {
@@ -22791,7 +22805,29 @@ const __iconNode$q = [
     }
   ]
 ];
-const MapPinned = createLucideIcon("map-pinned", __iconNode$q);
+const MapPinned = createLucideIcon("map-pinned", __iconNode$s);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$r = [
+  ["path", { d: "M4 12h16", key: "1lakjw" }],
+  ["path", { d: "M4 18h16", key: "19g7jn" }],
+  ["path", { d: "M4 6h16", key: "1o0s65" }]
+];
+const Menu$1 = createLucideIcon("menu", __iconNode$r);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$q = [
+  ["path", { d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z", key: "a7tn18" }]
+];
+const Moon = createLucideIcon("moon", __iconNode$q);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22799,28 +22835,6 @@ const MapPinned = createLucideIcon("map-pinned", __iconNode$q);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$p = [
-  ["path", { d: "M4 12h16", key: "1lakjw" }],
-  ["path", { d: "M4 18h16", key: "19g7jn" }],
-  ["path", { d: "M4 6h16", key: "1o0s65" }]
-];
-const Menu$1 = createLucideIcon("menu", __iconNode$p);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$o = [
-  ["path", { d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z", key: "a7tn18" }]
-];
-const Moon = createLucideIcon("moon", __iconNode$o);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$n = [
   [
     "path",
     {
@@ -22832,14 +22846,14 @@ const __iconNode$n = [
   ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
   ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
 ];
-const Package = createLucideIcon("package", __iconNode$n);
+const Package = createLucideIcon("package", __iconNode$p);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$m = [
+const __iconNode$o = [
   [
     "path",
     {
@@ -22852,14 +22866,14 @@ const __iconNode$m = [
   ["circle", { cx: "6.5", cy: "12.5", r: ".5", fill: "currentColor", key: "qy21gx" }],
   ["circle", { cx: "8.5", cy: "7.5", r: ".5", fill: "currentColor", key: "fotxhn" }]
 ];
-const Palette = createLucideIcon("palette", __iconNode$m);
+const Palette = createLucideIcon("palette", __iconNode$o);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$l = [
+const __iconNode$n = [
   [
     "path",
     {
@@ -22869,7 +22883,34 @@ const __iconNode$l = [
   ],
   ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
 ];
-const Pencil = createLucideIcon("pencil", __iconNode$l);
+const Pencil = createLucideIcon("pencil", __iconNode$n);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$m = [
+  [
+    "path",
+    {
+      d: "M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384",
+      key: "9njp5v"
+    }
+  ]
+];
+const Phone = createLucideIcon("phone", __iconNode$m);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$l = [
+  ["path", { d: "M5 12h14", key: "1ays0h" }],
+  ["path", { d: "M12 5v14", key: "s699le" }]
+];
+const Plus = createLucideIcon("plus", __iconNode$l);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22877,10 +22918,12 @@ const Pencil = createLucideIcon("pencil", __iconNode$l);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$k = [
-  ["path", { d: "M5 12h14", key: "1ays0h" }],
-  ["path", { d: "M12 5v14", key: "s699le" }]
+  ["path", { d: "M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "14sxne" }],
+  ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
+  ["path", { d: "M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16", key: "1hlbsb" }],
+  ["path", { d: "M16 16h5v5", key: "ccwih5" }]
 ];
-const Plus = createLucideIcon("plus", __iconNode$k);
+const RefreshCcw = createLucideIcon("refresh-ccw", __iconNode$k);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22888,12 +22931,12 @@ const Plus = createLucideIcon("plus", __iconNode$k);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$j = [
-  ["path", { d: "M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "14sxne" }],
-  ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
-  ["path", { d: "M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16", key: "1hlbsb" }],
-  ["path", { d: "M16 16h5v5", key: "ccwih5" }]
+  ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+  ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
+  ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
+  ["path", { d: "M8 16H3v5", key: "1cv678" }]
 ];
-const RefreshCcw = createLucideIcon("refresh-ccw", __iconNode$j);
+const RefreshCw = createLucideIcon("refresh-cw", __iconNode$j);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -25689,10 +25732,7 @@ const put = (url, data, options) => apiClient.put(url, data, options);
 const patch = (url, data, options) => apiClient.patch(url, data, options);
 const del = (url, options) => apiClient.delete(url, options);
 const upload = (url, formData, onProgress, method) => apiClient.upload(url, formData, onProgress, method);
-const BASE_URL = (
-  // "http://localhost:9020";
-  "https://bikanerapi.codeeratech.in"
-);
+const BASE_URL = "https://bikanerapi.codeeratech.in";
 const ENDPOINTS = {
   // Authentication
   LOGIN: `${BASE_URL}/auth/login`,
@@ -25744,12 +25784,17 @@ const ENDPOINTS = {
   CREATE_ORDER: `${BASE_URL}/orders`,
   UPDATE_ORDER: (id2) => `${BASE_URL}/orders/${id2}`,
   UPDATE_ORDER_STATUS: (id2) => `${BASE_URL}/orders/${id2}/status`,
+  CANCEL_ORDER: (id2) => `${BASE_URL}/orders/${id2}/cancel`,
   // Normal Orders
   GET_NORMAL_ORDERS: `${BASE_URL}/orders/normal`,
   GET_NORMAL_ORDER: (id2) => `${BASE_URL}/orders/normal/${id2}`,
   // Bulk Orders
   GET_BULK_ORDERS: `${BASE_URL}/orders/bulk`,
   GET_BULK_ORDER: (id2) => `${BASE_URL}/orders/bulk/${id2}`,
+  // Seller Approvals
+  GET_SELLER_APPLICATIONS: `${BASE_URL}/seller-applications`,
+  APPROVE_SELLER_APPLICATION: (id2) => `${BASE_URL}/seller-applications/${id2}/approve`,
+  REJECT_SELLER_APPLICATION: (id2) => `${BASE_URL}/seller-applications/${id2}/reject`,
   // Franchise
   GET_FRANCHISES: `${BASE_URL}/franchises`,
   GET_FRANCHISE: (id2) => `${BASE_URL}/franchises/${id2}`,
@@ -26580,6 +26625,81 @@ const cityService = {
     return del(ENDPOINTS.DELETE_CITY(id2));
   }
 };
+const staffService = {
+  /**
+   * Get all staff members
+   */
+  async getStaff(params) {
+    return get$4(ENDPOINTS.GET_USERS, params);
+  },
+  /**
+   * Get single staff member by ID
+   */
+  async getStaffById(id2) {
+    return get$4(ENDPOINTS.GET_USER(id2));
+  },
+  /**
+   * Create new staff member
+   */
+  async createStaff(data) {
+    if (data.profileImage) {
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(data)) {
+        if (value !== void 0 && value !== null) {
+          if (Array.isArray(value)) {
+            formData.append(key, JSON.stringify(value));
+          } else if (value instanceof File) {
+            formData.append(key, value);
+          } else {
+            formData.append(key, String(value));
+          }
+        }
+      }
+      return upload(ENDPOINTS.CREATE_USER, formData);
+    }
+    return post(ENDPOINTS.CREATE_USER, data);
+  },
+  /**
+   * Update staff member
+   */
+  async updateStaff(id2, data) {
+    if (data.profileImage) {
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(data)) {
+        if (value !== void 0 && value !== null) {
+          if (Array.isArray(value)) {
+            formData.append(key, JSON.stringify(value));
+          } else if (value instanceof File) {
+            formData.append(key, value);
+          } else {
+            formData.append(key, String(value));
+          }
+        }
+      }
+      return upload(
+        ENDPOINTS.UPDATE_USER(id2),
+        formData,
+        void 0,
+        "PUT"
+      );
+    }
+    return put(ENDPOINTS.UPDATE_USER(id2), data);
+  },
+  /**
+   * Delete staff member
+   */
+  async deleteStaff(id2) {
+    return del(
+      ENDPOINTS.DELETE_USER(id2)
+    );
+  },
+  /**
+   * Toggle staff status
+   */
+  async toggleStaffStatus(id2) {
+    return patch(ENDPOINTS.TOGGLE_USER_STATUS(id2));
+  }
+};
 const zoneService = {
   /**
    * Get all zones with pagination
@@ -26622,6 +26742,55 @@ const zoneService = {
     return del(ENDPOINTS.DELETE_ZONE(id2));
   }
 };
+const toOrderListItem = (order) => {
+  var _a3, _b2, _c2, _d2, _e2, _f2;
+  return {
+    id: order.id,
+    orderNumber: order.orderNumber || order.id,
+    customerName: ((_a3 = order.userId) == null ? void 0 : _a3.name) || ((_b2 = order.addressId) == null ? void 0 : _b2.name) || "Unknown Customer",
+    customerMobile: ((_c2 = order.userId) == null ? void 0 : _c2.mobile) || ((_d2 = order.addressId) == null ? void 0 : _d2.mobile) || "",
+    productCount: ((_e2 = order.items) == null ? void 0 : _e2.length) || 0,
+    quantity: ((_f2 = order.items) == null ? void 0 : _f2.reduce(
+      (total, item) => total + Number(item.quantity || 0),
+      0
+    )) || 0,
+    amount: Number(order.grandTotal || order.totalAmount || 0),
+    orderType: order.orderType,
+    paymentStatus: order.paymentStatus,
+    orderStatus: order.orderStatus,
+    paymentMethod: order.paymentMethod,
+    date: order.createdAt || order.updatedAt
+  };
+};
+const orderService = {
+  async getOrders(params) {
+    const response = await get$4(ENDPOINTS.GET_ORDERS, params);
+    return {
+      orders: response.data.map(toOrderListItem),
+      raw: response.data
+    };
+  },
+  async getNormalOrders() {
+    const response = await get$4(ENDPOINTS.GET_NORMAL_ORDERS, {
+      limit: 100
+    });
+    return response.data.map(toOrderListItem);
+  },
+  async getBulkOrders() {
+    const response = await get$4(ENDPOINTS.GET_BULK_ORDERS, {
+      limit: 100
+    });
+    return response.data.map(toOrderListItem);
+  },
+  async updateOrderStatus(id2, orderStatus) {
+    return put(ENDPOINTS.UPDATE_ORDER_STATUS(id2), {
+      orderStatus
+    });
+  },
+  async cancelOrder(id2, cancelReason) {
+    return put(ENDPOINTS.CANCEL_ORDER(id2), { cancelReason });
+  }
+};
 const productService = {
   /**
    * Get all products with pagination
@@ -26658,6 +26827,12 @@ const productService = {
     if (data.image) {
       formData.append("image", data.image);
     }
+    if (data.nutritionValues && Object.keys(data.nutritionValues).length > 0) {
+      formData.append("nutritionValues", JSON.stringify(data.nutritionValues));
+    }
+    if (data.ingredients && data.ingredients.length > 0) {
+      formData.append("ingredients", JSON.stringify(data.ingredients));
+    }
     return upload(ENDPOINTS.CREATE_PRODUCT, formData);
   },
   /**
@@ -26682,6 +26857,12 @@ const productService = {
     }
     if (data.image) {
       formData.append("image", data.image);
+    }
+    if (data.nutritionValues !== void 0) {
+      formData.append("nutritionValues", JSON.stringify(data.nutritionValues));
+    }
+    if (data.ingredients !== void 0) {
+      formData.append("ingredients", JSON.stringify(data.ingredients));
     }
     return upload(ENDPOINTS.UPDATE_PRODUCT(id2), formData, void 0, "PUT");
   },
@@ -26777,6 +26958,50 @@ const bannerService = {
       console.error("❌ Failed to delete banner:", error);
       throw error;
     }
+  }
+};
+const settingsService = {
+  async getSettings() {
+    return get$4(ENDPOINTS.GET_SETTINGS);
+  },
+  async updateSettings(data) {
+    if (data.siteLogo instanceof File) {
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(data)) {
+        if (value === void 0 || value === null) continue;
+        if (value instanceof File) {
+          formData.append(key, value);
+        } else {
+          formData.append(key, String(value));
+        }
+      }
+      return upload(
+        ENDPOINTS.UPDATE_SETTINGS,
+        formData,
+        void 0,
+        "PUT"
+      );
+    }
+    return put(ENDPOINTS.UPDATE_SETTINGS, data);
+  }
+};
+const sellerApplicationService = {
+  async getApplications(params) {
+    return get$4(
+      ENDPOINTS.GET_SELLER_APPLICATIONS,
+      params
+    );
+  },
+  async approveApplication(id2) {
+    return put(
+      ENDPOINTS.APPROVE_SELLER_APPLICATION(id2)
+    );
+  },
+  async rejectApplication(id2, reason) {
+    return put(
+      ENDPOINTS.REJECT_SELLER_APPLICATION(id2),
+      { reason }
+    );
   }
 };
 const useCategoryStore = create((set2, get2) => ({
@@ -27099,6 +27324,14 @@ create((set2, get2) => ({
   getRoleById: (id2) => {
     return get2().roles.find((r2) => r2.id === id2);
   }
+}));
+const useSettingsStore = create((set2) => ({
+  siteTitle: "Bikaner Biscuit",
+  siteLogo: "",
+  setBrandSettings: (settings) => set2((state) => ({
+    siteTitle: settings.siteTitle ?? state.siteTitle,
+    siteLogo: settings.siteLogo ?? state.siteLogo
+  }))
 }));
 const useUIStore = create((set2) => ({
   sidebarOpen: true,
@@ -32363,10 +32596,9 @@ const PERMISSIONS = {
   NORMAL_ORDERS_VIEW: "normalOrders:view",
   // Bulk Orders
   BULK_ORDERS_VIEW: "bulkOrders:view",
-  // Franchise Requests
-  FRANCHISE_REQUESTS_VIEW: "franchiseRequests:view",
-  // Registered Franchises
-  REGISTERED_FRANCHISES_VIEW: "registeredFranchises:view",
+  // Seller Approvals
+  SELLER_APPROVALS_VIEW: "sellerApprovals:view",
+  SELLER_APPROVALS_MANAGE: "sellerApprovals:manage",
   // Users
   USERS_VIEW: "users:view",
   USERS_CREATE: "users:create",
@@ -32546,23 +32778,35 @@ const menuItems = [
     ]
   },
   {
-    label: "Franchise",
-    icon: Store2,
+    label: "Approvals",
+    icon: UserCheck,
     children: [
       {
-        label: "Registered Franchise",
-        icon: Store2,
-        href: "/franchise/registered",
-        permission: PERMISSIONS.REGISTERED_FRANCHISES_VIEW
-      },
-      {
-        label: "Franchise Requests",
-        icon: Store2,
-        href: "/franchise/requests",
-        permission: PERMISSIONS.FRANCHISE_REQUESTS_VIEW
+        label: "Seller Applications",
+        icon: UserCheck,
+        href: "/approvals/sellers",
+        permission: PERMISSIONS.SELLER_APPROVALS_VIEW
       }
     ]
   },
+  // {
+  //   label: "Franchise",
+  //   icon: Store,
+  //   children: [
+  //     {
+  //       label: "Registered Franchise",
+  //       icon: Store,
+  //       href: "/franchise/registered",
+  //       permission: PERMISSIONS.REGISTERED_FRANCHISES_VIEW,
+  //     },
+  //     {
+  //       label: "Franchise Requests",
+  //       icon: Store,
+  //       href: "/franchise/requests",
+  //       permission: PERMISSIONS.FRANCHISE_REQUESTS_VIEW,
+  //     },
+  //   ],
+  // },
   {
     label: "Administration",
     icon: Shield,
@@ -32606,6 +32850,22 @@ const menuItems = [
     ]
   }
 ];
+const apiOrigin$1 = new URL(ENDPOINTS.GET_SETTINGS).origin;
+function getAssetUrl$1(path) {
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${apiOrigin$1}${path.startsWith("/") ? path : `/${path}`}`;
+}
+function BrandLogo({ logoUrl }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-7 w-7 rounded-md bg-primary flex items-center justify-center overflow-hidden", children: logoUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "img",
+    {
+      src: logoUrl,
+      alt: "Site logo",
+      className: "h-full w-full object-cover"
+    }
+  ) : /* @__PURE__ */ jsxRuntimeExports.jsx(Cookie, { className: "h-4 w-4 text-primary-foreground" }) });
+}
 function MenuItemComponent({
   item,
   collapsed,
@@ -32682,10 +32942,33 @@ function Sidebar() {
     mobileDrawerOpen,
     setMobileDrawerOpen
   } = useUIStore();
+  const { isAdmin: isAdmin2 } = usePermissions();
+  const { siteTitle, siteLogo, setBrandSettings } = useSettingsStore();
+  const logoUrl = reactExports.useMemo(() => getAssetUrl$1(siteLogo), [siteLogo]);
+  reactExports.useEffect(() => {
+    if (!isAdmin2) return;
+    let isMounted = true;
+    const loadBrandSettings = async () => {
+      try {
+        const response = await settingsService.getSettings();
+        if (!isMounted) return;
+        setBrandSettings({
+          siteTitle: response.data.siteTitle,
+          siteLogo: response.data.siteLogo || ""
+        });
+      } catch (error) {
+        console.error("Failed to load brand settings:", error);
+      }
+    };
+    loadBrandSettings();
+    return () => {
+      isMounted = false;
+    };
+  }, [isAdmin2, setBrandSettings]);
   const sidebarContent = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-full flex-col", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-14 items-center border-b border-sidebar-border px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 font-semibold text-sidebar-foreground", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-7 w-7 rounded-md bg-primary flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Cookie, { className: "h-4 w-4 text-primary-foreground" }) }),
-      !sidebarCollapsed && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: "Bikaner Biscuit" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(BrandLogo, { logoUrl }),
+      !sidebarCollapsed && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: siteTitle })
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ScrollArea, { className: "flex-1 px-3 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "space-y-1", children: menuItems.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       MenuItemComponent,
@@ -32726,8 +33009,8 @@ function Sidebar() {
           className: "w-64 p-0 bg-sidebar text-sidebar-foreground",
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-full flex-col", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-14 items-center border-b border-sidebar-border px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 font-semibold", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-7 w-7 rounded-md bg-primary flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Cookie, { className: "h-4 w-4 text-primary-foreground" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: "Bikaner Biscuit" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx(BrandLogo, { logoUrl }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: siteTitle })
             ] }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(ScrollArea, { className: "flex-1 px-3 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "space-y-1", children: menuItems.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsx(
               MenuItemComponent,
@@ -33683,7 +33966,7 @@ const ColumnGrouping = {
     };
   }
 };
-function orderColumns$4(leafColumns, grouping, groupedColumnMode) {
+function orderColumns$2(leafColumns, grouping, groupedColumnMode) {
   if (!(grouping != null && grouping.length) || !groupedColumnMode) {
     return leafColumns;
   }
@@ -33741,7 +34024,7 @@ const ColumnOrdering = {
         }
         orderedColumns = [...orderedColumns, ...columnsCopy];
       }
-      return orderColumns$4(orderedColumns, grouping, groupedColumnMode);
+      return orderColumns$2(orderedColumns, grouping, groupedColumnMode);
     }, getMemoOptions(table.options, "debugTable"));
   }
 };
@@ -37841,445 +38124,129 @@ function BannersPage() {
     ] }) })
   ] });
 }
-const mockDashboardStats = {
-  walletBalance: 45230.75
+const paymentVariants = {
+  paid: "default",
+  pending: "secondary",
+  failed: "destructive",
+  refunded: "outline"
 };
-const mockFmcgStats = {
-  totalOrders: 1456,
-  todaySales: 284750,
-  inventoryStatus: 87,
-  lowStockAlerts: 12,
-  topSellingProduct: "Marie Gold",
-  distributorPerformance: 94,
-  retailerActivity: 312,
-  revenueAnalytics: 245.89,
-  deliveryTracking: 89,
-  productionMetrics: 78
+const orderVariants = {
+  delivered: "default",
+  shipped: "default",
+  confirmed: "secondary",
+  processing: "secondary",
+  packed: "outline",
+  pending: "outline",
+  cancelled: "destructive"
 };
-const mockRecentOrders = [
+const orderColumns$1 = [
   {
-    id: "ORD-2024-001",
-    customerName: "Sharma Distributors",
-    productCount: 3,
-    quantity: 150,
-    amount: 45250,
-    paymentStatus: "paid",
-    orderStatus: "delivered",
-    date: "2024-06-18T10:30:00Z"
+    accessorKey: "orderNumber",
+    header: "Order",
+    cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono text-xs", children: row.getValue("orderNumber") })
   },
   {
-    id: "ORD-2024-002",
-    customerName: "Patel Retail Mart",
-    productCount: 2,
-    quantity: 80,
-    amount: 18990,
-    paymentStatus: "pending",
-    orderStatus: "processing",
-    date: "2024-06-18T09:15:00Z"
+    accessorKey: "customerName",
+    header: "Customer",
+    cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: row.original.customerName }),
+      row.original.customerMobile && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: row.original.customerMobile })
+    ] })
   },
   {
-    id: "ORD-2024-003",
-    customerName: "Gupta Wholesale",
-    productCount: 5,
-    quantity: 250,
-    amount: 87550,
-    paymentStatus: "paid",
-    orderStatus: "shipped",
-    date: "2024-06-17T16:45:00Z"
+    accessorKey: "orderType",
+    header: "Type",
+    cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: "outline", className: "capitalize", children: row.getValue("orderType") })
+  },
+  { accessorKey: "productCount", header: "Products" },
+  { accessorKey: "quantity", header: "Qty" },
+  {
+    accessorKey: "amount",
+    header: "Amount",
+    cell: ({ row }) => new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0
+    }).format(Number(row.getValue("amount")))
   },
   {
-    id: "ORD-2024-004",
-    customerName: "Kirana King Stores",
-    productCount: 1,
-    quantity: 500,
-    amount: 69950,
-    paymentStatus: "failed",
-    orderStatus: "pending",
-    date: "2024-06-17T14:20:00Z"
+    accessorKey: "paymentStatus",
+    header: "Payment",
+    cell: ({ row }) => {
+      const status = row.getValue("paymentStatus");
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: paymentVariants[status] || "secondary", children: status });
+    }
   },
   {
-    id: "ORD-2024-005",
-    customerName: "Agarwal Supermart",
-    productCount: 4,
-    quantity: 120,
-    amount: 32400,
-    paymentStatus: "paid",
-    orderStatus: "confirmed",
-    date: "2024-06-16T11:00:00Z"
+    accessorKey: "orderStatus",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("orderStatus");
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: orderVariants[status] || "secondary", children: status });
+    }
   },
   {
-    id: "ORD-2024-006",
-    customerName: "Verma General Store",
-    productCount: 2,
-    quantity: 60,
-    amount: 15600,
-    paymentStatus: "refunded",
-    orderStatus: "cancelled",
-    date: "2024-06-16T08:30:00Z"
-  },
-  {
-    id: "ORD-2024-007",
-    customerName: "Reddy Distribution",
-    productCount: 3,
-    quantity: 180,
-    amount: 54e3,
-    paymentStatus: "paid",
-    orderStatus: "packed",
-    date: "2024-06-15T15:00:00Z"
-  },
-  {
-    id: "ORD-2024-008",
-    customerName: "Singh Brothers Retail",
-    productCount: 6,
-    quantity: 300,
-    amount: 12e4,
-    paymentStatus: "pending",
-    orderStatus: "pending",
-    date: "2024-06-15T10:45:00Z"
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => row.getValue("date") ? new Date(row.getValue("date")).toLocaleDateString() : "—"
   }
 ];
-const mockRecentFranchiseRequests = [
-  {
-    id: "FRQ-001",
-    applicantName: "Ramesh Kumar",
-    email: "ramesh@biscuitmart.com",
-    phone: "+91-98765-43201",
-    address: "45 Gandhi Road, Jaipur, Rajasthan",
-    businessName: "Kumar Biscuit Mart",
-    requestDate: "2024-06-18T08:00:00Z",
-    status: "pending"
-  },
-  {
-    id: "FRQ-002",
-    applicantName: "Priya Sharma",
-    email: "priya@snackshack.in",
-    phone: "+91-98765-43202",
-    address: "78 MG Road, Bangalore, Karnataka",
-    businessName: "Sharma Snack Shack",
-    requestDate: "2024-06-17T14:30:00Z",
-    status: "pending"
-  },
-  {
-    id: "FRQ-003",
-    applicantName: "Mohammed Ali",
-    email: "ali@biscuitworld.com",
-    phone: "+91-98765-43203",
-    address: "22 Park Street, Kolkata, West Bengal",
-    businessName: "Ali Biscuit World",
-    requestDate: "2024-06-16T11:00:00Z",
-    status: "approved"
-  },
-  {
-    id: "FRQ-004",
-    applicantName: "Lakshmi Iyer",
-    email: "lakshmi@bakersdelight.in",
-    phone: "+91-98765-43204",
-    address: "33 Anna Salai, Chennai, Tamil Nadu",
-    businessName: "Iyer Bakers Delight",
-    requestDate: "2024-06-15T09:45:00Z",
-    status: "pending"
-  },
-  {
-    id: "FRQ-005",
-    applicantName: "Harpreet Singh",
-    email: "harpreet@punjabfoods.com",
-    phone: "+91-98765-43205",
-    address: "12 GT Road, Amritsar, Punjab",
-    businessName: "Singh Punjab Foods",
-    requestDate: "2024-06-14T16:20:00Z",
-    status: "rejected"
-  }
-];
-const mockInventoryItems = [
-  {
-    product: "Marie Gold",
-    sku: "BB-MG-001",
-    stockLevel: 4500,
-    maxStock: 5e3,
-    reorderPoint: 1e3,
-    status: "healthy",
-    warehouse: "Jaipur WH",
-    expiryDate: "2024-12-15"
-  },
-  {
-    product: "Bourbon",
-    sku: "BB-BB-002",
-    stockLevel: 3200,
-    maxStock: 5e3,
-    reorderPoint: 1e3,
-    status: "healthy",
-    warehouse: "Delhi WH",
-    expiryDate: "2024-11-20"
-  },
-  {
-    product: "Nice Biscuit",
-    sku: "BB-NB-003",
-    stockLevel: 850,
-    maxStock: 4e3,
-    reorderPoint: 1e3,
-    status: "low",
-    warehouse: "Mumbai WH",
-    expiryDate: "2024-10-10"
-  },
-  {
-    product: "Glucose",
-    sku: "BB-GL-004",
-    stockLevel: 6200,
-    maxStock: 8e3,
-    reorderPoint: 2e3,
-    status: "healthy",
-    warehouse: "Jaipur WH",
-    expiryDate: "2025-01-05"
-  },
-  {
-    product: "Krackjack",
-    sku: "BB-KJ-005",
-    stockLevel: 420,
-    maxStock: 3e3,
-    reorderPoint: 800,
-    status: "critical",
-    warehouse: "Bangalore WH",
-    expiryDate: "2024-09-28"
-  },
-  {
-    product: "Parle-G",
-    sku: "BB-PG-006",
-    stockLevel: 7800,
-    maxStock: 1e4,
-    reorderPoint: 2500,
-    status: "healthy",
-    warehouse: "Delhi WH",
-    expiryDate: "2025-02-15"
-  },
-  {
-    product: "Cream Cracker",
-    sku: "BB-CC-007",
-    stockLevel: 950,
-    maxStock: 3500,
-    reorderPoint: 900,
-    status: "low",
-    warehouse: "Chennai WH",
-    expiryDate: "2024-11-01"
-  },
-  {
-    product: "Digestive",
-    sku: "BB-DG-008",
-    stockLevel: 2100,
-    maxStock: 4e3,
-    reorderPoint: 1e3,
-    status: "healthy",
-    warehouse: "Mumbai WH",
-    expiryDate: "2024-12-20"
-  },
-  {
-    product: "Butter Cookies",
-    sku: "BB-BC-009",
-    stockLevel: 380,
-    maxStock: 2500,
-    reorderPoint: 600,
-    status: "critical",
-    warehouse: "Kolkata WH",
-    expiryDate: "2024-09-15"
-  },
-  {
-    product: "Fruit Biscuit",
-    sku: "BB-FB-010",
-    stockLevel: 1200,
-    maxStock: 3e3,
-    reorderPoint: 800,
-    status: "low",
-    warehouse: "Bangalore WH",
-    expiryDate: "2024-10-25"
-  }
-];
-const mockTopProducts = [
-  {
-    name: "Marie Gold",
-    sku: "BB-MG-001",
-    unitsSold: 45200,
-    revenue: 904e3,
-    growth: 12.5,
-    region: "North India"
-  },
-  {
-    name: "Parle-G",
-    sku: "BB-PG-006",
-    unitsSold: 38900,
-    revenue: 389e3,
-    growth: 8.3,
-    region: "All India"
-  },
-  {
-    name: "Bourbon",
-    sku: "BB-BB-002",
-    unitsSold: 28400,
-    revenue: 568e3,
-    growth: -2.1,
-    region: "South India"
-  },
-  {
-    name: "Glucose",
-    sku: "BB-GL-004",
-    unitsSold: 22100,
-    revenue: 331500,
-    growth: 15.7,
-    region: "West India"
-  },
-  {
-    name: "Krackjack",
-    sku: "BB-KJ-005",
-    unitsSold: 18700,
-    revenue: 280500,
-    growth: 5.4,
-    region: "East India"
-  }
-];
-const mockDeliveries = [
-  {
-    id: "DEL-001",
-    destination: "Jaipur, Rajasthan",
-    distributor: "Sharma Distributors",
-    items: 150,
-    status: "in_transit",
-    eta: "2024-06-19",
-    progress: 65
-  },
-  {
-    id: "DEL-002",
-    destination: "Bangalore, Karnataka",
-    distributor: "Patel Retail Mart",
-    items: 80,
-    status: "out_for_delivery",
-    eta: "2024-06-18",
-    progress: 90
-  },
-  {
-    id: "DEL-003",
-    destination: "Delhi, NCR",
-    distributor: "Gupta Wholesale",
-    items: 250,
-    status: "delivered",
-    eta: "2024-06-18",
-    progress: 100
-  },
-  {
-    id: "DEL-004",
-    destination: "Mumbai, Maharashtra",
-    distributor: "Agarwal Supermart",
-    items: 120,
-    status: "delayed",
-    eta: "2024-06-20",
-    progress: 45
-  },
-  {
-    id: "DEL-005",
-    destination: "Kolkata, West Bengal",
-    distributor: "Reddy Distribution",
-    items: 180,
-    status: "in_transit",
-    eta: "2024-06-19",
-    progress: 70
-  }
-];
-const mockProductionLines = [
-  {
-    lineName: "Line A - Marie Gold",
-    oee: 92,
-    efficiency: 88,
-    outputToday: 12500,
-    target: 14e3,
-    wastePercent: 2.1,
-    status: "running"
-  },
-  {
-    lineName: "Line B - Bourbon",
-    oee: 87,
-    efficiency: 85,
-    outputToday: 9800,
-    target: 11e3,
-    wastePercent: 3.2,
-    status: "running"
-  },
-  {
-    lineName: "Line C - Glucose",
-    oee: 94,
-    efficiency: 91,
-    outputToday: 15200,
-    target: 16e3,
-    wastePercent: 1.8,
-    status: "running"
-  },
-  {
-    lineName: "Line D - Packaging",
-    oee: 78,
-    efficiency: 76,
-    outputToday: 8400,
-    target: 12e3,
-    wastePercent: 4.5,
-    status: "maintenance"
-  }
-];
-const mockDistributorPerformance = [
-  {
-    name: "Sharma Distributors",
-    region: "Rajasthan",
-    ordersThisMonth: 45,
-    revenue: 125e4,
-    onTimeDelivery: 98,
-    rating: 4.8,
-    trend: 5.2
-  },
-  {
-    name: "Gupta Wholesale",
-    region: "Delhi NCR",
-    ordersThisMonth: 62,
-    revenue: 21e5,
-    onTimeDelivery: 95,
-    rating: 4.6,
-    trend: 8.1
-  },
-  {
-    name: "Patel Retail Mart",
-    region: "Karnataka",
-    ordersThisMonth: 38,
-    revenue: 89e4,
-    onTimeDelivery: 92,
-    rating: 4.4,
-    trend: -1.3
-  },
-  {
-    name: "Reddy Distribution",
-    region: "Andhra Pradesh",
-    ordersThisMonth: 51,
-    revenue: 156e4,
-    onTimeDelivery: 97,
-    rating: 4.7,
-    trend: 3.8
-  },
-  {
-    name: "Agarwal Supermart",
-    region: "Maharashtra",
-    ordersThisMonth: 29,
-    revenue: 72e4,
-    onTimeDelivery: 89,
-    rating: 4.2,
-    trend: 2.1
-  }
-];
-const mockRevenueByRegion = [
-  { region: "North India", revenue: 89.5, orders: 520 },
-  { region: "South India", revenue: 67.2, orders: 410 },
-  { region: "West India", revenue: 54.8, orders: 310 },
-  { region: "East India", revenue: 34.4, orders: 216 }
-];
-const mockProductionVsSales = [
-  { month: "Jan", production: 185, sales: 172 },
-  { month: "Feb", production: 210, sales: 198 },
-  { month: "Mar", production: 195, sales: 189 },
-  { month: "Apr", production: 240, sales: 225 },
-  { month: "May", production: 265, sales: 248 },
-  { month: "Jun", production: 280, sales: 264 }
-];
+function OrdersTable({
+  orderType,
+  searchPlaceholder,
+  emptyMessage
+}) {
+  const { addToast } = useUIStore();
+  const [orders, setOrders] = reactExports.useState([]);
+  const [isLoading, setIsLoading] = reactExports.useState(true);
+  const loadOrders = reactExports.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await orderService.getOrders({
+        limit: 100,
+        ...orderType ? { orderType } : {}
+      });
+      setOrders(response.orders);
+    } catch (error) {
+      addToast({
+        title: "Orders load failed",
+        description: error.message || "Could not fetch orders.",
+        variant: "error"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [addToast, orderType]);
+  reactExports.useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      Button,
+      {
+        type: "button",
+        variant: "outline",
+        size: "sm",
+        onClick: loadOrders,
+        disabled: isLoading,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "mr-2 h-4 w-4" }),
+          "Refresh"
+        ]
+      }
+    ) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      DataTable,
+      {
+        columns: orderColumns$1,
+        data: orders,
+        isLoading,
+        searchPlaceholder,
+        emptyMessage
+      }
+    )
+  ] });
+}
 const LayoutGroupContext = reactExports.createContext({});
 function useConstant(init) {
   const ref = reactExports.useRef(null);
@@ -46119,77 +46086,9 @@ const featureBundle = {
   ...layout
 };
 const motion = /* @__PURE__ */ createMotionProxy(featureBundle, createDomVisualElement);
-const bulkOrders = mockRecentOrders.filter((_, i2) => i2 % 2 === 1).map((o2) => ({
-  ...o2,
-  id: o2.id.replace("ORD", "BULK"),
-  quantity: o2.quantity * 10,
-  amount: o2.amount * 10
-}));
-const orderColumns$3 = [
-  {
-    accessorKey: "id",
-    header: "Order ID",
-    cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono text-xs", children: row.getValue("id") })
-  },
-  { accessorKey: "customerName", header: "Customer" },
-  { accessorKey: "productCount", header: "Products" },
-  { accessorKey: "quantity", header: "Quantity" },
-  {
-    accessorKey: "amount",
-    header: "Amount",
-    cell: ({ row }) => `$${Number(row.getValue("amount")).toFixed(2)}`
-  },
-  {
-    accessorKey: "paymentStatus",
-    header: "Payment",
-    cell: ({ row }) => {
-      const status = row.getValue("paymentStatus");
-      const variants = {
-        paid: "default",
-        pending: "secondary",
-        failed: "destructive",
-        refunded: "outline"
-      };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: variants[status] || "secondary", children: status });
-    }
-  },
-  {
-    accessorKey: "orderStatus",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("orderStatus");
-      const variants = {
-        delivered: "default",
-        shipped: "default",
-        confirmed: "secondary",
-        processing: "secondary",
-        packed: "outline",
-        pending: "outline",
-        cancelled: "destructive"
-      };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: variants[status] || "secondary", children: status });
-    }
-  },
-  {
-    accessorKey: "date",
-    header: "Date",
-    cell: ({ row }) => new Date(row.getValue("date")).toLocaleDateString()
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: () => /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "icon", "data-ocid": "bulk_orders.view_button", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { className: "h-4 w-4" }) })
-  }
-];
 function BulkOrdersPage() {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      PageHeader,
-      {
-        title: "Bulk Orders",
-        description: "High-volume wholesale orders"
-      }
-    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(PageHeader, { title: "Bulk Orders", description: "High-volume seller orders" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       motion.div,
       {
@@ -46197,11 +46096,11 @@ function BulkOrdersPage() {
         animate: { opacity: 1, y: 0 },
         transition: { duration: 0.4 },
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          DataTable,
+          OrdersTable,
           {
-            columns: orderColumns$3,
-            data: bulkOrders,
-            searchPlaceholder: "Search bulk orders..."
+            orderType: "bulk",
+            searchPlaceholder: "Search bulk orders...",
+            emptyMessage: "No bulk orders found"
           }
         )
       }
@@ -50645,6 +50544,132 @@ function handleIntersectionResults(result, left, right) {
   result.value = merged.data;
   return result;
 }
+const $ZodRecord = /* @__PURE__ */ $constructor("$ZodRecord", (inst, def) => {
+  $ZodType.init(inst, def);
+  inst._zod.parse = (payload, ctx) => {
+    const input = payload.value;
+    if (!isPlainObject$2(input)) {
+      payload.issues.push({
+        expected: "record",
+        code: "invalid_type",
+        input,
+        inst
+      });
+      return payload;
+    }
+    const proms = [];
+    const values = def.keyType._zod.values;
+    if (values) {
+      payload.value = {};
+      const recordKeys = /* @__PURE__ */ new Set();
+      for (const key of values) {
+        if (typeof key === "string" || typeof key === "number" || typeof key === "symbol") {
+          recordKeys.add(typeof key === "number" ? key.toString() : key);
+          const keyResult = def.keyType._zod.run({ value: key, issues: [] }, ctx);
+          if (keyResult instanceof Promise) {
+            throw new Error("Async schemas not supported in object keys currently");
+          }
+          if (keyResult.issues.length) {
+            payload.issues.push({
+              code: "invalid_key",
+              origin: "record",
+              issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config$1())),
+              input: key,
+              path: [key],
+              inst
+            });
+            continue;
+          }
+          const outKey = keyResult.value;
+          const result = def.valueType._zod.run({ value: input[key], issues: [] }, ctx);
+          if (result instanceof Promise) {
+            proms.push(result.then((result2) => {
+              if (result2.issues.length) {
+                payload.issues.push(...prefixIssues(key, result2.issues));
+              }
+              payload.value[outKey] = result2.value;
+            }));
+          } else {
+            if (result.issues.length) {
+              payload.issues.push(...prefixIssues(key, result.issues));
+            }
+            payload.value[outKey] = result.value;
+          }
+        }
+      }
+      let unrecognized;
+      for (const key in input) {
+        if (!recordKeys.has(key)) {
+          unrecognized = unrecognized ?? [];
+          unrecognized.push(key);
+        }
+      }
+      if (unrecognized && unrecognized.length > 0) {
+        payload.issues.push({
+          code: "unrecognized_keys",
+          input,
+          inst,
+          keys: unrecognized
+        });
+      }
+    } else {
+      payload.value = {};
+      for (const key of Reflect.ownKeys(input)) {
+        if (key === "__proto__")
+          continue;
+        if (!Object.prototype.propertyIsEnumerable.call(input, key))
+          continue;
+        let keyResult = def.keyType._zod.run({ value: key, issues: [] }, ctx);
+        if (keyResult instanceof Promise) {
+          throw new Error("Async schemas not supported in object keys currently");
+        }
+        const checkNumericKey = typeof key === "string" && number$4.test(key) && keyResult.issues.length;
+        if (checkNumericKey) {
+          const retryResult = def.keyType._zod.run({ value: Number(key), issues: [] }, ctx);
+          if (retryResult instanceof Promise) {
+            throw new Error("Async schemas not supported in object keys currently");
+          }
+          if (retryResult.issues.length === 0) {
+            keyResult = retryResult;
+          }
+        }
+        if (keyResult.issues.length) {
+          if (def.mode === "loose") {
+            payload.value[key] = input[key];
+          } else {
+            payload.issues.push({
+              code: "invalid_key",
+              origin: "record",
+              issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config$1())),
+              input: key,
+              path: [key],
+              inst
+            });
+          }
+          continue;
+        }
+        const result = def.valueType._zod.run({ value: input[key], issues: [] }, ctx);
+        if (result instanceof Promise) {
+          proms.push(result.then((result2) => {
+            if (result2.issues.length) {
+              payload.issues.push(...prefixIssues(key, result2.issues));
+            }
+            payload.value[keyResult.value] = result2.value;
+          }));
+        } else {
+          if (result.issues.length) {
+            payload.issues.push(...prefixIssues(key, result.issues));
+          }
+          payload.value[keyResult.value] = result.value;
+        }
+      }
+    }
+    if (proms.length) {
+      return Promise.all(proms).then(() => payload);
+    }
+    return payload;
+  };
+});
 const $ZodEnum = /* @__PURE__ */ $constructor("$ZodEnum", (inst, def) => {
   $ZodType.init(inst, def);
   const values = getEnumValues(def.entries);
@@ -52042,6 +52067,42 @@ const intersectionProcessor = (schema, ctx, json, params) => {
   ];
   json.allOf = allOf;
 };
+const recordProcessor = (schema, ctx, _json, params) => {
+  const json = _json;
+  const def = schema._zod.def;
+  json.type = "object";
+  const keyType = def.keyType;
+  const keyBag = keyType._zod.bag;
+  const patterns = keyBag == null ? void 0 : keyBag.patterns;
+  if (def.mode === "loose" && patterns && patterns.size > 0) {
+    const valueSchema = process$1(def.valueType, ctx, {
+      ...params,
+      path: [...params.path, "patternProperties", "*"]
+    });
+    json.patternProperties = {};
+    for (const pattern of patterns) {
+      json.patternProperties[pattern.source] = valueSchema;
+    }
+  } else {
+    if (ctx.target === "draft-07" || ctx.target === "draft-2020-12") {
+      json.propertyNames = process$1(def.keyType, ctx, {
+        ...params,
+        path: [...params.path, "propertyNames"]
+      });
+    }
+    json.additionalProperties = process$1(def.valueType, ctx, {
+      ...params,
+      path: [...params.path, "additionalProperties"]
+    });
+  }
+  const keyValues = keyType._zod.values;
+  if (keyValues) {
+    const validKeyValues = [...keyValues].filter((v2) => typeof v2 === "string" || typeof v2 === "number");
+    if (validKeyValues.length > 0) {
+      json.required = validKeyValues;
+    }
+  }
+};
 const nullableProcessor = (schema, ctx, json, params) => {
   const def = schema._zod.def;
   const inner = process$1(def.innerType, ctx, params);
@@ -52727,6 +52788,23 @@ function intersection(left, right) {
     right
   });
 }
+const ZodRecord = /* @__PURE__ */ $constructor("ZodRecord", (inst, def) => {
+  $ZodRecord.init(inst, def);
+  ZodType.init(inst, def);
+  inst._zod.processJSONSchema = (ctx, json, params) => recordProcessor(inst, ctx, json, params);
+  inst.keyType = def.keyType;
+  inst.valueType = def.valueType;
+});
+function record(keyType, valueType, params) {
+  {
+    return new ZodRecord({
+      type: "record",
+      keyType: string$1(),
+      valueType: keyType,
+      ...normalizeParams(valueType)
+    });
+  }
+}
 const ZodEnum = /* @__PURE__ */ $constructor("ZodEnum", (inst, def) => {
   $ZodEnum.init(inst, def);
   ZodType.init(inst, def);
@@ -52981,6 +53059,10 @@ const categorySchema = object$1({
   image: _instanceof(File).optional(),
   status: _enum(["active", "inactive"])
 });
+const nutritionEntrySchema = object$1({
+  value: number$3().min(0, "Value must be 0 or greater"),
+  unit: string$1().min(1, "Unit is required")
+});
 const productSchema = object$1({
   name: string$1().min(1, "Product name is required").max(200, "Name must be less than 200 characters"),
   categoryId: string$1().min(1, "Category is required"),
@@ -52995,7 +53077,9 @@ const productSchema = object$1({
   minBulkQty: number$3().int().min(0, "Min bulk quantity must be 0 or greater").optional(),
   isFeatured: boolean().optional(),
   status: _enum(["active", "inactive"]),
-  image: any().optional()
+  image: any().optional(),
+  nutritionValues: record(nutritionEntrySchema).optional(),
+  ingredients: array$1(string$1().min(1, "Ingredient cannot be empty")).optional()
 });
 object$1({
   name: string$1().min(1, "Role name is required").max(100, "Name must be less than 100 characters"),
@@ -53006,7 +53090,7 @@ const profileSchema = object$1({
   email: string$1().min(1, "Email is required").email("Invalid email address"),
   phone: string$1().min(1, "Phone is required").regex(/^\+?[\d\s-()]+$/, "Invalid phone number")
 });
-const settingsSchema = object$1({
+object$1({
   siteName: string$1().min(1, "Site name is required").max(100, "Site name must be less than 100 characters"),
   siteDescription: string$1().max(500, "Description must be less than 500 characters").optional(),
   contactEmail: string$1().min(1, "Contact email is required").email("Invalid email address"),
@@ -63838,6 +63922,445 @@ function Progress({
     }
   );
 }
+const mockDashboardStats = {
+  walletBalance: 45230.75
+};
+const mockFmcgStats = {
+  totalOrders: 1456,
+  todaySales: 284750,
+  inventoryStatus: 87,
+  lowStockAlerts: 12,
+  topSellingProduct: "Marie Gold",
+  distributorPerformance: 94,
+  retailerActivity: 312,
+  revenueAnalytics: 245.89,
+  deliveryTracking: 89,
+  productionMetrics: 78
+};
+const mockRecentOrders = [
+  {
+    id: "ORD-2024-001",
+    customerName: "Sharma Distributors",
+    productCount: 3,
+    quantity: 150,
+    amount: 45250,
+    paymentStatus: "paid",
+    orderStatus: "delivered",
+    date: "2024-06-18T10:30:00Z"
+  },
+  {
+    id: "ORD-2024-002",
+    customerName: "Patel Retail Mart",
+    productCount: 2,
+    quantity: 80,
+    amount: 18990,
+    paymentStatus: "pending",
+    orderStatus: "processing",
+    date: "2024-06-18T09:15:00Z"
+  },
+  {
+    id: "ORD-2024-003",
+    customerName: "Gupta Wholesale",
+    productCount: 5,
+    quantity: 250,
+    amount: 87550,
+    paymentStatus: "paid",
+    orderStatus: "shipped",
+    date: "2024-06-17T16:45:00Z"
+  },
+  {
+    id: "ORD-2024-004",
+    customerName: "Kirana King Stores",
+    productCount: 1,
+    quantity: 500,
+    amount: 69950,
+    paymentStatus: "failed",
+    orderStatus: "pending",
+    date: "2024-06-17T14:20:00Z"
+  },
+  {
+    id: "ORD-2024-005",
+    customerName: "Agarwal Supermart",
+    productCount: 4,
+    quantity: 120,
+    amount: 32400,
+    paymentStatus: "paid",
+    orderStatus: "confirmed",
+    date: "2024-06-16T11:00:00Z"
+  },
+  {
+    id: "ORD-2024-006",
+    customerName: "Verma General Store",
+    productCount: 2,
+    quantity: 60,
+    amount: 15600,
+    paymentStatus: "refunded",
+    orderStatus: "cancelled",
+    date: "2024-06-16T08:30:00Z"
+  },
+  {
+    id: "ORD-2024-007",
+    customerName: "Reddy Distribution",
+    productCount: 3,
+    quantity: 180,
+    amount: 54e3,
+    paymentStatus: "paid",
+    orderStatus: "packed",
+    date: "2024-06-15T15:00:00Z"
+  },
+  {
+    id: "ORD-2024-008",
+    customerName: "Singh Brothers Retail",
+    productCount: 6,
+    quantity: 300,
+    amount: 12e4,
+    paymentStatus: "pending",
+    orderStatus: "pending",
+    date: "2024-06-15T10:45:00Z"
+  }
+];
+const mockRecentFranchiseRequests = [
+  {
+    id: "FRQ-001",
+    applicantName: "Ramesh Kumar",
+    email: "ramesh@biscuitmart.com",
+    phone: "+91-98765-43201",
+    address: "45 Gandhi Road, Jaipur, Rajasthan",
+    businessName: "Kumar Biscuit Mart",
+    requestDate: "2024-06-18T08:00:00Z",
+    status: "pending"
+  },
+  {
+    id: "FRQ-002",
+    applicantName: "Priya Sharma",
+    email: "priya@snackshack.in",
+    phone: "+91-98765-43202",
+    address: "78 MG Road, Bangalore, Karnataka",
+    businessName: "Sharma Snack Shack",
+    requestDate: "2024-06-17T14:30:00Z",
+    status: "pending"
+  },
+  {
+    id: "FRQ-003",
+    applicantName: "Mohammed Ali",
+    email: "ali@biscuitworld.com",
+    phone: "+91-98765-43203",
+    address: "22 Park Street, Kolkata, West Bengal",
+    businessName: "Ali Biscuit World",
+    requestDate: "2024-06-16T11:00:00Z",
+    status: "approved"
+  },
+  {
+    id: "FRQ-004",
+    applicantName: "Lakshmi Iyer",
+    email: "lakshmi@bakersdelight.in",
+    phone: "+91-98765-43204",
+    address: "33 Anna Salai, Chennai, Tamil Nadu",
+    businessName: "Iyer Bakers Delight",
+    requestDate: "2024-06-15T09:45:00Z",
+    status: "pending"
+  },
+  {
+    id: "FRQ-005",
+    applicantName: "Harpreet Singh",
+    email: "harpreet@punjabfoods.com",
+    phone: "+91-98765-43205",
+    address: "12 GT Road, Amritsar, Punjab",
+    businessName: "Singh Punjab Foods",
+    requestDate: "2024-06-14T16:20:00Z",
+    status: "rejected"
+  }
+];
+const mockInventoryItems = [
+  {
+    product: "Marie Gold",
+    sku: "BB-MG-001",
+    stockLevel: 4500,
+    maxStock: 5e3,
+    reorderPoint: 1e3,
+    status: "healthy",
+    warehouse: "Jaipur WH",
+    expiryDate: "2024-12-15"
+  },
+  {
+    product: "Bourbon",
+    sku: "BB-BB-002",
+    stockLevel: 3200,
+    maxStock: 5e3,
+    reorderPoint: 1e3,
+    status: "healthy",
+    warehouse: "Delhi WH",
+    expiryDate: "2024-11-20"
+  },
+  {
+    product: "Nice Biscuit",
+    sku: "BB-NB-003",
+    stockLevel: 850,
+    maxStock: 4e3,
+    reorderPoint: 1e3,
+    status: "low",
+    warehouse: "Mumbai WH",
+    expiryDate: "2024-10-10"
+  },
+  {
+    product: "Glucose",
+    sku: "BB-GL-004",
+    stockLevel: 6200,
+    maxStock: 8e3,
+    reorderPoint: 2e3,
+    status: "healthy",
+    warehouse: "Jaipur WH",
+    expiryDate: "2025-01-05"
+  },
+  {
+    product: "Krackjack",
+    sku: "BB-KJ-005",
+    stockLevel: 420,
+    maxStock: 3e3,
+    reorderPoint: 800,
+    status: "critical",
+    warehouse: "Bangalore WH",
+    expiryDate: "2024-09-28"
+  },
+  {
+    product: "Parle-G",
+    sku: "BB-PG-006",
+    stockLevel: 7800,
+    maxStock: 1e4,
+    reorderPoint: 2500,
+    status: "healthy",
+    warehouse: "Delhi WH",
+    expiryDate: "2025-02-15"
+  },
+  {
+    product: "Cream Cracker",
+    sku: "BB-CC-007",
+    stockLevel: 950,
+    maxStock: 3500,
+    reorderPoint: 900,
+    status: "low",
+    warehouse: "Chennai WH",
+    expiryDate: "2024-11-01"
+  },
+  {
+    product: "Digestive",
+    sku: "BB-DG-008",
+    stockLevel: 2100,
+    maxStock: 4e3,
+    reorderPoint: 1e3,
+    status: "healthy",
+    warehouse: "Mumbai WH",
+    expiryDate: "2024-12-20"
+  },
+  {
+    product: "Butter Cookies",
+    sku: "BB-BC-009",
+    stockLevel: 380,
+    maxStock: 2500,
+    reorderPoint: 600,
+    status: "critical",
+    warehouse: "Kolkata WH",
+    expiryDate: "2024-09-15"
+  },
+  {
+    product: "Fruit Biscuit",
+    sku: "BB-FB-010",
+    stockLevel: 1200,
+    maxStock: 3e3,
+    reorderPoint: 800,
+    status: "low",
+    warehouse: "Bangalore WH",
+    expiryDate: "2024-10-25"
+  }
+];
+const mockTopProducts = [
+  {
+    name: "Marie Gold",
+    sku: "BB-MG-001",
+    unitsSold: 45200,
+    revenue: 904e3,
+    growth: 12.5,
+    region: "North India"
+  },
+  {
+    name: "Parle-G",
+    sku: "BB-PG-006",
+    unitsSold: 38900,
+    revenue: 389e3,
+    growth: 8.3,
+    region: "All India"
+  },
+  {
+    name: "Bourbon",
+    sku: "BB-BB-002",
+    unitsSold: 28400,
+    revenue: 568e3,
+    growth: -2.1,
+    region: "South India"
+  },
+  {
+    name: "Glucose",
+    sku: "BB-GL-004",
+    unitsSold: 22100,
+    revenue: 331500,
+    growth: 15.7,
+    region: "West India"
+  },
+  {
+    name: "Krackjack",
+    sku: "BB-KJ-005",
+    unitsSold: 18700,
+    revenue: 280500,
+    growth: 5.4,
+    region: "East India"
+  }
+];
+const mockDeliveries = [
+  {
+    id: "DEL-001",
+    destination: "Jaipur, Rajasthan",
+    distributor: "Sharma Distributors",
+    items: 150,
+    status: "in_transit",
+    eta: "2024-06-19",
+    progress: 65
+  },
+  {
+    id: "DEL-002",
+    destination: "Bangalore, Karnataka",
+    distributor: "Patel Retail Mart",
+    items: 80,
+    status: "out_for_delivery",
+    eta: "2024-06-18",
+    progress: 90
+  },
+  {
+    id: "DEL-003",
+    destination: "Delhi, NCR",
+    distributor: "Gupta Wholesale",
+    items: 250,
+    status: "delivered",
+    eta: "2024-06-18",
+    progress: 100
+  },
+  {
+    id: "DEL-004",
+    destination: "Mumbai, Maharashtra",
+    distributor: "Agarwal Supermart",
+    items: 120,
+    status: "delayed",
+    eta: "2024-06-20",
+    progress: 45
+  },
+  {
+    id: "DEL-005",
+    destination: "Kolkata, West Bengal",
+    distributor: "Reddy Distribution",
+    items: 180,
+    status: "in_transit",
+    eta: "2024-06-19",
+    progress: 70
+  }
+];
+const mockProductionLines = [
+  {
+    lineName: "Line A - Marie Gold",
+    oee: 92,
+    efficiency: 88,
+    outputToday: 12500,
+    target: 14e3,
+    wastePercent: 2.1,
+    status: "running"
+  },
+  {
+    lineName: "Line B - Bourbon",
+    oee: 87,
+    efficiency: 85,
+    outputToday: 9800,
+    target: 11e3,
+    wastePercent: 3.2,
+    status: "running"
+  },
+  {
+    lineName: "Line C - Glucose",
+    oee: 94,
+    efficiency: 91,
+    outputToday: 15200,
+    target: 16e3,
+    wastePercent: 1.8,
+    status: "running"
+  },
+  {
+    lineName: "Line D - Packaging",
+    oee: 78,
+    efficiency: 76,
+    outputToday: 8400,
+    target: 12e3,
+    wastePercent: 4.5,
+    status: "maintenance"
+  }
+];
+const mockDistributorPerformance = [
+  {
+    name: "Sharma Distributors",
+    region: "Rajasthan",
+    ordersThisMonth: 45,
+    revenue: 125e4,
+    onTimeDelivery: 98,
+    rating: 4.8,
+    trend: 5.2
+  },
+  {
+    name: "Gupta Wholesale",
+    region: "Delhi NCR",
+    ordersThisMonth: 62,
+    revenue: 21e5,
+    onTimeDelivery: 95,
+    rating: 4.6,
+    trend: 8.1
+  },
+  {
+    name: "Patel Retail Mart",
+    region: "Karnataka",
+    ordersThisMonth: 38,
+    revenue: 89e4,
+    onTimeDelivery: 92,
+    rating: 4.4,
+    trend: -1.3
+  },
+  {
+    name: "Reddy Distribution",
+    region: "Andhra Pradesh",
+    ordersThisMonth: 51,
+    revenue: 156e4,
+    onTimeDelivery: 97,
+    rating: 4.7,
+    trend: 3.8
+  },
+  {
+    name: "Agarwal Supermart",
+    region: "Maharashtra",
+    ordersThisMonth: 29,
+    revenue: 72e4,
+    onTimeDelivery: 89,
+    rating: 4.2,
+    trend: 2.1
+  }
+];
+const mockRevenueByRegion = [
+  { region: "North India", revenue: 89.5, orders: 520 },
+  { region: "South India", revenue: 67.2, orders: 410 },
+  { region: "West India", revenue: 54.8, orders: 310 },
+  { region: "East India", revenue: 34.4, orders: 216 }
+];
+const mockProductionVsSales = [
+  { month: "Jan", production: 185, sales: 172 },
+  { month: "Feb", production: 210, sales: 198 },
+  { month: "Mar", production: 195, sales: 189 },
+  { month: "Apr", production: 240, sales: 225 },
+  { month: "May", production: 265, sales: 248 },
+  { month: "Jun", production: 280, sales: 264 }
+];
 var isArray$e = Array.isArray;
 var isArray_1 = isArray$e;
 var freeGlobal$1 = typeof commonjsGlobal == "object" && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
@@ -65095,17 +65618,17 @@ var isSingleChildEqual = function isSingleChildEqual2(nextChild, prevChild) {
 };
 var renderByOrder = function renderByOrder2(children, renderMap) {
   var elements = [];
-  var record = {};
+  var record2 = {};
   toArray(children).forEach(function(child, index2) {
     if (isSvgElement(child)) {
       elements.push(child);
     } else if (child) {
       var displayName = getDisplayName(child.type);
       var _ref3 = renderMap[displayName] || {}, handler = _ref3.handler, once = _ref3.once;
-      if (handler && (!once || !record[displayName])) {
+      if (handler && (!once || !record2[displayName])) {
         var results = handler(child, displayName, index2);
         elements.push(results);
-        record[displayName] = true;
+        record2[displayName] = true;
       }
     }
   });
@@ -86963,7 +87486,7 @@ var AreaChart = generateCategoricalChart({
   }],
   formatAxisMap: formatAxisMap2
 });
-const orderColumns$2 = [
+const orderColumns = [
   {
     accessorKey: "id",
     header: "Order ID",
@@ -87780,7 +88303,7 @@ function DashboardPage() {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DataTable,
               {
-                columns: orderColumns$2,
+                columns: orderColumns,
                 data: mockRecentOrders,
                 searchPlaceholder: "Search orders..."
               }
@@ -87997,12 +88520,12 @@ function LoginPage() {
     handleSubmit,
     formState: { errors }
   } = useForm({
-    resolver: u$1(loginSchema),
-    defaultValues: {
-      email: "9999999999",
-      password: "admin123",
-      rememberMe: false
-    }
+    resolver: u$1(loginSchema)
+    // defaultValues: {
+    //   email: "9999999999",
+    //   password: "admin123",
+    //   rememberMe: false,
+    // },
   });
   if (Object.keys(errors).length > 0) {
     console.log("⚠️ Validation errors:", errors);
@@ -88043,9 +88566,9 @@ function LoginPage() {
       className: "w-full max-w-md",
       children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "border-border/50 shadow-elevated", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { className: "space-y-4 text-center pb-6", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto h-12 w-12 rounded-xl bg-primary flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Store2, { className: "h-6 w-6 text-primary-foreground" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto h-12 w-12 rounded-xl bg-primary flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Cookie, { className: "h-6 w-6 text-primary-foreground" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-2xl font-bold", children: "Franchise Admin" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-2xl font-bold", children: "Bikaner Admin" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { className: "mt-1", children: "Sign in to your account" })
           ] })
         ] }),
@@ -88067,7 +88590,7 @@ function LoginPage() {
                 }
               ),
               errors.email && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-destructive", children: errors.email.message }),
-              !errors.email && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Use your 10-digit mobile number (e.g., 9999999999)" })
+              !errors.email && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Use your 10-digit mobile number" })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "password", children: "Password" }),
@@ -88096,28 +88619,17 @@ function LoginPage() {
               ] }),
               errors.password && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-destructive", children: errors.password.message })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox, { id: "rememberMe", ...register("rememberMe") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  Label$1,
-                  {
-                    htmlFor: "rememberMe",
-                    className: "text-sm font-normal cursor-pointer",
-                    children: "Remember me"
-                  }
-                )
-              ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox, { id: "rememberMe", ...register("rememberMe") }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
+                Label$1,
                 {
-                  type: "button",
-                  className: "text-sm text-primary hover:underline",
-                  "data-ocid": "login.forgot_password",
-                  children: "Forgot password?"
+                  htmlFor: "rememberMe",
+                  className: "text-sm font-normal cursor-pointer",
+                  children: "Remember me"
                 }
               )
-            ] }),
+            ] }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               Button,
               {
@@ -88131,70 +88643,12 @@ function LoginPage() {
                 ] }) : "Sign in"
               }
             )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 text-center text-xs text-muted-foreground", children: "Demo credentials: 9999999999 / admin123" })
+          ] })
         ] })
       ] })
     }
   ) });
 }
-const normalOrders = mockRecentOrders.filter((_, i2) => i2 % 2 === 0);
-const orderColumns$1 = [
-  {
-    accessorKey: "id",
-    header: "Order ID",
-    cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono text-xs", children: row.getValue("id") })
-  },
-  { accessorKey: "customerName", header: "Customer" },
-  { accessorKey: "productCount", header: "Products" },
-  { accessorKey: "quantity", header: "Quantity" },
-  {
-    accessorKey: "amount",
-    header: "Amount",
-    cell: ({ row }) => `$${Number(row.getValue("amount")).toFixed(2)}`
-  },
-  {
-    accessorKey: "paymentStatus",
-    header: "Payment",
-    cell: ({ row }) => {
-      const status = row.getValue("paymentStatus");
-      const variants = {
-        paid: "default",
-        pending: "secondary",
-        failed: "destructive",
-        refunded: "outline"
-      };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: variants[status] || "secondary", children: status });
-    }
-  },
-  {
-    accessorKey: "orderStatus",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("orderStatus");
-      const variants = {
-        delivered: "default",
-        shipped: "default",
-        confirmed: "secondary",
-        processing: "secondary",
-        packed: "outline",
-        pending: "outline",
-        cancelled: "destructive"
-      };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: variants[status] || "secondary", children: status });
-    }
-  },
-  {
-    accessorKey: "date",
-    header: "Date",
-    cell: ({ row }) => new Date(row.getValue("date")).toLocaleDateString()
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: () => /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "icon", "data-ocid": "normal_orders.view_button", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { className: "h-4 w-4" }) })
-  }
-];
 function NormalOrdersPage() {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -88211,11 +88665,11 @@ function NormalOrdersPage() {
         animate: { opacity: 1, y: 0 },
         transition: { duration: 0.4 },
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          DataTable,
+          OrdersTable,
           {
-            columns: orderColumns$1,
-            data: normalOrders,
-            searchPlaceholder: "Search normal orders..."
+            orderType: "normal",
+            searchPlaceholder: "Search normal orders...",
+            emptyMessage: "No normal orders found"
           }
         )
       }
@@ -88251,62 +88705,6 @@ function NotFoundPage() {
     }
   ) });
 }
-const orderColumns = [
-  {
-    accessorKey: "id",
-    header: "Order ID",
-    cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono text-xs", children: row.getValue("id") })
-  },
-  { accessorKey: "customerName", header: "Customer" },
-  { accessorKey: "productCount", header: "Products" },
-  { accessorKey: "quantity", header: "Quantity" },
-  {
-    accessorKey: "amount",
-    header: "Amount",
-    cell: ({ row }) => `$${Number(row.getValue("amount")).toFixed(2)}`
-  },
-  {
-    accessorKey: "paymentStatus",
-    header: "Payment",
-    cell: ({ row }) => {
-      const status = row.getValue("paymentStatus");
-      const variants = {
-        paid: "default",
-        pending: "secondary",
-        failed: "destructive",
-        refunded: "outline"
-      };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: variants[status] || "secondary", children: status });
-    }
-  },
-  {
-    accessorKey: "orderStatus",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("orderStatus");
-      const variants = {
-        delivered: "default",
-        shipped: "default",
-        confirmed: "secondary",
-        processing: "secondary",
-        packed: "outline",
-        pending: "outline",
-        cancelled: "destructive"
-      };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: variants[status] || "secondary", children: status });
-    }
-  },
-  {
-    accessorKey: "date",
-    header: "Date",
-    cell: ({ row }) => new Date(row.getValue("date")).toLocaleDateString()
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: () => /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "icon", "data-ocid": "orders.view_button", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { className: "h-4 w-4" }) })
-  }
-];
 function OrdersPage() {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(PageHeader, { title: "Orders", description: "Manage all orders" }),
@@ -88317,15 +88715,162 @@ function OrdersPage() {
         animate: { opacity: 1, y: 0 },
         transition: { duration: 0.4 },
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          DataTable,
+          OrdersTable,
           {
-            columns: orderColumns,
-            data: mockRecentOrders,
-            searchPlaceholder: "Search orders..."
+            searchPlaceholder: "Search orders...",
+            emptyMessage: "No orders found"
           }
         )
       }
     )
+  ] });
+}
+function IngredientsInput({
+  value = [],
+  onChange
+}) {
+  const [ingredients, setIngredients] = reactExports.useState(value);
+  reactExports.useEffect(() => {
+    if (value.length === 0 && ingredients.length === 0) {
+      setIngredients([""]);
+    }
+  }, [value, ingredients.length]);
+  const handleAdd = () => {
+    const newIngredients = [...ingredients, ""];
+    setIngredients(newIngredients);
+  };
+  const handleRemove = (index2) => {
+    const newIngredients = ingredients.filter((_, i2) => i2 !== index2);
+    setIngredients(newIngredients);
+    onChange(newIngredients.filter((ing) => ing.trim() !== ""));
+  };
+  const handleChange = (index2, newValue) => {
+    const newIngredients = [...ingredients];
+    newIngredients[index2] = newValue;
+    setIngredients(newIngredients);
+    onChange(newIngredients.filter((ing) => ing.trim() !== ""));
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-medium mb-2", children: "Ingredients" }),
+    ingredients.map((ingredient, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 items-start", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          type: "text",
+          placeholder: "Ingredient name",
+          value: ingredient,
+          onChange: (e3) => handleChange(index2, e3.target.value),
+          className: "flex-1 h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Button,
+        {
+          type: "button",
+          variant: "ghost",
+          size: "icon",
+          onClick: () => handleRemove(index2),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4 text-destructive" })
+        }
+      )
+    ] }, index2)),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "button", variant: "outline", size: "sm", onClick: handleAdd, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "h-4 w-4 mr-2" }),
+      "Add Ingredient"
+    ] })
+  ] });
+}
+function NutritionValuesInput({
+  value = {},
+  onChange
+}) {
+  const [entries, setEntries] = reactExports.useState(() => {
+    return Object.entries(value).map(([key, data]) => ({
+      key,
+      value: data.value.toString(),
+      unit: data.unit
+    }));
+  });
+  reactExports.useEffect(() => {
+    if (Object.keys(value).length === 0 && entries.length === 0) {
+      setEntries([{ key: "", value: "", unit: "" }]);
+    }
+  }, [value, entries.length]);
+  const handleAdd = () => {
+    setEntries([...entries, { key: "", value: "", unit: "" }]);
+  };
+  const handleRemove = (index2) => {
+    const newEntries = entries.filter((_, i2) => i2 !== index2);
+    setEntries(newEntries);
+    updateParent(newEntries);
+  };
+  const handleChange = (index2, field, newValue) => {
+    const newEntries = [...entries];
+    newEntries[index2][field] = newValue;
+    setEntries(newEntries);
+    updateParent(newEntries);
+  };
+  const updateParent = (currentEntries) => {
+    const result = {};
+    currentEntries.forEach((entry) => {
+      if (entry.key && entry.value && entry.unit) {
+        result[entry.key] = {
+          value: parseFloat(entry.value),
+          unit: entry.unit
+        };
+      }
+    });
+    onChange(result);
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-medium mb-2", children: "Nutrition Values" }),
+    entries.map((entry, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 items-start", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          type: "text",
+          placeholder: "Field name (e.g., Calories)",
+          value: entry.key,
+          onChange: (e3) => handleChange(index2, "key", e3.target.value),
+          className: "flex-1 h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          type: "number",
+          step: "0.01",
+          placeholder: "Value",
+          value: entry.value,
+          onChange: (e3) => handleChange(index2, "value", e3.target.value),
+          className: "w-24 h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          type: "text",
+          placeholder: "Unit",
+          value: entry.unit,
+          onChange: (e3) => handleChange(index2, "unit", e3.target.value),
+          className: "w-20 h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Button,
+        {
+          type: "button",
+          variant: "ghost",
+          size: "icon",
+          onClick: () => handleRemove(index2),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4 text-destructive" })
+        }
+      )
+    ] }, index2)),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "button", variant: "outline", size: "sm", onClick: handleAdd, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "h-4 w-4 mr-2" }),
+      "Add Nutrition Entry"
+    ] })
   ] });
 }
 const API_BASE = "https://bikanerapi.codeeratech.in";
@@ -88378,7 +88923,9 @@ function ProductsPage() {
       stock: 0,
       minBulkQty: 0,
       isFeatured: false,
-      status: "active"
+      status: "active",
+      nutritionValues: {},
+      ingredients: []
     });
     setIsModalOpen(true);
   };
@@ -88398,7 +88945,9 @@ function ProductsPage() {
       stock: product.stock,
       minBulkQty: product.minBulkQty,
       isFeatured: product.isFeatured,
-      status: product.status
+      status: product.status,
+      nutritionValues: product.nutritionValues || {},
+      ingredients: product.ingredients || []
     });
     setIsModalOpen(true);
   };
@@ -88714,6 +89263,37 @@ function ProductsPage() {
             ]
           }
         ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 pt-4 border-t", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-medium", children: "Nutrition & Ingredients" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Controller,
+            {
+              name: "nutritionValues",
+              control: methods.control,
+              render: ({ field }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                NutritionValuesInput,
+                {
+                  value: field.value,
+                  onChange: field.onChange
+                }
+              )
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Controller,
+            {
+              name: "ingredients",
+              control: methods.control,
+              render: ({ field }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                IngredientsInput,
+                {
+                  value: field.value,
+                  onChange: field.onChange
+                }
+              )
+            }
+          )
+        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2 pt-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Button,
@@ -88731,243 +89311,10 @@ function ProductsPage() {
     ] }) })
   ] });
 }
-var TABS_NAME = "Tabs";
-var [createTabsContext] = createContextScope$1(TABS_NAME, [
-  createRovingFocusGroupScope
-]);
-var useRovingFocusGroupScope = createRovingFocusGroupScope();
-var [TabsProvider, useTabsContext] = createTabsContext(TABS_NAME);
-var Tabs$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const {
-      __scopeTabs,
-      value: valueProp,
-      onValueChange,
-      defaultValue,
-      orientation: orientation2 = "horizontal",
-      dir,
-      activationMode = "automatic",
-      ...tabsProps
-    } = props;
-    const direction = useDirection(dir);
-    const [value, setValue] = useControllableState({
-      prop: valueProp,
-      onChange: onValueChange,
-      defaultProp: defaultValue ?? "",
-      caller: TABS_NAME
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      TabsProvider,
-      {
-        scope: __scopeTabs,
-        baseId: useId(),
-        value,
-        onValueChange: setValue,
-        orientation: orientation2,
-        dir: direction,
-        activationMode,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Primitive$1.div,
-          {
-            dir: direction,
-            "data-orientation": orientation2,
-            ...tabsProps,
-            ref: forwardedRef
-          }
-        )
-      }
-    );
-  }
-);
-Tabs$1.displayName = TABS_NAME;
-var TAB_LIST_NAME = "TabsList";
-var TabsList$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeTabs, loop = true, ...listProps } = props;
-    const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
-    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Root$4,
-      {
-        asChild: true,
-        ...rovingFocusGroupScope,
-        orientation: context.orientation,
-        dir: context.dir,
-        loop,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Primitive$1.div,
-          {
-            role: "tablist",
-            "aria-orientation": context.orientation,
-            ...listProps,
-            ref: forwardedRef
-          }
-        )
-      }
-    );
-  }
-);
-TabsList$1.displayName = TAB_LIST_NAME;
-var TRIGGER_NAME$1 = "TabsTrigger";
-var TabsTrigger$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
-    const context = useTabsContext(TRIGGER_NAME$1, __scopeTabs);
-    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
-    const triggerId = makeTriggerId(context.baseId, value);
-    const contentId = makeContentId(context.baseId, value);
-    const isSelected = value === context.value;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Item$1,
-      {
-        asChild: true,
-        ...rovingFocusGroupScope,
-        focusable: !disabled,
-        active: isSelected,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Primitive$1.button,
-          {
-            type: "button",
-            role: "tab",
-            "aria-selected": isSelected,
-            "aria-controls": contentId,
-            "data-state": isSelected ? "active" : "inactive",
-            "data-disabled": disabled ? "" : void 0,
-            disabled,
-            id: triggerId,
-            ...triggerProps,
-            ref: forwardedRef,
-            onMouseDown: composeEventHandlers(props.onMouseDown, (event) => {
-              if (!disabled && event.button === 0 && event.ctrlKey === false) {
-                context.onValueChange(value);
-              } else {
-                event.preventDefault();
-              }
-            }),
-            onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
-              if ([" ", "Enter"].includes(event.key)) context.onValueChange(value);
-            }),
-            onFocus: composeEventHandlers(props.onFocus, () => {
-              const isAutomaticActivation = context.activationMode !== "manual";
-              if (!isSelected && !disabled && isAutomaticActivation) {
-                context.onValueChange(value);
-              }
-            })
-          }
-        )
-      }
-    );
-  }
-);
-TabsTrigger$1.displayName = TRIGGER_NAME$1;
-var CONTENT_NAME$1 = "TabsContent";
-var TabsContent$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
-    const context = useTabsContext(CONTENT_NAME$1, __scopeTabs);
-    const triggerId = makeTriggerId(context.baseId, value);
-    const contentId = makeContentId(context.baseId, value);
-    const isSelected = value === context.value;
-    const isMountAnimationPreventedRef = reactExports.useRef(isSelected);
-    reactExports.useEffect(() => {
-      const rAF = requestAnimationFrame(() => isMountAnimationPreventedRef.current = false);
-      return () => cancelAnimationFrame(rAF);
-    }, []);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, { present: forceMount || isSelected, children: ({ present }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.div,
-      {
-        "data-state": isSelected ? "active" : "inactive",
-        "data-orientation": context.orientation,
-        role: "tabpanel",
-        "aria-labelledby": triggerId,
-        hidden: !present,
-        id: contentId,
-        tabIndex: 0,
-        ...contentProps,
-        ref: forwardedRef,
-        style: {
-          ...props.style,
-          animationDuration: isMountAnimationPreventedRef.current ? "0s" : void 0
-        },
-        children: present && children
-      }
-    ) });
-  }
-);
-TabsContent$1.displayName = CONTENT_NAME$1;
-function makeTriggerId(baseId, value) {
-  return `${baseId}-trigger-${value}`;
-}
-function makeContentId(baseId, value) {
-  return `${baseId}-content-${value}`;
-}
-var Root2 = Tabs$1;
-var List = TabsList$1;
-var Trigger$1 = TabsTrigger$1;
-var Content = TabsContent$1;
-function Tabs({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Root2,
-    {
-      "data-slot": "tabs",
-      className: cn("flex flex-col gap-2", className),
-      ...props
-    }
-  );
-}
-function TabsList({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    List,
-    {
-      "data-slot": "tabs-list",
-      className: cn(
-        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
-        className
-      ),
-      ...props
-    }
-  );
-}
-function TabsTrigger({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Trigger$1,
-    {
-      "data-slot": "tabs-trigger",
-      className: cn(
-        "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      ),
-      ...props
-    }
-  );
-}
-function TabsContent({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Content,
-    {
-      "data-slot": "tabs-content",
-      className: cn("flex-1 outline-none", className),
-      ...props
-    }
-  );
-}
 function ProfilePage() {
   var _a3;
   const { user, setUser } = useAuthStore();
   const { addToast } = useUIStore();
-  const [activeTab, setActiveTab] = reactExports.useState("profile");
   const methods = useForm({
     resolver: u$1(profileSchema),
     defaultValues: {
@@ -88989,36 +89336,18 @@ function ProfilePage() {
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(PageHeader, { title: "Profile", description: "Manage your account settings" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
       motion.div,
       {
         initial: { opacity: 0, y: 20 },
         animate: { opacity: 1, y: 0 },
         transition: { duration: 0.4 },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Tabs, { value: activeTab, onValueChange: setActiveTab, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsList, { className: "grid w-full grid-cols-3 lg:w-[400px]", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsTrigger, { value: "profile", "data-ocid": "profile.tab.profile", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(User, { className: "h-4 w-4 mr-2" }),
-              "Profile"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsTrigger, { value: "security", "data-ocid": "profile.tab.security", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "h-4 w-4 mr-2" }),
-              "Security"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              TabsTrigger,
-              {
-                value: "preferences",
-                "data-ocid": "profile.tab.preferences",
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { className: "h-4 w-4 mr-2" }),
-                  "Preferences"
-                ]
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TabsContent, { value: "profile", className: "mt-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { children: "Profile Information" }) }),
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardTitle, { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(User, { className: "h-5 w-5" }),
+              "Profile Information"
+            ] }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(FormProvider, { ...methods, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit(onSubmit), className: "space-y-6", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-6", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
@@ -89035,7 +89364,7 @@ function ProfilePage() {
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-semibold", children: (user == null ? void 0 : user.name) || "User" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: (user == null ? void 0 : user.email) || "user@franchise.com" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: (user == null ? void 0 : user.email) || "user@example.com" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-muted-foreground mt-1", children: [
                     "Role: ",
                     (user == null ? void 0 : user.role) || "Staff"
@@ -89069,69 +89398,46 @@ function ProfilePage() {
                   placeholder: "Enter your phone number"
                 }
               ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "submit", "data-ocid": "profile.save_button", children: "Save Changes" }) })
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "button", variant: "outline", children: "Cancel" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "submit", "data-ocid": "profile.save_button", children: "Save Changes" })
+              ] })
             ] }) }) })
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TabsContent, { value: "security", className: "mt-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { children: "Security Settings" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "space-y-4", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-4 rounded-lg border border-border", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: "Change Password" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground", children: "Update your account password" })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", "data-ocid": "profile.change_password", children: "Change" })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-4 rounded-lg border border-border", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: "Two-Factor Authentication" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground", children: "Add an extra layer of security" })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", "data-ocid": "profile.enable_2fa", children: "Enable" })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-4 rounded-lg border border-border", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: "Active Sessions" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground", children: "Manage your active login sessions" })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", "data-ocid": "profile.manage_sessions", children: "Manage" })
-              ] })
-            ] })
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TabsContent, { value: "preferences", className: "mt-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { children: "Preferences" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "space-y-4", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-4 rounded-lg border border-border", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: "Email Notifications" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground", children: "Receive email updates about your account" })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  Button,
-                  {
-                    variant: "outline",
-                    "data-ocid": "profile.email_notifications",
-                    children: "Configure"
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-4 rounded-lg border border-border", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: "Language" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground", children: "Select your preferred language" })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", "data-ocid": "profile.language", children: "English" })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-4 rounded-lg border border-border", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: "Time Zone" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground", children: "Set your local time zone" })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", "data-ocid": "profile.timezone", children: "UTC-5" })
-              ] })
-            ] })
-          ] }) })
-        ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "mt-6", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { children: "Change Password" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(FormProvider, { ...methods, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { className: "space-y-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                FormInput,
+                {
+                  name: "currentPassword",
+                  label: "Current Password",
+                  type: "password",
+                  placeholder: "Enter current password"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                FormInput,
+                {
+                  name: "newPassword",
+                  label: "New Password",
+                  type: "password",
+                  placeholder: "Enter new password"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                FormInput,
+                {
+                  name: "confirmPassword",
+                  label: "Confirm New Password",
+                  type: "password",
+                  placeholder: "Confirm new password"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { "data-ocid": "profile.change_password", children: "Update Password" }) })
+            ] }) }) })
+          ] })
+        ]
       }
     )
   ] });
@@ -89591,25 +89897,741 @@ function RolesPage() {
     )
   ] });
 }
+const statusVariants = {
+  pending: "secondary",
+  approved: "default",
+  rejected: "destructive"
+};
+function SellerApprovalsPage() {
+  const { addToast } = useUIStore();
+  const [applications, setApplications] = reactExports.useState([]);
+  const [isLoading, setIsLoading] = reactExports.useState(true);
+  const [status, setStatus] = reactExports.useState(
+    "pending"
+  );
+  const [selectedApplication, setSelectedApplication] = reactExports.useState(null);
+  const [action, setAction] = reactExports.useState(null);
+  const [isSubmitting, setIsSubmitting] = reactExports.useState(false);
+  const loadApplications = reactExports.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await sellerApplicationService.getApplications({
+        status,
+        limit: 100
+      });
+      setApplications(response.data);
+    } catch (error) {
+      addToast({
+        title: "Applications load failed",
+        description: error.message || "Could not fetch seller applications.",
+        variant: "error"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [addToast, status]);
+  reactExports.useEffect(() => {
+    loadApplications();
+  }, [loadApplications]);
+  const handleConfirm = async () => {
+    if (!selectedApplication || !action) return;
+    setIsSubmitting(true);
+    try {
+      if (action === "approve") {
+        await sellerApplicationService.approveApplication(
+          selectedApplication.id
+        );
+      } else {
+        await sellerApplicationService.rejectApplication(
+          selectedApplication.id,
+          "Rejected by admin"
+        );
+      }
+      addToast({
+        title: action === "approve" ? "Seller approved" : "Seller application rejected",
+        description: `${selectedApplication.name}'s application was updated.`,
+        variant: "success"
+      });
+      setSelectedApplication(null);
+      setAction(null);
+      await loadApplications();
+    } catch (error) {
+      addToast({
+        title: "Action failed",
+        description: error.message || "Please try again.",
+        variant: "error"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  const columns2 = [
+    {
+      accessorKey: "name",
+      header: "Applicant",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: row.original.name }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: row.original.mobile })
+      ] })
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+      cell: ({ row }) => row.original.email || "—"
+    },
+    {
+      accessorKey: "gst",
+      header: "GST",
+      cell: ({ row }) => row.original.gst || "—"
+    },
+    {
+      accessorKey: "cityId.name",
+      header: "City",
+      cell: ({ row }) => {
+        var _a3;
+        return ((_a3 = row.original.cityId) == null ? void 0 : _a3.name) || "—";
+      }
+    },
+    {
+      accessorKey: "address",
+      header: "Address",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "line-clamp-2", children: row.original.address })
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Badge,
+        {
+          variant: statusVariants[row.original.status] || "secondary",
+          className: "capitalize",
+          children: row.original.status
+        }
+      )
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Applied",
+      cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString()
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => row.original.status === "pending" ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        PermissionGuard,
+        {
+          permission: PERMISSIONS.SELLER_APPROVALS_MANAGE,
+          hideOnDenied: true,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Button,
+              {
+                type: "button",
+                size: "sm",
+                variant: "outline",
+                onClick: () => {
+                  setSelectedApplication(row.original);
+                  setAction("reject");
+                },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "mr-1 h-4 w-4" }),
+                  "Reject"
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Button,
+              {
+                type: "button",
+                size: "sm",
+                onClick: () => {
+                  setSelectedApplication(row.original);
+                  setAction("approve");
+                },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "mr-1 h-4 w-4" }),
+                  "Approve"
+                ]
+              }
+            )
+          ] })
+        }
+      ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-muted-foreground", children: "Reviewed" })
+    }
+  ];
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      PageHeader,
+      {
+        title: "Seller Approvals",
+        description: "Review seller applications from the mobile app"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      motion.div,
+      {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.4 },
+        className: "space-y-4",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-3 sm:flex-row sm:justify-end", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Select,
+              {
+                value: status,
+                onValueChange: (value) => setStatus(value),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { className: "w-full sm:w-44", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Filter status" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "pending", children: "Pending" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "approved", children: "Approved" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "rejected", children: "Rejected" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "all", children: "All" })
+                  ] })
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Button,
+              {
+                type: "button",
+                variant: "outline",
+                size: "sm",
+                onClick: loadApplications,
+                disabled: isLoading,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "mr-2 h-4 w-4" }),
+                  "Refresh"
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            DataTable,
+            {
+              columns: columns2,
+              data: applications,
+              isLoading,
+              searchPlaceholder: "Search seller applications...",
+              emptyMessage: "No seller applications found"
+            }
+          )
+        ]
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ConfirmDialog,
+      {
+        open: !!selectedApplication && !!action,
+        onOpenChange: (open) => {
+          if (!open && !isSubmitting) {
+            setSelectedApplication(null);
+            setAction(null);
+          }
+        },
+        title: action === "approve" ? "Approve seller application" : "Reject seller application",
+        description: action === "approve" ? `Approve ${selectedApplication == null ? void 0 : selectedApplication.name} as a seller?` : `Reject ${selectedApplication == null ? void 0 : selectedApplication.name}'s seller application?`,
+        onConfirm: handleConfirm
+      }
+    )
+  ] });
+}
+var TABS_NAME = "Tabs";
+var [createTabsContext] = createContextScope$1(TABS_NAME, [
+  createRovingFocusGroupScope
+]);
+var useRovingFocusGroupScope = createRovingFocusGroupScope();
+var [TabsProvider, useTabsContext] = createTabsContext(TABS_NAME);
+var Tabs$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const {
+      __scopeTabs,
+      value: valueProp,
+      onValueChange,
+      defaultValue,
+      orientation: orientation2 = "horizontal",
+      dir,
+      activationMode = "automatic",
+      ...tabsProps
+    } = props;
+    const direction = useDirection(dir);
+    const [value, setValue] = useControllableState({
+      prop: valueProp,
+      onChange: onValueChange,
+      defaultProp: defaultValue ?? "",
+      caller: TABS_NAME
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      TabsProvider,
+      {
+        scope: __scopeTabs,
+        baseId: useId(),
+        value,
+        onValueChange: setValue,
+        orientation: orientation2,
+        dir: direction,
+        activationMode,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive$1.div,
+          {
+            dir: direction,
+            "data-orientation": orientation2,
+            ...tabsProps,
+            ref: forwardedRef
+          }
+        )
+      }
+    );
+  }
+);
+Tabs$1.displayName = TABS_NAME;
+var TAB_LIST_NAME = "TabsList";
+var TabsList$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeTabs, loop = true, ...listProps } = props;
+    const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Root$4,
+      {
+        asChild: true,
+        ...rovingFocusGroupScope,
+        orientation: context.orientation,
+        dir: context.dir,
+        loop,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive$1.div,
+          {
+            role: "tablist",
+            "aria-orientation": context.orientation,
+            ...listProps,
+            ref: forwardedRef
+          }
+        )
+      }
+    );
+  }
+);
+TabsList$1.displayName = TAB_LIST_NAME;
+var TRIGGER_NAME$1 = "TabsTrigger";
+var TabsTrigger$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
+    const context = useTabsContext(TRIGGER_NAME$1, __scopeTabs);
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
+    const triggerId = makeTriggerId(context.baseId, value);
+    const contentId = makeContentId(context.baseId, value);
+    const isSelected = value === context.value;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Item$1,
+      {
+        asChild: true,
+        ...rovingFocusGroupScope,
+        focusable: !disabled,
+        active: isSelected,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive$1.button,
+          {
+            type: "button",
+            role: "tab",
+            "aria-selected": isSelected,
+            "aria-controls": contentId,
+            "data-state": isSelected ? "active" : "inactive",
+            "data-disabled": disabled ? "" : void 0,
+            disabled,
+            id: triggerId,
+            ...triggerProps,
+            ref: forwardedRef,
+            onMouseDown: composeEventHandlers(props.onMouseDown, (event) => {
+              if (!disabled && event.button === 0 && event.ctrlKey === false) {
+                context.onValueChange(value);
+              } else {
+                event.preventDefault();
+              }
+            }),
+            onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
+              if ([" ", "Enter"].includes(event.key)) context.onValueChange(value);
+            }),
+            onFocus: composeEventHandlers(props.onFocus, () => {
+              const isAutomaticActivation = context.activationMode !== "manual";
+              if (!isSelected && !disabled && isAutomaticActivation) {
+                context.onValueChange(value);
+              }
+            })
+          }
+        )
+      }
+    );
+  }
+);
+TabsTrigger$1.displayName = TRIGGER_NAME$1;
+var CONTENT_NAME$1 = "TabsContent";
+var TabsContent$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
+    const context = useTabsContext(CONTENT_NAME$1, __scopeTabs);
+    const triggerId = makeTriggerId(context.baseId, value);
+    const contentId = makeContentId(context.baseId, value);
+    const isSelected = value === context.value;
+    const isMountAnimationPreventedRef = reactExports.useRef(isSelected);
+    reactExports.useEffect(() => {
+      const rAF = requestAnimationFrame(() => isMountAnimationPreventedRef.current = false);
+      return () => cancelAnimationFrame(rAF);
+    }, []);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, { present: forceMount || isSelected, children: ({ present }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive$1.div,
+      {
+        "data-state": isSelected ? "active" : "inactive",
+        "data-orientation": context.orientation,
+        role: "tabpanel",
+        "aria-labelledby": triggerId,
+        hidden: !present,
+        id: contentId,
+        tabIndex: 0,
+        ...contentProps,
+        ref: forwardedRef,
+        style: {
+          ...props.style,
+          animationDuration: isMountAnimationPreventedRef.current ? "0s" : void 0
+        },
+        children: present && children
+      }
+    ) });
+  }
+);
+TabsContent$1.displayName = CONTENT_NAME$1;
+function makeTriggerId(baseId, value) {
+  return `${baseId}-trigger-${value}`;
+}
+function makeContentId(baseId, value) {
+  return `${baseId}-content-${value}`;
+}
+var Root2 = Tabs$1;
+var List = TabsList$1;
+var Trigger$1 = TabsTrigger$1;
+var Content = TabsContent$1;
+function Tabs({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Root2,
+    {
+      "data-slot": "tabs",
+      className: cn("flex flex-col gap-2", className),
+      ...props
+    }
+  );
+}
+function TabsList({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    List,
+    {
+      "data-slot": "tabs-list",
+      className: cn(
+        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function TabsTrigger({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Trigger$1,
+    {
+      "data-slot": "tabs-trigger",
+      className: cn(
+        "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function TabsContent({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Content,
+    {
+      "data-slot": "tabs-content",
+      className: cn("flex-1 outline-none", className),
+      ...props
+    }
+  );
+}
+function UnauthorizedPage() {
+  const navigate = useNavigate();
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen flex items-center justify-center bg-background p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "max-w-md w-full", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { className: "text-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldAlert, { className: "h-8 w-8 text-destructive" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-2xl", children: "Access Denied" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { children: "You don't have permission to access this page" })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground text-center", children: "This page requires specific permissions that your current role doesn't have. Please contact your administrator if you believe this is an error." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Button,
+          {
+            variant: "outline",
+            className: "flex-1",
+            onClick: () => window.history.back(),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "h-4 w-4 mr-2" }),
+              "Go Back"
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Button,
+          {
+            className: "flex-1",
+            onClick: () => navigate({ to: "/dashboard" }),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(House, { className: "h-4 w-4 mr-2" }),
+              "Dashboard"
+            ]
+          }
+        )
+      ] })
+    ] })
+  ] }) });
+}
+const phoneRegex = /^\+?[\d\s-()]{7,20}$/;
+const loginPhoneRegex = /^\d{10}$/;
+const settingsSchema = object$1({
+  siteTitle: string$1().trim().min(1, "Site title is required").max(100, "Site title must be under 100 characters"),
+  siteDescription: string$1().trim().max(500, "Description must be under 500 characters").optional(),
+  contactEmail: string$1().trim().min(1, "Contact email is required").email("Enter a valid email"),
+  contactPhone: string$1().trim().min(1, "Contact phone is required").regex(phoneRegex, "Enter a valid contact phone"),
+  loginPhone: string$1().trim().min(1, "Admin login mobile is required").regex(loginPhoneRegex, "Admin login mobile must be 10 digits"),
+  adminPassword: string$1().optional().refine((value) => !value || value.length >= 6, {
+    message: "Password must be at least 6 characters"
+  }),
+  confirmAdminPassword: string$1().optional(),
+  range: string$1().trim().min(1, "Delivery radius is required").refine((value) => /^\d+$/.test(value), {
+    message: "Delivery radius must be a whole number"
+  }).refine((value) => {
+    const range3 = Number(value);
+    return range3 >= 100 && range3 <= 1e5;
+  }, "Use a radius between 100 and 100000 meters"),
+  termsAndConditions: string$1().optional(),
+  privacyPolicy: string$1().optional(),
+  aboutUs: string$1().optional(),
+  refundPolicy: string$1().optional(),
+  shippingPolicy: string$1().optional()
+}).refine(
+  (data) => !data.adminPassword || data.adminPassword === data.confirmAdminPassword,
+  {
+    message: "Passwords do not match",
+    path: ["confirmAdminPassword"]
+  }
+);
+const defaultValues = {
+  siteTitle: "Bikaner Biscuit",
+  siteDescription: "Complete franchise management solution",
+  contactEmail: "support@bikanerbiscuit.com",
+  contactPhone: "+91-9999999999",
+  loginPhone: "",
+  adminPassword: "",
+  confirmAdminPassword: "",
+  range: "5000",
+  termsAndConditions: "",
+  privacyPolicy: "",
+  aboutUs: "",
+  refundPolicy: "",
+  shippingPolicy: ""
+};
+const apiOrigin = new URL(ENDPOINTS.GET_SETTINGS).origin;
+function getAssetUrl(path) {
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${apiOrigin}${path.startsWith("/") ? path : `/${path}`}`;
+}
 function SettingsPage() {
   const { addToast } = useUIStore();
+  const { isAdmin: isAdmin2 } = usePermissions();
+  const { user, setUser } = useAuthStore();
+  const { setBrandSettings } = useSettingsStore();
+  const fileInputRef = reactExports.useRef(null);
+  const [activeTab, setActiveTab] = reactExports.useState("general");
+  const [isLoading, setIsLoading] = reactExports.useState(true);
+  const [logoFile, setLogoFile] = reactExports.useState(null);
+  const [logoPreview, setLogoPreview] = reactExports.useState("");
+  const [savedLogo, setSavedLogo] = reactExports.useState("");
+  const [loadedValues, setLoadedValues] = reactExports.useState(defaultValues);
   const methods = useForm({
     resolver: u$1(settingsSchema),
     defaultValues: {
-      siteName: "Franchise Admin",
-      siteDescription: "Complete franchise management solution",
-      contactEmail: "support@franchise.com",
-      contactPhone: "+1-555-0199"
+      ...defaultValues,
+      loginPhone: (user == null ? void 0 : user.phone) || ""
     }
   });
-  const { handleSubmit } = methods;
-  const onSubmit = (_data) => {
-    addToast({
-      title: "Settings saved",
-      description: "Site settings have been updated successfully.",
-      variant: "success"
-    });
+  const {
+    handleSubmit,
+    reset,
+    formState: { isSubmitting }
+  } = methods;
+  const previewUrl = reactExports.useMemo(() => {
+    if (logoFile) return logoPreview;
+    return getAssetUrl(logoPreview);
+  }, [logoFile, logoPreview]);
+  reactExports.useEffect(() => {
+    if (!isAdmin2) return;
+    let isMounted = true;
+    const loadSettings = async () => {
+      setIsLoading(true);
+      try {
+        const response = await settingsService.getSettings();
+        const settings = response.data;
+        const nextValues = {
+          siteTitle: settings.siteTitle || defaultValues.siteTitle,
+          siteDescription: settings.siteDescription || defaultValues.siteDescription,
+          contactEmail: settings.contactEmail || defaultValues.contactEmail,
+          contactPhone: settings.contactPhone || defaultValues.contactPhone,
+          loginPhone: (user == null ? void 0 : user.phone) || "",
+          adminPassword: "",
+          confirmAdminPassword: "",
+          range: String(settings.range || defaultValues.range),
+          termsAndConditions: settings.termsAndConditions || "",
+          privacyPolicy: settings.privacyPolicy || "",
+          aboutUs: settings.aboutUs || "",
+          refundPolicy: settings.refundPolicy || "",
+          shippingPolicy: settings.shippingPolicy || ""
+        };
+        if (!isMounted) return;
+        setLoadedValues(nextValues);
+        setLogoFile(null);
+        setSavedLogo(settings.siteLogo || "");
+        setLogoPreview(settings.siteLogo || "");
+        setBrandSettings({
+          siteTitle: nextValues.siteTitle,
+          siteLogo: settings.siteLogo || ""
+        });
+        reset(nextValues);
+      } catch (error) {
+        addToast({
+          title: "Settings load failed",
+          description: error.message || "Could not fetch settings.",
+          variant: "error"
+        });
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+    loadSettings();
+    return () => {
+      isMounted = false;
+    };
+  }, [addToast, isAdmin2, reset, setBrandSettings, user == null ? void 0 : user.phone]);
+  reactExports.useEffect(() => {
+    if (!logoFile) return;
+    const objectUrl = URL.createObjectURL(logoFile);
+    setLogoPreview(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [logoFile]);
+  const handleLogoChange = (event) => {
+    var _a3;
+    const file = (_a3 = event.target.files) == null ? void 0 : _a3[0];
+    if (!file) return;
+    const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      addToast({
+        title: "Invalid logo",
+        description: "Upload a PNG, JPG, or WEBP image.",
+        variant: "error"
+      });
+      return;
+    }
+    const maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+      addToast({
+        title: "Logo too large",
+        description: "Logo must be smaller than 2 MB.",
+        variant: "error"
+      });
+      return;
+    }
+    setLogoFile(file);
   };
+  const onSubmit = async (data) => {
+    var _a3;
+    try {
+      const response = await settingsService.updateSettings({
+        siteTitle: data.siteTitle.trim(),
+        siteDescription: ((_a3 = data.siteDescription) == null ? void 0 : _a3.trim()) || "",
+        contactEmail: data.contactEmail.trim(),
+        contactPhone: data.contactPhone.trim(),
+        range: Number(data.range),
+        termsAndConditions: data.termsAndConditions || "",
+        privacyPolicy: data.privacyPolicy || "",
+        aboutUs: data.aboutUs || "",
+        refundPolicy: data.refundPolicy || "",
+        shippingPolicy: data.shippingPolicy || "",
+        ...logoFile ? { siteLogo: logoFile } : {}
+      });
+      if (user == null ? void 0 : user.id) {
+        const updateData = {};
+        if (data.loginPhone.trim() !== user.phone) {
+          updateData.mobile = data.loginPhone.trim();
+        }
+        if (data.adminPassword) {
+          updateData.password = data.adminPassword;
+        }
+        if (Object.keys(updateData).length > 0) {
+          await staffService.updateStaff(user.id, updateData);
+          setUser({
+            ...user,
+            phone: updateData.mobile || user.phone
+          });
+        }
+      }
+      const nextValues = {
+        ...data,
+        adminPassword: "",
+        confirmAdminPassword: ""
+      };
+      setLoadedValues(nextValues);
+      const nextLogo = response.data.siteLogo || savedLogo;
+      setLogoFile(null);
+      setSavedLogo(nextLogo);
+      setLogoPreview(nextLogo);
+      setBrandSettings({
+        siteTitle: nextValues.siteTitle,
+        siteLogo: nextLogo
+      });
+      reset(nextValues);
+      addToast({
+        title: "Settings saved",
+        description: "Site, policy, login, and delivery settings were updated.",
+        variant: "success"
+      });
+    } catch (error) {
+      addToast({
+        title: "Settings save failed",
+        description: error.message || "Please check the fields and try again.",
+        variant: "error"
+      });
+    }
+  };
+  if (!isAdmin2) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(UnauthorizedPage, {});
+  }
+  if (isLoading) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-96 items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "h-8 w-8 animate-spin text-primary" }) });
+  }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       PageHeader,
@@ -89624,64 +90646,238 @@ function SettingsPage() {
         initial: { opacity: 0, y: 20 },
         animate: { opacity: 1, y: 0 },
         transition: { duration: 0.4 },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardTitle, { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { className: "h-5 w-5" }),
-            "Site Settings"
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(FormProvider, { ...methods, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit(onSubmit), className: "space-y-6", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 md:grid-cols-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                FormInput,
-                {
-                  name: "siteName",
-                  label: "Site Name",
-                  placeholder: "Enter site name",
-                  description: "This will be displayed in the browser title and header"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                FormInput,
-                {
-                  name: "contactEmail",
-                  label: "Contact Email",
-                  type: "email",
-                  placeholder: "support@franchise.com",
-                  description: "Primary contact email for the platform"
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              FormTextarea,
-              {
-                name: "siteDescription",
-                label: "Site Description",
-                placeholder: "Enter a brief description of your platform",
-                description: "This description may be used in meta tags and SEO"
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              FormInput,
-              {
-                name: "contactPhone",
-                label: "Contact Phone",
-                placeholder: "+1-555-0199",
-                description: "Primary contact phone number"
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 p-4 rounded-lg bg-muted/50 border border-border", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "h-5 w-5 text-muted-foreground" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: "Site URL" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground", children: "https://franchise-admin.example.com" })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(FormProvider, { ...methods, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit(onSubmit), className: "space-y-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(Tabs, { value: activeTab, onValueChange: setActiveTab, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsList, { className: "grid w-full grid-cols-2 lg:w-[400px]", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsTrigger, { value: "general", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { className: "mr-2 h-4 w-4" }),
+                "General"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsTrigger, { value: "policies", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { className: "mr-2 h-4 w-4" }),
+                "Policy Pages"
               ] })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "button", variant: "outline", children: "Cancel" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "submit", "data-ocid": "settings.save_button", children: "Save Settings" })
-            ] })
-          ] }) }) })
-        ] })
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsContent, { value: "general", className: "mt-6 space-y-6", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardTitle, { className: "flex items-center gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "h-5 w-5" }),
+                  "Site Information"
+                ] }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "space-y-6", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 md:grid-cols-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      FormInput,
+                      {
+                        name: "siteTitle",
+                        label: "Site Title",
+                        placeholder: "Enter site title",
+                        description: "Displayed beside the logo and in the browser title"
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      FormInput,
+                      {
+                        name: "contactEmail",
+                        label: "Contact Email",
+                        type: "email",
+                        placeholder: "support@example.com",
+                        description: "Primary contact email for the app"
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    FormTextarea,
+                    {
+                      name: "siteDescription",
+                      label: "Site Description",
+                      placeholder: "Enter a brief description",
+                      description: "Used in app/site metadata"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 md:grid-cols-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      FormInput,
+                      {
+                        name: "contactPhone",
+                        label: "Contact Phone",
+                        placeholder: "+91-9999999999",
+                        description: "Shown to app users for support"
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      FormInput,
+                      {
+                        name: "range",
+                        label: "Delivery Radius (meters)",
+                        type: "number",
+                        min: 100,
+                        max: 1e5,
+                        step: 1,
+                        placeholder: "5000",
+                        description: "Used by zone checker to match nearby delivery zones"
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "siteLogo", className: "text-sm font-medium", children: "Site Logo" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted", children: previewUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "img",
+                        {
+                          src: previewUrl,
+                          alt: "Site logo preview",
+                          className: "h-full w-full object-cover"
+                        }
+                      ) : /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "h-8 w-8 text-muted-foreground" }) }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "input",
+                        {
+                          id: "siteLogo",
+                          ref: fileInputRef,
+                          type: "file",
+                          accept: "image/png,image/jpeg,image/webp",
+                          className: "hidden",
+                          onChange: handleLogoChange
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        Button,
+                        {
+                          type: "button",
+                          variant: "outline",
+                          size: "sm",
+                          onClick: () => {
+                            var _a3;
+                            return (_a3 = fileInputRef.current) == null ? void 0 : _a3.click();
+                          },
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "mr-2 h-4 w-4" }),
+                            "Upload Logo"
+                          ]
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Recommended: 200x200px, PNG or JPG under 2 MB" })
+                  ] })
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardTitle, { className: "flex items-center gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "h-5 w-5" }),
+                  "Admin Login"
+                ] }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "space-y-6", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    FormInput,
+                    {
+                      name: "loginPhone",
+                      label: "Login Mobile",
+                      placeholder: "9999999999",
+                      description: "Mobile number used by the admin to sign in"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 md:grid-cols-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      FormInput,
+                      {
+                        name: "adminPassword",
+                        label: "New Password",
+                        type: "password",
+                        placeholder: "Leave blank to keep current password"
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      FormInput,
+                      {
+                        name: "confirmAdminPassword",
+                        label: "Confirm New Password",
+                        type: "password",
+                        placeholder: "Repeat new password"
+                      }
+                    )
+                  ] })
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(TabsContent, { value: "policies", className: "mt-6 space-y-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardTitle, { className: "flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { className: "h-5 w-5" }),
+                "Policy Pages"
+              ] }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "space-y-6", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  FormTextarea,
+                  {
+                    name: "termsAndConditions",
+                    label: "Terms & Conditions",
+                    placeholder: "Enter your terms and conditions...",
+                    rows: 8
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  FormTextarea,
+                  {
+                    name: "privacyPolicy",
+                    label: "Privacy Policy",
+                    placeholder: "Enter your privacy policy...",
+                    rows: 8
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  FormTextarea,
+                  {
+                    name: "aboutUs",
+                    label: "About Us",
+                    placeholder: "Tell users about Bikaner Biscuit...",
+                    rows: 8
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  FormTextarea,
+                  {
+                    name: "refundPolicy",
+                    label: "Refund Policy",
+                    placeholder: "Enter your refund policy...",
+                    rows: 8
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  FormTextarea,
+                  {
+                    name: "shippingPolicy",
+                    label: "Shipping Policy",
+                    placeholder: "Enter your shipping policy...",
+                    rows: 8
+                  }
+                )
+              ] })
+            ] }) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                type: "button",
+                variant: "outline",
+                disabled: isSubmitting,
+                onClick: () => {
+                  setLogoFile(null);
+                  setLogoPreview(savedLogo);
+                  reset(loadedValues);
+                },
+                children: "Cancel"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "submit", disabled: isSubmitting, children: isSubmitting ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "mr-2 h-4 w-4 animate-spin" }),
+              "Saving..."
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "mr-2 h-4 w-4" }),
+              "Save Settings"
+            ] }) })
+          ] })
+        ] }) })
       }
     )
   ] });
@@ -91499,116 +92695,6 @@ function ThemePage() {
     )
   ] });
 }
-function UnauthorizedPage() {
-  const navigate = useNavigate();
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen flex items-center justify-center bg-background p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "max-w-md w-full", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { className: "text-center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mx-auto h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldAlert, { className: "h-8 w-8 text-destructive" }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-2xl", children: "Access Denied" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { children: "You don't have permission to access this page" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "space-y-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground text-center", children: "This page requires specific permissions that your current role doesn't have. Please contact your administrator if you believe this is an error." }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          Button,
-          {
-            variant: "outline",
-            className: "flex-1",
-            onClick: () => window.history.back(),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "h-4 w-4 mr-2" }),
-              "Go Back"
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          Button,
-          {
-            className: "flex-1",
-            onClick: () => navigate({ to: "/dashboard" }),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(House, { className: "h-4 w-4 mr-2" }),
-              "Dashboard"
-            ]
-          }
-        )
-      ] })
-    ] })
-  ] }) });
-}
-const staffService = {
-  /**
-   * Get all staff members
-   */
-  async getStaff(params) {
-    return get$4(ENDPOINTS.GET_USERS, params);
-  },
-  /**
-   * Get single staff member by ID
-   */
-  async getStaffById(id2) {
-    return get$4(ENDPOINTS.GET_USER(id2));
-  },
-  /**
-   * Create new staff member
-   */
-  async createStaff(data) {
-    if (data.profileImage) {
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== void 0 && value !== null) {
-          if (Array.isArray(value)) {
-            formData.append(key, JSON.stringify(value));
-          } else if (value instanceof File) {
-            formData.append(key, value);
-          } else {
-            formData.append(key, String(value));
-          }
-        }
-      });
-      return upload(ENDPOINTS.CREATE_USER, formData);
-    }
-    return post(ENDPOINTS.CREATE_USER, data);
-  },
-  /**
-   * Update staff member
-   */
-  async updateStaff(id2, data) {
-    if (data.profileImage) {
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== void 0 && value !== null) {
-          if (Array.isArray(value)) {
-            formData.append(key, JSON.stringify(value));
-          } else if (value instanceof File) {
-            formData.append(key, value);
-          } else {
-            formData.append(key, String(value));
-          }
-        }
-      });
-      return upload(ENDPOINTS.UPDATE_USER(id2), formData, {
-        method: "PUT"
-      });
-    }
-    return put(ENDPOINTS.UPDATE_USER(id2), data);
-  },
-  /**
-   * Delete staff member
-   */
-  async deleteStaff(id2) {
-    return del(
-      ENDPOINTS.DELETE_USER(id2)
-    );
-  },
-  /**
-   * Toggle staff status
-   */
-  async toggleStaffStatus(id2) {
-    return patch(ENDPOINTS.TOGGLE_USER_STATUS(id2));
-  }
-};
 function UsersPage() {
   const { canCreate, canEdit, canDelete, isAdmin: isAdmin2, userPermissions } = usePermissions();
   console.log("🔍 UsersPage - Permission Check:");
@@ -91618,11 +92704,14 @@ function UsersPage() {
   console.log("  canDelete:", canDelete);
   console.log("  userPermissions:", userPermissions);
   console.log("  USERS_CREATE permission:", PERMISSIONS.USERS_CREATE);
-  console.log("  Has USERS_CREATE?", userPermissions.includes(PERMISSIONS.USERS_CREATE));
+  console.log(
+    "  Has USERS_CREATE?",
+    userPermissions.includes(PERMISSIONS.USERS_CREATE)
+  );
   const [staff, setStaff] = reactExports.useState([]);
   const [roles, setRoles] = reactExports.useState([]);
   const [cities, setCities] = reactExports.useState([]);
-  const [zones, setZones] = reactExports.useState([]);
+  const [_zones, setZones] = reactExports.useState([]);
   const [loading, setLoading] = reactExports.useState(true);
   const [searchTerm, setSearchTerm] = reactExports.useState("");
   const [roleFilter, setRoleFilter] = reactExports.useState("all");
@@ -91657,11 +92746,13 @@ function UsersPage() {
       ]);
       if (staffRes.success) setStaff(staffRes.data);
       if (rolesRes.success) {
-        const nonAdminRoles = rolesRes.data.filter((role) => role.name !== "Admin");
+        const nonAdminRoles = rolesRes.data.filter(
+          (role) => role.name !== "Admin"
+        );
         setRoles(nonAdminRoles);
       }
-      setCities(citiesRes.data);
-      setZones(zonesRes.data);
+      setCities(citiesRes.data || []);
+      setZones(zonesRes.data || []);
     } catch (error) {
       console.error("Failed to load data:", error);
     } finally {
@@ -91672,9 +92763,11 @@ function UsersPage() {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.mobile.trim()) newErrors.mobile = "Mobile is required";
-    if (!/^\d{10}$/.test(formData.mobile)) newErrors.mobile = "Mobile must be 10 digits";
+    if (!/^\d{10}$/.test(formData.mobile))
+      newErrors.mobile = "Mobile must be 10 digits";
     if (!formData.roleId) newErrors.roleId = "Role is required";
-    if (!editingStaff && !formData.password) newErrors.password = "Password is required";
+    if (!editingStaff && !formData.password)
+      newErrors.password = "Password is required";
     if (formData.password && formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
@@ -91770,8 +92863,11 @@ function UsersPage() {
     setErrors({});
   };
   const filteredStaff = staff.filter((s2) => {
-    var _a3;
-    const matchesSearch = s2.name.toLowerCase().includes(searchTerm.toLowerCase()) || s2.mobile.includes(searchTerm) || ((_a3 = s2.email) == null ? void 0 : _a3.toLowerCase().includes(searchTerm.toLowerCase()));
+    const name = s2.name || "";
+    const mobile = s2.mobile || "";
+    const email2 = s2.email || "";
+    const normalizedSearch = searchTerm.toLowerCase();
+    const matchesSearch = name.toLowerCase().includes(normalizedSearch) || mobile.includes(searchTerm) || email2.toLowerCase().includes(normalizedSearch);
     const matchesRole = roleFilter === "all" || s2.roleId === roleFilter;
     const matchesStatus = statusFilter === "all" || s2.status === statusFilter;
     return matchesSearch && matchesRole && matchesStatus;
@@ -91784,11 +92880,11 @@ function UsersPage() {
       render: (staffMember) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Avatar, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImage, { src: staffMember.profileImage }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarFallback, { children: staffMember.name.split(" ").map((n2) => n2[0]).join("").toUpperCase() })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarFallback, { children: (staffMember.name || "User").split(" ").map((n2) => n2[0]).join("").toUpperCase() })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: staffMember.name }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground", children: staffMember.mobile })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: staffMember.name || "Unnamed User" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground", children: staffMember.mobile || "No mobile" })
         ] })
       ] })
     },
@@ -91804,7 +92900,13 @@ function UsersPage() {
       label: "Role",
       render: (staffMember) => {
         var _a3, _b2;
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: ((_a3 = staffMember.role) == null ? void 0 : _a3.name) === "Admin" ? "default" : "secondary", children: ((_b2 = staffMember.role) == null ? void 0 : _b2.name) || "No Role" });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Badge,
+          {
+            variant: ((_a3 = staffMember.role) == null ? void 0 : _a3.name) === "Admin" ? "default" : "secondary",
+            children: ((_b2 = staffMember.role) == null ? void 0 : _b2.name) || "No Role"
+          }
+        );
       }
     },
     {
@@ -91820,7 +92922,13 @@ function UsersPage() {
       accessorKey: "status",
       key: "status",
       label: "Status",
-      render: (staffMember) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: staffMember.status === "active" ? "default" : "secondary", children: staffMember.status })
+      render: (staffMember) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Badge,
+        {
+          variant: staffMember.status === "active" ? "default" : "secondary",
+          children: staffMember.status
+        }
+      )
     },
     {
       accessorKey: "actions",
@@ -91979,7 +93087,8 @@ function UsersPage() {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "col-span-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs(Label$1, { htmlFor: "password", children: [
-              "Password ",
+              "Password",
+              " ",
               !editingStaff && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-destructive", children: "*" })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -92006,7 +93115,13 @@ function UsersPage() {
                 value: formData.roleId,
                 onValueChange: (value) => setFormData({ ...formData, roleId: value }),
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { className: errors.roleId ? "border-destructive" : "", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select a role" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    SelectTrigger,
+                    {
+                      className: errors.roleId ? "border-destructive" : "",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select a role" })
+                    }
+                  ),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContent, { children: roles.map((role) => /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: role.id, children: role.name }, role.id)) })
                 ]
               }
@@ -92889,6 +94004,7 @@ const ROUTE_PERMISSIONS = {
   "/orders": "orders:view",
   "/orders/normal": "normalOrders:view",
   "/orders/bulk": "bulkOrders:view",
+  "/approvals/sellers": "sellerApprovals:view",
   "/franchise": "franchise:view",
   "/franchise/registered": "registeredFranchises:view",
   "/franchise/requests": "franchiseRequests:view",
@@ -92917,7 +94033,15 @@ function ProtectedRoute() {
         navigate({ to: "/unauthorized" });
       }
     }
-  }, [isAuthenticated, isRehydrating, isLoading, location.pathname, can, isAdmin2, navigate]);
+  }, [
+    isAuthenticated,
+    isRehydrating,
+    isLoading,
+    location.pathname,
+    can,
+    isAdmin2,
+    navigate
+  ]);
   reactExports.useEffect(() => {
     if (isAuthenticated) {
       const { applyTheme } = useThemeStore.getState();
@@ -93027,6 +94151,11 @@ const bulkOrdersRoute = createRoute({
   path: "/orders/bulk",
   component: BulkOrdersPage
 });
+const sellerApprovalsRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: "/approvals/sellers",
+  component: SellerApprovalsPage
+});
 const franchiseRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "/franchise",
@@ -93078,6 +94207,7 @@ const routeTree = rootRoute.addChildren([
       ordersRoute,
       normalOrdersRoute,
       bulkOrdersRoute,
+      sellerApprovalsRoute,
       franchiseRoute,
       registeredFranchiseRoute,
       franchiseRequestsRoute,

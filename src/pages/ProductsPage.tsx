@@ -5,6 +5,8 @@ import {
   FormSelect,
   FormTextarea,
 } from "@/components/FormComponents";
+import { IngredientsInput } from "@/components/IngredientsInput";
+import { NutritionValuesInput } from "@/components/NutritionValuesInput";
 import { PageHeader } from "@/components/PageHeader";
 import { PermissionGuard } from "@/components/PermissionGuard";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ImageIcon, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:9020";
 
@@ -84,6 +86,8 @@ export function ProductsPage() {
       minBulkQty: 0,
       isFeatured: false,
       status: "active",
+      nutritionValues: {},
+      ingredients: [],
     });
     setIsModalOpen(true);
   };
@@ -105,6 +109,8 @@ export function ProductsPage() {
       minBulkQty: product.minBulkQty,
       isFeatured: product.isFeatured,
       status: product.status,
+      nutritionValues: product.nutritionValues || {},
+      ingredients: product.ingredients || [],
     });
     setIsModalOpen(true);
   };
@@ -416,6 +422,31 @@ export function ProductsPage() {
                   { value: "inactive", label: "Inactive" },
                 ]}
               />
+              <div className="space-y-4 pt-4 border-t">
+                <h3 className="text-lg font-medium">Nutrition & Ingredients</h3>
+                
+                <Controller
+                  name="nutritionValues"
+                  control={methods.control}
+                  render={({ field }) => (
+                    <NutritionValuesInput
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                
+                <Controller
+                  name="ingredients"
+                  control={methods.control}
+                  render={({ field }) => (
+                    <IngredientsInput
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
               <div className="flex justify-end gap-2 pt-4">
                 <Button
                   type="button"

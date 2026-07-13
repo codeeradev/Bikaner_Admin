@@ -56,6 +56,7 @@ export type PermissionModule =
   | "orders"
   | "normalOrders"
   | "bulkOrders"
+  | "sellerApprovals"
   | "franchise"
   | "franchiseRequests"
   | "registeredFranchises"

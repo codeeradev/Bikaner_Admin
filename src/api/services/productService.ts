@@ -1,6 +1,15 @@
 import { del, get, upload } from "../apiClient";
 import { ENDPOINTS } from "../endpoints";
 
+export interface NutritionEntry {
+  value: number;
+  unit: string;
+}
+
+export interface NutritionValues {
+  [key: string]: NutritionEntry;
+}
+
 export interface Product {
   id: string;
   categoryId: string;
@@ -17,6 +26,8 @@ export interface Product {
   minBulkQty?: number;
   isFeatured?: boolean;
   status: "active" | "inactive";
+  nutritionValues?: NutritionValues;
+  ingredients?: string[];
   createdAt: string;
   updatedAt: string;
   category?: {
@@ -40,6 +51,8 @@ export interface CreateProductDto {
   minBulkQty?: number;
   isFeatured?: boolean;
   status?: "active" | "inactive";
+  nutritionValues?: NutritionValues;
+  ingredients?: string[];
 }
 
 export interface UpdateProductDto {
@@ -57,6 +70,8 @@ export interface UpdateProductDto {
   minBulkQty?: number;
   isFeatured?: boolean;
   status?: "active" | "inactive";
+  nutritionValues?: NutritionValues;
+  ingredients?: string[];
 }
 
 export interface ProductListResponse {
@@ -119,6 +134,15 @@ export const productService = {
       formData.append("image", data.image);
     }
     
+    // Add nutritionValues as JSON string
+    if (data.nutritionValues && Object.keys(data.nutritionValues).length > 0) {
+      formData.append("nutritionValues", JSON.stringify(data.nutritionValues));
+    }
+    
+    // Add ingredients as JSON string
+    if (data.ingredients && data.ingredients.length > 0) {
+      formData.append("ingredients", JSON.stringify(data.ingredients));
+    }
     
     return upload<Product>(ENDPOINTS.CREATE_PRODUCT, formData);
   },
@@ -151,6 +175,16 @@ export const productService = {
     // Add image file if provided
     if (data.image) {
       formData.append("image", data.image);
+    }
+    
+    // Add nutritionValues as JSON string
+    if (data.nutritionValues !== undefined) {
+      formData.append("nutritionValues", JSON.stringify(data.nutritionValues));
+    }
+    
+    // Add ingredients as JSON string
+    if (data.ingredients !== undefined) {
+      formData.append("ingredients", JSON.stringify(data.ingredients));
     }
     
     return upload<Product>(ENDPOINTS.UPDATE_PRODUCT(id), formData, undefined, 'PUT');

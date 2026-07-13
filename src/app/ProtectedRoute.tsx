@@ -1,8 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAuthStore, useThemeStore } from "@/store";
-import { Outlet, useNavigate, useLocation } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useAuthStore, useThemeStore } from "@/store";
+import { Outlet, useLocation, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 // Map routes to required permissions
 const ROUTE_PERMISSIONS: Record<string, string> = {
@@ -14,6 +14,7 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   "/orders": "orders:view",
   "/orders/normal": "normalOrders:view",
   "/orders/bulk": "bulkOrders:view",
+  "/approvals/sellers": "sellerApprovals:view",
   "/franchise": "franchise:view",
   "/franchise/registered": "registeredFranchises:view",
   "/franchise/requests": "franchiseRequests:view",
@@ -48,7 +49,15 @@ export function ProtectedRoute() {
         navigate({ to: "/unauthorized" });
       }
     }
-  }, [isAuthenticated, isRehydrating, isLoading, location.pathname, can, isAdmin, navigate]);
+  }, [
+    isAuthenticated,
+    isRehydrating,
+    isLoading,
+    location.pathname,
+    can,
+    isAdmin,
+    navigate,
+  ]);
 
   // Ensure theme is applied when entering protected routes
   useEffect(() => {

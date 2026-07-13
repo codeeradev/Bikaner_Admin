@@ -1,6 +1,6 @@
 /**
  * Permission utility functions
- * 
+ *
  * This file contains helper functions for checking user permissions
  * and working with the RBAC system
  */
@@ -17,6 +17,7 @@ export type PermissionModule =
   | "orders"
   | "normalOrders"
   | "bulkOrders"
+  | "sellerApprovals"
   | "franchise"
   | "franchiseRequests"
   | "registeredFranchises"
@@ -72,6 +73,10 @@ export const PERMISSIONS = {
   // Bulk Orders
   BULK_ORDERS_VIEW: "bulkOrders:view",
   BULK_ORDERS_EDIT: "bulkOrders:edit",
+
+  // Seller Approvals
+  SELLER_APPROVALS_VIEW: "sellerApprovals:view",
+  SELLER_APPROVALS_MANAGE: "sellerApprovals:manage",
 
   // Franchise
   FRANCHISE_VIEW: "franchise:view",
@@ -134,6 +139,7 @@ export const MODULE_LABELS: Record<PermissionModule, string> = {
   orders: "Orders",
   normalOrders: "Normal Orders",
   bulkOrders: "Bulk Orders",
+  sellerApprovals: "Seller Approvals",
   franchise: "Franchise",
   franchiseRequests: "Franchise Requests",
   registeredFranchises: "Registered Franchises",
@@ -170,7 +176,7 @@ export const SPECIAL_ROLES = {
  */
 export const createPermission = (
   module: PermissionModule,
-  action: PermissionAction
+  action: PermissionAction,
 ): string => {
   return `${module}:${action}`;
 };
@@ -179,7 +185,7 @@ export const createPermission = (
  * Parse permission string into module and action
  */
 export const parsePermission = (
-  permission: string
+  permission: string,
 ): { module: string; action: string } => {
   const [module, action] = permission.split(":");
   return { module, action };
@@ -190,7 +196,7 @@ export const parsePermission = (
  */
 export const hasPermission = (
   userPermissions: string[],
-  requiredPermission: string
+  requiredPermission: string,
 ): boolean => {
   return userPermissions.includes(requiredPermission);
 };
@@ -200,10 +206,10 @@ export const hasPermission = (
  */
 export const hasAnyPermission = (
   userPermissions: string[],
-  requiredPermissions: string[]
+  requiredPermissions: string[],
 ): boolean => {
   return requiredPermissions.some((permission) =>
-    userPermissions.includes(permission)
+    userPermissions.includes(permission),
   );
 };
 
@@ -212,10 +218,10 @@ export const hasAnyPermission = (
  */
 export const hasAllPermissions = (
   userPermissions: string[],
-  requiredPermissions: string[]
+  requiredPermissions: string[],
 ): boolean => {
   return requiredPermissions.every((permission) =>
-    userPermissions.includes(permission)
+    userPermissions.includes(permission),
   );
 };
 
@@ -231,7 +237,7 @@ export const isAdmin = (roleName: string): boolean => {
  */
 export const getModulePermissions = (module: PermissionModule): string[] => {
   return Object.values(PERMISSIONS).filter((permission) =>
-    permission.startsWith(`${module}:`)
+    permission.startsWith(`${module}:`),
   );
 };
 
@@ -239,7 +245,7 @@ export const getModulePermissions = (module: PermissionModule): string[] => {
  * Group permissions by module
  */
 export const groupPermissionsByModule = (
-  permissions: string[]
+  permissions: string[],
 ): Record<string, string[]> => {
   const grouped: Record<string, string[]> = {};
 
@@ -259,7 +265,7 @@ export const groupPermissionsByModule = (
  */
 export const filterPermissionsByAction = (
   permissions: string[],
-  action: PermissionAction
+  action: PermissionAction,
 ): string[] => {
   return permissions.filter((permission) => permission.endsWith(`:${action}`));
 };
@@ -269,10 +275,10 @@ export const filterPermissionsByAction = (
  */
 export const getModuleActions = (
   permissions: string[],
-  module: PermissionModule
+  module: PermissionModule,
 ): PermissionAction[] => {
   const modulePermissions = permissions.filter((permission) =>
-    permission.startsWith(`${module}:`)
+    permission.startsWith(`${module}:`),
   );
 
   return modulePermissions.map((permission) => {
@@ -287,7 +293,7 @@ export const getModuleActions = (
 export const hasModuleAction = (
   permissions: string[],
   module: PermissionModule,
-  action: PermissionAction
+  action: PermissionAction,
 ): boolean => {
   return permissions.includes(createPermission(module, action));
 };

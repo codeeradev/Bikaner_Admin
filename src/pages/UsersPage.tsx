@@ -1,3 +1,14 @@
+import { cityService } from "@/api/services/cityService";
+import { roleService } from "@/api/services/roleService";
+import { staffService } from "@/api/services/staffService";
+import { zoneService } from "@/api/services/zoneService";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { DataTable } from "@/components/DataTable";
+import { PageHeader } from "@/components/PageHeader";
+import { PermissionGuard } from "@/components/PermissionGuard";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,26 +34,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { staffService } from "@/api/services/staffService";
-import { roleService } from "@/api/services/roleService";
-import { cityService } from "@/api/services/cityService";
-import { zoneService } from "@/api/services/zoneService";
-import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { DataTable } from "@/components/DataTable";
-import { PageHeader } from "@/components/PageHeader";
-import { PermissionGuard } from "@/components/PermissionGuard";
-import { PERMISSIONS } from "@/lib/permissions";
 import { usePermissions } from "@/hooks/usePermissions";
-import type { Staff, Role } from "@/types";
-import { Loader2, Plus, Search, Edit, Trash2, UserCheck, UserX } from "lucide-react";
+import { PERMISSIONS } from "@/lib/permissions";
+import type { Role, Staff } from "@/types";
+import {
+  Edit,
+  Loader2,
+  Plus,
+  Search,
+  Trash2,
+  UserCheck,
+  UserX,
+} from "lucide-react";
 import { useEffect, useState } from "react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function UsersPage() {
-  const { canCreate, canEdit, canDelete, isAdmin, userPermissions } = usePermissions();
-  
+  const { canCreate, canEdit, canDelete, isAdmin, userPermissions } =
+    usePermissions();
+
   // Debug logging
   console.log("🔍 UsersPage - Permission Check:");
   console.log("  isAdmin:", isAdmin);
@@ -51,12 +60,15 @@ export function UsersPage() {
   console.log("  canDelete:", canDelete);
   console.log("  userPermissions:", userPermissions);
   console.log("  USERS_CREATE permission:", PERMISSIONS.USERS_CREATE);
-  console.log("  Has USERS_CREATE?", userPermissions.includes(PERMISSIONS.USERS_CREATE));
-  
+  console.log(
+    "  Has USERS_CREATE?",
+    userPermissions.includes(PERMISSIONS.USERS_CREATE),
+  );
+
   const [staff, setStaff] = useState<Staff[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [cities, setCities] = useState<any[]>([]);
-  const [zones, setZones] = useState<any[]>([]);
+  const [_zones, setZones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -95,11 +107,13 @@ export function UsersPage() {
       if (staffRes.success) setStaff(staffRes.data);
       if (rolesRes.success) {
         // Filter out Admin role from the list
-        const nonAdminRoles = rolesRes.data.filter(role => role.name !== "Admin");
+        const nonAdminRoles = rolesRes.data.filter(
+          (role) => role.name !== "Admin",
+        );
         setRoles(nonAdminRoles);
       }
-      setCities(citiesRes.data);
-      setZones(zonesRes.data);
+      setCities(citiesRes.data || []);
+      setZones(zonesRes.data || []);
     } catch (error) {
       console.error("Failed to load data:", error);
     } finally {
@@ -112,9 +126,11 @@ export function UsersPage() {
 
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.mobile.trim()) newErrors.mobile = "Mobile is required";
-    if (!/^\d{10}$/.test(formData.mobile)) newErrors.mobile = "Mobile must be 10 digits";
+    if (!/^\d{10}$/.test(formData.mobile))
+      newErrors.mobile = "Mobile must be 10 digits";
     if (!formData.roleId) newErrors.roleId = "Role is required";
-    if (!editingStaff && !formData.password) newErrors.password = "Password is required";
+    if (!editingStaff && !formData.password)
+      newErrors.password = "Password is required";
     if (formData.password && formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
@@ -222,10 +238,15 @@ export function UsersPage() {
   };
 
   const filteredStaff = staff.filter((s) => {
+    const name = s.name || "";
+    const mobile = s.mobile || "";
+    const email = s.email || "";
+    const normalizedSearch = searchTerm.toLowerCase();
+
     const matchesSearch =
-      s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.mobile.includes(searchTerm) ||
-      s.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      name.toLowerCase().includes(normalizedSearch) ||
+      mobile.includes(searchTerm) ||
+      email.toLowerCase().includes(normalizedSearch);
 
     const matchesRole = roleFilter === "all" || s.roleId === roleFilter;
     const matchesStatus = statusFilter === "all" || s.status === statusFilter;
@@ -243,7 +264,7 @@ export function UsersPage() {
           <Avatar>
             <AvatarImage src={staffMember.profileImage} />
             <AvatarFallback>
-              {staffMember.name
+              {(staffMember.name || "User")
                 .split(" ")
                 .map((n) => n[0])
                 .join("")
@@ -251,8 +272,12 @@ export function UsersPage() {
             </AvatarFallback>
           </Avatar>
           <div>
-            <div className="font-medium">{staffMember.name}</div>
-            <div className="text-sm text-muted-foreground">{staffMember.mobile}</div>
+            <div className="font-medium">
+              {staffMember.name || "Unnamed User"}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {staffMember.mobile || "No mobile"}
+            </div>
           </div>
         </div>
       ),
@@ -268,7 +293,9 @@ export function UsersPage() {
       key: "role",
       label: "Role",
       render: (staffMember: Staff) => (
-        <Badge variant={staffMember.role?.name === "Admin" ? "default" : "secondary"}>
+        <Badge
+          variant={staffMember.role?.name === "Admin" ? "default" : "secondary"}
+        >
           {staffMember.role?.name || "No Role"}
         </Badge>
       ),
@@ -284,7 +311,9 @@ export function UsersPage() {
       key: "status",
       label: "Status",
       render: (staffMember: Staff) => (
-        <Badge variant={staffMember.status === "active" ? "default" : "secondary"}>
+        <Badge
+          variant={staffMember.status === "active" ? "default" : "secondary"}
+        >
           {staffMember.status}
         </Badge>
       ),
@@ -472,7 +501,9 @@ export function UsersPage() {
                   className={errors.mobile ? "border-destructive" : ""}
                 />
                 {errors.mobile && (
-                  <p className="text-xs text-destructive mt-1">{errors.mobile}</p>
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.mobile}
+                  </p>
                 )}
               </div>
 
@@ -490,7 +521,8 @@ export function UsersPage() {
 
               <div className="col-span-2">
                 <Label htmlFor="password">
-                  Password {!editingStaff && <span className="text-destructive">*</span>}
+                  Password{" "}
+                  {!editingStaff && <span className="text-destructive">*</span>}
                 </Label>
                 <Input
                   id="password"
@@ -499,11 +531,15 @@ export function UsersPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
-                  placeholder={editingStaff ? "Leave blank to keep current" : ""}
+                  placeholder={
+                    editingStaff ? "Leave blank to keep current" : ""
+                  }
                   className={errors.password ? "border-destructive" : ""}
                 />
                 {errors.password && (
-                  <p className="text-xs text-destructive mt-1">{errors.password}</p>
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.password}
+                  </p>
                 )}
               </div>
 
@@ -517,7 +553,9 @@ export function UsersPage() {
                     setFormData({ ...formData, roleId: value })
                   }
                 >
-                  <SelectTrigger className={errors.roleId ? "border-destructive" : ""}>
+                  <SelectTrigger
+                    className={errors.roleId ? "border-destructive" : ""}
+                  >
                     <SelectValue placeholder="Select a role" />
                   </SelectTrigger>
                   <SelectContent>
@@ -529,7 +567,9 @@ export function UsersPage() {
                   </SelectContent>
                 </Select>
                 {errors.roleId && (
-                  <p className="text-xs text-destructive mt-1">{errors.roleId}</p>
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.roleId}
+                  </p>
                 )}
               </div>
 
