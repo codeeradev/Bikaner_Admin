@@ -103,11 +103,11 @@ export interface Staff {
     id: string;
     name: string;
   };
-  zoneIds?: string[];
-  zones?: Array<{
+  zoneId?: string;
+  zone?: {
     id: string;
     name: string;
-  }>;
+  };
   status: "active" | "inactive";
   isBlocked?: boolean;
   createdAt: string;

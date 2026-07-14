@@ -88520,12 +88520,12 @@ function LoginPage() {
     handleSubmit,
     formState: { errors }
   } = useForm({
-    resolver: u$1(loginSchema)
-    // defaultValues: {
-    //   email: "9999999999",
-    //   password: "admin123",
-    //   rememberMe: false,
-    // },
+    resolver: u$1(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false
+    }
   });
   if (Object.keys(errors).length > 0) {
     console.log("⚠️ Validation errors:", errors);
@@ -92711,7 +92711,7 @@ function UsersPage() {
   const [staff, setStaff] = reactExports.useState([]);
   const [roles, setRoles] = reactExports.useState([]);
   const [cities, setCities] = reactExports.useState([]);
-  const [_zones, setZones] = reactExports.useState([]);
+  const [zones, setZones] = reactExports.useState([]);
   const [loading, setLoading] = reactExports.useState(true);
   const [searchTerm, setSearchTerm] = reactExports.useState("");
   const [roleFilter, setRoleFilter] = reactExports.useState("all");
@@ -92727,7 +92727,7 @@ function UsersPage() {
     password: "",
     roleId: "",
     cityId: "",
-    zoneIds: [],
+    zoneId: "",
     status: "active"
   });
   const [errors, setErrors] = reactExports.useState({});
@@ -92786,7 +92786,7 @@ function UsersPage() {
           mobile: formData.mobile,
           roleId: formData.roleId,
           cityId: formData.cityId || void 0,
-          zoneIds: formData.zoneIds.length > 0 ? formData.zoneIds : void 0,
+          zoneId: formData.zoneId || void 0,
           status: formData.status
         };
         if (formData.password) {
@@ -92801,7 +92801,7 @@ function UsersPage() {
           password: formData.password,
           roleId: formData.roleId,
           cityId: formData.cityId || void 0,
-          zoneIds: formData.zoneIds.length > 0 ? formData.zoneIds : void 0,
+          zoneId: formData.zoneId || void 0,
           status: formData.status
         });
       }
@@ -92824,7 +92824,7 @@ function UsersPage() {
       password: "",
       roleId: staffMember.roleId,
       cityId: staffMember.cityId || "",
-      zoneIds: staffMember.zoneIds || [],
+      zoneId: staffMember.zoneId || "",
       status: staffMember.status
     });
     setIsDialogOpen(true);
@@ -92856,7 +92856,7 @@ function UsersPage() {
       password: "",
       roleId: "",
       cityId: "",
-      zoneIds: [],
+      zoneId: "",
       status: "active"
     });
     setEditingStaff(null);
@@ -93138,6 +93138,20 @@ function UsersPage() {
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select city" }) }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContent, { children: cities.map((city) => /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: city.id, children: city.name }, city.id)) })
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "zoneId", children: "Zone" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Select,
+              {
+                value: formData.zoneId,
+                onValueChange: (value) => setFormData({ ...formData, zoneId: value }),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select zone" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContent, { children: zones.map((zone) => /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: zone.id, children: zone.name }, zone.id)) })
                 ]
               }
             )

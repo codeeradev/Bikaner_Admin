@@ -9,7 +9,7 @@ export interface CreateStaffDto {
   email?: string;
   password: string;
   cityId?: string;
-  zoneIds?: string[];
+  zoneId?: string;
   allowedCategories?: string[];
   customPricingEnabled?: boolean;
   status?: "active" | "inactive";
@@ -23,7 +23,7 @@ export interface UpdateStaffDto {
   email?: string;
   password?: string;
   cityId?: string;
-  zoneIds?: string[];
+  zoneId?: string;
   allowedCategories?: string[];
   customPricingEnabled?: boolean;
   status?: "active" | "inactive";

@@ -68,7 +68,7 @@ export function UsersPage() {
   const [staff, setStaff] = useState<Staff[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [cities, setCities] = useState<any[]>([]);
-  const [_zones, setZones] = useState<any[]>([]);
+  const [zones, setZones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -84,7 +84,7 @@ export function UsersPage() {
     password: "",
     roleId: "",
     cityId: "",
-    zoneIds: [] as string[],
+    zoneId: "",
     status: "active" as "active" | "inactive",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -153,7 +153,7 @@ export function UsersPage() {
           mobile: formData.mobile,
           roleId: formData.roleId,
           cityId: formData.cityId || undefined,
-          zoneIds: formData.zoneIds.length > 0 ? formData.zoneIds : undefined,
+          zoneId: formData.zoneId || undefined,
           status: formData.status,
         };
         if (formData.password) {
@@ -169,7 +169,7 @@ export function UsersPage() {
           password: formData.password,
           roleId: formData.roleId,
           cityId: formData.cityId || undefined,
-          zoneIds: formData.zoneIds.length > 0 ? formData.zoneIds : undefined,
+          zoneId: formData.zoneId || undefined,
           status: formData.status,
         });
       }
@@ -194,7 +194,7 @@ export function UsersPage() {
       password: "",
       roleId: staffMember.roleId,
       cityId: staffMember.cityId || "",
-      zoneIds: staffMember.zoneIds || [],
+      zoneId: staffMember.zoneId || "",
       status: staffMember.status,
     });
     setIsDialogOpen(true);
@@ -230,7 +230,7 @@ export function UsersPage() {
       password: "",
       roleId: "",
       cityId: "",
-      zoneIds: [],
+      zoneId: "",
       status: "active",
     });
     setEditingStaff(null);
@@ -588,6 +588,27 @@ export function UsersPage() {
                     {cities.map((city) => (
                       <SelectItem key={city.id} value={city.id}>
                         {city.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="zoneId">Zone</Label>
+                <Select
+                  value={formData.zoneId}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, zoneId: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select zone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {zones.map((zone) => (
+                      <SelectItem key={zone.id} value={zone.id}>
+                        {zone.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

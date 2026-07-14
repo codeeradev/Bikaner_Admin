@@ -32,11 +32,11 @@ export function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    // defaultValues: {
-    //   email: "9999999999",
-    //   password: "admin123",
-    //   rememberMe: false,
-    // },
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
   });
 
   // Log validation errors when they occur
