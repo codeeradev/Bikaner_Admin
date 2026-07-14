@@ -48,7 +48,7 @@ export function LoginPage() {
     console.log("🔐 Login form submitted with data:", { mobile: data.email });
     setError("");
     setIsSubmitting(true);
-    
+
     try {
       console.log("📞 Calling login function...");
       const result = await login(
@@ -56,21 +56,26 @@ export function LoginPage() {
         data.password,
         data.rememberMe || false,
       );
-      
+
       console.log("📦 Login result:", result);
       setIsSubmitting(false);
-      
+
       if (result.success) {
         console.log("✅ Login successful, navigating to dashboard...");
         navigate({ to: "/dashboard" });
       } else {
         console.error("❌ Login failed:", result.error);
-        setError(result.error || "Invalid mobile or password. Try 9999999999 / admin123");
+        setError(
+          result.error ||
+            "Invalid mobile or password. Try 9999999999 / admin123",
+        );
       }
     } catch (err) {
       console.error("💥 Login error:", err);
       setIsSubmitting(false);
-      setError(`An error occurred during login: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(
+        `An error occurred during login: ${err instanceof Error ? err.message : "Unknown error"}`,
+      );
     }
   };
 
@@ -98,8 +103,13 @@ export function LoginPage() {
           </CardHeader>
           <CardContent>
             {error && (
-              <Alert variant="destructive" className="mb-4">
-                <AlertDescription>{error}</AlertDescription>
+              <Alert
+                variant="destructive"
+                className="mb-4 border-red-500 bg-red-50 dark:bg-red-950/30"
+              >
+                <AlertDescription className="font-medium text-red-600 dark:text-red-400">
+                  {error}
+                </AlertDescription>
               </Alert>
             )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

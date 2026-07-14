@@ -88549,12 +88549,16 @@ function LoginPage() {
         navigate({ to: "/dashboard" });
       } else {
         console.error("❌ Login failed:", result.error);
-        setError(result.error || "Invalid mobile or password. Try 9999999999 / admin123");
+        setError(
+          result.error || "Invalid mobile or password. Try 9999999999 / admin123"
+        );
       }
     } catch (err) {
       console.error("💥 Login error:", err);
       setIsSubmitting(false);
-      setError(`An error occurred during login: ${err instanceof Error ? err.message : "Unknown error"}`);
+      setError(
+        `An error occurred during login: ${err instanceof Error ? err.message : "Unknown error"}`
+      );
     }
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-card to-background p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -88573,7 +88577,14 @@ function LoginPage() {
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { children: [
-          error && /* @__PURE__ */ jsxRuntimeExports.jsx(Alert, { variant: "destructive", className: "mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDescription, { children: error }) }),
+          error && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Alert,
+            {
+              variant: "destructive",
+              className: "mb-4 border-red-500 bg-red-50 dark:bg-red-950/30",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDescription, { className: "font-medium text-red-600 dark:text-red-400", children: error })
+            }
+          ),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit(onSubmit), className: "space-y-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "email", children: "Mobile Number" }),
