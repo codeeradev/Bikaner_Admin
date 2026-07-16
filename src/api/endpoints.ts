@@ -127,4 +127,10 @@ export const ENDPOINTS = {
   BANNERS_CREATE: `${BASE_URL}/banners`,
   BANNERS_UPDATE: (id: string) => `${BASE_URL}/banners/${id}`,
   BANNERS_DELETE: (id: string) => `${BASE_URL}/banners/${id}`,
+
+  // Notifications
+  GET_NOTIFICATIONS: `${BASE_URL}/notifications`,
+  MARK_NOTIFICATION_READ: (id: string) =>
+    `${BASE_URL}/notifications/${id}/read`,
+  DELETE_NOTIFICATION: (id: string) => `${BASE_URL}/notifications/${id}`,
 } as const;

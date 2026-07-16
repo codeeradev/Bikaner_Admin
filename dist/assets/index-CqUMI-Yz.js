@@ -25831,7 +25831,11 @@ const ENDPOINTS = {
   BANNERS_GET: `${BASE_URL}/banners`,
   BANNERS_CREATE: `${BASE_URL}/banners`,
   BANNERS_UPDATE: (id2) => `${BASE_URL}/banners/${id2}`,
-  BANNERS_DELETE: (id2) => `${BASE_URL}/banners/${id2}`
+  BANNERS_DELETE: (id2) => `${BASE_URL}/banners/${id2}`,
+  // Notifications
+  GET_NOTIFICATIONS: `${BASE_URL}/notifications`,
+  MARK_NOTIFICATION_READ: (id2) => `${BASE_URL}/notifications/${id2}/read`,
+  DELETE_NOTIFICATION: (id2) => `${BASE_URL}/notifications/${id2}`
 };
 const authService = {
   /**
@@ -26742,6 +26746,12 @@ const zoneService = {
     return del(ENDPOINTS.DELETE_ZONE(id2));
   }
 };
+const ensureSuccess = (response, fallbackMessage) => {
+  if (!response.success) {
+    throw new Error(response.message || fallbackMessage);
+  }
+  return response;
+};
 const toOrderListItem = (order) => {
   var _a3, _b2, _c2, _d2, _e2, _f2;
   return {
@@ -26764,31 +26774,47 @@ const toOrderListItem = (order) => {
 };
 const orderService = {
   async getOrders(params) {
-    const response = await get$4(ENDPOINTS.GET_ORDERS, params);
+    const response = ensureSuccess(
+      await get$4(ENDPOINTS.GET_ORDERS, params),
+      "Failed to fetch orders"
+    );
     return {
       orders: response.data.map(toOrderListItem),
       raw: response.data
     };
   },
   async getNormalOrders() {
-    const response = await get$4(ENDPOINTS.GET_NORMAL_ORDERS, {
-      limit: 100
-    });
+    const response = ensureSuccess(
+      await get$4(ENDPOINTS.GET_NORMAL_ORDERS, {
+        limit: 100
+      }),
+      "Failed to fetch normal orders"
+    );
     return response.data.map(toOrderListItem);
   },
   async getBulkOrders() {
-    const response = await get$4(ENDPOINTS.GET_BULK_ORDERS, {
-      limit: 100
-    });
+    const response = ensureSuccess(
+      await get$4(ENDPOINTS.GET_BULK_ORDERS, {
+        limit: 100
+      }),
+      "Failed to fetch bulk orders"
+    );
     return response.data.map(toOrderListItem);
   },
-  async updateOrderStatus(id2, orderStatus) {
-    return put(ENDPOINTS.UPDATE_ORDER_STATUS(id2), {
-      orderStatus
-    });
+  async updateOrderStatus(id2, orderStatus, cancelReason) {
+    return ensureSuccess(
+      await put(ENDPOINTS.UPDATE_ORDER_STATUS(id2), {
+        orderStatus,
+        cancelReason
+      }),
+      "Failed to update order status"
+    );
   },
   async cancelOrder(id2, cancelReason) {
-    return put(ENDPOINTS.CANCEL_ORDER(id2), { cancelReason });
+    return ensureSuccess(
+      await put(ENDPOINTS.CANCEL_ORDER(id2), { cancelReason }),
+      "Failed to cancel order"
+    );
   }
 };
 const productService = {
@@ -33966,7 +33992,7 @@ const ColumnGrouping = {
     };
   }
 };
-function orderColumns$2(leafColumns, grouping, groupedColumnMode) {
+function orderColumns$1(leafColumns, grouping, groupedColumnMode) {
   if (!(grouping != null && grouping.length) || !groupedColumnMode) {
     return leafColumns;
   }
@@ -34024,7 +34050,7 @@ const ColumnOrdering = {
         }
         orderedColumns = [...orderedColumns, ...columnsCopy];
       }
-      return orderColumns$2(orderedColumns, grouping, groupedColumnMode);
+      return orderColumns$1(orderedColumns, grouping, groupedColumnMode);
     }, getMemoOptions(table.options, "debugTable"));
   }
 };
@@ -38124,6 +38150,19 @@ function BannersPage() {
     ] }) })
   ] });
 }
+function Textarea({ className, ...props }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "textarea",
+    {
+      "data-slot": "textarea",
+      className: cn(
+        "border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        className
+      ),
+      ...props
+    }
+  );
+}
 const paymentVariants = {
   paid: "default",
   pending: "secondary",
@@ -38131,74 +38170,35 @@ const paymentVariants = {
   refunded: "outline"
 };
 const orderVariants = {
-  delivered: "default",
-  shipped: "default",
-  confirmed: "secondary",
-  processing: "secondary",
-  packed: "outline",
   pending: "outline",
+  accepted: "secondary",
+  delivered: "default",
   cancelled: "destructive"
 };
-const orderColumns$1 = [
-  {
-    accessorKey: "orderNumber",
-    header: "Order",
-    cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono text-xs", children: row.getValue("orderNumber") })
-  },
-  {
-    accessorKey: "customerName",
-    header: "Customer",
-    cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: row.original.customerName }),
-      row.original.customerMobile && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: row.original.customerMobile })
-    ] })
-  },
-  {
-    accessorKey: "orderType",
-    header: "Type",
-    cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: "outline", className: "capitalize", children: row.getValue("orderType") })
-  },
-  { accessorKey: "productCount", header: "Products" },
-  { accessorKey: "quantity", header: "Qty" },
-  {
-    accessorKey: "amount",
-    header: "Amount",
-    cell: ({ row }) => new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0
-    }).format(Number(row.getValue("amount")))
-  },
-  {
-    accessorKey: "paymentStatus",
-    header: "Payment",
-    cell: ({ row }) => {
-      const status = row.getValue("paymentStatus");
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: paymentVariants[status] || "secondary", children: status });
-    }
-  },
-  {
-    accessorKey: "orderStatus",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("orderStatus");
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: orderVariants[status] || "secondary", children: status });
-    }
-  },
-  {
-    accessorKey: "date",
-    header: "Date",
-    cell: ({ row }) => row.getValue("date") ? new Date(row.getValue("date")).toLocaleDateString() : "—"
+const statusLabels = {
+  pending: "Pending",
+  accepted: "Accepted",
+  delivered: "Delivered",
+  cancelled: "Cancelled"
+};
+const getErrorMessage = (error, fallback) => {
+  if (error instanceof Error && error.message) return error.message;
+  if (typeof error === "object" && error !== null && "message" in error && typeof error.message === "string") {
+    return error.message;
   }
-];
+  return fallback;
+};
 function OrdersTable({
   orderType,
   searchPlaceholder,
   emptyMessage
 }) {
-  const { addToast } = useUIStore();
+  const alert2 = useAlert();
   const [orders, setOrders] = reactExports.useState([]);
   const [isLoading, setIsLoading] = reactExports.useState(true);
+  const [isUpdating, setIsUpdating] = reactExports.useState(false);
+  const [confirmDialog, setConfirmDialog] = reactExports.useState({ open: false, orderId: "", orderNumber: "", newStatus: "accepted" });
+  const [cancelDialog, setCancelDialog] = reactExports.useState({ open: false, orderId: "", orderNumber: "", reason: "" });
   const loadOrders = reactExports.useCallback(async () => {
     setIsLoading(true);
     try {
@@ -38208,18 +38208,194 @@ function OrdersTable({
       });
       setOrders(response.orders);
     } catch (error) {
-      addToast({
-        title: "Orders load failed",
-        description: error.message || "Could not fetch orders.",
-        variant: "error"
-      });
+      alert2.error(
+        getErrorMessage(error, "Something went wrong while loading orders.")
+      );
     } finally {
       setIsLoading(false);
     }
-  }, [addToast, orderType]);
+  }, [alert2, orderType]);
   reactExports.useEffect(() => {
     loadOrders();
   }, [loadOrders]);
+  const handleStatusClick = (orderId, orderNumber, newStatus) => {
+    if (newStatus === "cancelled") {
+      setCancelDialog({
+        open: true,
+        orderId,
+        orderNumber,
+        reason: ""
+      });
+    } else {
+      setConfirmDialog({
+        open: true,
+        orderId,
+        orderNumber,
+        newStatus
+      });
+    }
+  };
+  const handleConfirmStatusChange = async () => {
+    try {
+      setIsUpdating(true);
+      const response = await orderService.updateOrderStatus(
+        confirmDialog.orderId,
+        confirmDialog.newStatus
+      );
+      alert2.success(
+        response.message || `Order ${confirmDialog.orderNumber} marked ${statusLabels[confirmDialog.newStatus]}.`
+      );
+      setConfirmDialog({ ...confirmDialog, open: false });
+      await loadOrders();
+    } catch (error) {
+      alert2.error(
+        getErrorMessage(
+          error,
+          "Something went wrong while updating order status."
+        )
+      );
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+  const handleCancelOrder = async () => {
+    if (!cancelDialog.reason.trim()) {
+      alert2.error("Please provide a cancel reason.");
+      return;
+    }
+    try {
+      setIsUpdating(true);
+      const response = await orderService.updateOrderStatus(
+        cancelDialog.orderId,
+        "cancelled",
+        cancelDialog.reason
+      );
+      alert2.success(
+        response.message || `Order ${cancelDialog.orderNumber} cancelled successfully.`
+      );
+      setCancelDialog({ ...cancelDialog, open: false, reason: "" });
+      await loadOrders();
+    } catch (error) {
+      alert2.error(
+        getErrorMessage(error, "Something went wrong while cancelling order.")
+      );
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+  const orderColumns2 = [
+    {
+      accessorKey: "orderNumber",
+      header: "Order",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono text-xs", children: row.getValue("orderNumber") })
+    },
+    {
+      accessorKey: "customerName",
+      header: "Customer",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: row.original.customerName }),
+        row.original.customerMobile && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: row.original.customerMobile })
+      ] })
+    },
+    {
+      accessorKey: "orderType",
+      header: "Type",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: "outline", className: "capitalize", children: row.getValue("orderType") })
+    },
+    { accessorKey: "productCount", header: "Products" },
+    { accessorKey: "quantity", header: "Qty" },
+    {
+      accessorKey: "amount",
+      header: "Amount",
+      cell: ({ row }) => new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0
+      }).format(Number(row.getValue("amount")))
+    },
+    {
+      accessorKey: "paymentStatus",
+      header: "Payment",
+      cell: ({ row }) => {
+        const status = row.getValue("paymentStatus");
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: paymentVariants[status] || "secondary", children: status });
+      }
+    },
+    {
+      accessorKey: "orderStatus",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("orderStatus");
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: orderVariants[status] || "secondary", children: statusLabels[status] || status });
+      }
+    },
+    {
+      accessorKey: "date",
+      header: "Date",
+      cell: ({ row }) => row.getValue("date") ? new Date(row.getValue("date")).toLocaleDateString() : "—"
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const status = row.getValue("orderStatus");
+        const isTerminal = status === "delivered" || status === "cancelled";
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Button,
+            {
+              variant: "outline",
+              size: "sm",
+              disabled: isTerminal || isUpdating,
+              children: [
+                "Change Status",
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "ml-1 h-3 w-3" })
+              ]
+            }
+          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "end", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DropdownMenuItem,
+              {
+                disabled: status === "accepted",
+                onClick: () => handleStatusClick(
+                  row.original.id,
+                  row.original.orderNumber,
+                  "accepted"
+                ),
+                children: "Accept"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DropdownMenuItem,
+              {
+                disabled: status === "delivered",
+                onClick: () => handleStatusClick(
+                  row.original.id,
+                  row.original.orderNumber,
+                  "delivered"
+                ),
+                children: "Mark Delivered"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DropdownMenuItem,
+              {
+                disabled: status === "cancelled",
+                onClick: () => handleStatusClick(
+                  row.original.id,
+                  row.original.orderNumber,
+                  "cancelled"
+                ),
+                className: "text-destructive",
+                children: "Cancel Order"
+              }
+            )
+          ] })
+        ] });
+      }
+    }
+  ];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
       Button,
@@ -38238,11 +38414,95 @@ function OrdersTable({
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       DataTable,
       {
-        columns: orderColumns$1,
+        columns: orderColumns2,
         data: orders,
         isLoading,
         searchPlaceholder,
         emptyMessage
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Dialog,
+      {
+        open: confirmDialog.open,
+        onOpenChange: (open) => setConfirmDialog({ ...confirmDialog, open }),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Confirm Status Change" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogDescription, { children: [
+              "Are you sure you want to change the status of order",
+              " ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono font-semibold", children: confirmDialog.orderNumber }),
+              " ",
+              "to",
+              " ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold", children: confirmDialog.newStatus }),
+              "?"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "outline",
+                disabled: isUpdating,
+                onClick: () => setConfirmDialog({ ...confirmDialog, open: false }),
+                children: "Cancel"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleConfirmStatusChange, disabled: isUpdating, children: "Confirm" })
+          ] })
+        ] })
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Dialog,
+      {
+        open: cancelDialog.open,
+        onOpenChange: (open) => setCancelDialog({ ...cancelDialog, open }),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Cancel Order" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogDescription, { children: [
+              "Please provide a reason for cancelling order",
+              " ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono font-semibold", children: cancelDialog.orderNumber })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "cancelReason", children: "Cancel Reason*" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Textarea,
+              {
+                id: "cancelReason",
+                placeholder: "Enter reason for cancellation...",
+                value: cancelDialog.reason,
+                onChange: (e3) => setCancelDialog({ ...cancelDialog, reason: e3.target.value }),
+                rows: 4
+              }
+            )
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "outline",
+                disabled: isUpdating,
+                onClick: () => setCancelDialog({ ...cancelDialog, open: false, reason: "" }),
+                children: "Cancel"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "destructive",
+                onClick: handleCancelOrder,
+                disabled: isUpdating,
+                children: "Cancel Order"
+              }
+            )
+          ] })
+        ] })
       }
     )
   ] });
@@ -46385,19 +46645,6 @@ function Checkbox({
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-3.5" })
         }
       )
-    }
-  );
-}
-function Textarea({ className, ...props }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "textarea",
-    {
-      "data-slot": "textarea",
-      className: cn(
-        "border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        className
-      ),
-      ...props
     }
   );
 }

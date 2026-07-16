@@ -9,3 +9,4 @@ export * from "./productService";
 export * from "./bannerService";
 export * from "./settingsService";
 export * from "./sellerApplicationService";
+export * from "./notificationService";

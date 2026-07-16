@@ -3,14 +3,7 @@ import { ENDPOINTS } from "../endpoints";
 
 export type OrderType = "normal" | "bulk";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
-export type OrderStatus =
-  | "pending"
-  | "confirmed"
-  | "processing"
-  | "packed"
-  | "shipped"
-  | "delivered"
-  | "cancelled";
+export type OrderStatus = "pending" | "accepted" | "cancelled" | "delivered";
 
 export interface ApiOrder {
   id: string;
@@ -64,6 +57,7 @@ export interface OrderListItem {
 
 interface OrderListResponse {
   success: boolean;
+  message?: string;
   data: ApiOrder[];
   pagination: {
     total: number;
@@ -78,6 +72,17 @@ interface OrderResponse {
   message?: string;
   data: ApiOrder;
 }
+
+const ensureSuccess = <T extends { success: boolean; message?: string }>(
+  response: T,
+  fallbackMessage: string,
+): T => {
+  if (!response.success) {
+    throw new Error(response.message || fallbackMessage);
+  }
+
+  return response;
+};
 
 const toOrderListItem = (order: ApiOrder): OrderListItem => ({
   id: order.id,
@@ -108,7 +113,10 @@ export const orderService = {
     paymentStatus?: PaymentStatus;
     search?: string;
   }): Promise<{ orders: OrderListItem[]; raw: ApiOrder[] }> {
-    const response = await get<OrderListResponse>(ENDPOINTS.GET_ORDERS, params);
+    const response = ensureSuccess(
+      await get<OrderListResponse>(ENDPOINTS.GET_ORDERS, params),
+      "Failed to fetch orders",
+    );
     return {
       orders: response.data.map(toOrderListItem),
       raw: response.data,
@@ -116,29 +124,43 @@ export const orderService = {
   },
 
   async getNormalOrders(): Promise<OrderListItem[]> {
-    const response = await get<OrderListResponse>(ENDPOINTS.GET_NORMAL_ORDERS, {
-      limit: 100,
-    });
+    const response = ensureSuccess(
+      await get<OrderListResponse>(ENDPOINTS.GET_NORMAL_ORDERS, {
+        limit: 100,
+      }),
+      "Failed to fetch normal orders",
+    );
     return response.data.map(toOrderListItem);
   },
 
   async getBulkOrders(): Promise<OrderListItem[]> {
-    const response = await get<OrderListResponse>(ENDPOINTS.GET_BULK_ORDERS, {
-      limit: 100,
-    });
+    const response = ensureSuccess(
+      await get<OrderListResponse>(ENDPOINTS.GET_BULK_ORDERS, {
+        limit: 100,
+      }),
+      "Failed to fetch bulk orders",
+    );
     return response.data.map(toOrderListItem);
   },
 
   async updateOrderStatus(
     id: string,
-    orderStatus: OrderStatus,
+    orderStatus: Exclude<OrderStatus, "pending">,
+    cancelReason?: string,
   ): Promise<OrderResponse> {
-    return put<OrderResponse>(ENDPOINTS.UPDATE_ORDER_STATUS(id), {
-      orderStatus,
-    });
+    return ensureSuccess(
+      await put<OrderResponse>(ENDPOINTS.UPDATE_ORDER_STATUS(id), {
+        orderStatus,
+        cancelReason,
+      }),
+      "Failed to update order status",
+    );
   },
 
   async cancelOrder(id: string, cancelReason?: string): Promise<OrderResponse> {
-    return put<OrderResponse>(ENDPOINTS.CANCEL_ORDER(id), { cancelReason });
+    return ensureSuccess(
+      await put<OrderResponse>(ENDPOINTS.CANCEL_ORDER(id), { cancelReason }),
+      "Failed to cancel order",
+    );
   },
 };
