@@ -55,7 +55,7 @@ export function SellerApprovalsPage() {
     } catch (error: any) {
       addToast({
         title: "Applications load failed",
-        description: error.message || "Could not fetch seller applications.",
+        description: error.message || "Could not fetch distributor applications.",
         variant: "error",
       });
     } finally {
@@ -86,8 +86,8 @@ export function SellerApprovalsPage() {
       addToast({
         title:
           action === "approve"
-            ? "Seller approved"
-            : "Seller application rejected",
+            ? "Distributor approved"
+            : "Distributor application rejected",
         description: `${selectedApplication.name}'s application was updated.`,
         variant: "success",
       });
@@ -201,8 +201,8 @@ export function SellerApprovalsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Seller Approvals"
-        description="Review seller applications from the mobile app"
+        title="Distributor Approvals"
+        description="Review distributor applications from the mobile app"
       />
 
       <motion.div
@@ -244,8 +244,8 @@ export function SellerApprovalsPage() {
           columns={columns}
           data={applications}
           isLoading={isLoading}
-          searchPlaceholder="Search seller applications..."
-          emptyMessage="No seller applications found"
+          searchPlaceholder="Search distributor applications..."
+          emptyMessage="No distributor applications found"
         />
       </motion.div>
 
@@ -259,13 +259,13 @@ export function SellerApprovalsPage() {
         }}
         title={
           action === "approve"
-            ? "Approve seller application"
-            : "Reject seller application"
+            ? "Approve distributor application"
+            : "Reject distributor application"
         }
         description={
           action === "approve"
-            ? `Approve ${selectedApplication?.name} as a seller?`
-            : `Reject ${selectedApplication?.name}'s seller application?`
+            ? `Approve ${selectedApplication?.name} as a distributor?`
+            : `Reject ${selectedApplication?.name}'s distributor application?`
         }
         onConfirm={handleConfirm}
       />

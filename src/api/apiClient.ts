@@ -197,6 +197,28 @@ class ApiClient {
   }
 
   /**
+   * GET text response
+   */
+  async getText(
+    url: string,
+    params?: Record<string, string | number | boolean>,
+  ): Promise<string> {
+    const response = await fetch(this.buildUrl(url, params), {
+      method: "GET",
+      headers: this.buildHeaders(),
+    });
+
+    if (!response.ok) {
+      throw {
+        message: await response.text(),
+        status: response.status,
+      } as ApiError;
+    }
+
+    return response.text();
+  }
+
+  /**
    * POST request
    */
   async post<T>(
@@ -347,6 +369,11 @@ export const get = <T = unknown>(
   url: string,
   params?: Record<string, string | number | boolean>,
 ): Promise<T> => apiClient.get<T>(url, params);
+
+export const getText = (
+  url: string,
+  params?: Record<string, string | number | boolean>,
+): Promise<string> => apiClient.getText(url, params);
 
 export const post = <T = unknown>(
   url: string,

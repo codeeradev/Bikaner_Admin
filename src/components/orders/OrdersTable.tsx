@@ -25,7 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAlert } from "@/hooks/use-alert";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ChevronDown, RefreshCw } from "lucide-react";
+import { ChevronDown, Download, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 const paymentVariants: Record<
@@ -85,6 +85,7 @@ export function OrdersTable({
   const [orders, setOrders] = useState<OrderListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [downloadingInvoiceId, setDownloadingInvoiceId] = useState<string | null>(null);
 
   // Status change dialogs
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -170,6 +171,27 @@ export function OrdersTable({
       );
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleDownloadInvoice = async (order: OrderListItem) => {
+    try {
+      setDownloadingInvoiceId(order.id);
+      const invoiceHtml = await orderService.generateInvoice(order.id);
+      const blob = new Blob([invoiceHtml], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `invoice-${order.orderNumber || order.id}.html`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      alert.success(`Invoice ${order.orderNumber} downloaded.`);
+    } catch (error) {
+      alert.error(getErrorMessage(error, "Could not download invoice."));
+    } finally {
+      setDownloadingInvoiceId(null);
     }
   };
 
@@ -288,57 +310,69 @@ export function OrdersTable({
         const isTerminal = status === "delivered" || status === "cancelled";
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={isTerminal || isUpdating}
-              >
-                Change Status
-                <ChevronDown className="ml-1 h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                disabled={status === "accepted"}
-                onClick={() =>
-                  handleStatusClick(
-                    row.original.id,
-                    row.original.orderNumber,
-                    "accepted",
-                  )
-                }
-              >
-                Accept
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                disabled={status === "delivered"}
-                onClick={() =>
-                  handleStatusClick(
-                    row.original.id,
-                    row.original.orderNumber,
-                    "delivered",
-                  )
-                }
-              >
-                Mark Delivered
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                disabled={status === "cancelled"}
-                onClick={() =>
-                  handleStatusClick(
-                    row.original.id,
-                    row.original.orderNumber,
-                    "cancelled",
-                  )
-                }
-                className="text-destructive"
-              >
-                Cancel Order
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              title="Download invoice"
+              disabled={downloadingInvoiceId === row.original.id}
+              onClick={() => handleDownloadInvoice(row.original)}
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={isTerminal || isUpdating}
+                >
+                  Change Status
+                  <ChevronDown className="ml-1 h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  disabled={status === "accepted"}
+                  onClick={() =>
+                    handleStatusClick(
+                      row.original.id,
+                      row.original.orderNumber,
+                      "accepted",
+                    )
+                  }
+                >
+                  Accept
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={status === "delivered"}
+                  onClick={() =>
+                    handleStatusClick(
+                      row.original.id,
+                      row.original.orderNumber,
+                      "delivered",
+                    )
+                  }
+                >
+                  Mark Delivered
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={status === "cancelled"}
+                  onClick={() =>
+                    handleStatusClick(
+                      row.original.id,
+                      row.original.orderNumber,
+                      "cancelled",
+                    )
+                  }
+                  className="text-destructive"
+                >
+                  Cancel Order
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
     },

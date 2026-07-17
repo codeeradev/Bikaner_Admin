@@ -24,6 +24,7 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   "/theme": "theme:view",
   "/profile": "profile:view",
   "/settings": "settings:view",
+  "/coupons": "settings:view",
 };
 
 export function ProtectedRoute() {

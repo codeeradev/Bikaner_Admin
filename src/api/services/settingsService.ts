@@ -20,6 +20,12 @@ export interface SettingsData {
   linkedinUrl?: string;
   maintenanceMode?: boolean;
   maintenanceMessage?: string;
+  razorpayKeyId?: string;
+  razorpayKeySecret?: string;
+  razorpayWebhookSecret?: string;
+  globalDeliveryCharges?: number;
+  platformFee?: number;
+  globalTax?: number;
 }
 
 export type UpdateSettingsDto = Partial<

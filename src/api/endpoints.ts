@@ -63,6 +63,7 @@ export const ENDPOINTS = {
   UPDATE_ORDER: (id: string) => `${BASE_URL}/orders/${id}`,
   UPDATE_ORDER_STATUS: (id: string) => `${BASE_URL}/orders/${id}/status`,
   CANCEL_ORDER: (id: string) => `${BASE_URL}/orders/${id}/cancel`,
+  GENERATE_INVOICE: (id: string) => `${BASE_URL}/orders/${id}/invoice`,
 
   // Normal Orders
   GET_NORMAL_ORDERS: `${BASE_URL}/orders/normal`,
@@ -121,6 +122,12 @@ export const ENDPOINTS = {
   // Settings
   GET_SETTINGS: `${BASE_URL}/settings`,
   UPDATE_SETTINGS: `${BASE_URL}/settings`,
+
+  // Coupons
+  GET_COUPONS: `${BASE_URL}/coupons`,
+  CREATE_COUPON: `${BASE_URL}/coupons`,
+  UPDATE_COUPON: (id: string) => `${BASE_URL}/coupons/${id}`,
+  DELETE_COUPON: (id: string) => `${BASE_URL}/coupons/${id}`,
 
   // Banners
   BANNERS_GET: `${BASE_URL}/banners`,

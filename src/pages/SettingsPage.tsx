@@ -1,6 +1,6 @@
 import { ENDPOINTS } from "@/api/endpoints";
 import { settingsService, staffService } from "@/api/services";
-import { FormInput, FormTextarea } from "@/components/FormComponents";
+import { FormCheckbox, FormInput, FormTextarea } from "@/components/FormComponents";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,11 +10,13 @@ import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
 import { useAuthStore, useSettingsStore, useUIStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  CreditCard,
   FileText,
   Globe,
   Loader2,
   Phone,
   Settings,
+  Share2,
   Shield,
   Upload,
 } from "lucide-react";
@@ -71,6 +73,38 @@ const settingsSchema = z
         const range = Number(value);
         return range >= 100 && range <= 100000;
       }, "Use a radius between 100 and 100000 meters"),
+    globalDeliveryCharges: z
+      .string()
+      .trim()
+      .min(1, "Global delivery charge is required")
+      .refine((value) => Number.isFinite(Number(value)) && Number(value) >= 0, {
+        message: "Global delivery charge must be a positive number",
+      }),
+    platformFee: z
+      .string()
+      .trim()
+      .min(1, "Platform fee is required")
+      .refine((value) => {
+        const fee = Number(value);
+        return Number.isFinite(fee) && fee >= 0 && fee <= 100;
+      }, "Platform fee must be between 0 and 100"),
+    globalTax: z
+      .string()
+      .trim()
+      .min(1, "Global tax is required")
+      .refine((value) => {
+        const tax = Number(value);
+        return Number.isFinite(tax) && tax >= 0 && tax <= 100;
+      }, "Global tax must be between 0 and 100"),
+    facebookUrl: z.string().optional(),
+    instagramUrl: z.string().optional(),
+    twitterUrl: z.string().optional(),
+    linkedinUrl: z.string().optional(),
+    maintenanceMode: z.boolean(),
+    maintenanceMessage: z.string().optional(),
+    razorpayKeyId: z.string().optional(),
+    razorpayKeySecret: z.string().optional(),
+    razorpayWebhookSecret: z.string().optional(),
     termsAndConditions: z.string().optional(),
     privacyPolicy: z.string().optional(),
     aboutUs: z.string().optional(),
@@ -97,6 +131,18 @@ const defaultValues: SettingsFormData = {
   adminPassword: "",
   confirmAdminPassword: "",
   range: "5000",
+  globalDeliveryCharges: "30",
+  platformFee: "5",
+  globalTax: "0",
+  facebookUrl: "",
+  instagramUrl: "",
+  twitterUrl: "",
+  linkedinUrl: "",
+  maintenanceMode: false,
+  maintenanceMessage: "We are currently under maintenance. Please check back soon.",
+  razorpayKeyId: "",
+  razorpayKeySecret: "",
+  razorpayWebhookSecret: "",
   termsAndConditions: "",
   privacyPolicy: "",
   aboutUs: "",
@@ -165,6 +211,21 @@ export function SettingsPage() {
           adminPassword: "",
           confirmAdminPassword: "",
           range: String(settings.range || defaultValues.range),
+          globalDeliveryCharges: String(
+            settings.globalDeliveryCharges ?? defaultValues.globalDeliveryCharges,
+          ),
+          platformFee: String(settings.platformFee ?? defaultValues.platformFee),
+          globalTax: String(settings.globalTax ?? defaultValues.globalTax),
+          facebookUrl: settings.facebookUrl || "",
+          instagramUrl: settings.instagramUrl || "",
+          twitterUrl: settings.twitterUrl || "",
+          linkedinUrl: settings.linkedinUrl || "",
+          maintenanceMode: Boolean(settings.maintenanceMode),
+          maintenanceMessage:
+            settings.maintenanceMessage || defaultValues.maintenanceMessage,
+          razorpayKeyId: settings.razorpayKeyId || "",
+          razorpayKeySecret: settings.razorpayKeySecret || "",
+          razorpayWebhookSecret: settings.razorpayWebhookSecret || "",
           termsAndConditions: settings.termsAndConditions || "",
           privacyPolicy: settings.privacyPolicy || "",
           aboutUs: settings.aboutUs || "",
@@ -246,6 +307,18 @@ export function SettingsPage() {
         contactEmail: data.contactEmail.trim(),
         contactPhone: data.contactPhone.trim(),
         range: Number(data.range),
+        globalDeliveryCharges: Number(data.globalDeliveryCharges),
+        platformFee: Number(data.platformFee),
+        globalTax: Number(data.globalTax),
+        facebookUrl: data.facebookUrl?.trim() || "",
+        instagramUrl: data.instagramUrl?.trim() || "",
+        twitterUrl: data.twitterUrl?.trim() || "",
+        linkedinUrl: data.linkedinUrl?.trim() || "",
+        maintenanceMode: data.maintenanceMode,
+        maintenanceMessage: data.maintenanceMessage || "",
+        razorpayKeyId: data.razorpayKeyId?.trim() || "",
+        razorpayKeySecret: data.razorpayKeySecret?.trim() || "",
+        razorpayWebhookSecret: data.razorpayWebhookSecret?.trim() || "",
         termsAndConditions: data.termsAndConditions || "",
         privacyPolicy: data.privacyPolicy || "",
         aboutUs: data.aboutUs || "",
@@ -329,14 +402,22 @@ export function SettingsPage() {
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+              <TabsList className="grid w-full grid-cols-4 lg:w-[720px]">
                 <TabsTrigger value="general">
                   <Settings className="mr-2 h-4 w-4" />
                   General
                 </TabsTrigger>
                 <TabsTrigger value="policies">
                   <FileText className="mr-2 h-4 w-4" />
-                  Policy Pages
+                  Policies
+                </TabsTrigger>
+                <TabsTrigger value="app">
+                  <Share2 className="mr-2 h-4 w-4" />
+                  App
+                </TabsTrigger>
+                <TabsTrigger value="payments">
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Payments
                 </TabsTrigger>
               </TabsList>
 
@@ -388,6 +469,36 @@ export function SettingsPage() {
                         step={1}
                         placeholder="5000"
                         description="Used by zone checker to match nearby delivery zones"
+                      />
+                    </div>
+
+                    <div className="grid gap-6 md:grid-cols-3">
+                      <FormInput
+                        name="globalDeliveryCharges"
+                        label="Global Delivery Charges"
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        placeholder="30"
+                      />
+                      <FormInput
+                        name="platformFee"
+                        label="Platform Fee (%)"
+                        type="number"
+                        min={0}
+                        max={100}
+                        step="0.01"
+                        placeholder="5"
+                      />
+                      <FormInput
+                        name="globalTax"
+                        label="Included Tax (%)"
+                        type="number"
+                        min={0}
+                        max={100}
+                        step="0.01"
+                        placeholder="0"
+                        description="Shown on invoices as tax already included in prices"
                       />
                     </div>
 
@@ -502,6 +613,69 @@ export function SettingsPage() {
                       label="Shipping Policy"
                       placeholder="Enter your shipping policy..."
                       rows={8}
+                    />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="app" className="mt-6 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Share2 className="h-5 w-5" />
+                      Social Links
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid gap-6 md:grid-cols-2">
+                      <FormInput name="facebookUrl" label="Facebook URL" />
+                      <FormInput name="instagramUrl" label="Instagram URL" />
+                      <FormInput name="twitterUrl" label="Twitter URL" />
+                      <FormInput name="linkedinUrl" label="LinkedIn URL" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Settings className="h-5 w-5" />
+                      App Settings
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <FormCheckbox
+                      name="maintenanceMode"
+                      label="Maintenance Mode"
+                      description="Temporarily show maintenance state in the app"
+                    />
+                    <FormTextarea
+                      name="maintenanceMessage"
+                      label="Maintenance Message"
+                      rows={4}
+                    />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="payments" className="mt-6 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CreditCard className="h-5 w-5" />
+                      Razorpay Settings
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <FormInput name="razorpayKeyId" label="Razorpay Key ID" />
+                    <FormInput
+                      name="razorpayKeySecret"
+                      label="Razorpay Key Secret"
+                      type="password"
+                    />
+                    <FormInput
+                      name="razorpayWebhookSecret"
+                      label="Razorpay Webhook Secret"
+                      type="password"
                     />
                   </CardContent>
                 </Card>

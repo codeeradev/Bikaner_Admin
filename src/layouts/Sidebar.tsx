@@ -24,6 +24,7 @@ import {
   Palette,
   Settings,
   Shield,
+  TicketPercent,
   ShoppingCart,
   Store,
   User,
@@ -117,7 +118,7 @@ const menuItems: MenuItem[] = [
     icon: UserCheck,
     children: [
       {
-        label: "Seller Applications",
+        label: "Distributor Applications",
         icon: UserCheck,
         href: "/approvals/sellers",
         permission: PERMISSIONS.SELLER_APPROVALS_VIEW,
@@ -180,6 +181,12 @@ const menuItems: MenuItem[] = [
         label: "Settings",
         icon: Settings,
         href: "/settings",
+        permission: PERMISSIONS.SETTINGS_VIEW,
+      },
+      {
+        label: "Coupon Management",
+        icon: TicketPercent,
+        href: "/coupons",
         permission: PERMISSIONS.SETTINGS_VIEW,
       },
     ],

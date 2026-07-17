@@ -1,4 +1,4 @@
-import { get, put } from "../apiClient";
+import { get, getText, put } from "../apiClient";
 import { ENDPOINTS } from "../endpoints";
 
 export type OrderType = "normal" | "bulk";
@@ -162,5 +162,9 @@ export const orderService = {
       await put<OrderResponse>(ENDPOINTS.CANCEL_ORDER(id), { cancelReason }),
       "Failed to cancel order",
     );
+  },
+
+  async generateInvoice(id: string): Promise<string> {
+    return getText(ENDPOINTS.GENERATE_INVOICE(id));
   },
 };
