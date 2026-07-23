@@ -6,8 +6,12 @@ export interface NutritionEntry {
   unit: string;
 }
 
-export interface NutritionValues {
-  [key: string]: NutritionEntry;
+export type NutritionValues = Record<string, NutritionEntry>;
+
+export interface BulkPriceTier {
+  minQty: number;
+  maxQty: number;
+  price: number;
 }
 
 export interface Product {
@@ -21,9 +25,8 @@ export interface Product {
   unit?: string;
   mrp?: number;
   sellingPrice?: number;
-  bulkPrice?: number;
+  bulkPricing?: BulkPriceTier[];
   stock?: number;
-  minBulkQty?: number;
   isFeatured?: boolean;
   status: "active" | "inactive";
   nutritionValues?: NutritionValues;
@@ -46,9 +49,8 @@ export interface CreateProductDto {
   unit?: string;
   mrp?: number;
   sellingPrice?: number;
-  bulkPrice?: number;
+  bulkPricing?: BulkPriceTier[];
   stock?: number;
-  minBulkQty?: number;
   isFeatured?: boolean;
   status?: "active" | "inactive";
   nutritionValues?: NutritionValues;
@@ -65,9 +67,8 @@ export interface UpdateProductDto {
   unit?: string;
   mrp?: number;
   sellingPrice?: number;
-  bulkPrice?: number;
+  bulkPricing?: BulkPriceTier[];
   stock?: number;
-  minBulkQty?: number;
   isFeatured?: boolean;
   status?: "active" | "inactive";
   nutritionValues?: NutritionValues;
@@ -119,9 +120,7 @@ export const productService = {
     if (data.unit !== undefined) formData.append("unit", data.unit);
     if (data.mrp !== undefined) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice !== undefined) formData.append("sellingPrice", data.sellingPrice.toString());
-    if (data.bulkPrice !== undefined) formData.append("bulkPrice", data.bulkPrice.toString());
     if (data.stock !== undefined) formData.append("stock", data.stock.toString());
-    if (data.minBulkQty !== undefined) formData.append("minBulkQty", data.minBulkQty.toString());
     if (data.isFeatured !== undefined) formData.append("isFeatured", data.isFeatured.toString());
     
     // Convert status to isActive
@@ -144,6 +143,11 @@ export const productService = {
       formData.append("ingredients", JSON.stringify(data.ingredients));
     }
     
+    // Add bulkPricing as JSON string
+    if (data.bulkPricing && data.bulkPricing.length > 0) {
+      formData.append("bulkPricing", JSON.stringify(data.bulkPricing));
+    }
+    
     return upload<Product>(ENDPOINTS.CREATE_PRODUCT, formData);
   },
 
@@ -160,11 +164,9 @@ export const productService = {
     if (data.sku) formData.append("sku", data.sku);
     if (data.unitValue) formData.append("unitValue", data.unitValue.toString());
     if (data.unit) formData.append("unit", data.unit);
-    if (data.mrp) formData.append("mrp", data.mrp.toString());
-    if (data.sellingPrice) formData.append("sellingPrice", data.sellingPrice.toString());
-    if (data.bulkPrice) formData.append("bulkPrice", data.bulkPrice.toString());
+    if (data.mrp !== undefined) formData.append("mrp", data.mrp.toString());
+    if (data.sellingPrice !== undefined) formData.append("sellingPrice", data.sellingPrice.toString());
     if (data.stock !== undefined) formData.append("stock", data.stock.toString());
-    if (data.minBulkQty !== undefined) formData.append("minBulkQty", data.minBulkQty.toString());
     if (data.isFeatured !== undefined) formData.append("isFeatured", data.isFeatured.toString());
     
     // Convert status to isActive
@@ -185,6 +187,11 @@ export const productService = {
     // Add ingredients as JSON string
     if (data.ingredients !== undefined) {
       formData.append("ingredients", JSON.stringify(data.ingredients));
+    }
+    
+    // Add bulkPricing as JSON string
+    if (data.bulkPricing !== undefined) {
+      formData.append("bulkPricing", JSON.stringify(data.bulkPricing));
     }
     
     return upload<Product>(ENDPOINTS.UPDATE_PRODUCT(id), formData, undefined, 'PUT');

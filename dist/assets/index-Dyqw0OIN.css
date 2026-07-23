@@ -3239,6 +3239,11 @@ video {
   color: oklch(var(--accent-foreground));
 }
 
+.hover\:text-destructive:hover {
+  --tw-text-opacity: 1;
+  color: oklch(var(--destructive) / var(--tw-text-opacity, 1));
+}
+
 .hover\:text-foreground:hover {
   color: oklch(var(--foreground));
 }

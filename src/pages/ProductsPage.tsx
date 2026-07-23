@@ -1,4 +1,5 @@
 import type { Product } from "@/api";
+import { BulkPricingInput } from "@/components/BulkPricingInput";
 import { DataTable } from "@/components/DataTable";
 import {
   FormInput,
@@ -50,7 +51,7 @@ export function ProductsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const methods = useForm({
+  const methods = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
   });
 
@@ -81,9 +82,8 @@ export function ProductsPage() {
       unit: "kg",
       mrp: 0,
       sellingPrice: 0,
-      bulkPrice: 0,
+      bulkPricing: [],
       stock: 0,
-      minBulkQty: 0,
       isFeatured: false,
       status: "active",
       nutritionValues: {},
@@ -104,14 +104,13 @@ export function ProductsPage() {
       unit: product.unit,
       mrp: product.mrp,
       sellingPrice: product.sellingPrice,
-      bulkPrice: product.bulkPrice,
+      bulkPricing: product.bulkPricing || [],
       stock: product.stock,
-      minBulkQty: product.minBulkQty,
       isFeatured: product.isFeatured,
       status: product.status,
       nutritionValues: product.nutritionValues || {},
       ingredients: product.ingredients || [],
-    });
+    } as ProductFormData);
     setIsModalOpen(true);
   };
 
@@ -352,17 +351,11 @@ export function ProductsPage() {
                 label="Description"
                 placeholder="Enter product description"
               />
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <FormInput name="mrp" label="MRP" type="number" step="0.01" />
                 <FormInput
                   name="sellingPrice"
                   label="Selling Price"
-                  type="number"
-                  step="0.01"
-                />
-                <FormInput
-                  name="bulkPrice"
-                  label="Bulk Price"
                   type="number"
                   step="0.01"
                 />
@@ -381,10 +374,15 @@ export function ProductsPage() {
                 />
                 <FormInput name="stock" label="Stock" type="number" />
               </div>
-              <FormInput
-                name="minBulkQty"
-                label="Minimum Bulk Quantity"
-                type="number"
+              <Controller
+                name="bulkPricing"
+                control={methods.control}
+                render={({ field }) => (
+                  <BulkPricingInput
+                    value={field.value || []}
+                    onChange={field.onChange}
+                  />
+                )}
               />
               <div>
                 <label className="block text-sm font-medium mb-2">
@@ -424,24 +422,24 @@ export function ProductsPage() {
               />
               <div className="space-y-4 pt-4 border-t">
                 <h3 className="text-lg font-medium">Nutrition & Ingredients</h3>
-                
+
                 <Controller
                   name="nutritionValues"
                   control={methods.control}
                   render={({ field }) => (
                     <NutritionValuesInput
-                      value={field.value}
+                      value={field.value as Record<string, { value: number; unit: string }> | undefined}
                       onChange={field.onChange}
                     />
                   )}
                 />
-                
+
                 <Controller
                   name="ingredients"
                   control={methods.control}
                   render={({ field }) => (
                     <IngredientsInput
-                      value={field.value}
+                      value={field.value as string[] | undefined}
                       onChange={field.onChange}
                     />
                   )}

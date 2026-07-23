@@ -1,8 +1,8 @@
 // Base URL for API - Update this with your actual backend URL
 const BASE_URL 
-// = "http://localhost:9020";
+= "http://localhost:9020";
 
-= "https://bikanerapi.codeeratech.in";
+// = "https://bikanerapi.codeeratech.in";
 export const ENDPOINTS = {
   // Authentication
   LOGIN: `${BASE_URL}/auth/login`,

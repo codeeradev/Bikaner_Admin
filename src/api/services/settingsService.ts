@@ -23,6 +23,7 @@ export interface SettingsData {
   razorpayKeyId?: string;
   razorpayKeySecret?: string;
   razorpayWebhookSecret?: string;
+  enableRazorpayForSellers?: boolean;
   globalDeliveryCharges?: number;
   platformFee?: number;
   globalTax?: number;

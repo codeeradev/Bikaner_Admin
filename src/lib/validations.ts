@@ -35,6 +35,12 @@ const nutritionEntrySchema = z.object({
   unit: z.string().min(1, "Unit is required"),
 });
 
+const bulkPriceTierSchema = z.object({
+  minQty: z.coerce.number().min(0, "Min quantity must be 0 or greater"),
+  maxQty: z.coerce.number().min(0, "Max quantity must be 0 or greater"),
+  price: z.coerce.number().min(0, "Price must be 0 or greater"),
+});
+
 export const productSchema = z.object({
   name: z
     .string()
@@ -47,9 +53,8 @@ export const productSchema = z.object({
   unit: z.string().optional(),
   mrp: z.coerce.number().min(0, "MRP must be 0 or greater").optional(),
   sellingPrice: z.coerce.number().min(0, "Selling price must be 0 or greater").optional(),
-  bulkPrice: z.coerce.number().min(0, "Bulk price must be 0 or greater").optional(),
+  bulkPricing: z.array(bulkPriceTierSchema).optional(),
   stock: z.coerce.number().int().min(0, "Stock must be 0 or greater").optional(),
-  minBulkQty: z.coerce.number().int().min(0, "Min bulk quantity must be 0 or greater").optional(),
   isFeatured: z.boolean().optional(),
   status: z.enum(["active", "inactive"]),
   image: z.any().optional(),

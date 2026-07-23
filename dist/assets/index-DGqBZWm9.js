@@ -26902,7 +26902,6 @@ const productService = {
     if (data.unit !== void 0) formData.append("unit", data.unit);
     if (data.mrp !== void 0) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice !== void 0) formData.append("sellingPrice", data.sellingPrice.toString());
-    if (data.bulkPrice !== void 0) formData.append("bulkPrice", data.bulkPrice.toString());
     if (data.stock !== void 0) formData.append("stock", data.stock.toString());
     if (data.minBulkQty !== void 0) formData.append("minBulkQty", data.minBulkQty.toString());
     if (data.isFeatured !== void 0) formData.append("isFeatured", data.isFeatured.toString());
@@ -26917,6 +26916,9 @@ const productService = {
     }
     if (data.ingredients && data.ingredients.length > 0) {
       formData.append("ingredients", JSON.stringify(data.ingredients));
+    }
+    if (data.bulkPricing && data.bulkPricing.length > 0) {
+      formData.append("bulkPricing", JSON.stringify(data.bulkPricing));
     }
     return upload(ENDPOINTS.CREATE_PRODUCT, formData);
   },
@@ -26933,7 +26935,6 @@ const productService = {
     if (data.unit) formData.append("unit", data.unit);
     if (data.mrp) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice) formData.append("sellingPrice", data.sellingPrice.toString());
-    if (data.bulkPrice) formData.append("bulkPrice", data.bulkPrice.toString());
     if (data.stock !== void 0) formData.append("stock", data.stock.toString());
     if (data.minBulkQty !== void 0) formData.append("minBulkQty", data.minBulkQty.toString());
     if (data.isFeatured !== void 0) formData.append("isFeatured", data.isFeatured.toString());
@@ -26948,6 +26949,9 @@ const productService = {
     }
     if (data.ingredients !== void 0) {
       formData.append("ingredients", JSON.stringify(data.ingredients));
+    }
+    if (data.bulkPricing !== void 0) {
+      formData.append("bulkPricing", JSON.stringify(data.bulkPricing));
     }
     return upload(ENDPOINTS.UPDATE_PRODUCT(id2), formData, void 0, "PUT");
   },
@@ -51700,10 +51704,9 @@ function _isoDuration(Class, params) {
   });
 }
 // @__NO_SIDE_EFFECTS__
-function _coercedNumber(Class, params) {
+function _number(Class, params) {
   return new Class({
     type: "number",
-    coerce: true,
     checks: [],
     ...normalizeParams(params)
   });
@@ -53060,6 +53063,9 @@ const ZodNumber = /* @__PURE__ */ $constructor("ZodNumber", (inst, def) => {
   inst.isFinite = true;
   inst.format = bag.format ?? null;
 });
+function number$3(params) {
+  return /* @__PURE__ */ _number(ZodNumber, params);
+}
 const ZodNumberFormat = /* @__PURE__ */ $constructor("ZodNumberFormat", (inst, def) => {
   $ZodNumberFormat.init(inst, def);
   ZodNumber.init(inst, def);
@@ -53464,9 +53470,6 @@ function _instanceof(cls, params = {}) {
   };
   return inst;
 }
-function number$3(params) {
-  return /* @__PURE__ */ _coercedNumber(ZodNumber, params);
-}
 const loginSchema = object$1({
   email: string$1().min(1, "Mobile number is required").min(10, "Mobile number must be at least 10 digits").regex(/^\d+$/, "Please enter only numbers (no spaces or special characters)"),
   password: string$1().min(1, "Password is required").min(6, "Password must be at least 6 characters"),
@@ -53482,6 +53485,11 @@ const nutritionEntrySchema = object$1({
   value: number$3().min(0, "Value must be 0 or greater"),
   unit: string$1().min(1, "Unit is required")
 });
+const bulkPriceTierSchema = object$1({
+  minQty: number$3().min(0, "Min quantity must be 0 or greater"),
+  maxQty: number$3().min(0, "Max quantity must be 0 or greater"),
+  price: number$3().min(0, "Price must be 0 or greater")
+});
 const productSchema = object$1({
   name: string$1().min(1, "Product name is required").max(200, "Name must be less than 200 characters"),
   categoryId: string$1().min(1, "Category is required"),
@@ -53491,7 +53499,7 @@ const productSchema = object$1({
   unit: string$1().optional(),
   mrp: number$3().min(0, "MRP must be 0 or greater").optional(),
   sellingPrice: number$3().min(0, "Selling price must be 0 or greater").optional(),
-  bulkPrice: number$3().min(0, "Bulk price must be 0 or greater").optional(),
+  bulkPricing: array$1(bulkPriceTierSchema).optional(),
   stock: number$3().int().min(0, "Stock must be 0 or greater").optional(),
   minBulkQty: number$3().int().min(0, "Min bulk quantity must be 0 or greater").optional(),
   isFeatured: boolean().optional(),
@@ -89644,6 +89652,102 @@ function OrdersPage() {
     )
   ] });
 }
+function BulkPricingInput({ value = [], onChange }) {
+  const addTier = () => {
+    const newTier = {
+      minQty: 0,
+      maxQty: 0,
+      price: 0
+    };
+    onChange([...value, newTier]);
+  };
+  const removeTier = (index2) => {
+    const newValue = value.filter((_, i2) => i2 !== index2);
+    onChange(newValue);
+  };
+  const updateTier = (index2, field, fieldValue) => {
+    const newValue = [...value];
+    newValue[index2] = {
+      ...newValue[index2],
+      [field]: fieldValue
+    };
+    onChange(newValue);
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-sm font-medium", children: "Bulk Pricing Tiers" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "button", variant: "outline", size: "sm", onClick: addTier, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "h-4 w-4 mr-2" }),
+        "Add Tier"
+      ] })
+    ] }),
+    value.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground p-4 border border-dashed rounded-md text-center", children: 'No bulk pricing tiers added. Click "Add Tier" to create quantity-based pricing.' }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: value.map((tier, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "flex items-center gap-3 p-3 border rounded-md bg-muted/30",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 grid grid-cols-3 gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs text-muted-foreground block mb-1", children: "Min Qty" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "number",
+                  value: tier.minQty,
+                  onChange: (e3) => updateTier(index2, "minQty", Number(e3.target.value)),
+                  className: "w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm",
+                  placeholder: "10",
+                  min: "0"
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs text-muted-foreground block mb-1", children: "Max Qty" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "number",
+                  value: tier.maxQty,
+                  onChange: (e3) => updateTier(index2, "maxQty", Number(e3.target.value)),
+                  className: "w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm",
+                  placeholder: "20",
+                  min: "0"
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs text-muted-foreground block mb-1", children: "Price (₹)" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "number",
+                  step: "0.01",
+                  value: tier.price,
+                  onChange: (e3) => updateTier(index2, "price", Number(e3.target.value)),
+                  className: "w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm",
+                  placeholder: "100.00",
+                  min: "0"
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              type: "button",
+              variant: "ghost",
+              size: "icon",
+              onClick: () => removeTier(index2),
+              className: "text-destructive hover:text-destructive",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4" })
+            }
+          )
+        ]
+      },
+      index2
+    )) })
+  ] });
+}
 function IngredientsInput({
   value = [],
   onChange
@@ -89838,7 +89942,7 @@ function ProductsPage() {
       unit: "kg",
       mrp: 0,
       sellingPrice: 0,
-      bulkPrice: 0,
+      bulkPricing: [],
       stock: 0,
       minBulkQty: 0,
       isFeatured: false,
@@ -89860,7 +89964,7 @@ function ProductsPage() {
       unit: product.unit,
       mrp: product.mrp,
       sellingPrice: product.sellingPrice,
-      bulkPrice: product.bulkPrice,
+      bulkPricing: product.bulkPricing || [],
       stock: product.stock,
       minBulkQty: product.minBulkQty,
       isFeatured: product.isFeatured,
@@ -90091,22 +90195,13 @@ function ProductsPage() {
             placeholder: "Enter product description"
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-3 gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(FormInput, { name: "mrp", label: "MRP", type: "number", step: "0.01" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             FormInput,
             {
               name: "sellingPrice",
               label: "Selling Price",
-              type: "number",
-              step: "0.01"
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            FormInput,
-            {
-              name: "bulkPrice",
-              label: "Bulk Price",
               type: "number",
               step: "0.01"
             }
@@ -90132,6 +90227,20 @@ function ProductsPage() {
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(FormInput, { name: "stock", label: "Stock", type: "number" })
         ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Controller,
+          {
+            name: "bulkPricing",
+            control: methods.control,
+            render: ({ field }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              BulkPricingInput,
+              {
+                value: field.value || [],
+                onChange: field.onChange
+              }
+            )
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           FormInput,
           {
