@@ -37,6 +37,7 @@ export const ENDPOINTS = {
 
   // Products
   GET_PRODUCTS: `${BASE_URL}/products`,
+  GET_PRODUCTS_SELECTION: `${BASE_URL}/products/selection`,
   GET_PRODUCT: (id: string) => `${BASE_URL}/products/${id}`,
   CREATE_PRODUCT: `${BASE_URL}/products`,
   UPDATE_PRODUCT: (id: string) => `${BASE_URL}/products/${id}`,
@@ -123,11 +124,12 @@ export const ENDPOINTS = {
   GET_SETTINGS: `${BASE_URL}/settings`,
   UPDATE_SETTINGS: `${BASE_URL}/settings`,
 
-  // Coupons
-  GET_COUPONS: `${BASE_URL}/coupons`,
-  CREATE_COUPON: `${BASE_URL}/coupons`,
-  UPDATE_COUPON: (id: string) => `${BASE_URL}/coupons/${id}`,
-  DELETE_COUPON: (id: string) => `${BASE_URL}/coupons/${id}`,
+  // Offers
+  GET_OFFERS: `${BASE_URL}/offers`,
+  GET_OFFER: (id: string) => `${BASE_URL}/offers/${id}`,
+  CREATE_OFFER: `${BASE_URL}/offers`,
+  UPDATE_OFFER: (id: string) => `${BASE_URL}/offers/${id}`,
+  DELETE_OFFER: (id: string) => `${BASE_URL}/offers/${id}`,
 
   // Banners
   BANNERS_GET: `${BASE_URL}/banners`,

@@ -24,6 +24,7 @@ export type PermissionModule =
   | "users"
   | "roles"
   | "wallet"
+  | "offers"
   | "settings"
   | "theme"
   | "profile"
@@ -108,6 +109,10 @@ export const PERMISSIONS = {
   WALLET_VIEW: "wallet:view",
   WALLET_MANAGE: "wallet:manage",
 
+  // Offers
+  OFFERS_VIEW: "offers:view",
+  OFFERS_MANAGE: "offers:manage",
+
   // Settings
   SETTINGS_VIEW: "settings:view",
   SETTINGS_EDIT: "settings:edit",
@@ -146,6 +151,7 @@ export const MODULE_LABELS: Record<PermissionModule, string> = {
   users: "Users",
   roles: "Roles",
   wallet: "Wallet",
+  offers: "Offers & Promotions",
   settings: "Settings",
   theme: "Theme",
   profile: "Profile",

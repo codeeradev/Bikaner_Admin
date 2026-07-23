@@ -1,4 +1,3 @@
-// Export all services from a single entry point
 export * from "./authService";
 export * from "./categoryService";
 export * from "./cityService";
@@ -10,4 +9,4 @@ export * from "./bannerService";
 export * from "./settingsService";
 export * from "./sellerApplicationService";
 export * from "./notificationService";
-export * from "./couponService";
+export * from "./offerService";

@@ -4,8 +4,8 @@ import { BannersPage } from "@/pages/BannersPage";
 import { BulkOrdersPage } from "@/pages/BulkOrdersPage";
 import { CategoriesPage } from "@/pages/CategoriesPage";
 import { CitiesPage } from "@/pages/CitiesPage";
-import { CouponManagementPage } from "@/pages/CouponManagementPage";
 import { DashboardPage } from "@/pages/DashboardPage";
+import { OfferManagementPage } from "@/pages/OfferManagementPage";
 import { FranchisePage } from "@/pages/FranchisePage";
 import { FranchiseRequestsPage } from "@/pages/FranchiseRequestsPage";
 import { LoginPage } from "@/pages/LoginPage";
@@ -125,10 +125,10 @@ const settingsRoute = createRoute({
   component: SettingsPage,
 });
 
-const couponsRoute = createRoute({
+const offersRoute = createRoute({
   getParentRoute: () => protectedRoute,
-  path: "/coupons",
-  component: CouponManagementPage,
+  path: "/offers",
+  component: OfferManagementPage,
 });
 
 const ordersRoute = createRoute({
@@ -223,7 +223,7 @@ const routeTree = rootRoute.addChildren([
       themeRoute,
       profileRoute,
       settingsRoute,
-      couponsRoute,
+      offersRoute,
     ]),
   ]),
 ]);

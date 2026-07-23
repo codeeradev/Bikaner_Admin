@@ -1,12 +1,10 @@
-import { ENDPOINTS } from "@/api/endpoints";
-import { settingsService } from "@/api/services";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { usePermissions } from "@/hooks/usePermissions";
 import { PERMISSIONS } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
-import { useSettingsStore, useUIStore } from "@/store";
+import { useUIStore } from "@/store";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
   Building2,
@@ -14,7 +12,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
-  Cookie,
   FolderTree,
   ImageIcon,
   LayoutDashboard,
@@ -27,10 +24,11 @@ import {
   TicketPercent,
   ShoppingCart,
   Store,
+  Tag,
   User,
   UserCheck,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 
 interface MenuItem {
   label: string;
@@ -168,8 +166,20 @@ const menuItems: MenuItem[] = [
     ],
   },
   {
+    label: "Promotions",
+    icon: Tag,
+    children: [
+      {
+        label: "Offers",
+        icon: Tag,
+        href: "/offers",
+        permission: PERMISSIONS.OFFERS_VIEW,
+      },
+    ],
+  },
+  {
     label: "Settings",
-    icon: Settings,
+    icon: User,
     children: [
       {
         label: "Profile",
@@ -179,43 +189,13 @@ const menuItems: MenuItem[] = [
       },
       {
         label: "Settings",
-        icon: Settings,
+        icon: User,
         href: "/settings",
-        permission: PERMISSIONS.SETTINGS_VIEW,
-      },
-      {
-        label: "Coupon Management",
-        icon: TicketPercent,
-        href: "/coupons",
         permission: PERMISSIONS.SETTINGS_VIEW,
       },
     ],
   },
 ];
-
-const apiOrigin = new URL(ENDPOINTS.GET_SETTINGS).origin;
-
-function getAssetUrl(path?: string) {
-  if (!path) return "";
-  if (/^https?:\/\//i.test(path)) return path;
-  return `${apiOrigin}${path.startsWith("/") ? path : `/${path}`}`;
-}
-
-function BrandLogo({ logoUrl }: { logoUrl: string }) {
-  return (
-    <div className="h-7 w-7 rounded-md bg-primary flex items-center justify-center overflow-hidden">
-      {logoUrl ? (
-        <img
-          src={logoUrl}
-          alt="Site logo"
-          className="h-full w-full object-cover"
-        />
-      ) : (
-        <Cookie className="h-4 w-4 text-primary-foreground" />
-      )}
-    </div>
-  );
-}
 
 function MenuItemComponent({
   item,
@@ -324,40 +304,12 @@ export function Sidebar() {
     setMobileDrawerOpen,
   } = useUIStore();
   const { isAdmin } = usePermissions();
-  const { siteTitle, siteLogo, setBrandSettings } = useSettingsStore();
-  const logoUrl = useMemo(() => getAssetUrl(siteLogo), [siteLogo]);
-
-  useEffect(() => {
-    if (!isAdmin) return;
-
-    let isMounted = true;
-
-    const loadBrandSettings = async () => {
-      try {
-        const response = await settingsService.getSettings();
-        if (!isMounted) return;
-        setBrandSettings({
-          siteTitle: response.data.siteTitle,
-          siteLogo: response.data.siteLogo || "",
-        });
-      } catch (error) {
-        console.error("Failed to load brand settings:", error);
-      }
-    };
-
-    loadBrandSettings();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [isAdmin, setBrandSettings]);
 
   const sidebarContent = (
     <div className="flex h-full flex-col">
       <div className="flex h-14 items-center border-b border-sidebar-border px-4">
         <div className="flex items-center gap-2 font-semibold text-sidebar-foreground">
-          <BrandLogo logoUrl={logoUrl} />
-          {!sidebarCollapsed && <span className="text-sm">{siteTitle}</span>}
+          {!sidebarCollapsed && <span className="text-sm">Bikaner Admin</span>}
         </div>
       </div>
       <ScrollArea className="flex-1 px-3 py-4">
@@ -409,9 +361,8 @@ export function Sidebar() {
         >
           <div className="flex h-full flex-col">
             <div className="flex h-14 items-center border-b border-sidebar-border px-4">
-              <div className="flex items-center gap-2 font-semibold">
-                <BrandLogo logoUrl={logoUrl} />
-                <span className="text-sm">{siteTitle}</span>
+              <div className="flex items-center gap-2 font-semibold text-sidebar-foreground">
+                <span className="text-sm">Bikaner Admin</span>
               </div>
             </div>
             <ScrollArea className="flex-1 px-3 py-4">
