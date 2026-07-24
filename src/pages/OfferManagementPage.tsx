@@ -26,30 +26,26 @@ import { useAlert } from "@/hooks/use-alert";
 import { ENDPOINTS } from "@/api/endpoints";
 import { get } from "@/api/apiClient";
 import type { ColumnDef } from "@tanstack/react-table";
-import { 
-  Pencil, 
-  Plus, 
-  RefreshCw, 
-  Tag, 
-  Trash2,
-  X,
-} from "lucide-react";
+import { Pencil, Plus, RefreshCw, Tag, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 type OfferForm = {
   name: string;
   description: string;
   offerType: string;
-  requiresCoupon: boolean;
-  couponCode: string;
   discountValue: string;
   maxDiscountAmount: string;
+  bogoConfig: {
+    buyQuantity: string;
+    getQuantity: string;
+  };
   applicableOn: string;
   specificProducts: string[];
   minCartValue: string;
   startDate: string;
   endDate: string;
   priority: string;
+  autoApply: boolean;
   isActive: boolean;
 };
 
@@ -57,23 +53,26 @@ type ProductOption = {
   id: string;
   name: string;
   image: string | null;
-  price: number;
+  sellingPrice: number;
 };
 
 const emptyForm: OfferForm = {
   name: "",
   description: "",
   offerType: "flat_discount",
-  requiresCoupon: false,
-  couponCode: "",
   discountValue: "",
   maxDiscountAmount: "",
+  bogoConfig: {
+    buyQuantity: "1",
+    getQuantity: "1",
+  },
   applicableOn: "cart",
   specificProducts: [],
   minCartValue: "0",
   startDate: new Date().toISOString().split("T")[0],
   endDate: "",
-  priority: "0",
+  priority: "1",
+  autoApply: true,
   isActive: true,
 };
 
@@ -87,16 +86,19 @@ const toForm = (offer: Offer): OfferForm => ({
   name: offer.name,
   description: offer.description || "",
   offerType: offer.offerType,
-  requiresCoupon: offer.requiresCoupon,
-  couponCode: offer.couponCode || "",
   discountValue: String(offer.discountValue ?? ""),
   maxDiscountAmount: String(offer.maxDiscountAmount ?? ""),
+  bogoConfig: {
+    buyQuantity: String(offer.bogoConfig?.buyQuantity ?? 1),
+    getQuantity: String(offer.bogoConfig?.getQuantity ?? 1),
+  },
   applicableOn: offer.applicableOn,
   specificProducts: offer.specificProducts || [],
   minCartValue: String(offer.minCartValue ?? 0),
   startDate: offer.startDate.split("T")[0],
   endDate: offer.endDate ? offer.endDate.split("T")[0] : "",
-  priority: String(offer.priority ?? 0),
+  priority: String(offer.priority ?? 1),
+  autoApply: offer.autoApply ?? true,
   isActive: offer.isActive,
 });
 
@@ -114,13 +116,19 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 };
 
 const getOfferTypeBadge = (offerType: string) => {
-  const types: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
+  const types: Record<
+    string,
+    { label: string; variant: "default" | "secondary" | "outline" }
+  > = {
     flat_discount: { label: "Flat Discount", variant: "default" },
     percentage_discount: { label: "Percentage Off", variant: "secondary" },
     bogo: { label: "BOGO", variant: "outline" },
   };
-  
-  const type = types[offerType] || { label: offerType, variant: "outline" as const };
+
+  const type = types[offerType] || {
+    label: offerType,
+    variant: "outline" as const,
+  };
   return <Badge variant={type.variant}>{type.label}</Badge>;
 };
 
@@ -131,13 +139,12 @@ export function OfferManagementPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingOffer, setEditingOffer] = useState<Offer | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState("");
   const [form, setForm] = useState<OfferForm>(emptyForm);
-  
+
   // Product selection state
-  const [productSearch, setProductSearch] = useState("");
   const [productOptions, setProductOptions] = useState<ProductOption[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<ProductOption[]>([]);
-  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
   const loadOffers = useCallback(async () => {
     setIsLoading(true);
@@ -154,104 +161,85 @@ export function OfferManagementPage() {
     loadOffers();
   }, [loadOffers]);
 
-  // Load products for selection
-  const searchProducts = useCallback(async (search: string) => {
-    if (!search || search.length < 2) {
-      setProductOptions([]);
-      return;
-    }
-
-    setIsLoadingProducts(true);
+  const loadProducts = async () => {
     try {
-      const response = await get<{ success: boolean; data: ProductOption[] }>(
-        ENDPOINTS.GET_PRODUCTS_SELECTION,
-        { search, limit: 20 }
-      );
+      const response = await get<{
+        success: boolean;
+        data: ProductOption[];
+      }>(ENDPOINTS.GET_PRODUCTS_SELECTION);
+
       if (response.success) {
         setProductOptions(response.data);
       }
     } catch (error) {
-      console.error("Error searching products:", error);
-    } finally {
-      setIsLoadingProducts(false);
+      console.error(error);
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (form.applicableOn === "specific_products") {
-        searchProducts(productSearch);
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [productSearch, form.applicableOn, searchProducts]);
-
-  const openCreateDialog = () => {
+  const openCreateDialog = async () => {
     setEditingOffer(null);
     setForm(emptyForm);
     setSelectedProducts([]);
-    setProductSearch("");
+    await loadProducts();
     setDialogOpen(true);
   };
 
   const openEditDialog = async (offer: Offer) => {
     setEditingOffer(offer);
+    await loadProducts();
     setForm(toForm(offer));
-    
+
     // Load selected products if specific_products
-    if (offer.applicableOn === "specific_products" && offer.specificProducts) {
-      try {
-        const response = await get<{ success: boolean; data: ProductOption[] }>(
-          ENDPOINTS.GET_PRODUCTS_SELECTION,
-          { limit: 100 }
-        );
-        if (response.success) {
-          const selected = response.data.filter(p => 
-            offer.specificProducts?.includes(p.id)
-          );
-          setSelectedProducts(selected);
-        }
-      } catch (error) {
-        console.error("Error loading products:", error);
-      }
+    if (offer.applicableOn === "specific_products") {
+      const selected = productOptions.filter((p) =>
+        offer.specificProducts?.includes(p.id),
+      );
+
+      setSelectedProducts(selected);
     }
-    
+
     setDialogOpen(true);
   };
 
   const addProduct = (product: ProductOption) => {
-    if (!selectedProducts.find(p => p.id === product.id)) {
+    if (!selectedProducts.find((p) => p.id === product.id)) {
       setSelectedProducts([...selectedProducts, product]);
-      setForm({ ...form, specificProducts: [...form.specificProducts, product.id] });
+      setForm({
+        ...form,
+        specificProducts: [...form.specificProducts, product.id],
+      });
     }
-    setProductSearch("");
-    setProductOptions([]);
   };
 
   const removeProduct = (productId: string) => {
-    setSelectedProducts(selectedProducts.filter(p => p.id !== productId));
-    setForm({ ...form, specificProducts: form.specificProducts.filter(id => id !== productId) });
+    setSelectedProducts(selectedProducts.filter((p) => p.id !== productId));
+    setForm({
+      ...form,
+      specificProducts: form.specificProducts.filter((id) => id !== productId),
+    });
   };
 
   const handleSubmit = async () => {
     const name = form.name.trim();
     const discountValue = Number(form.discountValue);
     const minCartValue = Number(form.minCartValue || 0);
+    const priority = Number(form.priority || 1);
 
     if (!name) {
       alert.error("Offer name is required.");
       return;
     }
 
-    if (form.requiresCoupon && !form.couponCode.trim()) {
-      alert.error("Coupon code is required when 'Requires Coupon' is enabled.");
+    // Validate priority (must be at least 1)
+    if (priority < 1) {
+      alert.error("Priority must be at least 1.");
       return;
     }
 
     if (
-      (form.offerType === "flat_discount" || form.offerType === "percentage_discount") &&
-      (!Number.isFinite(discountValue) || discountValue < 0)
+      (form.offerType === "flat_discount" ||
+        form.offerType === "percentage_discount") &&
+      (!Number.isFinite(discountValue) || discountValue <= 0)
     ) {
       alert.error("Discount value must be a valid positive number.");
       return;
@@ -260,6 +248,28 @@ export function OfferManagementPage() {
     if (form.offerType === "percentage_discount" && discountValue > 100) {
       alert.error("Percentage discount cannot exceed 100%.");
       return;
+    }
+
+    // Validate BOGO config
+    if (form.offerType === "bogo") {
+      const buyQty = Number(form.bogoConfig.buyQuantity);
+      const getQty = Number(form.bogoConfig.getQuantity);
+      
+      if (!Number.isFinite(buyQty) || buyQty < 1) {
+        alert.error("Buy quantity must be at least 1.");
+        return;
+      }
+      
+      if (!Number.isFinite(getQty) || getQty < 1) {
+        alert.error("Get quantity must be at least 1.");
+        return;
+      }
+      
+      // BOGO requires specific products
+      if (form.applicableOn !== "specific_products") {
+        alert.error("BOGO offers must be applied to specific products.");
+        return;
+      }
     }
 
     if (!Number.isFinite(minCartValue) || minCartValue < 0) {
@@ -272,7 +282,10 @@ export function OfferManagementPage() {
       return;
     }
 
-    if (form.applicableOn === "specific_products" && form.specificProducts.length === 0) {
+    if (
+      form.applicableOn === "specific_products" &&
+      form.specificProducts.length === 0
+    ) {
       alert.error("Please select at least one product.");
       return;
     }
@@ -283,19 +296,31 @@ export function OfferManagementPage() {
         name,
         description: form.description.trim(),
         offerType: form.offerType as any,
-        requiresCoupon: form.requiresCoupon,
-        couponCode: form.couponCode.trim().toUpperCase() || undefined,
-        discountValue: form.offerType === "flat_discount" || form.offerType === "percentage_discount" 
-          ? discountValue 
+        discountValue:
+          form.offerType === "flat_discount" ||
+          form.offerType === "percentage_discount"
+            ? discountValue
+            : undefined,
+        maxDiscountAmount: form.maxDiscountAmount
+          ? Number(form.maxDiscountAmount)
           : undefined,
-        maxDiscountAmount: form.maxDiscountAmount ? Number(form.maxDiscountAmount) : undefined,
+        bogoConfig:
+          form.offerType === "bogo"
+            ? {
+                buyQuantity: Number(form.bogoConfig.buyQuantity),
+                getQuantity: Number(form.bogoConfig.getQuantity),
+              }
+            : undefined,
         applicableOn: form.applicableOn as any,
-        specificProducts: form.applicableOn === "specific_products" ? form.specificProducts : undefined,
+        specificProducts:
+          form.applicableOn === "specific_products"
+            ? form.specificProducts
+            : undefined,
         minCartValue,
         startDate: form.startDate,
         endDate: form.endDate || undefined,
-        priority: Number(form.priority || 0),
-        autoApply: !form.requiresCoupon,
+        priority,
+        autoApply: form.autoApply,
         isActive: form.isActive,
       };
 
@@ -335,9 +360,9 @@ export function OfferManagementPage() {
       cell: ({ row }) => (
         <div>
           <div className="font-medium">{row.original.name}</div>
-          {row.original.couponCode && (
-            <div className="text-xs text-muted-foreground font-mono">
-              Code: {row.original.couponCode}
+          {row.original.description && (
+            <div className="text-xs text-muted-foreground">
+              {row.original.description}
             </div>
           )}
         </div>
@@ -371,7 +396,7 @@ export function OfferManagementPage() {
       header: "Valid Period",
       cell: ({ row }) => {
         const start = new Date(row.original.startDate).toLocaleDateString();
-        const end = row.original.endDate 
+        const end = row.original.endDate
           ? new Date(row.original.endDate).toLocaleDateString()
           : "No end";
         return (
@@ -383,11 +408,11 @@ export function OfferManagementPage() {
       },
     },
     {
-      accessorKey: "requiresCoupon",
+      accessorKey: "autoApply",
       header: "Type",
       cell: ({ row }) => (
-        <Badge variant={row.original.requiresCoupon ? "outline" : "secondary"}>
-          {row.original.requiresCoupon ? "Coupon" : "Auto"}
+        <Badge variant={row.original.autoApply ? "secondary" : "outline"}>
+          {row.original.autoApply ? "Auto Apply" : "Manual"}
         </Badge>
       ),
     },
@@ -475,7 +500,9 @@ export function OfferManagementPage() {
                 <Switch
                   id="isActive"
                   checked={form.isActive}
-                  onCheckedChange={(checked) => setForm({ ...form, isActive: checked })}
+                  onCheckedChange={(checked) =>
+                    setForm({ ...form, isActive: checked })
+                  }
                 />
               </div>
             </div>
@@ -503,7 +530,9 @@ export function OfferManagementPage() {
                 <Textarea
                   id="description"
                   value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
                   rows={2}
                   placeholder="Brief description of the offer"
                 />
@@ -514,14 +543,20 @@ export function OfferManagementPage() {
                   <Label>Offer Type *</Label>
                   <Select
                     value={form.offerType}
-                    onValueChange={(value) => setForm({ ...form, offerType: value })}
+                    onValueChange={(value) =>
+                      setForm({ ...form, offerType: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="flat_discount">Flat Discount</SelectItem>
-                      <SelectItem value="percentage_discount">Percentage Discount</SelectItem>
+                      <SelectItem value="flat_discount">
+                        Flat Discount
+                      </SelectItem>
+                      <SelectItem value="percentage_discount">
+                        Percentage Discount
+                      </SelectItem>
                       <SelectItem value="bogo">Buy One Get One</SelectItem>
                     </SelectContent>
                   </Select>
@@ -532,7 +567,11 @@ export function OfferManagementPage() {
                   <Select
                     value={form.applicableOn}
                     onValueChange={(value) => {
-                      setForm({ ...form, applicableOn: value, specificProducts: [] });
+                      setForm({
+                        ...form,
+                        applicableOn: value,
+                        specificProducts: [],
+                      });
                       setSelectedProducts([]);
                     }}
                   >
@@ -541,7 +580,9 @@ export function OfferManagementPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="cart">Entire Cart</SelectItem>
-                      <SelectItem value="specific_products">Specific Products</SelectItem>
+                      <SelectItem value="specific_products">
+                        Specific Products
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -550,36 +591,32 @@ export function OfferManagementPage() {
               {form.applicableOn === "specific_products" && (
                 <div className="space-y-2">
                   <Label>Select Products *</Label>
-                  <Input
-                    placeholder="Search products..."
-                    value={productSearch}
-                    onChange={(e) => setProductSearch(e.target.value)}
-                  />
-                  {isLoadingProducts && (
-                    <p className="text-xs text-muted-foreground">Searching...</p>
-                  )}
-                  {productOptions.length > 0 && (
-                    <div className="border rounded-md max-h-40 overflow-y-auto">
+                  <Select
+                    value={selectedProductId}
+                    onValueChange={(value) => {
+                      setSelectedProductId(value);
+
+                      const product = productOptions.find(
+                        (p) => p.id === value,
+                      );
+
+                      if (product) {
+                        addProduct(product);
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Product" />
+                    </SelectTrigger>
+
+                    <SelectContent>
                       {productOptions.map((product) => (
-                        <button
-                          key={product.id}
-                          type="button"
-                          onClick={() => addProduct(product)}
-                          className="w-full p-2 hover:bg-accent text-left flex items-center gap-2"
-                        >
-                          {product.image && (
-                            <img src={product.image} alt="" className="w-8 h-8 object-cover rounded" />
-                          )}
-                          <div className="flex-1">
-                            <div className="text-sm">{product.name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {currency.format(product.price)}
-                            </div>
-                          </div>
-                        </button>
+                        <SelectItem key={product.id} value={product.id}>
+                          {product.name} - ₹{product.sellingPrice}
+                        </SelectItem>
                       ))}
-                    </div>
-                  )}
+                    </SelectContent>
+                  </Select>
                   {selectedProducts.length > 0 && (
                     <div className="space-y-1">
                       <Label className="text-xs">Selected Products:</Label>
@@ -605,31 +642,49 @@ export function OfferManagementPage() {
                 </div>
               )}
 
-              {(form.offerType === "flat_discount" || form.offerType === "percentage_discount") && (
+              {(form.offerType === "flat_discount" ||
+                form.offerType === "percentage_discount") && (
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="discountValue">
-                      {form.offerType === "percentage_discount" ? "Discount (%)" : "Discount Amount (₹)"}
+                      {form.offerType === "percentage_discount"
+                        ? "Discount (%)"
+                        : "Discount Amount (₹)"}
                     </Label>
                     <Input
                       id="discountValue"
                       type="number"
                       min={0}
-                      max={form.offerType === "percentage_discount" ? 100 : undefined}
+                      max={
+                        form.offerType === "percentage_discount"
+                          ? 100
+                          : undefined
+                      }
                       value={form.discountValue}
-                      onChange={(e) => setForm({ ...form, discountValue: e.target.value })}
-                      placeholder={form.offerType === "percentage_discount" ? "10" : "100"}
+                      onChange={(e) =>
+                        setForm({ ...form, discountValue: e.target.value })
+                      }
+                      placeholder={
+                        form.offerType === "percentage_discount" ? "10" : "100"
+                      }
                     />
                   </div>
                   {form.offerType === "percentage_discount" && (
                     <div className="space-y-2">
-                      <Label htmlFor="maxDiscountAmount">Max Discount (₹)</Label>
+                      <Label htmlFor="maxDiscountAmount">
+                        Max Discount (₹)
+                      </Label>
                       <Input
                         id="maxDiscountAmount"
                         type="number"
                         min={0}
                         value={form.maxDiscountAmount}
-                        onChange={(e) => setForm({ ...form, maxDiscountAmount: e.target.value })}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            maxDiscountAmount: e.target.value,
+                          })
+                        }
                         placeholder="Optional cap"
                       />
                     </div>
@@ -637,34 +692,77 @@ export function OfferManagementPage() {
                 </div>
               )}
 
+              {form.offerType === "bogo" && (
+                <div className="space-y-4 rounded-lg border p-4 bg-muted/50">
+                  <div className="font-medium">Buy One Get One Configuration</div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="buyQuantity">Buy Quantity</Label>
+                      <Input
+                        id="buyQuantity"
+                        type="number"
+                        min={1}
+                        value={form.bogoConfig.buyQuantity}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            bogoConfig: {
+                              ...form.bogoConfig,
+                              buyQuantity: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="1"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Customer buys this many
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="getQuantity">Get Quantity (Free)</Label>
+                      <Input
+                        id="getQuantity"
+                        type="number"
+                        min={1}
+                        value={form.bogoConfig.getQuantity}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            bogoConfig: {
+                              ...form.bogoConfig,
+                              getQuantity: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="1"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Customer gets this many free
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-sm text-muted-foreground bg-background p-3 rounded">
+                    Example: Buy {form.bogoConfig.buyQuantity || "1"}, Get{" "}
+                    {form.bogoConfig.getQuantity || "1"} Free
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center justify-between rounded-md border p-3">
                 <div className="space-y-0.5">
-                  <Label htmlFor="requiresCoupon">Requires Coupon Code</Label>
+                  <Label htmlFor="autoApply">Auto Apply</Label>
                   <p className="text-xs text-muted-foreground">
-                    User must enter a coupon code to activate this offer
+                    Automatically apply this offer when conditions are met
                   </p>
                 </div>
                 <Switch
-                  id="requiresCoupon"
-                  checked={form.requiresCoupon}
-                  onCheckedChange={(checked) => setForm({ ...form, requiresCoupon: checked })}
+                  id="autoApply"
+                  checked={form.autoApply}
+                  onCheckedChange={(checked) =>
+                    setForm({ ...form, autoApply: checked })
+                  }
                 />
               </div>
-
-              {form.requiresCoupon && (
-                <div className="space-y-2">
-                  <Label htmlFor="couponCode">Coupon Code *</Label>
-                  <Input
-                    id="couponCode"
-                    value={form.couponCode}
-                    onChange={(e) => 
-                      setForm({ ...form, couponCode: e.target.value.toUpperCase() })
-                    }
-                    placeholder="SAVE10"
-                    className="font-mono"
-                  />
-                </div>
-              )}
             </TabsContent>
 
             <TabsContent value="conditions" className="space-y-4 mt-4">
@@ -675,7 +773,9 @@ export function OfferManagementPage() {
                   type="number"
                   min={0}
                   value={form.minCartValue}
-                  onChange={(e) => setForm({ ...form, minCartValue: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, minCartValue: e.target.value })
+                  }
                 />
               </div>
 
@@ -686,7 +786,9 @@ export function OfferManagementPage() {
                     id="startDate"
                     type="date"
                     value={form.startDate}
-                    onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, startDate: e.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -695,7 +797,9 @@ export function OfferManagementPage() {
                     id="endDate"
                     type="date"
                     value={form.endDate}
-                    onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, endDate: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -705,12 +809,15 @@ export function OfferManagementPage() {
                 <Input
                   id="priority"
                   type="number"
+                  min={1}
                   value={form.priority}
-                  onChange={(e) => setForm({ ...form, priority: e.target.value })}
-                  placeholder="0"
+                  onChange={(e) =>
+                    setForm({ ...form, priority: e.target.value })
+                  }
+                  placeholder="1"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Higher priority offers are evaluated first
+                  Higher priority offers are evaluated first (minimum: 1)
                 </p>
               </div>
             </TabsContent>

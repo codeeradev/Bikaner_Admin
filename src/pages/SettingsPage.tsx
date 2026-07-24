@@ -4,6 +4,7 @@ import { FormCheckbox, FormInput, FormTextarea } from "@/components/FormComponen
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePermissions } from "@/hooks/usePermissions";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
@@ -105,6 +106,7 @@ const settingsSchema = z
     razorpayKeyId: z.string().optional(),
     razorpayKeySecret: z.string().optional(),
     razorpayWebhookSecret: z.string().optional(),
+    enableRazorpayForSellers: z.boolean(),
     termsAndConditions: z.string().optional(),
     privacyPolicy: z.string().optional(),
     aboutUs: z.string().optional(),
@@ -143,6 +145,7 @@ const defaultValues: SettingsFormData = {
   razorpayKeyId: "",
   razorpayKeySecret: "",
   razorpayWebhookSecret: "",
+  enableRazorpayForSellers: false,
   termsAndConditions: "",
   privacyPolicy: "",
   aboutUs: "",
@@ -226,6 +229,7 @@ export function SettingsPage() {
           razorpayKeyId: settings.razorpayKeyId || "",
           razorpayKeySecret: settings.razorpayKeySecret || "",
           razorpayWebhookSecret: settings.razorpayWebhookSecret || "",
+          enableRazorpayForSellers: settings.enableRazorpayForSellers || false,
           termsAndConditions: settings.termsAndConditions || "",
           privacyPolicy: settings.privacyPolicy || "",
           aboutUs: settings.aboutUs || "",
@@ -319,6 +323,7 @@ export function SettingsPage() {
         razorpayKeyId: data.razorpayKeyId?.trim() || "",
         razorpayKeySecret: data.razorpayKeySecret?.trim() || "",
         razorpayWebhookSecret: data.razorpayWebhookSecret?.trim() || "",
+        enableRazorpayForSellers: data.enableRazorpayForSellers,
         termsAndConditions: data.termsAndConditions || "",
         privacyPolicy: data.privacyPolicy || "",
         aboutUs: data.aboutUs || "",
@@ -677,6 +682,21 @@ export function SettingsPage() {
                       label="Razorpay Webhook Secret"
                       type="password"
                     />
+                    <div className="flex items-center justify-between rounded-md border p-3">
+                      <div className="space-y-0.5">
+                        <label htmlFor="enableRazorpayForSellers" className="text-sm font-medium">
+                          Enable Razorpay for Sellers
+                        </label>
+                        <p className="text-xs text-muted-foreground">
+                          Allow sellers to receive payments via Razorpay
+                        </p>
+                      </div>
+                      <Switch
+                        id="enableRazorpayForSellers"
+                        checked={methods.watch("enableRazorpayForSellers")}
+                        onCheckedChange={(checked) => methods.setValue("enableRazorpayForSellers", checked)}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>

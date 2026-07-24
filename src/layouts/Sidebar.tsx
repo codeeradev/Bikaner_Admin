@@ -19,11 +19,8 @@ import {
   Menu,
   Package,
   Palette,
-  Settings,
   Shield,
-  TicketPercent,
   ShoppingCart,
-  Store,
   Tag,
   User,
   UserCheck,
@@ -303,7 +300,6 @@ export function Sidebar() {
     mobileDrawerOpen,
     setMobileDrawerOpen,
   } = useUIStore();
-  const { isAdmin } = usePermissions();
 
   const sidebarContent = (
     <div className="flex h-full flex-col">

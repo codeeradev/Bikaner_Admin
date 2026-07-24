@@ -23096,15 +23096,13 @@ const __iconNode$b = [
   [
     "path",
     {
-      d: "M2 9a3 3 0 1 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 1 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z",
-      key: "1l48ns"
+      d: "M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z",
+      key: "vktsd0"
     }
   ],
-  ["path", { d: "M9 9h.01", key: "1q5me6" }],
-  ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
-  ["path", { d: "M15 15h.01", key: "lqbp3k" }]
+  ["circle", { cx: "7.5", cy: "7.5", r: ".5", fill: "currentColor", key: "kqv944" }]
 ];
-const TicketPercent = createLucideIcon("ticket-percent", __iconNode$b);
+const Tag = createLucideIcon("tag", __iconNode$b);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -25812,6 +25810,7 @@ const ENDPOINTS = {
   DELETE_CATEGORY: (id2) => `${BASE_URL}/categories/${id2}`,
   // Products
   GET_PRODUCTS: `${BASE_URL}/products`,
+  GET_PRODUCTS_SELECTION: `${BASE_URL}/products`,
   GET_PRODUCT: (id2) => `${BASE_URL}/products/${id2}`,
   CREATE_PRODUCT: `${BASE_URL}/products`,
   UPDATE_PRODUCT: (id2) => `${BASE_URL}/products/${id2}`,
@@ -25878,11 +25877,12 @@ const ENDPOINTS = {
   // Settings
   GET_SETTINGS: `${BASE_URL}/settings`,
   UPDATE_SETTINGS: `${BASE_URL}/settings`,
-  // Coupons
-  GET_COUPONS: `${BASE_URL}/coupons`,
-  CREATE_COUPON: `${BASE_URL}/coupons`,
-  UPDATE_COUPON: (id2) => `${BASE_URL}/coupons/${id2}`,
-  DELETE_COUPON: (id2) => `${BASE_URL}/coupons/${id2}`,
+  // Offers
+  GET_OFFERS: `${BASE_URL}/offers`,
+  GET_OFFER: (id2) => `${BASE_URL}/offers/${id2}`,
+  CREATE_OFFER: `${BASE_URL}/offers`,
+  UPDATE_OFFER: (id2) => `${BASE_URL}/offers/${id2}`,
+  DELETE_OFFER: (id2) => `${BASE_URL}/offers/${id2}`,
   // Banners
   BANNERS_GET: `${BASE_URL}/banners`,
   BANNERS_CREATE: `${BASE_URL}/banners`,
@@ -26903,7 +26903,6 @@ const productService = {
     if (data.mrp !== void 0) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice !== void 0) formData.append("sellingPrice", data.sellingPrice.toString());
     if (data.stock !== void 0) formData.append("stock", data.stock.toString());
-    if (data.minBulkQty !== void 0) formData.append("minBulkQty", data.minBulkQty.toString());
     if (data.isFeatured !== void 0) formData.append("isFeatured", data.isFeatured.toString());
     if (data.status) {
       formData.append("isActive", (data.status === "active").toString());
@@ -26933,10 +26932,9 @@ const productService = {
     if (data.sku) formData.append("sku", data.sku);
     if (data.unitValue) formData.append("unitValue", data.unitValue.toString());
     if (data.unit) formData.append("unit", data.unit);
-    if (data.mrp) formData.append("mrp", data.mrp.toString());
-    if (data.sellingPrice) formData.append("sellingPrice", data.sellingPrice.toString());
+    if (data.mrp !== void 0) formData.append("mrp", data.mrp.toString());
+    if (data.sellingPrice !== void 0) formData.append("sellingPrice", data.sellingPrice.toString());
     if (data.stock !== void 0) formData.append("stock", data.stock.toString());
-    if (data.minBulkQty !== void 0) formData.append("minBulkQty", data.minBulkQty.toString());
     if (data.isFeatured !== void 0) formData.append("isFeatured", data.isFeatured.toString());
     if (data.status) {
       formData.append("isActive", (data.status === "active").toString());
@@ -27099,30 +27097,37 @@ const ensureSuccess = (response, fallbackMessage) => {
   }
   return response;
 };
-const couponService = {
-  async getCoupons() {
+const offerService = {
+  async getOffers() {
     const response = ensureSuccess(
-      await get$4(ENDPOINTS.GET_COUPONS, { limit: 100 }),
-      "Failed to fetch coupons"
+      await get$4(ENDPOINTS.GET_OFFERS, { limit: 100 }),
+      "Failed to fetch offers"
     );
     return response.data;
   },
-  async createCoupon(data) {
+  async getOfferById(id2) {
+    const response = ensureSuccess(
+      await get$4(ENDPOINTS.GET_OFFER(id2)),
+      "Failed to fetch offer"
+    );
+    return response.data;
+  },
+  async createOffer(data) {
     return ensureSuccess(
-      await post(ENDPOINTS.CREATE_COUPON, data),
-      "Failed to create coupon"
+      await post(ENDPOINTS.CREATE_OFFER, data),
+      "Failed to create offer"
     );
   },
-  async updateCoupon(id2, data) {
+  async updateOffer(id2, data) {
     return ensureSuccess(
-      await put(ENDPOINTS.UPDATE_COUPON(id2), data),
-      "Failed to update coupon"
+      await put(ENDPOINTS.UPDATE_OFFER(id2), data),
+      "Failed to update offer"
     );
   },
-  async deleteCoupon(id2) {
+  async deleteOffer(id2) {
     return ensureSuccess(
-      await del(ENDPOINTS.DELETE_COUPON(id2)),
-      "Failed to delete coupon"
+      await del(ENDPOINTS.DELETE_OFFER(id2)),
+      "Failed to delete offer"
     );
   }
 };
@@ -32731,6 +32736,8 @@ const PERMISSIONS = {
   ROLES_CREATE: "roles:create",
   ROLES_EDIT: "roles:edit",
   ROLES_DELETE: "roles:delete",
+  // Offers
+  OFFERS_VIEW: "offers:view",
   // Settings
   SETTINGS_VIEW: "settings:view",
   // Theme
@@ -32954,8 +32961,20 @@ const menuItems = [
     ]
   },
   {
+    label: "Promotions",
+    icon: Tag,
+    children: [
+      {
+        label: "Offers",
+        icon: Tag,
+        href: "/offers",
+        permission: PERMISSIONS.OFFERS_VIEW
+      }
+    ]
+  },
+  {
     label: "Settings",
-    icon: Settings,
+    icon: User,
     children: [
       {
         label: "Profile",
@@ -32965,35 +32984,13 @@ const menuItems = [
       },
       {
         label: "Settings",
-        icon: Settings,
+        icon: User,
         href: "/settings",
-        permission: PERMISSIONS.SETTINGS_VIEW
-      },
-      {
-        label: "Coupon Management",
-        icon: TicketPercent,
-        href: "/coupons",
         permission: PERMISSIONS.SETTINGS_VIEW
       }
     ]
   }
 ];
-const apiOrigin$1 = new URL(ENDPOINTS.GET_SETTINGS).origin;
-function getAssetUrl$1(path) {
-  if (!path) return "";
-  if (/^https?:\/\//i.test(path)) return path;
-  return `${apiOrigin$1}${path.startsWith("/") ? path : `/${path}`}`;
-}
-function BrandLogo({ logoUrl }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-7 w-7 rounded-md bg-primary flex items-center justify-center overflow-hidden", children: logoUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "img",
-    {
-      src: logoUrl,
-      alt: "Site logo",
-      className: "h-full w-full object-cover"
-    }
-  ) : /* @__PURE__ */ jsxRuntimeExports.jsx(Cookie, { className: "h-4 w-4 text-primary-foreground" }) });
-}
 function MenuItemComponent({
   item,
   collapsed,
@@ -33070,34 +33067,8 @@ function Sidebar() {
     mobileDrawerOpen,
     setMobileDrawerOpen
   } = useUIStore();
-  const { isAdmin: isAdmin2 } = usePermissions();
-  const { siteTitle, siteLogo, setBrandSettings } = useSettingsStore();
-  const logoUrl = reactExports.useMemo(() => getAssetUrl$1(siteLogo), [siteLogo]);
-  reactExports.useEffect(() => {
-    if (!isAdmin2) return;
-    let isMounted = true;
-    const loadBrandSettings = async () => {
-      try {
-        const response = await settingsService.getSettings();
-        if (!isMounted) return;
-        setBrandSettings({
-          siteTitle: response.data.siteTitle,
-          siteLogo: response.data.siteLogo || ""
-        });
-      } catch (error) {
-        console.error("Failed to load brand settings:", error);
-      }
-    };
-    loadBrandSettings();
-    return () => {
-      isMounted = false;
-    };
-  }, [isAdmin2, setBrandSettings]);
   const sidebarContent = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-full flex-col", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-14 items-center border-b border-sidebar-border px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 font-semibold text-sidebar-foreground", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(BrandLogo, { logoUrl }),
-      !sidebarCollapsed && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: siteTitle })
-    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-14 items-center border-b border-sidebar-border px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 font-semibold text-sidebar-foreground", children: !sidebarCollapsed && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: "Bikaner Admin" }) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ScrollArea, { className: "flex-1 px-3 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "space-y-1", children: menuItems.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       MenuItemComponent,
       {
@@ -33136,10 +33107,7 @@ function Sidebar() {
           side: "left",
           className: "w-64 p-0 bg-sidebar text-sidebar-foreground",
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-full flex-col", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-14 items-center border-b border-sidebar-border px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 font-semibold", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(BrandLogo, { logoUrl }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: siteTitle })
-            ] }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-14 items-center border-b border-sidebar-border px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 font-semibold text-sidebar-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: "Bikaner Admin" }) }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(ScrollArea, { className: "flex-1 px-3 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "space-y-1", children: menuItems.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsx(
               MenuItemComponent,
               {
@@ -51704,9 +51672,10 @@ function _isoDuration(Class, params) {
   });
 }
 // @__NO_SIDE_EFFECTS__
-function _number(Class, params) {
+function _coercedNumber(Class, params) {
   return new Class({
     type: "number",
+    coerce: true,
     checks: [],
     ...normalizeParams(params)
   });
@@ -53063,9 +53032,6 @@ const ZodNumber = /* @__PURE__ */ $constructor("ZodNumber", (inst, def) => {
   inst.isFinite = true;
   inst.format = bag.format ?? null;
 });
-function number$3(params) {
-  return /* @__PURE__ */ _number(ZodNumber, params);
-}
 const ZodNumberFormat = /* @__PURE__ */ $constructor("ZodNumberFormat", (inst, def) => {
   $ZodNumberFormat.init(inst, def);
   ZodNumber.init(inst, def);
@@ -53470,6 +53436,9 @@ function _instanceof(cls, params = {}) {
   };
   return inst;
 }
+function number$3(params) {
+  return /* @__PURE__ */ _coercedNumber(ZodNumber, params);
+}
 const loginSchema = object$1({
   email: string$1().min(1, "Mobile number is required").min(10, "Mobile number must be at least 10 digits").regex(/^\d+$/, "Please enter only numbers (no spaces or special characters)"),
   password: string$1().min(1, "Password is required").min(6, "Password must be at least 6 characters"),
@@ -53501,7 +53470,6 @@ const productSchema = object$1({
   sellingPrice: number$3().min(0, "Selling price must be 0 or greater").optional(),
   bulkPricing: array$1(bulkPriceTierSchema).optional(),
   stock: number$3().int().min(0, "Stock must be 0 or greater").optional(),
-  minBulkQty: number$3().int().min(0, "Min bulk quantity must be 0 or greater").optional(),
   isFeatured: boolean().optional(),
   status: _enum(["active", "inactive"]),
   image: any().optional(),
@@ -64147,495 +64115,6 @@ function CitiesPage() {
     ] }) })
   ] });
 }
-var SWITCH_NAME = "Switch";
-var [createSwitchContext] = createContextScope$1(SWITCH_NAME);
-var [SwitchProvider, useSwitchContext] = createSwitchContext(SWITCH_NAME);
-var Switch$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const {
-      __scopeSwitch,
-      name,
-      checked: checkedProp,
-      defaultChecked,
-      required: required2,
-      disabled,
-      value = "on",
-      onCheckedChange,
-      form,
-      ...switchProps
-    } = props;
-    const [button, setButton] = reactExports.useState(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
-    const hasConsumerStoppedPropagationRef = reactExports.useRef(false);
-    const isFormControl = button ? form || !!button.closest("form") : true;
-    const [checked, setChecked] = useControllableState({
-      prop: checkedProp,
-      defaultProp: defaultChecked ?? false,
-      onChange: onCheckedChange,
-      caller: SWITCH_NAME
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(SwitchProvider, { scope: __scopeSwitch, checked, disabled, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Primitive$1.button,
-        {
-          type: "button",
-          role: "switch",
-          "aria-checked": checked,
-          "aria-required": required2,
-          "data-state": getState(checked),
-          "data-disabled": disabled ? "" : void 0,
-          disabled,
-          value,
-          ...switchProps,
-          ref: composedRefs,
-          onClick: composeEventHandlers(props.onClick, (event) => {
-            setChecked((prevChecked) => !prevChecked);
-            if (isFormControl) {
-              hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-              if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
-            }
-          })
-        }
-      ),
-      isFormControl && /* @__PURE__ */ jsxRuntimeExports.jsx(
-        SwitchBubbleInput,
-        {
-          control: button,
-          bubbles: !hasConsumerStoppedPropagationRef.current,
-          name,
-          value,
-          checked,
-          required: required2,
-          disabled,
-          form,
-          style: { transform: "translateX(-100%)" }
-        }
-      )
-    ] });
-  }
-);
-Switch$1.displayName = SWITCH_NAME;
-var THUMB_NAME = "SwitchThumb";
-var SwitchThumb = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSwitch, ...thumbProps } = props;
-    const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.span,
-      {
-        "data-state": getState(context.checked),
-        "data-disabled": context.disabled ? "" : void 0,
-        ...thumbProps,
-        ref: forwardedRef
-      }
-    );
-  }
-);
-SwitchThumb.displayName = THUMB_NAME;
-var BUBBLE_INPUT_NAME = "SwitchBubbleInput";
-var SwitchBubbleInput = reactExports.forwardRef(
-  ({
-    __scopeSwitch,
-    control,
-    checked,
-    bubbles = true,
-    ...props
-  }, forwardedRef) => {
-    const ref = reactExports.useRef(null);
-    const composedRefs = useComposedRefs(ref, forwardedRef);
-    const prevChecked = usePrevious(checked);
-    const controlSize = useSize(control);
-    reactExports.useEffect(() => {
-      const input = ref.current;
-      if (!input) return;
-      const inputProto = window.HTMLInputElement.prototype;
-      const descriptor = Object.getOwnPropertyDescriptor(
-        inputProto,
-        "checked"
-      );
-      const setChecked = descriptor.set;
-      if (prevChecked !== checked && setChecked) {
-        const event = new Event("click", { bubbles });
-        setChecked.call(input, checked);
-        input.dispatchEvent(event);
-      }
-    }, [prevChecked, checked, bubbles]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "input",
-      {
-        type: "checkbox",
-        "aria-hidden": true,
-        defaultChecked: checked,
-        ...props,
-        tabIndex: -1,
-        ref: composedRefs,
-        style: {
-          ...props.style,
-          ...controlSize,
-          position: "absolute",
-          pointerEvents: "none",
-          opacity: 0,
-          margin: 0
-        }
-      }
-    );
-  }
-);
-SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME;
-function getState(checked) {
-  return checked ? "checked" : "unchecked";
-}
-var Root$1 = Switch$1;
-var Thumb = SwitchThumb;
-function Switch({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Root$1,
-    {
-      "data-slot": "switch",
-      className: cn(
-        "peer data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
-        className
-      ),
-      ...props,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Thumb,
-        {
-          "data-slot": "switch-thumb",
-          className: cn(
-            "bg-background dark:data-[state=unchecked]:bg-foreground dark:data-[state=checked]:bg-primary-foreground pointer-events-none block size-4 rounded-full ring-0 transition-transform data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0"
-          )
-        }
-      )
-    }
-  );
-}
-const emptyForm = {
-  code: "",
-  type: "percentage",
-  value: "",
-  minOrderAmount: "0",
-  description: "",
-  isActive: true
-};
-const currency = new Intl.NumberFormat("en-IN", {
-  style: "currency",
-  currency: "INR",
-  maximumFractionDigits: 0
-});
-const toForm = (coupon) => ({
-  code: coupon.code,
-  type: coupon.type,
-  value: String(coupon.value ?? ""),
-  minOrderAmount: String(coupon.minOrderAmount ?? 0),
-  description: coupon.description || "",
-  isActive: coupon.isActive
-});
-const getErrorMessage = (error, fallback) => {
-  if (error instanceof Error && error.message) return error.message;
-  if (typeof error === "object" && error !== null && "message" in error && typeof error.message === "string") {
-    return error.message;
-  }
-  return fallback;
-};
-function CouponManagementPage() {
-  const alert2 = useAlert();
-  const [coupons, setCoupons] = reactExports.useState([]);
-  const [isLoading, setIsLoading] = reactExports.useState(true);
-  const [isSaving, setIsSaving] = reactExports.useState(false);
-  const [dialogOpen, setDialogOpen] = reactExports.useState(false);
-  const [editingCoupon, setEditingCoupon] = reactExports.useState(null);
-  const [form, setForm] = reactExports.useState(emptyForm);
-  const loadCoupons = reactExports.useCallback(async () => {
-    setIsLoading(true);
-    try {
-      setCoupons(await couponService.getCoupons());
-    } catch (error) {
-      alert2.error(getErrorMessage(error, "Could not fetch coupons."));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [alert2]);
-  reactExports.useEffect(() => {
-    loadCoupons();
-  }, [loadCoupons]);
-  const openCreateDialog = () => {
-    setEditingCoupon(null);
-    setForm(emptyForm);
-    setDialogOpen(true);
-  };
-  const openEditDialog = (coupon) => {
-    setEditingCoupon(coupon);
-    setForm(toForm(coupon));
-    setDialogOpen(true);
-  };
-  const handleSubmit = async () => {
-    const code = form.code.trim().toUpperCase();
-    const value = Number(form.value);
-    const minOrderAmount = Number(form.minOrderAmount || 0);
-    if (!code) {
-      alert2.error("Coupon code is required.");
-      return;
-    }
-    if (!Number.isFinite(value) || value < 0) {
-      alert2.error("Coupon value must be a valid positive number.");
-      return;
-    }
-    if (form.type === "percentage" && value > 100) {
-      alert2.error("Percentage discount cannot exceed 100%.");
-      return;
-    }
-    if (!Number.isFinite(minOrderAmount) || minOrderAmount < 0) {
-      alert2.error("Minimum order amount must be a valid positive number.");
-      return;
-    }
-    try {
-      setIsSaving(true);
-      const payload = {
-        code,
-        type: form.type,
-        value,
-        minOrderAmount,
-        description: form.description.trim(),
-        isActive: form.isActive
-      };
-      if (editingCoupon) {
-        await couponService.updateCoupon(editingCoupon.id, payload);
-        alert2.success("Coupon updated.");
-      } else {
-        await couponService.createCoupon(payload);
-        alert2.success("Coupon created.");
-      }
-      setDialogOpen(false);
-      await loadCoupons();
-    } catch (error) {
-      alert2.error(getErrorMessage(error, "Could not save coupon."));
-    } finally {
-      setIsSaving(false);
-    }
-  };
-  const handleDelete = async (coupon) => {
-    if (!window.confirm(`Delete coupon ${coupon.code}?`)) return;
-    try {
-      await couponService.deleteCoupon(coupon.id);
-      alert2.success("Coupon deleted.");
-      await loadCoupons();
-    } catch (error) {
-      alert2.error(getErrorMessage(error, "Could not delete coupon."));
-    }
-  };
-  const columns2 = [
-    {
-      accessorKey: "code",
-      header: "Code",
-      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono text-xs font-semibold", children: row.original.code })
-    },
-    {
-      accessorKey: "type",
-      header: "Type",
-      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: "outline", className: "capitalize", children: row.original.type })
-    },
-    {
-      accessorKey: "value",
-      header: "Value",
-      cell: ({ row }) => row.original.type === "percentage" ? `${row.original.value}%` : currency.format(row.original.value)
-    },
-    {
-      accessorKey: "minOrderAmount",
-      header: "Min Order",
-      cell: ({ row }) => currency.format(row.original.minOrderAmount || 0)
-    },
-    {
-      accessorKey: "isActive",
-      header: "Status",
-      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: row.original.isActive ? "default" : "secondary", children: row.original.isActive ? "Active" : "Inactive" })
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button,
-          {
-            type: "button",
-            variant: "outline",
-            size: "icon",
-            onClick: () => openEditDialog(row.original),
-            title: "Edit coupon",
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "h-4 w-4" })
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button,
-          {
-            type: "button",
-            variant: "outline",
-            size: "icon",
-            onClick: () => handleDelete(row.original),
-            title: "Delete coupon",
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4 text-destructive" })
-          }
-        )
-      ] })
-    }
-  ];
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      PageHeader,
-      {
-        title: "Coupon Management",
-        description: "Create and manage simple discount coupons"
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        Button,
-        {
-          type: "button",
-          variant: "outline",
-          size: "sm",
-          onClick: loadCoupons,
-          disabled: isLoading,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "mr-2 h-4 w-4" }),
-            "Refresh"
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "button", size: "sm", onClick: openCreateDialog, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "mr-2 h-4 w-4" }),
-        "Add Coupon"
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      DataTable,
-      {
-        columns: columns2,
-        data: coupons,
-        isLoading,
-        searchPlaceholder: "Search coupons...",
-        emptyMessage: "No coupons found"
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: dialogOpen, onOpenChange: setDialogOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TicketPercent, { className: "h-5 w-5" }),
-        editingCoupon ? "Edit Coupon" : "Add Coupon"
-      ] }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 py-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "code", children: "Coupon Code" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Input,
-            {
-              id: "code",
-              value: form.code,
-              onChange: (event) => setForm((current) => ({
-                ...current,
-                code: event.target.value.toUpperCase()
-              })),
-              placeholder: "SAVE10"
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 md:grid-cols-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { children: "Type" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              Select,
-              {
-                value: form.type,
-                onValueChange: (value) => setForm((current) => ({ ...current, type: value })),
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {}) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "percentage", children: "Percentage" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "flat", children: "Flat" })
-                  ] })
-                ]
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "value", children: "Value" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Input,
-              {
-                id: "value",
-                type: "number",
-                min: 0,
-                max: form.type === "percentage" ? 100 : void 0,
-                value: form.value,
-                onChange: (event) => setForm((current) => ({
-                  ...current,
-                  value: event.target.value
-                })),
-                placeholder: form.type === "percentage" ? "10" : "100"
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "minOrderAmount", children: "Minimum Order Amount" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Input,
-            {
-              id: "minOrderAmount",
-              type: "number",
-              min: 0,
-              value: form.minOrderAmount,
-              onChange: (event) => setForm((current) => ({
-                ...current,
-                minOrderAmount: event.target.value
-              }))
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "description", children: "Description" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Textarea,
-            {
-              id: "description",
-              value: form.description,
-              onChange: (event) => setForm((current) => ({
-                ...current,
-                description: event.target.value
-              })),
-              rows: 3
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between rounded-md border p-3", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "isActive", children: "Active" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Switch,
-            {
-              id: "isActive",
-              checked: form.isActive,
-              onCheckedChange: (checked) => setForm((current) => ({ ...current, isActive: checked }))
-            }
-          )
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button,
-          {
-            type: "button",
-            variant: "outline",
-            onClick: () => setDialogOpen(false),
-            disabled: isSaving,
-            children: "Cancel"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "button", onClick: handleSubmit, disabled: isSaving, children: isSaving ? "Saving..." : "Save Coupon" })
-      ] })
-    ] }) })
-  ] });
-}
 function Card({ className, ...props }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
@@ -64811,7 +64290,7 @@ function getInvalidValueError(propValue, componentName) {
 
 Defaulting to \`null\`.`;
 }
-var Root = Progress$1;
+var Root$1 = Progress$1;
 var Indicator = ProgressIndicator;
 function Progress({
   className,
@@ -64819,7 +64298,7 @@ function Progress({
   ...props
 }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Root,
+    Root$1,
     {
       "data-slot": "progress",
       className: cn(
@@ -89249,6 +88728,1077 @@ function DashboardPage() {
     ] })
   ] });
 }
+var SWITCH_NAME = "Switch";
+var [createSwitchContext] = createContextScope$1(SWITCH_NAME);
+var [SwitchProvider, useSwitchContext] = createSwitchContext(SWITCH_NAME);
+var Switch$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const {
+      __scopeSwitch,
+      name,
+      checked: checkedProp,
+      defaultChecked,
+      required: required2,
+      disabled,
+      value = "on",
+      onCheckedChange,
+      form,
+      ...switchProps
+    } = props;
+    const [button, setButton] = reactExports.useState(null);
+    const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
+    const hasConsumerStoppedPropagationRef = reactExports.useRef(false);
+    const isFormControl = button ? form || !!button.closest("form") : true;
+    const [checked, setChecked] = useControllableState({
+      prop: checkedProp,
+      defaultProp: defaultChecked ?? false,
+      onChange: onCheckedChange,
+      caller: SWITCH_NAME
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(SwitchProvider, { scope: __scopeSwitch, checked, disabled, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Primitive$1.button,
+        {
+          type: "button",
+          role: "switch",
+          "aria-checked": checked,
+          "aria-required": required2,
+          "data-state": getState(checked),
+          "data-disabled": disabled ? "" : void 0,
+          disabled,
+          value,
+          ...switchProps,
+          ref: composedRefs,
+          onClick: composeEventHandlers(props.onClick, (event) => {
+            setChecked((prevChecked) => !prevChecked);
+            if (isFormControl) {
+              hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+              if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+            }
+          })
+        }
+      ),
+      isFormControl && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        SwitchBubbleInput,
+        {
+          control: button,
+          bubbles: !hasConsumerStoppedPropagationRef.current,
+          name,
+          value,
+          checked,
+          required: required2,
+          disabled,
+          form,
+          style: { transform: "translateX(-100%)" }
+        }
+      )
+    ] });
+  }
+);
+Switch$1.displayName = SWITCH_NAME;
+var THUMB_NAME = "SwitchThumb";
+var SwitchThumb = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSwitch, ...thumbProps } = props;
+    const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive$1.span,
+      {
+        "data-state": getState(context.checked),
+        "data-disabled": context.disabled ? "" : void 0,
+        ...thumbProps,
+        ref: forwardedRef
+      }
+    );
+  }
+);
+SwitchThumb.displayName = THUMB_NAME;
+var BUBBLE_INPUT_NAME = "SwitchBubbleInput";
+var SwitchBubbleInput = reactExports.forwardRef(
+  ({
+    __scopeSwitch,
+    control,
+    checked,
+    bubbles = true,
+    ...props
+  }, forwardedRef) => {
+    const ref = reactExports.useRef(null);
+    const composedRefs = useComposedRefs(ref, forwardedRef);
+    const prevChecked = usePrevious(checked);
+    const controlSize = useSize(control);
+    reactExports.useEffect(() => {
+      const input = ref.current;
+      if (!input) return;
+      const inputProto = window.HTMLInputElement.prototype;
+      const descriptor = Object.getOwnPropertyDescriptor(
+        inputProto,
+        "checked"
+      );
+      const setChecked = descriptor.set;
+      if (prevChecked !== checked && setChecked) {
+        const event = new Event("click", { bubbles });
+        setChecked.call(input, checked);
+        input.dispatchEvent(event);
+      }
+    }, [prevChecked, checked, bubbles]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "input",
+      {
+        type: "checkbox",
+        "aria-hidden": true,
+        defaultChecked: checked,
+        ...props,
+        tabIndex: -1,
+        ref: composedRefs,
+        style: {
+          ...props.style,
+          ...controlSize,
+          position: "absolute",
+          pointerEvents: "none",
+          opacity: 0,
+          margin: 0
+        }
+      }
+    );
+  }
+);
+SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME;
+function getState(checked) {
+  return checked ? "checked" : "unchecked";
+}
+var Root = Switch$1;
+var Thumb = SwitchThumb;
+function Switch({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Root,
+    {
+      "data-slot": "switch",
+      className: cn(
+        "peer data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      ),
+      ...props,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Thumb,
+        {
+          "data-slot": "switch-thumb",
+          className: cn(
+            "bg-background dark:data-[state=unchecked]:bg-foreground dark:data-[state=checked]:bg-primary-foreground pointer-events-none block size-4 rounded-full ring-0 transition-transform data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0"
+          )
+        }
+      )
+    }
+  );
+}
+var TABS_NAME = "Tabs";
+var [createTabsContext] = createContextScope$1(TABS_NAME, [
+  createRovingFocusGroupScope
+]);
+var useRovingFocusGroupScope = createRovingFocusGroupScope();
+var [TabsProvider, useTabsContext] = createTabsContext(TABS_NAME);
+var Tabs$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const {
+      __scopeTabs,
+      value: valueProp,
+      onValueChange,
+      defaultValue,
+      orientation: orientation2 = "horizontal",
+      dir,
+      activationMode = "automatic",
+      ...tabsProps
+    } = props;
+    const direction = useDirection(dir);
+    const [value, setValue] = useControllableState({
+      prop: valueProp,
+      onChange: onValueChange,
+      defaultProp: defaultValue ?? "",
+      caller: TABS_NAME
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      TabsProvider,
+      {
+        scope: __scopeTabs,
+        baseId: useId(),
+        value,
+        onValueChange: setValue,
+        orientation: orientation2,
+        dir: direction,
+        activationMode,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive$1.div,
+          {
+            dir: direction,
+            "data-orientation": orientation2,
+            ...tabsProps,
+            ref: forwardedRef
+          }
+        )
+      }
+    );
+  }
+);
+Tabs$1.displayName = TABS_NAME;
+var TAB_LIST_NAME = "TabsList";
+var TabsList$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeTabs, loop = true, ...listProps } = props;
+    const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Root$5,
+      {
+        asChild: true,
+        ...rovingFocusGroupScope,
+        orientation: context.orientation,
+        dir: context.dir,
+        loop,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive$1.div,
+          {
+            role: "tablist",
+            "aria-orientation": context.orientation,
+            ...listProps,
+            ref: forwardedRef
+          }
+        )
+      }
+    );
+  }
+);
+TabsList$1.displayName = TAB_LIST_NAME;
+var TRIGGER_NAME$1 = "TabsTrigger";
+var TabsTrigger$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
+    const context = useTabsContext(TRIGGER_NAME$1, __scopeTabs);
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
+    const triggerId = makeTriggerId(context.baseId, value);
+    const contentId = makeContentId(context.baseId, value);
+    const isSelected = value === context.value;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Item$1,
+      {
+        asChild: true,
+        ...rovingFocusGroupScope,
+        focusable: !disabled,
+        active: isSelected,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive$1.button,
+          {
+            type: "button",
+            role: "tab",
+            "aria-selected": isSelected,
+            "aria-controls": contentId,
+            "data-state": isSelected ? "active" : "inactive",
+            "data-disabled": disabled ? "" : void 0,
+            disabled,
+            id: triggerId,
+            ...triggerProps,
+            ref: forwardedRef,
+            onMouseDown: composeEventHandlers(props.onMouseDown, (event) => {
+              if (!disabled && event.button === 0 && event.ctrlKey === false) {
+                context.onValueChange(value);
+              } else {
+                event.preventDefault();
+              }
+            }),
+            onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
+              if ([" ", "Enter"].includes(event.key)) context.onValueChange(value);
+            }),
+            onFocus: composeEventHandlers(props.onFocus, () => {
+              const isAutomaticActivation = context.activationMode !== "manual";
+              if (!isSelected && !disabled && isAutomaticActivation) {
+                context.onValueChange(value);
+              }
+            })
+          }
+        )
+      }
+    );
+  }
+);
+TabsTrigger$1.displayName = TRIGGER_NAME$1;
+var CONTENT_NAME$1 = "TabsContent";
+var TabsContent$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
+    const context = useTabsContext(CONTENT_NAME$1, __scopeTabs);
+    const triggerId = makeTriggerId(context.baseId, value);
+    const contentId = makeContentId(context.baseId, value);
+    const isSelected = value === context.value;
+    const isMountAnimationPreventedRef = reactExports.useRef(isSelected);
+    reactExports.useEffect(() => {
+      const rAF = requestAnimationFrame(() => isMountAnimationPreventedRef.current = false);
+      return () => cancelAnimationFrame(rAF);
+    }, []);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, { present: forceMount || isSelected, children: ({ present }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive$1.div,
+      {
+        "data-state": isSelected ? "active" : "inactive",
+        "data-orientation": context.orientation,
+        role: "tabpanel",
+        "aria-labelledby": triggerId,
+        hidden: !present,
+        id: contentId,
+        tabIndex: 0,
+        ...contentProps,
+        ref: forwardedRef,
+        style: {
+          ...props.style,
+          animationDuration: isMountAnimationPreventedRef.current ? "0s" : void 0
+        },
+        children: present && children
+      }
+    ) });
+  }
+);
+TabsContent$1.displayName = CONTENT_NAME$1;
+function makeTriggerId(baseId, value) {
+  return `${baseId}-trigger-${value}`;
+}
+function makeContentId(baseId, value) {
+  return `${baseId}-content-${value}`;
+}
+var Root2 = Tabs$1;
+var List = TabsList$1;
+var Trigger$1 = TabsTrigger$1;
+var Content = TabsContent$1;
+function Tabs({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Root2,
+    {
+      "data-slot": "tabs",
+      className: cn("flex flex-col gap-2", className),
+      ...props
+    }
+  );
+}
+function TabsList({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    List,
+    {
+      "data-slot": "tabs-list",
+      className: cn(
+        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function TabsTrigger({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Trigger$1,
+    {
+      "data-slot": "tabs-trigger",
+      className: cn(
+        "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function TabsContent({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Content,
+    {
+      "data-slot": "tabs-content",
+      className: cn("flex-1 outline-none", className),
+      ...props
+    }
+  );
+}
+const emptyForm = {
+  name: "",
+  description: "",
+  offerType: "flat_discount",
+  discountValue: "",
+  maxDiscountAmount: "",
+  bogoConfig: {
+    buyQuantity: "1",
+    getQuantity: "1"
+  },
+  applicableOn: "cart",
+  specificProducts: [],
+  minCartValue: "0",
+  startDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+  endDate: "",
+  priority: "1",
+  autoApply: true,
+  isActive: true
+};
+const currency = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 0
+});
+const toForm = (offer) => {
+  var _a3, _b2;
+  return {
+    name: offer.name,
+    description: offer.description || "",
+    offerType: offer.offerType,
+    discountValue: String(offer.discountValue ?? ""),
+    maxDiscountAmount: String(offer.maxDiscountAmount ?? ""),
+    bogoConfig: {
+      buyQuantity: String(((_a3 = offer.bogoConfig) == null ? void 0 : _a3.buyQuantity) ?? 1),
+      getQuantity: String(((_b2 = offer.bogoConfig) == null ? void 0 : _b2.getQuantity) ?? 1)
+    },
+    applicableOn: offer.applicableOn,
+    specificProducts: offer.specificProducts || [],
+    minCartValue: String(offer.minCartValue ?? 0),
+    startDate: offer.startDate.split("T")[0],
+    endDate: offer.endDate ? offer.endDate.split("T")[0] : "",
+    priority: String(offer.priority ?? 1),
+    autoApply: offer.autoApply ?? true,
+    isActive: offer.isActive
+  };
+};
+const getErrorMessage = (error, fallback) => {
+  if (error instanceof Error && error.message) return error.message;
+  if (typeof error === "object" && error !== null && "message" in error && typeof error.message === "string") {
+    return error.message;
+  }
+  return fallback;
+};
+const getOfferTypeBadge = (offerType) => {
+  const types = {
+    flat_discount: { label: "Flat Discount", variant: "default" },
+    percentage_discount: { label: "Percentage Off", variant: "secondary" },
+    bogo: { label: "BOGO", variant: "outline" }
+  };
+  const type = types[offerType] || {
+    label: offerType,
+    variant: "outline"
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: type.variant, children: type.label });
+};
+function OfferManagementPage() {
+  const alert2 = useAlert();
+  const [offers, setOffers] = reactExports.useState([]);
+  const [isLoading, setIsLoading] = reactExports.useState(true);
+  const [isSaving, setIsSaving] = reactExports.useState(false);
+  const [dialogOpen, setDialogOpen] = reactExports.useState(false);
+  const [editingOffer, setEditingOffer] = reactExports.useState(null);
+  const [selectedProductId, setSelectedProductId] = reactExports.useState("");
+  const [form, setForm] = reactExports.useState(emptyForm);
+  const [productOptions, setProductOptions] = reactExports.useState([]);
+  const [selectedProducts, setSelectedProducts] = reactExports.useState([]);
+  const loadOffers = reactExports.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      setOffers(await offerService.getOffers());
+    } catch (error) {
+      alert2.error(getErrorMessage(error, "Could not fetch offers."));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [alert2]);
+  reactExports.useEffect(() => {
+    loadOffers();
+  }, [loadOffers]);
+  const loadProducts = async () => {
+    try {
+      const response = await get$4(ENDPOINTS.GET_PRODUCTS_SELECTION);
+      if (response.success) {
+        setProductOptions(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const openCreateDialog = async () => {
+    setEditingOffer(null);
+    setForm(emptyForm);
+    setSelectedProducts([]);
+    await loadProducts();
+    setDialogOpen(true);
+  };
+  const openEditDialog = async (offer) => {
+    setEditingOffer(offer);
+    await loadProducts();
+    setForm(toForm(offer));
+    if (offer.applicableOn === "specific_products") {
+      const selected = productOptions.filter(
+        (p2) => {
+          var _a3;
+          return (_a3 = offer.specificProducts) == null ? void 0 : _a3.includes(p2.id);
+        }
+      );
+      setSelectedProducts(selected);
+    }
+    setDialogOpen(true);
+  };
+  const addProduct = (product) => {
+    if (!selectedProducts.find((p2) => p2.id === product.id)) {
+      setSelectedProducts([...selectedProducts, product]);
+      setForm({
+        ...form,
+        specificProducts: [...form.specificProducts, product.id]
+      });
+    }
+  };
+  const removeProduct = (productId) => {
+    setSelectedProducts(selectedProducts.filter((p2) => p2.id !== productId));
+    setForm({
+      ...form,
+      specificProducts: form.specificProducts.filter((id2) => id2 !== productId)
+    });
+  };
+  const handleSubmit = async () => {
+    const name = form.name.trim();
+    const discountValue = Number(form.discountValue);
+    const minCartValue = Number(form.minCartValue || 0);
+    const priority = Number(form.priority || 1);
+    if (!name) {
+      alert2.error("Offer name is required.");
+      return;
+    }
+    if (priority < 1) {
+      alert2.error("Priority must be at least 1.");
+      return;
+    }
+    if ((form.offerType === "flat_discount" || form.offerType === "percentage_discount") && (!Number.isFinite(discountValue) || discountValue <= 0)) {
+      alert2.error("Discount value must be a valid positive number.");
+      return;
+    }
+    if (form.offerType === "percentage_discount" && discountValue > 100) {
+      alert2.error("Percentage discount cannot exceed 100%.");
+      return;
+    }
+    if (form.offerType === "bogo") {
+      const buyQty = Number(form.bogoConfig.buyQuantity);
+      const getQty = Number(form.bogoConfig.getQuantity);
+      if (!Number.isFinite(buyQty) || buyQty < 1) {
+        alert2.error("Buy quantity must be at least 1.");
+        return;
+      }
+      if (!Number.isFinite(getQty) || getQty < 1) {
+        alert2.error("Get quantity must be at least 1.");
+        return;
+      }
+      if (form.applicableOn !== "specific_products") {
+        alert2.error("BOGO offers must be applied to specific products.");
+        return;
+      }
+    }
+    if (!Number.isFinite(minCartValue) || minCartValue < 0) {
+      alert2.error("Minimum cart value must be a valid positive number.");
+      return;
+    }
+    if (!form.startDate) {
+      alert2.error("Start date is required.");
+      return;
+    }
+    if (form.applicableOn === "specific_products" && form.specificProducts.length === 0) {
+      alert2.error("Please select at least one product.");
+      return;
+    }
+    try {
+      setIsSaving(true);
+      const payload = {
+        name,
+        description: form.description.trim(),
+        offerType: form.offerType,
+        discountValue: form.offerType === "flat_discount" || form.offerType === "percentage_discount" ? discountValue : void 0,
+        maxDiscountAmount: form.maxDiscountAmount ? Number(form.maxDiscountAmount) : void 0,
+        bogoConfig: form.offerType === "bogo" ? {
+          buyQuantity: Number(form.bogoConfig.buyQuantity),
+          getQuantity: Number(form.bogoConfig.getQuantity)
+        } : void 0,
+        applicableOn: form.applicableOn,
+        specificProducts: form.applicableOn === "specific_products" ? form.specificProducts : void 0,
+        minCartValue,
+        startDate: form.startDate,
+        endDate: form.endDate || void 0,
+        priority,
+        autoApply: form.autoApply,
+        isActive: form.isActive
+      };
+      if (editingOffer) {
+        await offerService.updateOffer(editingOffer.id, payload);
+        alert2.success("Offer updated.");
+      } else {
+        await offerService.createOffer(payload);
+        alert2.success("Offer created.");
+      }
+      setDialogOpen(false);
+      await loadOffers();
+    } catch (error) {
+      alert2.error(getErrorMessage(error, "Could not save offer."));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleDelete = async (offer) => {
+    if (!window.confirm(`Delete offer "${offer.name}"?`)) return;
+    try {
+      await offerService.deleteOffer(offer.id);
+      alert2.success("Offer deleted.");
+      await loadOffers();
+    } catch (error) {
+      alert2.error(getErrorMessage(error, "Could not delete offer."));
+    }
+  };
+  const columns2 = [
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: row.original.name }),
+        row.original.description && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: row.original.description })
+      ] })
+    },
+    {
+      accessorKey: "offerType",
+      header: "Type",
+      cell: ({ row }) => getOfferTypeBadge(row.original.offerType)
+    },
+    {
+      accessorKey: "discountValue",
+      header: "Discount",
+      cell: ({ row }) => {
+        if (row.original.offerType === "percentage_discount") {
+          return `${row.original.discountValue}%`;
+        }
+        if (row.original.offerType === "flat_discount") {
+          return currency.format(row.original.discountValue || 0);
+        }
+        return "—";
+      }
+    },
+    {
+      accessorKey: "minCartValue",
+      header: "Min Cart",
+      cell: ({ row }) => currency.format(row.original.minCartValue || 0)
+    },
+    {
+      accessorKey: "startDate",
+      header: "Valid Period",
+      cell: ({ row }) => {
+        const start = new Date(row.original.startDate).toLocaleDateString();
+        const end = row.original.endDate ? new Date(row.original.endDate).toLocaleDateString() : "No end";
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: start }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-muted-foreground", children: [
+            "to ",
+            end
+          ] })
+        ] });
+      }
+    },
+    {
+      accessorKey: "autoApply",
+      header: "Type",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: row.original.autoApply ? "secondary" : "outline", children: row.original.autoApply ? "Auto Apply" : "Manual" })
+    },
+    {
+      accessorKey: "isActive",
+      header: "Status",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: row.original.isActive ? "default" : "secondary", children: row.original.isActive ? "Active" : "Inactive" })
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            size: "icon",
+            onClick: () => openEditDialog(row.original),
+            title: "Edit offer",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "h-4 w-4" })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            size: "icon",
+            onClick: () => handleDelete(row.original),
+            title: "Delete offer",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4 text-destructive" })
+          }
+        )
+      ] })
+    }
+  ];
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      PageHeader,
+      {
+        title: "Offer Management",
+        description: "Create and manage offers including coupons, discounts, and BOGO deals"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Button,
+        {
+          type: "button",
+          variant: "outline",
+          size: "sm",
+          onClick: loadOffers,
+          disabled: isLoading,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "mr-2 h-4 w-4" }),
+            "Refresh"
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { type: "button", size: "sm", onClick: openCreateDialog, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "mr-2 h-4 w-4" }),
+        "Add Offer"
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      DataTable,
+      {
+        columns: columns2,
+        data: offers,
+        isLoading,
+        searchPlaceholder: "Search offers...",
+        emptyMessage: "No offers found"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: dialogOpen, onOpenChange: setDialogOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-w-2xl max-h-[90vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Tag, { className: "h-5 w-5" }),
+          editingOffer ? "Edit Offer" : "Create Offer"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "isActive", className: "text-sm font-normal", children: form.isActive ? "Active" : "Inactive" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Switch,
+            {
+              id: "isActive",
+              checked: form.isActive,
+              onCheckedChange: (checked) => setForm({ ...form, isActive: checked })
+            }
+          )
+        ] })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Tabs, { defaultValue: "basic", className: "w-full", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsList, { className: "grid w-full grid-cols-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TabsTrigger, { value: "basic", children: "Basic Info" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TabsTrigger, { value: "conditions", children: "Conditions" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsContent, { value: "basic", className: "space-y-4 mt-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "name", children: "Offer Name *" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Input,
+              {
+                id: "name",
+                value: form.name,
+                onChange: (e3) => setForm({ ...form, name: e3.target.value }),
+                placeholder: "e.g., Summer Sale 2024"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "description", children: "Description" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Textarea,
+              {
+                id: "description",
+                value: form.description,
+                onChange: (e3) => setForm({ ...form, description: e3.target.value }),
+                rows: 2,
+                placeholder: "Brief description of the offer"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 md:grid-cols-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { children: "Offer Type *" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                Select,
+                {
+                  value: form.offerType,
+                  onValueChange: (value) => setForm({ ...form, offerType: value }),
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {}) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "flat_discount", children: "Flat Discount" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "percentage_discount", children: "Percentage Discount" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "bogo", children: "Buy One Get One" })
+                    ] })
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { children: "Applicable On *" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                Select,
+                {
+                  value: form.applicableOn,
+                  onValueChange: (value) => {
+                    setForm({
+                      ...form,
+                      applicableOn: value,
+                      specificProducts: []
+                    });
+                    setSelectedProducts([]);
+                  },
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {}) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "cart", children: "Entire Cart" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "specific_products", children: "Specific Products" })
+                    ] })
+                  ]
+                }
+              )
+            ] })
+          ] }),
+          form.applicableOn === "specific_products" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { children: "Select Products *" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Select,
+              {
+                value: selectedProductId,
+                onValueChange: (value) => {
+                  setSelectedProductId(value);
+                  const product = productOptions.find(
+                    (p2) => p2.id === value
+                  );
+                  if (product) {
+                    addProduct(product);
+                  }
+                },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select Product" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContent, { children: productOptions.map((product) => /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectItem, { value: product.id, children: [
+                    product.name,
+                    " - ₹",
+                    product.sellingPrice
+                  ] }, product.id)) })
+                ]
+              }
+            ),
+            selectedProducts.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { className: "text-xs", children: "Selected Products:" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap gap-2", children: selectedProducts.map((product) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "flex items-center gap-1 bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: product.name }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "button",
+                      {
+                        type: "button",
+                        onClick: () => removeProduct(product.id),
+                        className: "hover:text-destructive",
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "h-3 w-3" })
+                      }
+                    )
+                  ]
+                },
+                product.id
+              )) })
+            ] })
+          ] }),
+          (form.offerType === "flat_discount" || form.offerType === "percentage_discount") && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 md:grid-cols-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "discountValue", children: form.offerType === "percentage_discount" ? "Discount (%)" : "Discount Amount (₹)" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Input,
+                {
+                  id: "discountValue",
+                  type: "number",
+                  min: 0,
+                  max: form.offerType === "percentage_discount" ? 100 : void 0,
+                  value: form.discountValue,
+                  onChange: (e3) => setForm({ ...form, discountValue: e3.target.value }),
+                  placeholder: form.offerType === "percentage_discount" ? "10" : "100"
+                }
+              )
+            ] }),
+            form.offerType === "percentage_discount" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "maxDiscountAmount", children: "Max Discount (₹)" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Input,
+                {
+                  id: "maxDiscountAmount",
+                  type: "number",
+                  min: 0,
+                  value: form.maxDiscountAmount,
+                  onChange: (e3) => setForm({
+                    ...form,
+                    maxDiscountAmount: e3.target.value
+                  }),
+                  placeholder: "Optional cap"
+                }
+              )
+            ] })
+          ] }),
+          form.offerType === "bogo" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 rounded-lg border p-4 bg-muted/50", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: "Buy One Get One Configuration" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 md:grid-cols-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "buyQuantity", children: "Buy Quantity" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Input,
+                  {
+                    id: "buyQuantity",
+                    type: "number",
+                    min: 1,
+                    value: form.bogoConfig.buyQuantity,
+                    onChange: (e3) => setForm({
+                      ...form,
+                      bogoConfig: {
+                        ...form.bogoConfig,
+                        buyQuantity: e3.target.value
+                      }
+                    }),
+                    placeholder: "1"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Customer buys this many" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "getQuantity", children: "Get Quantity (Free)" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Input,
+                  {
+                    id: "getQuantity",
+                    type: "number",
+                    min: 1,
+                    value: form.bogoConfig.getQuantity,
+                    onChange: (e3) => setForm({
+                      ...form,
+                      bogoConfig: {
+                        ...form.bogoConfig,
+                        getQuantity: e3.target.value
+                      }
+                    }),
+                    placeholder: "1"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Customer gets this many free" })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-sm text-muted-foreground bg-background p-3 rounded", children: [
+              "Example: Buy ",
+              form.bogoConfig.buyQuantity || "1",
+              ", Get",
+              " ",
+              form.bogoConfig.getQuantity || "1",
+              " Free"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between rounded-md border p-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-0.5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "autoApply", children: "Auto Apply" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Automatically apply this offer when conditions are met" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Switch,
+              {
+                id: "autoApply",
+                checked: form.autoApply,
+                onCheckedChange: (checked) => setForm({ ...form, autoApply: checked })
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsContent, { value: "conditions", className: "space-y-4 mt-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "minCartValue", children: "Minimum Cart Value (₹)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Input,
+              {
+                id: "minCartValue",
+                type: "number",
+                min: 0,
+                value: form.minCartValue,
+                onChange: (e3) => setForm({ ...form, minCartValue: e3.target.value })
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 md:grid-cols-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "startDate", children: "Start Date *" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Input,
+                {
+                  id: "startDate",
+                  type: "date",
+                  value: form.startDate,
+                  onChange: (e3) => setForm({ ...form, startDate: e3.target.value })
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "endDate", children: "End Date" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Input,
+                {
+                  id: "endDate",
+                  type: "date",
+                  value: form.endDate,
+                  onChange: (e3) => setForm({ ...form, endDate: e3.target.value })
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "priority", children: "Priority" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Input,
+              {
+                id: "priority",
+                type: "number",
+                min: 1,
+                value: form.priority,
+                onChange: (e3) => setForm({ ...form, priority: e3.target.value }),
+                placeholder: "1"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Higher priority offers are evaluated first (minimum: 1)" })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            onClick: () => setDialogOpen(false),
+            disabled: isSaving,
+            children: "Cancel"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "button", onClick: handleSubmit, disabled: isSaving, children: isSaving ? "Saving..." : "Save Offer" })
+      ] })
+    ] }) })
+  ] });
+}
 const franchiseColumns = [
   { accessorKey: "applicantName", header: "Applicant" },
   { accessorKey: "businessName", header: "Business" },
@@ -89944,7 +90494,6 @@ function ProductsPage() {
       sellingPrice: 0,
       bulkPricing: [],
       stock: 0,
-      minBulkQty: 0,
       isFeatured: false,
       status: "active",
       nutritionValues: {},
@@ -89966,7 +90515,6 @@ function ProductsPage() {
       sellingPrice: product.sellingPrice,
       bulkPricing: product.bulkPricing || [],
       stock: product.stock,
-      minBulkQty: product.minBulkQty,
       isFeatured: product.isFeatured,
       status: product.status,
       nutritionValues: product.nutritionValues || {},
@@ -90239,14 +90787,6 @@ function ProductsPage() {
                 onChange: field.onChange
               }
             )
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          FormInput,
-          {
-            name: "minBulkQty",
-            label: "Minimum Bulk Quantity",
-            type: "number"
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -91165,238 +91705,6 @@ function SellerApprovalsPage() {
     )
   ] });
 }
-var TABS_NAME = "Tabs";
-var [createTabsContext] = createContextScope$1(TABS_NAME, [
-  createRovingFocusGroupScope
-]);
-var useRovingFocusGroupScope = createRovingFocusGroupScope();
-var [TabsProvider, useTabsContext] = createTabsContext(TABS_NAME);
-var Tabs$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const {
-      __scopeTabs,
-      value: valueProp,
-      onValueChange,
-      defaultValue,
-      orientation: orientation2 = "horizontal",
-      dir,
-      activationMode = "automatic",
-      ...tabsProps
-    } = props;
-    const direction = useDirection(dir);
-    const [value, setValue] = useControllableState({
-      prop: valueProp,
-      onChange: onValueChange,
-      defaultProp: defaultValue ?? "",
-      caller: TABS_NAME
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      TabsProvider,
-      {
-        scope: __scopeTabs,
-        baseId: useId(),
-        value,
-        onValueChange: setValue,
-        orientation: orientation2,
-        dir: direction,
-        activationMode,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Primitive$1.div,
-          {
-            dir: direction,
-            "data-orientation": orientation2,
-            ...tabsProps,
-            ref: forwardedRef
-          }
-        )
-      }
-    );
-  }
-);
-Tabs$1.displayName = TABS_NAME;
-var TAB_LIST_NAME = "TabsList";
-var TabsList$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeTabs, loop = true, ...listProps } = props;
-    const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
-    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Root$5,
-      {
-        asChild: true,
-        ...rovingFocusGroupScope,
-        orientation: context.orientation,
-        dir: context.dir,
-        loop,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Primitive$1.div,
-          {
-            role: "tablist",
-            "aria-orientation": context.orientation,
-            ...listProps,
-            ref: forwardedRef
-          }
-        )
-      }
-    );
-  }
-);
-TabsList$1.displayName = TAB_LIST_NAME;
-var TRIGGER_NAME$1 = "TabsTrigger";
-var TabsTrigger$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
-    const context = useTabsContext(TRIGGER_NAME$1, __scopeTabs);
-    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
-    const triggerId = makeTriggerId(context.baseId, value);
-    const contentId = makeContentId(context.baseId, value);
-    const isSelected = value === context.value;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Item$1,
-      {
-        asChild: true,
-        ...rovingFocusGroupScope,
-        focusable: !disabled,
-        active: isSelected,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Primitive$1.button,
-          {
-            type: "button",
-            role: "tab",
-            "aria-selected": isSelected,
-            "aria-controls": contentId,
-            "data-state": isSelected ? "active" : "inactive",
-            "data-disabled": disabled ? "" : void 0,
-            disabled,
-            id: triggerId,
-            ...triggerProps,
-            ref: forwardedRef,
-            onMouseDown: composeEventHandlers(props.onMouseDown, (event) => {
-              if (!disabled && event.button === 0 && event.ctrlKey === false) {
-                context.onValueChange(value);
-              } else {
-                event.preventDefault();
-              }
-            }),
-            onKeyDown: composeEventHandlers(props.onKeyDown, (event) => {
-              if ([" ", "Enter"].includes(event.key)) context.onValueChange(value);
-            }),
-            onFocus: composeEventHandlers(props.onFocus, () => {
-              const isAutomaticActivation = context.activationMode !== "manual";
-              if (!isSelected && !disabled && isAutomaticActivation) {
-                context.onValueChange(value);
-              }
-            })
-          }
-        )
-      }
-    );
-  }
-);
-TabsTrigger$1.displayName = TRIGGER_NAME$1;
-var CONTENT_NAME$1 = "TabsContent";
-var TabsContent$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
-    const context = useTabsContext(CONTENT_NAME$1, __scopeTabs);
-    const triggerId = makeTriggerId(context.baseId, value);
-    const contentId = makeContentId(context.baseId, value);
-    const isSelected = value === context.value;
-    const isMountAnimationPreventedRef = reactExports.useRef(isSelected);
-    reactExports.useEffect(() => {
-      const rAF = requestAnimationFrame(() => isMountAnimationPreventedRef.current = false);
-      return () => cancelAnimationFrame(rAF);
-    }, []);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, { present: forceMount || isSelected, children: ({ present }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.div,
-      {
-        "data-state": isSelected ? "active" : "inactive",
-        "data-orientation": context.orientation,
-        role: "tabpanel",
-        "aria-labelledby": triggerId,
-        hidden: !present,
-        id: contentId,
-        tabIndex: 0,
-        ...contentProps,
-        ref: forwardedRef,
-        style: {
-          ...props.style,
-          animationDuration: isMountAnimationPreventedRef.current ? "0s" : void 0
-        },
-        children: present && children
-      }
-    ) });
-  }
-);
-TabsContent$1.displayName = CONTENT_NAME$1;
-function makeTriggerId(baseId, value) {
-  return `${baseId}-trigger-${value}`;
-}
-function makeContentId(baseId, value) {
-  return `${baseId}-content-${value}`;
-}
-var Root2 = Tabs$1;
-var List = TabsList$1;
-var Trigger$1 = TabsTrigger$1;
-var Content = TabsContent$1;
-function Tabs({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Root2,
-    {
-      "data-slot": "tabs",
-      className: cn("flex flex-col gap-2", className),
-      ...props
-    }
-  );
-}
-function TabsList({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    List,
-    {
-      "data-slot": "tabs-list",
-      className: cn(
-        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
-        className
-      ),
-      ...props
-    }
-  );
-}
-function TabsTrigger({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Trigger$1,
-    {
-      "data-slot": "tabs-trigger",
-      className: cn(
-        "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      ),
-      ...props
-    }
-  );
-}
-function TabsContent({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Content,
-    {
-      "data-slot": "tabs-content",
-      className: cn("flex-1 outline-none", className),
-      ...props
-    }
-  );
-}
 function UnauthorizedPage() {
   const navigate = useNavigate();
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen flex items-center justify-center bg-background p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "max-w-md w-full", children: [
@@ -91473,6 +91781,7 @@ const settingsSchema = object$1({
   razorpayKeyId: string$1().optional(),
   razorpayKeySecret: string$1().optional(),
   razorpayWebhookSecret: string$1().optional(),
+  enableRazorpayForSellers: boolean(),
   termsAndConditions: string$1().optional(),
   privacyPolicy: string$1().optional(),
   aboutUs: string$1().optional(),
@@ -91506,6 +91815,7 @@ const defaultValues = {
   razorpayKeyId: "",
   razorpayKeySecret: "",
   razorpayWebhookSecret: "",
+  enableRazorpayForSellers: false,
   termsAndConditions: "",
   privacyPolicy: "",
   aboutUs: "",
@@ -91577,6 +91887,7 @@ function SettingsPage() {
           razorpayKeyId: settings.razorpayKeyId || "",
           razorpayKeySecret: settings.razorpayKeySecret || "",
           razorpayWebhookSecret: settings.razorpayWebhookSecret || "",
+          enableRazorpayForSellers: settings.enableRazorpayForSellers || false,
           termsAndConditions: settings.termsAndConditions || "",
           privacyPolicy: settings.privacyPolicy || "",
           aboutUs: settings.aboutUs || "",
@@ -91661,6 +91972,7 @@ function SettingsPage() {
         razorpayKeyId: ((_f2 = data.razorpayKeyId) == null ? void 0 : _f2.trim()) || "",
         razorpayKeySecret: ((_g2 = data.razorpayKeySecret) == null ? void 0 : _g2.trim()) || "",
         razorpayWebhookSecret: ((_h2 = data.razorpayWebhookSecret) == null ? void 0 : _h2.trim()) || "",
+        enableRazorpayForSellers: data.enableRazorpayForSellers,
         termsAndConditions: data.termsAndConditions || "",
         privacyPolicy: data.privacyPolicy || "",
         aboutUs: data.aboutUs || "",
@@ -92045,7 +92357,21 @@ function SettingsPage() {
                     label: "Razorpay Webhook Secret",
                     type: "password"
                   }
-                )
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between rounded-md border p-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-0.5", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "enableRazorpayForSellers", className: "text-sm font-medium", children: "Enable Razorpay for Sellers" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Allow sellers to receive payments via Razorpay" })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Switch,
+                    {
+                      id: "enableRazorpayForSellers",
+                      checked: methods.watch("enableRazorpayForSellers"),
+                      onCheckedChange: (checked) => methods.setValue("enableRazorpayForSellers", checked)
+                    }
+                  )
+                ] })
               ] })
             ] }) })
           ] }),
@@ -95346,10 +95672,10 @@ const settingsRoute = createRoute({
   path: "/settings",
   component: SettingsPage
 });
-const couponsRoute = createRoute({
+const offersRoute = createRoute({
   getParentRoute: () => protectedRoute,
-  path: "/coupons",
-  component: CouponManagementPage
+  path: "/offers",
+  component: OfferManagementPage
 });
 const ordersRoute = createRoute({
   getParentRoute: () => protectedRoute,
@@ -95432,7 +95758,7 @@ const routeTree = rootRoute.addChildren([
       themeRoute,
       profileRoute,
       settingsRoute,
-      couponsRoute
+      offersRoute
     ])
   ])
 ]);

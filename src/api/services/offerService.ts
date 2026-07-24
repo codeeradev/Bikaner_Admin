@@ -1,47 +1,13 @@
 import { del, get, post, put } from "../apiClient";
 import { ENDPOINTS } from "../endpoints";
 
-export type OfferType =
-  | "flat_discount"
-  | "percentage_discount"
-  | "bogo"
-  | "buy_x_get_y"
-  | "combo"
-  | "free_product";
+export type OfferType = "flat_discount" | "percentage_discount" | "bogo";
 
-export type ApplicableOn = "cart" | "specific_products" | "category";
+export type ApplicableOn = "cart" | "specific_products";
 
 export interface BOGOConfig {
   buyQuantity: number;
   getQuantity: number;
-  applyOn: "same_product" | "cheapest" | "free_product";
-  freeProductId?: string;
-}
-
-export interface BuyXGetYProduct {
-  productId: string;
-  quantity: number;
-  discountPercentage?: number;
-}
-
-export interface BuyXGetYConfig {
-  buyProducts: BuyXGetYProduct[];
-  getProducts: BuyXGetYProduct[];
-}
-
-export interface ComboProduct {
-  productId: string;
-  quantity: number;
-}
-
-export interface ComboConfig {
-  products: ComboProduct[];
-  comboPrice: number;
-}
-
-export interface FreeProductConfig {
-  productId: string;
-  quantity: number;
 }
 
 export interface Offer {
@@ -49,26 +15,15 @@ export interface Offer {
   name: string;
   description?: string;
   offerType: OfferType;
-  requiresCoupon: boolean;
-  couponCode?: string;
   discountValue?: number;
   maxDiscountAmount?: number;
   bogoConfig?: BOGOConfig;
-  buyXGetYConfig?: BuyXGetYConfig;
-  comboConfig?: ComboConfig;
-  freeProductConfig?: FreeProductConfig;
   applicableOn: ApplicableOn;
   specificProducts?: string[];
-  specificCategories?: string[];
   minCartValue?: number;
-  minQuantity?: number;
-  maxUsagePerUser?: number;
-  totalUsageLimit?: number;
-  currentUsageCount?: number;
   startDate: string;
   endDate?: string;
   priority: number;
-  isStackable: boolean;
   autoApply: boolean;
   isActive: boolean;
   createdAt: string;
@@ -79,25 +34,15 @@ export interface OfferPayload {
   name: string;
   description?: string;
   offerType: OfferType;
-  requiresCoupon: boolean;
-  couponCode?: string;
   discountValue?: number;
   maxDiscountAmount?: number;
   bogoConfig?: BOGOConfig;
-  buyXGetYConfig?: BuyXGetYConfig;
-  comboConfig?: ComboConfig;
-  freeProductConfig?: FreeProductConfig;
   applicableOn: ApplicableOn;
   specificProducts?: string[];
-  specificCategories?: string[];
   minCartValue?: number;
-  minQuantity?: number;
-  maxUsagePerUser?: number;
-  totalUsageLimit?: number;
   startDate: string;
   endDate?: string;
   priority?: number;
-  isStackable?: boolean;
   autoApply?: boolean;
   isActive?: boolean;
 }
