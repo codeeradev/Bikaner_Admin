@@ -34,7 +34,6 @@ export interface Product {
   sellingPrice?: number;
   bulkPrice?: number;
   stock?: number;
-  minBulkQty?: number;
   isFeatured?: boolean;
   status: "active" | "inactive";
   createdAt: string;

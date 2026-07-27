@@ -1,8 +1,8 @@
 // Base URL for API - Update this with your actual backend URL
-const BASE_URL 
-// = "http://localhost:9020";
+const BASE_URL =
+  "http://localhost:9020";
 
-= "https://bikanerapi.codeeratech.in";
+  // "https://bikanerapi.codeeratech.in";
 export const ENDPOINTS = {
   // Authentication
   LOGIN: `${BASE_URL}/auth/login`,
@@ -138,8 +138,9 @@ export const ENDPOINTS = {
   BANNERS_DELETE: (id: string) => `${BASE_URL}/banners/${id}`,
 
   // Notifications
-  GET_NOTIFICATIONS: `${BASE_URL}/notifications`,
+  GET_NOTIFICATIONS: `${BASE_URL}/admin-notifications`,
+  MARK_ALL_NOTIFICATIONS_READ: `${BASE_URL}/admin-notifications/read`,
   MARK_NOTIFICATION_READ: (id: string) =>
-    `${BASE_URL}/notifications/${id}/read`,
-  DELETE_NOTIFICATION: (id: string) => `${BASE_URL}/notifications/${id}`,
+    `${BASE_URL}/admin-notifications/${id}/read`,
+  DELETE_NOTIFICATION: (id: string) => `${BASE_URL}/admin-notifications/${id}`,
 } as const;

@@ -2,22 +2,34 @@ import { del, get, put } from "../apiClient";
 import { ENDPOINTS } from "../endpoints";
 
 export type NotificationType =
-  | "order_status"
+  | "new_order"
+  | "bulk_order"
+  | "seller_application"
   | "general"
   | "promotion"
-  | "alert";
+  | "alert"
+  | "order_status";
 
 export interface Notification {
-  _id: string;
-  userId: string;
+  id: string;
+  recipientConstRoleId: number;
   title: string;
   message: string;
   image?: string;
   type: NotificationType;
+  link?: string;
   orderId?: {
-    _id: string;
+    id: string;
     orderNumber: string;
     orderStatus: string;
+    orderType?: "normal" | "bulk";
+    grandTotal?: number;
+  };
+  sellerApplicationId?: {
+    id: string;
+    name: string;
+    mobile: string;
+    status: string;
   };
   read: boolean;
   createdAt: string;
@@ -32,6 +44,7 @@ export interface PaginationParams {
 export interface NotificationListResponse {
   success: boolean;
   data: Notification[];
+  unreadCount: number;
   pagination: {
     total: number;
     page: number;
@@ -48,14 +61,17 @@ export interface NotificationResponse {
 
 export const notificationService = {
   /**
-   * Get user notifications with pagination
+   * Get admin notifications with pagination
    * @param params - Pagination parameters (page, limit)
    * @returns Promise with notification list and pagination
    */
   async getNotifications(
-    params?: PaginationParams
+    params?: PaginationParams,
   ): Promise<NotificationListResponse> {
-    return get<NotificationListResponse>(ENDPOINTS.GET_NOTIFICATIONS, params);
+    return get<NotificationListResponse>(
+      ENDPOINTS.GET_NOTIFICATIONS,
+      params ? { ...params } : undefined,
+    );
   },
 
   /**
@@ -66,8 +82,16 @@ export const notificationService = {
   async markAsRead(notificationId: string): Promise<NotificationResponse> {
     return put<NotificationResponse>(
       ENDPOINTS.MARK_NOTIFICATION_READ(notificationId),
-      {}
+      {},
     );
+  },
+
+  /**
+   * Mark all admin notifications as read
+   * @returns Promise with success response
+   */
+  async markAllAsRead(): Promise<NotificationResponse> {
+    return put<NotificationResponse>(ENDPOINTS.MARK_ALL_NOTIFICATIONS_READ, {});
   },
 
   /**
@@ -76,10 +100,10 @@ export const notificationService = {
    * @returns Promise with success response
    */
   async deleteNotification(
-    notificationId: string
+    notificationId: string,
   ): Promise<NotificationResponse> {
     return del<NotificationResponse>(
-      ENDPOINTS.DELETE_NOTIFICATION(notificationId)
+      ENDPOINTS.DELETE_NOTIFICATION(notificationId),
     );
   },
 };
