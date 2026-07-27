@@ -409,7 +409,7 @@ function isPlainObject$5(o2) {
 function hasObjectPrototype$1(o2) {
   return Object.prototype.toString.call(o2) === "[object Object]";
 }
-function sleep(timeout) {
+function sleep$1(timeout) {
   return new Promise((resolve) => {
     timeoutManager.setTimeout(resolve, timeout);
   });
@@ -729,7 +729,7 @@ function createRetryer(config2) {
       }
       failureCount++;
       (_a3 = config2.onFail) == null ? void 0 : _a3.call(config2, failureCount, error);
-      sleep(delay2).then(() => {
+      sleep$1(delay2).then(() => {
         return canContinue() ? void 0 : pause();
       }).then(() => {
         if (isRetryCancelled) {
@@ -2117,26 +2117,26 @@ var ReactNoopUpdateQueue = {
   enqueueSetState: function() {
   }
 }, assign$1 = Object.assign, emptyObject = {};
-function Component(props, context, updater) {
+function Component$1(props, context, updater) {
   this.props = props;
   this.context = context;
   this.refs = emptyObject;
   this.updater = updater || ReactNoopUpdateQueue;
 }
-Component.prototype.isReactComponent = {};
-Component.prototype.setState = function(partialState, callback) {
+Component$1.prototype.isReactComponent = {};
+Component$1.prototype.setState = function(partialState, callback) {
   if ("object" !== typeof partialState && "function" !== typeof partialState && null != partialState)
     throw Error(
       "takes an object of state variables to update or a function which returns an object of state variables."
     );
   this.updater.enqueueSetState(this, partialState, callback, "setState");
 };
-Component.prototype.forceUpdate = function(callback) {
+Component$1.prototype.forceUpdate = function(callback) {
   this.updater.enqueueForceUpdate(this, callback, "forceUpdate");
 };
 function ComponentDummy() {
 }
-ComponentDummy.prototype = Component.prototype;
+ComponentDummy.prototype = Component$1.prototype;
 function PureComponent(props, context, updater) {
   this.props = props;
   this.context = context;
@@ -2145,7 +2145,7 @@ function PureComponent(props, context, updater) {
 }
 var pureComponentPrototype = PureComponent.prototype = new ComponentDummy();
 pureComponentPrototype.constructor = PureComponent;
-assign$1(pureComponentPrototype, Component.prototype);
+assign$1(pureComponentPrototype, Component$1.prototype);
 pureComponentPrototype.isPureReactComponent = true;
 var isArrayImpl$1 = Array.isArray, ReactSharedInternals$2 = { H: null, A: null, T: null, S: null, V: null }, hasOwnProperty$c = Object.prototype.hasOwnProperty;
 function ReactElement(type, key, self2, source, owner, props) {
@@ -2355,7 +2355,7 @@ react_production.Children = {
     return children;
   }
 };
-react_production.Component = Component;
+react_production.Component = Component$1;
 react_production.Fragment = REACT_FRAGMENT_TYPE$1;
 react_production.Profiler = REACT_PROFILER_TYPE$1;
 react_production.PureComponent = PureComponent;
@@ -2478,9 +2478,9 @@ react_production.useDebugValue = function() {
 react_production.useDeferredValue = function(value, initialValue) {
   return ReactSharedInternals$2.H.useDeferredValue(value, initialValue);
 };
-react_production.useEffect = function(create2, createDeps, update) {
+react_production.useEffect = function(create2, createDeps, update2) {
   var dispatcher = ReactSharedInternals$2.H;
-  if ("function" === typeof update)
+  if ("function" === typeof update2)
     throw Error(
       "useEffect CRUD overload is not enabled in this build of React."
     );
@@ -3379,8 +3379,8 @@ function markRootFinished(root2, finishedLanes, remainingLanes, spawnedLane, upd
     var hiddenUpdatesForLane = hiddenUpdates[index$5];
     if (null !== hiddenUpdatesForLane)
       for (hiddenUpdates[index$5] = null, index$5 = 0; index$5 < hiddenUpdatesForLane.length; index$5++) {
-        var update = hiddenUpdatesForLane[index$5];
-        null !== update && (update.lane &= -536870913);
+        var update2 = hiddenUpdatesForLane[index$5];
+        null !== update2 && (update2.lane &= -536870913);
       }
     remainingLanes &= ~lane;
   }
@@ -3528,56 +3528,56 @@ function isAttributeNameSafe(attributeName) {
   illegalAttributeNameCache[attributeName] = true;
   return false;
 }
-function setValueForAttribute(node, name, value) {
-  if (isAttributeNameSafe(name))
-    if (null === value) node.removeAttribute(name);
+function setValueForAttribute(node, name2, value) {
+  if (isAttributeNameSafe(name2))
+    if (null === value) node.removeAttribute(name2);
     else {
       switch (typeof value) {
         case "undefined":
         case "function":
         case "symbol":
-          node.removeAttribute(name);
+          node.removeAttribute(name2);
           return;
         case "boolean":
-          var prefix$8 = name.toLowerCase().slice(0, 5);
+          var prefix$8 = name2.toLowerCase().slice(0, 5);
           if ("data-" !== prefix$8 && "aria-" !== prefix$8) {
-            node.removeAttribute(name);
+            node.removeAttribute(name2);
             return;
           }
       }
-      node.setAttribute(name, "" + value);
+      node.setAttribute(name2, "" + value);
     }
 }
-function setValueForKnownAttribute(node, name, value) {
-  if (null === value) node.removeAttribute(name);
+function setValueForKnownAttribute(node, name2, value) {
+  if (null === value) node.removeAttribute(name2);
   else {
     switch (typeof value) {
       case "undefined":
       case "function":
       case "symbol":
       case "boolean":
-        node.removeAttribute(name);
+        node.removeAttribute(name2);
         return;
     }
-    node.setAttribute(name, "" + value);
+    node.setAttribute(name2, "" + value);
   }
 }
-function setValueForNamespacedAttribute(node, namespace, name, value) {
-  if (null === value) node.removeAttribute(name);
+function setValueForNamespacedAttribute(node, namespace, name2, value) {
+  if (null === value) node.removeAttribute(name2);
   else {
     switch (typeof value) {
       case "undefined":
       case "function":
       case "symbol":
       case "boolean":
-        node.removeAttribute(name);
+        node.removeAttribute(name2);
         return;
     }
-    node.setAttributeNS(namespace, name, "" + value);
+    node.setAttributeNS(namespace, name2, "" + value);
   }
 }
 var prefix$1, suffix;
-function describeBuiltInComponentFrame(name) {
+function describeBuiltInComponentFrame(name2) {
   if (void 0 === prefix$1)
     try {
       throw Error();
@@ -3586,7 +3586,7 @@ function describeBuiltInComponentFrame(name) {
       prefix$1 = match && match[1] || "";
       suffix = -1 < x2.stack.indexOf("\n    at") ? " (<anonymous>)" : -1 < x2.stack.indexOf("@") ? "@unknown:0:0" : "";
     }
-  return "\n" + prefix$1 + name + suffix;
+  return "\n" + prefix$1 + name2 + suffix;
 }
 var reentry = false;
 function describeNativeComponentFrame(fn, construct) {
@@ -3798,7 +3798,7 @@ function escapeSelectorAttributeValueInsideDoubleQuotes(value) {
     }
   );
 }
-function updateInput(element, value, defaultValue, lastDefaultValue, checked, defaultChecked, type, name) {
+function updateInput(element, value, defaultValue, lastDefaultValue, checked, defaultChecked, type, name2) {
   element.name = "";
   null != type && "function" !== typeof type && "symbol" !== typeof type && "boolean" !== typeof type ? element.type = type : element.removeAttribute("type");
   if (null != value)
@@ -3812,9 +3812,9 @@ function updateInput(element, value, defaultValue, lastDefaultValue, checked, de
   null != value ? setDefaultValue(element, type, getToStringValue(value)) : null != defaultValue ? setDefaultValue(element, type, getToStringValue(defaultValue)) : null != lastDefaultValue && element.removeAttribute("value");
   null == checked && null != defaultChecked && (element.defaultChecked = !!defaultChecked);
   null != checked && (element.checked = checked && "function" !== typeof checked && "symbol" !== typeof checked);
-  null != name && "function" !== typeof name && "symbol" !== typeof name && "boolean" !== typeof name ? element.name = "" + getToStringValue(name) : element.removeAttribute("name");
+  null != name2 && "function" !== typeof name2 && "symbol" !== typeof name2 && "boolean" !== typeof name2 ? element.name = "" + getToStringValue(name2) : element.removeAttribute("name");
 }
-function initInput(element, value, defaultValue, checked, defaultChecked, type, name, isHydrating2) {
+function initInput(element, value, defaultValue, checked, defaultChecked, type, name2, isHydrating2) {
   null != type && "function" !== typeof type && "symbol" !== typeof type && "boolean" !== typeof type && (element.type = type);
   if (null != value || null != defaultValue) {
     if (!("submit" !== type && "reset" !== type || void 0 !== value && null !== value))
@@ -3828,7 +3828,7 @@ function initInput(element, value, defaultValue, checked, defaultChecked, type, 
   checked = "function" !== typeof checked && "symbol" !== typeof checked && !!checked;
   element.checked = isHydrating2 ? element.checked : !!checked;
   element.defaultChecked = !!checked;
-  null != name && "function" !== typeof name && "symbol" !== typeof name && "boolean" !== typeof name && (element.name = name);
+  null != name2 && "function" !== typeof name2 && "symbol" !== typeof name2 && "boolean" !== typeof name2 && (element.name = name2);
 }
 function setDefaultValue(node, type, value) {
   "number" === type && getActiveElement(node.ownerDocument) === node || node.defaultValue === "" + value || (node.defaultValue = "" + value);
@@ -4630,43 +4630,43 @@ function finishQueueingConcurrentUpdates() {
     concurrentQueues[i2++] = null;
     var queue = concurrentQueues[i2];
     concurrentQueues[i2++] = null;
-    var update = concurrentQueues[i2];
+    var update2 = concurrentQueues[i2];
     concurrentQueues[i2++] = null;
     var lane = concurrentQueues[i2];
     concurrentQueues[i2++] = null;
-    if (null !== queue && null !== update) {
+    if (null !== queue && null !== update2) {
       var pending = queue.pending;
-      null === pending ? update.next = update : (update.next = pending.next, pending.next = update);
-      queue.pending = update;
+      null === pending ? update2.next = update2 : (update2.next = pending.next, pending.next = update2);
+      queue.pending = update2;
     }
-    0 !== lane && markUpdateLaneFromFiberToRoot(fiber, update, lane);
+    0 !== lane && markUpdateLaneFromFiberToRoot(fiber, update2, lane);
   }
 }
-function enqueueUpdate$1(fiber, queue, update, lane) {
+function enqueueUpdate$1(fiber, queue, update2, lane) {
   concurrentQueues[concurrentQueuesIndex++] = fiber;
   concurrentQueues[concurrentQueuesIndex++] = queue;
-  concurrentQueues[concurrentQueuesIndex++] = update;
+  concurrentQueues[concurrentQueuesIndex++] = update2;
   concurrentQueues[concurrentQueuesIndex++] = lane;
   concurrentlyUpdatedLanes |= lane;
   fiber.lanes |= lane;
   fiber = fiber.alternate;
   null !== fiber && (fiber.lanes |= lane);
 }
-function enqueueConcurrentHookUpdate(fiber, queue, update, lane) {
-  enqueueUpdate$1(fiber, queue, update, lane);
+function enqueueConcurrentHookUpdate(fiber, queue, update2, lane) {
+  enqueueUpdate$1(fiber, queue, update2, lane);
   return getRootForUpdatedFiber(fiber);
 }
 function enqueueConcurrentRenderForLane(fiber, lane) {
   enqueueUpdate$1(fiber, null, null, lane);
   return getRootForUpdatedFiber(fiber);
 }
-function markUpdateLaneFromFiberToRoot(sourceFiber, update, lane) {
+function markUpdateLaneFromFiberToRoot(sourceFiber, update2, lane) {
   sourceFiber.lanes |= lane;
   var alternate = sourceFiber.alternate;
   null !== alternate && (alternate.lanes |= lane);
   for (var isHidden2 = false, parent = sourceFiber.return; null !== parent; )
     parent.childLanes |= lane, alternate = parent.alternate, null !== alternate && (alternate.childLanes |= lane), 22 === parent.tag && (sourceFiber = parent.stateNode, null === sourceFiber || sourceFiber._visibility & 1 || (isHidden2 = true)), sourceFiber = parent, parent = parent.return;
-  return 3 === sourceFiber.tag ? (parent = sourceFiber.stateNode, isHidden2 && null !== update && (isHidden2 = 31 - clz32(lane), sourceFiber = parent.hiddenUpdates, alternate = sourceFiber[isHidden2], null === alternate ? sourceFiber[isHidden2] = [update] : alternate.push(update), update.lane = lane | 536870912), parent) : null;
+  return 3 === sourceFiber.tag ? (parent = sourceFiber.stateNode, isHidden2 && null !== update2 && (isHidden2 = 31 - clz32(lane), sourceFiber = parent.hiddenUpdates, alternate = sourceFiber[isHidden2], null === alternate ? sourceFiber[isHidden2] = [update2] : alternate.push(update2), update2.lane = lane | 536870912), parent) : null;
 }
 function getRootForUpdatedFiber(sourceFiber) {
   if (50 < nestedUpdateCount)
@@ -5299,19 +5299,19 @@ function cloneUpdateQueue(current, workInProgress2) {
 function createUpdate(lane) {
   return { lane, tag: 0, payload: null, callback: null, next: null };
 }
-function enqueueUpdate(fiber, update, lane) {
+function enqueueUpdate(fiber, update2, lane) {
   var updateQueue = fiber.updateQueue;
   if (null === updateQueue) return null;
   updateQueue = updateQueue.shared;
   if (0 !== (executionContext & 2)) {
     var pending = updateQueue.pending;
-    null === pending ? update.next = update : (update.next = pending.next, pending.next = update);
-    updateQueue.pending = update;
-    update = getRootForUpdatedFiber(fiber);
+    null === pending ? update2.next = update2 : (update2.next = pending.next, pending.next = update2);
+    updateQueue.pending = update2;
+    update2 = getRootForUpdatedFiber(fiber);
     markUpdateLaneFromFiberToRoot(fiber, null, lane);
-    return update;
+    return update2;
   }
-  enqueueUpdate$1(fiber, updateQueue, update, lane);
+  enqueueUpdate$1(fiber, updateQueue, update2, lane);
   return getRootForUpdatedFiber(fiber);
 }
 function entangleTransitions(root2, fiber, lane) {
@@ -5395,12 +5395,12 @@ function processUpdateQueue(workInProgress$jscomp$0, props, instance$jscomp$0, r
           next: null
         });
         a: {
-          var workInProgress2 = workInProgress$jscomp$0, update = pendingQueue;
+          var workInProgress2 = workInProgress$jscomp$0, update2 = pendingQueue;
           updateLane = props;
           var instance = instance$jscomp$0;
-          switch (update.tag) {
+          switch (update2.tag) {
             case 1:
-              workInProgress2 = update.payload;
+              workInProgress2 = update2.payload;
               if ("function" === typeof workInProgress2) {
                 newState = workInProgress2.call(instance, newState, updateLane);
                 break a;
@@ -5410,7 +5410,7 @@ function processUpdateQueue(workInProgress$jscomp$0, props, instance$jscomp$0, r
             case 3:
               workInProgress2.flags = workInProgress2.flags & -65537 | 128;
             case 0:
-              workInProgress2 = update.payload;
+              workInProgress2 = update2.payload;
               updateLane = "function" === typeof workInProgress2 ? workInProgress2.call(instance, newState, updateLane) : workInProgress2;
               if (null === updateLane || void 0 === updateLane) break a;
               newState = assign({}, newState, updateLane);
@@ -5670,47 +5670,47 @@ function updateReducerImpl(hook, current, reducer) {
   if (null === baseQueue) hook.memoizedState = pendingQueue;
   else {
     current = baseQueue.next;
-    var newBaseQueueFirst = baseFirst = null, newBaseQueueLast = null, update = current, didReadFromEntangledAsyncAction$32 = false;
+    var newBaseQueueFirst = baseFirst = null, newBaseQueueLast = null, update2 = current, didReadFromEntangledAsyncAction$32 = false;
     do {
-      var updateLane = update.lane & -536870913;
-      if (updateLane !== update.lane ? (workInProgressRootRenderLanes & updateLane) === updateLane : (renderLanes & updateLane) === updateLane) {
-        var revertLane = update.revertLane;
+      var updateLane = update2.lane & -536870913;
+      if (updateLane !== update2.lane ? (workInProgressRootRenderLanes & updateLane) === updateLane : (renderLanes & updateLane) === updateLane) {
+        var revertLane = update2.revertLane;
         if (0 === revertLane)
           null !== newBaseQueueLast && (newBaseQueueLast = newBaseQueueLast.next = {
             lane: 0,
             revertLane: 0,
-            action: update.action,
-            hasEagerState: update.hasEagerState,
-            eagerState: update.eagerState,
+            action: update2.action,
+            hasEagerState: update2.hasEagerState,
+            eagerState: update2.eagerState,
             next: null
           }), updateLane === currentEntangledLane && (didReadFromEntangledAsyncAction$32 = true);
         else if ((renderLanes & revertLane) === revertLane) {
-          update = update.next;
+          update2 = update2.next;
           revertLane === currentEntangledLane && (didReadFromEntangledAsyncAction$32 = true);
           continue;
         } else
           updateLane = {
             lane: 0,
-            revertLane: update.revertLane,
-            action: update.action,
-            hasEagerState: update.hasEagerState,
-            eagerState: update.eagerState,
+            revertLane: update2.revertLane,
+            action: update2.action,
+            hasEagerState: update2.hasEagerState,
+            eagerState: update2.eagerState,
             next: null
           }, null === newBaseQueueLast ? (newBaseQueueFirst = newBaseQueueLast = updateLane, baseFirst = pendingQueue) : newBaseQueueLast = newBaseQueueLast.next = updateLane, currentlyRenderingFiber.lanes |= revertLane, workInProgressRootSkippedLanes |= revertLane;
-        updateLane = update.action;
+        updateLane = update2.action;
         shouldDoubleInvokeUserFnsInHooksDEV && reducer(pendingQueue, updateLane);
-        pendingQueue = update.hasEagerState ? update.eagerState : reducer(pendingQueue, updateLane);
+        pendingQueue = update2.hasEagerState ? update2.eagerState : reducer(pendingQueue, updateLane);
       } else
         revertLane = {
           lane: updateLane,
-          revertLane: update.revertLane,
-          action: update.action,
-          hasEagerState: update.hasEagerState,
-          eagerState: update.eagerState,
+          revertLane: update2.revertLane,
+          action: update2.action,
+          hasEagerState: update2.hasEagerState,
+          eagerState: update2.eagerState,
           next: null
         }, null === newBaseQueueLast ? (newBaseQueueFirst = newBaseQueueLast = revertLane, baseFirst = pendingQueue) : newBaseQueueLast = newBaseQueueLast.next = revertLane, currentlyRenderingFiber.lanes |= updateLane, workInProgressRootSkippedLanes |= updateLane;
-      update = update.next;
-    } while (null !== update && update !== current);
+      update2 = update2.next;
+    } while (null !== update2 && update2 !== current);
     null === newBaseQueueLast ? baseFirst = pendingQueue : newBaseQueueLast.next = newBaseQueueFirst;
     if (!objectIs$2(pendingQueue, hook.memoizedState) && (didReceiveUpdate = true, didReadFromEntangledAsyncAction$32 && (reducer = currentEntangledActionThenable, null !== reducer)))
       throw reducer;
@@ -5729,10 +5729,10 @@ function rerenderReducer(reducer) {
   var dispatch = queue.dispatch, lastRenderPhaseUpdate = queue.pending, newState = hook.memoizedState;
   if (null !== lastRenderPhaseUpdate) {
     queue.pending = null;
-    var update = lastRenderPhaseUpdate = lastRenderPhaseUpdate.next;
+    var update2 = lastRenderPhaseUpdate = lastRenderPhaseUpdate.next;
     do
-      newState = reducer(newState, update.action), update = update.next;
-    while (update !== lastRenderPhaseUpdate);
+      newState = reducer(newState, update2.action), update2 = update2.next;
+    while (update2 !== lastRenderPhaseUpdate);
     objectIs$2(newState, hook.memoizedState) || (didReceiveUpdate = true);
     hook.memoizedState = newState;
     null === hook.baseQueue && (hook.baseState = newState);
@@ -6291,7 +6291,7 @@ function dispatchSetState(fiber, queue, action) {
   dispatchSetStateInternal(fiber, queue, action, lane);
 }
 function dispatchSetStateInternal(fiber, queue, action, lane) {
-  var update = {
+  var update2 = {
     lane,
     revertLane: 0,
     action,
@@ -6299,20 +6299,20 @@ function dispatchSetStateInternal(fiber, queue, action, lane) {
     eagerState: null,
     next: null
   };
-  if (isRenderPhaseUpdate(fiber)) enqueueRenderPhaseUpdate(queue, update);
+  if (isRenderPhaseUpdate(fiber)) enqueueRenderPhaseUpdate(queue, update2);
   else {
     var alternate = fiber.alternate;
     if (0 === fiber.lanes && (null === alternate || 0 === alternate.lanes) && (alternate = queue.lastRenderedReducer, null !== alternate))
       try {
         var currentState = queue.lastRenderedState, eagerState = alternate(currentState, action);
-        update.hasEagerState = true;
-        update.eagerState = eagerState;
+        update2.hasEagerState = true;
+        update2.eagerState = eagerState;
         if (objectIs$2(eagerState, currentState))
-          return enqueueUpdate$1(fiber, queue, update, 0), null === workInProgressRoot && finishQueueingConcurrentUpdates(), false;
+          return enqueueUpdate$1(fiber, queue, update2, 0), null === workInProgressRoot && finishQueueingConcurrentUpdates(), false;
       } catch (error) {
       } finally {
       }
-    action = enqueueConcurrentHookUpdate(fiber, queue, update, lane);
+    action = enqueueConcurrentHookUpdate(fiber, queue, update2, lane);
     if (null !== action)
       return scheduleUpdateOnFiber(action, fiber, lane), entangleTransitionUpdate(action, queue, lane), true;
   }
@@ -6341,11 +6341,11 @@ function isRenderPhaseUpdate(fiber) {
   var alternate = fiber.alternate;
   return fiber === currentlyRenderingFiber || null !== alternate && alternate === currentlyRenderingFiber;
 }
-function enqueueRenderPhaseUpdate(queue, update) {
+function enqueueRenderPhaseUpdate(queue, update2) {
   didScheduleRenderPhaseUpdateDuringThisPass = didScheduleRenderPhaseUpdate = true;
   var pending = queue.pending;
-  null === pending ? update.next = update : (update.next = pending.next, pending.next = update);
-  queue.pending = update;
+  null === pending ? update2.next = update2 : (update2.next = pending.next, pending.next = update2);
+  queue.pending = update2;
 }
 function entangleTransitionUpdate(root2, queue, lane) {
   if (0 !== (lane & 4194048)) {
@@ -7170,27 +7170,27 @@ function applyDerivedStateFromProps(workInProgress2, ctor, getDerivedStateFromPr
 var classComponentUpdater = {
   enqueueSetState: function(inst, payload, callback) {
     inst = inst._reactInternals;
-    var lane = requestUpdateLane(), update = createUpdate(lane);
-    update.payload = payload;
-    void 0 !== callback && null !== callback && (update.callback = callback);
-    payload = enqueueUpdate(inst, update, lane);
+    var lane = requestUpdateLane(), update2 = createUpdate(lane);
+    update2.payload = payload;
+    void 0 !== callback && null !== callback && (update2.callback = callback);
+    payload = enqueueUpdate(inst, update2, lane);
     null !== payload && (scheduleUpdateOnFiber(payload, inst, lane), entangleTransitions(payload, inst, lane));
   },
   enqueueReplaceState: function(inst, payload, callback) {
     inst = inst._reactInternals;
-    var lane = requestUpdateLane(), update = createUpdate(lane);
-    update.tag = 1;
-    update.payload = payload;
-    void 0 !== callback && null !== callback && (update.callback = callback);
-    payload = enqueueUpdate(inst, update, lane);
+    var lane = requestUpdateLane(), update2 = createUpdate(lane);
+    update2.tag = 1;
+    update2.payload = payload;
+    void 0 !== callback && null !== callback && (update2.callback = callback);
+    payload = enqueueUpdate(inst, update2, lane);
     null !== payload && (scheduleUpdateOnFiber(payload, inst, lane), entangleTransitions(payload, inst, lane));
   },
   enqueueForceUpdate: function(inst, callback) {
     inst = inst._reactInternals;
-    var lane = requestUpdateLane(), update = createUpdate(lane);
-    update.tag = 2;
-    void 0 !== callback && null !== callback && (update.callback = callback);
-    callback = enqueueUpdate(inst, update, lane);
+    var lane = requestUpdateLane(), update2 = createUpdate(lane);
+    update2.tag = 2;
+    void 0 !== callback && null !== callback && (update2.callback = callback);
+    callback = enqueueUpdate(inst, update2, lane);
     null !== callback && (scheduleUpdateOnFiber(callback, inst, lane), entangleTransitions(callback, inst, lane));
   }
 };
@@ -7279,19 +7279,19 @@ function createClassErrorUpdate(lane) {
   lane.tag = 3;
   return lane;
 }
-function initializeClassErrorUpdate(update, root2, fiber, errorInfo) {
+function initializeClassErrorUpdate(update2, root2, fiber, errorInfo) {
   var getDerivedStateFromError = fiber.type.getDerivedStateFromError;
   if ("function" === typeof getDerivedStateFromError) {
     var error = errorInfo.value;
-    update.payload = function() {
+    update2.payload = function() {
       return getDerivedStateFromError(error);
     };
-    update.callback = function() {
+    update2.callback = function() {
       logCaughtError(root2, fiber, errorInfo);
     };
   }
   var inst = fiber.stateNode;
-  null !== inst && "function" === typeof inst.componentDidCatch && (update.callback = function() {
+  null !== inst && "function" === typeof inst.componentDidCatch && (update2.callback = function() {
     logCaughtError(root2, fiber, errorInfo);
     "function" !== typeof getDerivedStateFromError && (null === legacyErrorBoundariesThatAlreadyFailed ? legacyErrorBoundariesThatAlreadyFailed = /* @__PURE__ */ new Set([this]) : legacyErrorBoundariesThatAlreadyFailed.add(this));
     var stack = errorInfo.stack;
@@ -12424,7 +12424,7 @@ function updateProperties(domElement, tag, lastProps, nextProps) {
     case "li":
       break;
     case "input":
-      var name = null, type = null, value = null, defaultValue = null, lastDefaultValue = null, checked = null, defaultChecked = null;
+      var name2 = null, type = null, value = null, defaultValue = null, lastDefaultValue = null, checked = null, defaultChecked = null;
       for (propKey in lastProps) {
         var lastProp = lastProps[propKey];
         if (lastProps.hasOwnProperty(propKey) && null != lastProp)
@@ -12448,7 +12448,7 @@ function updateProperties(domElement, tag, lastProps, nextProps) {
               type = propKey;
               break;
             case "name":
-              name = propKey;
+              name2 = propKey;
               break;
             case "checked":
               checked = propKey;
@@ -12486,7 +12486,7 @@ function updateProperties(domElement, tag, lastProps, nextProps) {
         checked,
         defaultChecked,
         type,
-        name
+        name2
       );
       return;
     case "select":
@@ -12508,9 +12508,9 @@ function updateProperties(domElement, tag, lastProps, nextProps) {
                 lastDefaultValue
               );
           }
-      for (name in nextProps)
-        if (type = nextProps[name], lastDefaultValue = lastProps[name], nextProps.hasOwnProperty(name) && (null != type || null != lastDefaultValue))
-          switch (name) {
+      for (name2 in nextProps)
+        if (type = nextProps[name2], lastDefaultValue = lastProps[name2], nextProps.hasOwnProperty(name2) && (null != type || null != lastDefaultValue))
+          switch (name2) {
             case "value":
               propKey$205 = type;
               break;
@@ -12523,7 +12523,7 @@ function updateProperties(domElement, tag, lastProps, nextProps) {
               type !== lastDefaultValue && setProp(
                 domElement,
                 tag,
-                name,
+                name2,
                 type,
                 nextProps,
                 lastDefaultValue
@@ -12537,31 +12537,31 @@ function updateProperties(domElement, tag, lastProps, nextProps) {
     case "textarea":
       propKey = propKey$205 = null;
       for (defaultValue in lastProps)
-        if (name = lastProps[defaultValue], lastProps.hasOwnProperty(defaultValue) && null != name && !nextProps.hasOwnProperty(defaultValue))
+        if (name2 = lastProps[defaultValue], lastProps.hasOwnProperty(defaultValue) && null != name2 && !nextProps.hasOwnProperty(defaultValue))
           switch (defaultValue) {
             case "value":
               break;
             case "children":
               break;
             default:
-              setProp(domElement, tag, defaultValue, null, nextProps, name);
+              setProp(domElement, tag, defaultValue, null, nextProps, name2);
           }
       for (value in nextProps)
-        if (name = nextProps[value], type = lastProps[value], nextProps.hasOwnProperty(value) && (null != name || null != type))
+        if (name2 = nextProps[value], type = lastProps[value], nextProps.hasOwnProperty(value) && (null != name2 || null != type))
           switch (value) {
             case "value":
-              propKey$205 = name;
+              propKey$205 = name2;
               break;
             case "defaultValue":
-              propKey = name;
+              propKey = name2;
               break;
             case "children":
               break;
             case "dangerouslySetInnerHTML":
-              if (null != name) throw Error(formatProdErrorMessage(91));
+              if (null != name2) throw Error(formatProdErrorMessage(91));
               break;
             default:
-              name !== type && setProp(domElement, tag, value, name, nextProps, type);
+              name2 !== type && setProp(domElement, tag, value, name2, nextProps, type);
           }
       updateTextarea(domElement, propKey$205, propKey);
       return;
@@ -12776,8 +12776,8 @@ function canHydrateInstance(instance, type, props, inRootOrSingleton) {
         break;
     } else if (!inRootOrSingleton)
       if ("input" === type && "hidden" === instance.type) {
-        var name = null == anyProps.name ? null : "" + anyProps.name;
-        if ("hidden" === anyProps.type && instance.getAttribute("name") === name)
+        var name2 = null == anyProps.name ? null : "" + anyProps.name;
+        if ("hidden" === anyProps.type && instance.getAttribute("name") === name2)
           return instance;
       } else return instance;
     else if (!instance[internalHoistableMarker])
@@ -12786,18 +12786,18 @@ function canHydrateInstance(instance, type, props, inRootOrSingleton) {
           if (!instance.hasAttribute("itemprop")) break;
           return instance;
         case "link":
-          name = instance.getAttribute("rel");
-          if ("stylesheet" === name && instance.hasAttribute("data-precedence"))
+          name2 = instance.getAttribute("rel");
+          if ("stylesheet" === name2 && instance.hasAttribute("data-precedence"))
             break;
-          else if (name !== anyProps.rel || instance.getAttribute("href") !== (null == anyProps.href || "" === anyProps.href ? null : anyProps.href) || instance.getAttribute("crossorigin") !== (null == anyProps.crossOrigin ? null : anyProps.crossOrigin) || instance.getAttribute("title") !== (null == anyProps.title ? null : anyProps.title))
+          else if (name2 !== anyProps.rel || instance.getAttribute("href") !== (null == anyProps.href || "" === anyProps.href ? null : anyProps.href) || instance.getAttribute("crossorigin") !== (null == anyProps.crossOrigin ? null : anyProps.crossOrigin) || instance.getAttribute("title") !== (null == anyProps.title ? null : anyProps.title))
             break;
           return instance;
         case "style":
           if (instance.hasAttribute("data-precedence")) break;
           return instance;
         case "script":
-          name = instance.getAttribute("src");
-          if ((name !== (null == anyProps.src ? null : anyProps.src) || instance.getAttribute("type") !== (null == anyProps.type ? null : anyProps.type) || instance.getAttribute("crossorigin") !== (null == anyProps.crossOrigin ? null : anyProps.crossOrigin)) && name && instance.hasAttribute("async") && !instance.hasAttribute("itemprop"))
+          name2 = instance.getAttribute("src");
+          if ((name2 !== (null == anyProps.src ? null : anyProps.src) || instance.getAttribute("type") !== (null == anyProps.type ? null : anyProps.type) || instance.getAttribute("crossorigin") !== (null == anyProps.crossOrigin ? null : anyProps.crossOrigin)) && name2 && instance.hasAttribute("async") && !instance.hasAttribute("itemprop"))
             break;
           return instance;
         default:
@@ -14758,9 +14758,9 @@ function replaceEqualDeep(prev, _next) {
 function getEnumerableOwnKeys(o2) {
   const keys2 = [];
   const names = Object.getOwnPropertyNames(o2);
-  for (const name of names) {
-    if (!Object.prototype.propertyIsEnumerable.call(o2, name)) return false;
-    keys2.push(name);
+  for (const name2 of names) {
+    if (!Object.prototype.propertyIsEnumerable.call(o2, name2)) return false;
+    keys2.push(name2);
   }
   const symbols = Object.getOwnPropertySymbols(o2);
   for (const symbol of symbols) {
@@ -14792,7 +14792,7 @@ function hasObjectPrototype(o2) {
 function isPlainArray(value) {
   return Array.isArray(value) && value.length === Object.keys(value).length;
 }
-function deepEqual$3(a2, b2, opts) {
+function deepEqual$4(a2, b2, opts) {
   if (a2 === b2) {
     return true;
   }
@@ -14802,7 +14802,7 @@ function deepEqual$3(a2, b2, opts) {
   if (Array.isArray(a2) && Array.isArray(b2)) {
     if (a2.length !== b2.length) return false;
     for (let i2 = 0, l2 = a2.length; i2 < l2; i2++) {
-      if (!deepEqual$3(a2[i2], b2[i2], opts)) return false;
+      if (!deepEqual$4(a2[i2], b2[i2], opts)) return false;
     }
     return true;
   }
@@ -14811,7 +14811,7 @@ function deepEqual$3(a2, b2, opts) {
     if (opts == null ? void 0 : opts.partial) {
       for (const k2 in b2) {
         if (!ignoreUndefined || b2[k2] !== void 0) {
-          if (!deepEqual$3(a2[k2], b2[k2], opts)) return false;
+          if (!deepEqual$4(a2[k2], b2[k2], opts)) return false;
         }
       }
       return true;
@@ -14828,7 +14828,7 @@ function deepEqual$3(a2, b2, opts) {
     for (const k2 in b2) {
       if (!ignoreUndefined || b2[k2] !== void 0) {
         bCount++;
-        if (bCount > aCount || !deepEqual$3(a2[k2], b2[k2], opts)) return false;
+        if (bCount > aCount || !deepEqual$4(a2[k2], b2[k2], opts)) return false;
       }
     }
     return aCount === bCount;
@@ -15683,7 +15683,7 @@ function setupScrollRestoration(router2, force) {
   }
   router2.isScrollRestorationSetup = true;
   ignoreScroll = false;
-  const getKey = router2.options.getScrollRestorationKey || defaultGetScrollRestorationKey;
+  const getKey2 = router2.options.getScrollRestorationKey || defaultGetScrollRestorationKey;
   window.history.scrollRestoration = "manual";
   const onScroll = (event) => {
     if (ignoreScroll || !router2.isScrollRestoring) {
@@ -15702,7 +15702,7 @@ function setupScrollRestoration(router2, force) {
         elementSelector = getCssSelector(event.target);
       }
     }
-    const restoreKey = getKey(router2.state.location);
+    const restoreKey = getKey2(router2.state.location);
     scrollRestorationCache.set((state) => {
       const keyEntry = state[restoreKey] || (state[restoreKey] = {});
       const elementEntry = keyEntry[elementSelector] || (keyEntry[elementSelector] = {});
@@ -15723,7 +15723,7 @@ function setupScrollRestoration(router2, force) {
     document.addEventListener("scroll", throttle$2(onScroll, 100), true);
   }
   router2.subscribe("onRendered", (event) => {
-    const cacheKey = getKey(event.toLocation);
+    const cacheKey = getKey2(event.toLocation);
     if (!router2.resetNextScroll) {
       router2.resetNextScroll = true;
       return;
@@ -15755,7 +15755,7 @@ function handleHashScroll(router2) {
     }
   }
 }
-function encode$1(obj, stringify = String) {
+function encode$2(obj, stringify = String) {
   const result = new URLSearchParams();
   for (const key in obj) {
     const val = obj[key];
@@ -15827,7 +15827,7 @@ function stringifySearchWith(stringify, parser) {
     return val;
   }
   return (search) => {
-    const searchStr = encode$1(search, stringifyValue);
+    const searchStr = encode$2(search, stringifyValue);
     return searchStr ? `?${searchStr}` : "";
   };
 }
@@ -16903,7 +16903,7 @@ class RouterCore {
         ignoredProps.forEach((prop) => {
           next.state[prop] = this.latestLocation.state[prop];
         });
-        const isEqual2 = deepEqual$3(next.state, this.latestLocation.state);
+        const isEqual2 = deepEqual$4(next.state, this.latestLocation.state);
         ignoredProps.forEach((prop) => {
           delete next.state[prop];
         });
@@ -17368,12 +17368,12 @@ class RouterCore {
         return false;
       }
       if (location.params) {
-        if (!deepEqual$3(match, location.params, { partial: true })) {
+        if (!deepEqual$4(match, location.params, { partial: true })) {
           return false;
         }
       }
       if (match && ((opts == null ? void 0 : opts.includeSearch) ?? true)) {
-        return deepEqual$3(baseLocation.search, next.search, { partial: true }) ? match : false;
+        return deepEqual$4(baseLocation.search, next.search, { partial: true }) ? match : false;
       }
       return match;
     };
@@ -18438,7 +18438,7 @@ function useLinkProps(options, forwardedRef) {
         }
       }
       if ((activeOptions == null ? void 0 : activeOptions.includeSearch) ?? true) {
-        const searchTest = deepEqual$3(s2.location.search, next.search, {
+        const searchTest = deepEqual$4(s2.location.search, next.search, {
           partial: !(activeOptions == null ? void 0 : activeOptions.exact),
           ignoreUndefined: !(activeOptions == null ? void 0 : activeOptions.explicitUndefined)
         });
@@ -18961,8 +18961,8 @@ function ScriptOnce({
 }
 function ScrollRestoration() {
   const router2 = useRouter();
-  const getKey = router2.options.getScrollRestorationKey || defaultGetScrollRestorationKey;
-  const userKey = getKey(router2.latestLocation);
+  const getKey2 = router2.options.getScrollRestorationKey || defaultGetScrollRestorationKey;
+  const userKey = getKey2(router2.latestLocation);
   const resolvedKey = userKey !== defaultGetScrollRestorationKey(router2.latestLocation) ? userKey : void 0;
   if (!router2.isScrollRestoring || !router2.isServer) {
     return null;
@@ -19474,7 +19474,7 @@ const createLruCache = (maxCacheSize) => {
   let cacheSize = 0;
   let cache = /* @__PURE__ */ new Map();
   let previousCache = /* @__PURE__ */ new Map();
-  const update = (key, value) => {
+  const update2 = (key, value) => {
     cache.set(key, value);
     cacheSize++;
     if (cacheSize > maxCacheSize) {
@@ -19490,7 +19490,7 @@ const createLruCache = (maxCacheSize) => {
         return value;
       }
       if ((value = previousCache.get(key)) !== void 0) {
-        update(key, value);
+        update2(key, value);
         return value;
       }
     },
@@ -19498,7 +19498,7 @@ const createLruCache = (maxCacheSize) => {
       if (cache.has(key)) {
         cache.set(key, value);
       } else {
-        update(key, value);
+        update2(key, value);
       }
     }
   };
@@ -22260,11 +22260,46 @@ const createLucideIcon = (iconName, iconNode) => {
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$17 = [
+const __iconNode$1a = [
   ["path", { d: "M17 7 7 17", key: "15tmo1" }],
   ["path", { d: "M17 17H7V7", key: "1org7z" }]
 ];
-const ArrowDownLeft = createLucideIcon("arrow-down-left", __iconNode$17);
+const ArrowDownLeft = createLucideIcon("arrow-down-left", __iconNode$1a);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$19 = [
+  ["path", { d: "M12 5v14", key: "s699le" }],
+  ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
+];
+const ArrowDown = createLucideIcon("arrow-down", __iconNode$19);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$18 = [
+  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
+  ["path", { d: "M19 12H5", key: "x3x0zl" }]
+];
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$18);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$17 = [
+  ["path", { d: "m21 16-4 4-4-4", key: "f6ql7i" }],
+  ["path", { d: "M17 20V4", key: "1ejh1v" }],
+  ["path", { d: "m3 8 4-4 4 4", key: "11wl7u" }],
+  ["path", { d: "M7 4v16", key: "1glfcx" }]
+];
+const ArrowUpDown = createLucideIcon("arrow-up-down", __iconNode$17);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22272,10 +22307,10 @@ const ArrowDownLeft = createLucideIcon("arrow-down-left", __iconNode$17);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$16 = [
-  ["path", { d: "M12 5v14", key: "s699le" }],
-  ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
+  ["path", { d: "M7 7h10v10", key: "1tivn9" }],
+  ["path", { d: "M7 17 17 7", key: "1vkiza" }]
 ];
-const ArrowDown = createLucideIcon("arrow-down", __iconNode$16);
+const ArrowUpRight = createLucideIcon("arrow-up-right", __iconNode$16);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22283,10 +22318,10 @@ const ArrowDown = createLucideIcon("arrow-down", __iconNode$16);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$15 = [
-  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
-  ["path", { d: "M19 12H5", key: "x3x0zl" }]
+  ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
+  ["path", { d: "M12 19V5", key: "x0mq9r" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$15);
+const ArrowUp = createLucideIcon("arrow-up", __iconNode$15);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22294,41 +22329,6 @@ const ArrowLeft = createLucideIcon("arrow-left", __iconNode$15);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$14 = [
-  ["path", { d: "m21 16-4 4-4-4", key: "f6ql7i" }],
-  ["path", { d: "M17 20V4", key: "1ejh1v" }],
-  ["path", { d: "m3 8 4-4 4 4", key: "11wl7u" }],
-  ["path", { d: "M7 4v16", key: "1glfcx" }]
-];
-const ArrowUpDown = createLucideIcon("arrow-up-down", __iconNode$14);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$13 = [
-  ["path", { d: "M7 7h10v10", key: "1tivn9" }],
-  ["path", { d: "M7 17 17 7", key: "1vkiza" }]
-];
-const ArrowUpRight = createLucideIcon("arrow-up-right", __iconNode$13);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$12 = [
-  ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
-  ["path", { d: "M12 19V5", key: "x0mq9r" }]
-];
-const ArrowUp = createLucideIcon("arrow-up", __iconNode$12);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$11 = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   [
     "path",
@@ -22338,14 +22338,14 @@ const __iconNode$11 = [
     }
   ]
 ];
-const Bell = createLucideIcon("bell", __iconNode$11);
+const Bell = createLucideIcon("bell", __iconNode$14);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$10 = [
+const __iconNode$13 = [
   ["path", { d: "M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z", key: "1b4qmf" }],
   ["path", { d: "M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2", key: "i71pzd" }],
   ["path", { d: "M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2", key: "10jefs" }],
@@ -22354,14 +22354,14 @@ const __iconNode$10 = [
   ["path", { d: "M10 14h4", key: "kelpxr" }],
   ["path", { d: "M10 18h4", key: "1ulq68" }]
 ];
-const Building2 = createLucideIcon("building-2", __iconNode$10);
+const Building2 = createLucideIcon("building-2", __iconNode$13);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$$ = [
+const __iconNode$12 = [
   [
     "path",
     {
@@ -22371,60 +22371,93 @@ const __iconNode$$ = [
   ],
   ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
 ];
-const Camera = createLucideIcon("camera", __iconNode$$);
+const Camera = createLucideIcon("camera", __iconNode$12);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$_ = [
+const __iconNode$11 = [
   ["path", { d: "M3 3v16a2 2 0 0 0 2 2h16", key: "c24i48" }],
   ["path", { d: "M18 17V9", key: "2bz60n" }],
   ["path", { d: "M13 17V5", key: "1frdt8" }],
   ["path", { d: "M8 17v-3", key: "17ska0" }]
 ];
-const ChartColumn = createLucideIcon("chart-column", __iconNode$_);
+const ChartColumn = createLucideIcon("chart-column", __iconNode$11);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$Z = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$Z);
+const __iconNode$10 = [
+  ["path", { d: "M18 6 7 17l-5-5", key: "116fxf" }],
+  ["path", { d: "m22 10-7.5 7.5L13 16", key: "ke71qq" }]
+];
+const CheckCheck = createLucideIcon("check-check", __iconNode$10);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$Y = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("chevron-down", __iconNode$Y);
+const __iconNode$$ = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$$);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$X = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-const ChevronLeft = createLucideIcon("chevron-left", __iconNode$X);
+const __iconNode$_ = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("chevron-down", __iconNode$_);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$W = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("chevron-right", __iconNode$W);
+const __iconNode$Z = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+const ChevronLeft = createLucideIcon("chevron-left", __iconNode$Z);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$V = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-const ChevronUp = createLucideIcon("chevron-up", __iconNode$V);
+const __iconNode$Y = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+const ChevronRight = createLucideIcon("chevron-right", __iconNode$Y);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$X = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+const ChevronUp = createLucideIcon("chevron-up", __iconNode$X);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$W = [
+  ["path", { d: "m11 17-5-5 5-5", key: "13zhaf" }],
+  ["path", { d: "m18 17-5-5 5-5", key: "h8a8et" }]
+];
+const ChevronsLeft = createLucideIcon("chevrons-left", __iconNode$W);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$V = [
+  ["path", { d: "m6 17 5-5-5-5", key: "xnjwq" }],
+  ["path", { d: "m13 17 5-5-5-5", key: "17xmmf" }]
+];
+const ChevronsRight = createLucideIcon("chevrons-right", __iconNode$V);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22432,10 +22465,10 @@ const ChevronUp = createLucideIcon("chevron-up", __iconNode$V);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$U = [
-  ["path", { d: "m11 17-5-5 5-5", key: "13zhaf" }],
-  ["path", { d: "m18 17-5-5 5-5", key: "h8a8et" }]
+  ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
+  ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
 ];
-const ChevronsLeft = createLucideIcon("chevrons-left", __iconNode$U);
+const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$U);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22443,10 +22476,10 @@ const ChevronsLeft = createLucideIcon("chevrons-left", __iconNode$U);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$T = [
-  ["path", { d: "m6 17 5-5-5-5", key: "xnjwq" }],
-  ["path", { d: "m13 17 5-5-5-5", key: "17xmmf" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ];
-const ChevronsRight = createLucideIcon("chevrons-right", __iconNode$T);
+const CircleCheck = createLucideIcon("circle-check", __iconNode$T);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22454,10 +22487,11 @@ const ChevronsRight = createLucideIcon("chevrons-right", __iconNode$T);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$S = [
-  ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
-  ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
+  ["path", { d: "M12 17h.01", key: "p32p05" }]
 ];
-const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$S);
+const CircleHelp = createLucideIcon("circle-help", __iconNode$S);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22466,9 +22500,10 @@ const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$S);
  */
 const __iconNode$R = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+  ["line", { x1: "10", x2: "10", y1: "15", y2: "9", key: "c1nkhi" }],
+  ["line", { x1: "14", x2: "14", y1: "15", y2: "9", key: "h65svq" }]
 ];
-const CircleCheck = createLucideIcon("circle-check", __iconNode$R);
+const CirclePause = createLucideIcon("circle-pause", __iconNode$R);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22477,10 +22512,9 @@ const CircleCheck = createLucideIcon("circle-check", __iconNode$R);
  */
 const __iconNode$Q = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
-  ["path", { d: "M12 17h.01", key: "p32p05" }]
+  ["polygon", { points: "10 8 16 12 10 16 10 8", key: "1cimsy" }]
 ];
-const CircleHelp = createLucideIcon("circle-help", __iconNode$Q);
+const CirclePlay = createLucideIcon("circle-play", __iconNode$Q);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22489,10 +22523,10 @@ const CircleHelp = createLucideIcon("circle-help", __iconNode$Q);
  */
 const __iconNode$P = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["line", { x1: "10", x2: "10", y1: "15", y2: "9", key: "c1nkhi" }],
-  ["line", { x1: "14", x2: "14", y1: "15", y2: "9", key: "h65svq" }]
+  ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
+  ["path", { d: "m9 9 6 6", key: "z0biqf" }]
 ];
-const CirclePause = createLucideIcon("circle-pause", __iconNode$P);
+const CircleX = createLucideIcon("circle-x", __iconNode$P);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22500,10 +22534,20 @@ const CirclePause = createLucideIcon("circle-pause", __iconNode$P);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$O = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["polygon", { points: "10 8 16 12 10 16 10 8", key: "1cimsy" }]
+  ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
+  [
+    "path",
+    {
+      d: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2",
+      key: "116196"
+    }
+  ],
+  ["path", { d: "M12 11h4", key: "1jrz19" }],
+  ["path", { d: "M12 16h4", key: "n85exb" }],
+  ["path", { d: "M8 11h.01", key: "1dfujw" }],
+  ["path", { d: "M8 16h.01", key: "18s6g9" }]
 ];
-const CirclePlay = createLucideIcon("circle-play", __iconNode$O);
+const ClipboardList = createLucideIcon("clipboard-list", __iconNode$O);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22511,18 +22555,6 @@ const CirclePlay = createLucideIcon("circle-play", __iconNode$O);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$N = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
-  ["path", { d: "m9 9 6 6", key: "z0biqf" }]
-];
-const CircleX = createLucideIcon("circle-x", __iconNode$N);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$M = [
   ["path", { d: "M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5", key: "laymnq" }],
   ["path", { d: "M8.5 8.5v.01", key: "ue8clq" }],
   ["path", { d: "M16 15.5v.01", key: "14dtrp" }],
@@ -22530,7 +22562,18 @@ const __iconNode$M = [
   ["path", { d: "M11 17v.01", key: "1hyl5a" }],
   ["path", { d: "M7 14v.01", key: "uct60s" }]
 ];
-const Cookie = createLucideIcon("cookie", __iconNode$M);
+const Cookie = createLucideIcon("cookie", __iconNode$N);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$M = [
+  ["rect", { width: "20", height: "14", x: "2", y: "5", rx: "2", key: "ynyp8z" }],
+  ["line", { x1: "2", x2: "22", y1: "10", y2: "10", key: "1b3vmo" }]
+];
+const CreditCard = createLucideIcon("credit-card", __iconNode$M);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22538,10 +22581,10 @@ const Cookie = createLucideIcon("cookie", __iconNode$M);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$L = [
-  ["rect", { width: "20", height: "14", x: "2", y: "5", rx: "2", key: "ynyp8z" }],
-  ["line", { x1: "2", x2: "22", y1: "10", y2: "10", key: "1b3vmo" }]
+  ["line", { x1: "12", x2: "12", y1: "2", y2: "22", key: "7eqyqh" }],
+  ["path", { d: "M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6", key: "1b0p4s" }]
 ];
-const CreditCard = createLucideIcon("credit-card", __iconNode$L);
+const DollarSign = createLucideIcon("dollar-sign", __iconNode$L);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22549,10 +22592,11 @@ const CreditCard = createLucideIcon("credit-card", __iconNode$L);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$K = [
-  ["line", { x1: "12", x2: "12", y1: "2", y2: "22", key: "7eqyqh" }],
-  ["path", { d: "M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6", key: "1b0p4s" }]
+  ["path", { d: "M12 15V3", key: "m9g1x1" }],
+  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
+  ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
 ];
-const DollarSign = createLucideIcon("dollar-sign", __iconNode$K);
+const Download = createLucideIcon("download", __iconNode$K);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22560,18 +22604,6 @@ const DollarSign = createLucideIcon("dollar-sign", __iconNode$K);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$J = [
-  ["path", { d: "M12 15V3", key: "m9g1x1" }],
-  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
-  ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
-];
-const Download = createLucideIcon("download", __iconNode$J);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$I = [
   [
     "path",
     {
@@ -22589,14 +22621,14 @@ const __iconNode$I = [
   ],
   ["path", { d: "m2 2 20 20", key: "1ooewy" }]
 ];
-const EyeOff = createLucideIcon("eye-off", __iconNode$I);
+const EyeOff = createLucideIcon("eye-off", __iconNode$J);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$H = [
+const __iconNode$I = [
   [
     "path",
     {
@@ -22606,14 +22638,14 @@ const __iconNode$H = [
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Eye = createLucideIcon("eye", __iconNode$H);
+const Eye = createLucideIcon("eye", __iconNode$I);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$G = [
+const __iconNode$H = [
   ["path", { d: "M12 16h.01", key: "1drbdi" }],
   ["path", { d: "M16 16h.01", key: "1f9h7w" }],
   [
@@ -22625,7 +22657,21 @@ const __iconNode$G = [
   ],
   ["path", { d: "M8 16h.01", key: "18s6g9" }]
 ];
-const Factory = createLucideIcon("factory", __iconNode$G);
+const Factory = createLucideIcon("factory", __iconNode$H);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$G = [
+  ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
+  ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
+  ["path", { d: "M10 9H8", key: "b1mrlr" }],
+  ["path", { d: "M16 13H8", key: "t4e002" }],
+  ["path", { d: "M16 17H8", key: "z1uh3a" }]
+];
+const FileText = createLucideIcon("file-text", __iconNode$G);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22633,20 +22679,6 @@ const Factory = createLucideIcon("factory", __iconNode$G);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$F = [
-  ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
-  ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
-  ["path", { d: "M10 9H8", key: "b1mrlr" }],
-  ["path", { d: "M16 13H8", key: "t4e002" }],
-  ["path", { d: "M16 17H8", key: "z1uh3a" }]
-];
-const FileText = createLucideIcon("file-text", __iconNode$F);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$E = [
   [
     "path",
     {
@@ -22664,7 +22696,19 @@ const __iconNode$E = [
   ["path", { d: "M3 5a2 2 0 0 0 2 2h3", key: "f2jnh7" }],
   ["path", { d: "M3 3v13a2 2 0 0 0 2 2h3", key: "k8epm1" }]
 ];
-const FolderTree = createLucideIcon("folder-tree", __iconNode$E);
+const FolderTree = createLucideIcon("folder-tree", __iconNode$F);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$E = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
+  ["path", { d: "M2 12h20", key: "9i4pu4" }]
+];
+const Globe = createLucideIcon("globe", __iconNode$E);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22672,18 +22716,6 @@ const FolderTree = createLucideIcon("folder-tree", __iconNode$E);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$D = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
-  ["path", { d: "M2 12h20", key: "9i4pu4" }]
-];
-const Globe = createLucideIcon("globe", __iconNode$D);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$C = [
   ["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8", key: "5wwlr5" }],
   [
     "path",
@@ -22693,7 +22725,19 @@ const __iconNode$C = [
     }
   ]
 ];
-const House = createLucideIcon("house", __iconNode$C);
+const House = createLucideIcon("house", __iconNode$D);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$C = [
+  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
+  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
+  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+];
+const Image$1 = createLucideIcon("image", __iconNode$C);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22701,11 +22745,13 @@ const House = createLucideIcon("house", __iconNode$C);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$B = [
-  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
-  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
-  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+  ["path", { d: "M6 3h12", key: "ggurg9" }],
+  ["path", { d: "M6 8h12", key: "6g4wlu" }],
+  ["path", { d: "m6 13 8.5 8", key: "u1kupk" }],
+  ["path", { d: "M6 13h3", key: "wdp6ag" }],
+  ["path", { d: "M9 13c6.667 0 6.667-10 0-10", key: "1nkvk2" }]
 ];
-const Image$1 = createLucideIcon("image", __iconNode$B);
+const IndianRupee = createLucideIcon("indian-rupee", __iconNode$B);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22713,13 +22759,11 @@ const Image$1 = createLucideIcon("image", __iconNode$B);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$A = [
-  ["path", { d: "M6 3h12", key: "ggurg9" }],
-  ["path", { d: "M6 8h12", key: "6g4wlu" }],
-  ["path", { d: "m6 13 8.5 8", key: "u1kupk" }],
-  ["path", { d: "M6 13h3", key: "wdp6ag" }],
-  ["path", { d: "M9 13c6.667 0 6.667-10 0-10", key: "1nkvk2" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 16v-4", key: "1dtifu" }],
+  ["path", { d: "M12 8h.01", key: "e9boi3" }]
 ];
-const IndianRupee = createLucideIcon("indian-rupee", __iconNode$A);
+const Info = createLucideIcon("info", __iconNode$A);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22727,32 +22771,32 @@ const IndianRupee = createLucideIcon("indian-rupee", __iconNode$A);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$z = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M12 16v-4", key: "1dtifu" }],
-  ["path", { d: "M12 8h.01", key: "e9boi3" }]
-];
-const Info = createLucideIcon("info", __iconNode$z);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$y = [
   ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
   ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
   ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
   ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
 ];
-const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$y);
+const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$z);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$x = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-const LoaderCircle = createLucideIcon("loader-circle", __iconNode$x);
+const __iconNode$y = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+const LoaderCircle = createLucideIcon("loader-circle", __iconNode$y);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$x = [
+  ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
+  ["path", { d: "M21 12H9", key: "dn1m92" }],
+  ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
+];
+const LogOut = createLucideIcon("log-out", __iconNode$x);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22760,18 +22804,6 @@ const LoaderCircle = createLucideIcon("loader-circle", __iconNode$x);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$w = [
-  ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-  ["path", { d: "M21 12H9", key: "dn1m92" }],
-  ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
-];
-const LogOut = createLucideIcon("log-out", __iconNode$w);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$v = [
   [
     "path",
     {
@@ -22781,14 +22813,14 @@ const __iconNode$v = [
   ],
   ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }]
 ];
-const MapPin = createLucideIcon("map-pin", __iconNode$v);
+const MapPin = createLucideIcon("map-pin", __iconNode$w);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$u = [
+const __iconNode$v = [
   [
     "path",
     {
@@ -22805,7 +22837,19 @@ const __iconNode$u = [
     }
   ]
 ];
-const MapPinned = createLucideIcon("map-pinned", __iconNode$u);
+const MapPinned = createLucideIcon("map-pinned", __iconNode$v);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$u = [
+  ["path", { d: "M4 12h16", key: "1lakjw" }],
+  ["path", { d: "M4 18h16", key: "19g7jn" }],
+  ["path", { d: "M4 6h16", key: "1o0s65" }]
+];
+const Menu$1 = createLucideIcon("menu", __iconNode$u);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22813,11 +22857,9 @@ const MapPinned = createLucideIcon("map-pinned", __iconNode$u);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$t = [
-  ["path", { d: "M4 12h16", key: "1lakjw" }],
-  ["path", { d: "M4 18h16", key: "19g7jn" }],
-  ["path", { d: "M4 6h16", key: "1o0s65" }]
+  ["path", { d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z", key: "a7tn18" }]
 ];
-const Menu$1 = createLucideIcon("menu", __iconNode$t);
+const Moon = createLucideIcon("moon", __iconNode$t);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22825,16 +22867,6 @@ const Menu$1 = createLucideIcon("menu", __iconNode$t);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$s = [
-  ["path", { d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z", key: "a7tn18" }]
-];
-const Moon = createLucideIcon("moon", __iconNode$s);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$r = [
   [
     "path",
     {
@@ -22846,14 +22878,14 @@ const __iconNode$r = [
   ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
   ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
 ];
-const Package = createLucideIcon("package", __iconNode$r);
+const Package = createLucideIcon("package", __iconNode$s);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$q = [
+const __iconNode$r = [
   [
     "path",
     {
@@ -22866,7 +22898,24 @@ const __iconNode$q = [
   ["circle", { cx: "6.5", cy: "12.5", r: ".5", fill: "currentColor", key: "qy21gx" }],
   ["circle", { cx: "8.5", cy: "7.5", r: ".5", fill: "currentColor", key: "fotxhn" }]
 ];
-const Palette = createLucideIcon("palette", __iconNode$q);
+const Palette = createLucideIcon("palette", __iconNode$r);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$q = [
+  [
+    "path",
+    {
+      d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+      key: "1a8usu"
+    }
+  ],
+  ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
+];
+const Pencil = createLucideIcon("pencil", __iconNode$q);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22877,13 +22926,12 @@ const __iconNode$p = [
   [
     "path",
     {
-      d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
-      key: "1a8usu"
+      d: "M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384",
+      key: "9njp5v"
     }
-  ],
-  ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
+  ]
 ];
-const Pencil = createLucideIcon("pencil", __iconNode$p);
+const Phone = createLucideIcon("phone", __iconNode$p);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22891,15 +22939,10 @@ const Pencil = createLucideIcon("pencil", __iconNode$p);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$o = [
-  [
-    "path",
-    {
-      d: "M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384",
-      key: "9njp5v"
-    }
-  ]
+  ["path", { d: "M5 12h14", key: "1ays0h" }],
+  ["path", { d: "M12 5v14", key: "s699le" }]
 ];
-const Phone = createLucideIcon("phone", __iconNode$o);
+const Plus = createLucideIcon("plus", __iconNode$o);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22907,10 +22950,12 @@ const Phone = createLucideIcon("phone", __iconNode$o);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$n = [
-  ["path", { d: "M5 12h14", key: "1ays0h" }],
-  ["path", { d: "M12 5v14", key: "s699le" }]
+  ["path", { d: "M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "14sxne" }],
+  ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
+  ["path", { d: "M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16", key: "1hlbsb" }],
+  ["path", { d: "M16 16h5v5", key: "ccwih5" }]
 ];
-const Plus = createLucideIcon("plus", __iconNode$n);
+const RefreshCcw = createLucideIcon("refresh-ccw", __iconNode$n);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22918,12 +22963,12 @@ const Plus = createLucideIcon("plus", __iconNode$n);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$m = [
-  ["path", { d: "M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "14sxne" }],
-  ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
-  ["path", { d: "M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16", key: "1hlbsb" }],
-  ["path", { d: "M16 16h5v5", key: "ccwih5" }]
+  ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+  ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
+  ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
+  ["path", { d: "M8 16H3v5", key: "1cv678" }]
 ];
-const RefreshCcw = createLucideIcon("refresh-ccw", __iconNode$m);
+const RefreshCw = createLucideIcon("refresh-cw", __iconNode$m);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22931,12 +22976,10 @@ const RefreshCcw = createLucideIcon("refresh-ccw", __iconNode$m);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$l = [
-  ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
-  ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
-  ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
-  ["path", { d: "M8 16H3v5", key: "1cv678" }]
+  ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
+  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
 ];
-const RefreshCw = createLucideIcon("refresh-cw", __iconNode$l);
+const Search = createLucideIcon("search", __iconNode$l);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22944,17 +22987,6 @@ const RefreshCw = createLucideIcon("refresh-cw", __iconNode$l);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$k = [
-  ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
-  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
-];
-const Search = createLucideIcon("search", __iconNode$k);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$j = [
   [
     "path",
     {
@@ -22964,7 +22996,21 @@ const __iconNode$j = [
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Settings = createLucideIcon("settings", __iconNode$j);
+const Settings = createLucideIcon("settings", __iconNode$k);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$j = [
+  ["circle", { cx: "18", cy: "5", r: "3", key: "gq8acd" }],
+  ["circle", { cx: "6", cy: "12", r: "3", key: "w7nqdw" }],
+  ["circle", { cx: "18", cy: "19", r: "3", key: "1xt0gg" }],
+  ["line", { x1: "8.59", x2: "15.42", y1: "13.51", y2: "17.49", key: "47mynk" }],
+  ["line", { x1: "15.41", x2: "8.59", y1: "6.51", y2: "10.49", key: "1n3mei" }]
+];
+const Share2 = createLucideIcon("share-2", __iconNode$j);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22972,13 +23018,17 @@ const Settings = createLucideIcon("settings", __iconNode$j);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$i = [
-  ["circle", { cx: "18", cy: "5", r: "3", key: "gq8acd" }],
-  ["circle", { cx: "6", cy: "12", r: "3", key: "w7nqdw" }],
-  ["circle", { cx: "18", cy: "19", r: "3", key: "1xt0gg" }],
-  ["line", { x1: "8.59", x2: "15.42", y1: "13.51", y2: "17.49", key: "47mynk" }],
-  ["line", { x1: "15.41", x2: "8.59", y1: "6.51", y2: "10.49", key: "1n3mei" }]
+  [
+    "path",
+    {
+      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+      key: "oel41y"
+    }
+  ],
+  ["path", { d: "M12 8v4", key: "1got3b" }],
+  ["path", { d: "M12 16h.01", key: "1drbdi" }]
 ];
-const Share2 = createLucideIcon("share-2", __iconNode$i);
+const ShieldAlert = createLucideIcon("shield-alert", __iconNode$i);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22992,11 +23042,9 @@ const __iconNode$h = [
       d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
       key: "oel41y"
     }
-  ],
-  ["path", { d: "M12 8v4", key: "1got3b" }],
-  ["path", { d: "M12 16h.01", key: "1drbdi" }]
+  ]
 ];
-const ShieldAlert = createLucideIcon("shield-alert", __iconNode$h);
+const Shield = createLucideIcon("shield", __iconNode$h);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -23004,15 +23052,11 @@ const ShieldAlert = createLucideIcon("shield-alert", __iconNode$h);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$g = [
-  [
-    "path",
-    {
-      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-      key: "oel41y"
-    }
-  ]
+  ["path", { d: "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z", key: "hou9p0" }],
+  ["path", { d: "M3 6h18", key: "d0wm0j" }],
+  ["path", { d: "M16 10a4 4 0 0 1-8 0", key: "1ltviw" }]
 ];
-const Shield = createLucideIcon("shield", __iconNode$g);
+const ShoppingBag = createLucideIcon("shopping-bag", __iconNode$g);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -23302,19 +23346,19 @@ function AlertContainer() {
 }
 function createContext2(rootComponentName, defaultContext) {
   const Context = reactExports.createContext(defaultContext);
-  const Provider2 = (props) => {
+  const Provider3 = (props) => {
     const { children, ...context } = props;
     const value = reactExports.useMemo(() => context, Object.values(context));
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Context.Provider, { value, children });
   };
-  Provider2.displayName = rootComponentName + "Provider";
+  Provider3.displayName = rootComponentName + "Provider";
   function useContext2(consumerName) {
     const context = reactExports.useContext(Context);
     if (context) return context;
     if (defaultContext !== void 0) return defaultContext;
     throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
   }
-  return [Provider2, useContext2];
+  return [Provider3, useContext2];
 }
 function createContextScope$1(scopeName, createContextScopeDeps = []) {
   let defaultContexts = [];
@@ -23322,14 +23366,14 @@ function createContextScope$1(scopeName, createContextScopeDeps = []) {
     const BaseContext = reactExports.createContext(defaultContext);
     const index2 = defaultContexts.length;
     defaultContexts = [...defaultContexts, defaultContext];
-    const Provider2 = (props) => {
+    const Provider3 = (props) => {
       var _a3;
       const { scope, children, ...context } = props;
       const Context = ((_a3 = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a3[index2]) || BaseContext;
       const value = reactExports.useMemo(() => context, Object.values(context));
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Context.Provider, { value, children });
     };
-    Provider2.displayName = rootComponentName + "Provider";
+    Provider3.displayName = rootComponentName + "Provider";
     function useContext2(consumerName, scope) {
       var _a3;
       const Context = ((_a3 = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a3[index2]) || BaseContext;
@@ -23338,7 +23382,7 @@ function createContextScope$1(scopeName, createContextScopeDeps = []) {
       if (defaultContext !== void 0) return defaultContext;
       throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
     }
-    return [Provider2, useContext2];
+    return [Provider3, useContext2];
   }
   const createScope = () => {
     const scopeContexts = defaultContexts.map((defaultContext) => {
@@ -23800,10 +23844,10 @@ function dispatchUpdate() {
   const event = new CustomEvent(CONTEXT_UPDATE);
   document.dispatchEvent(event);
 }
-function handleAndDispatchCustomEvent(name, handler, detail, { discrete }) {
+function handleAndDispatchCustomEvent(name2, handler, detail, { discrete }) {
   const target = detail.originalEvent.target;
-  const event = new CustomEvent(name, { bubbles: false, cancelable: true, detail });
-  if (handler) target.addEventListener(name, handler, { once: true });
+  const event = new CustomEvent(name2, { bubbles: false, cancelable: true, detail });
+  if (handler) target.addEventListener(name2, handler, { once: true });
   if (discrete) {
     dispatchDiscreteCustomEvent(target, event);
   } else {
@@ -24766,8 +24810,8 @@ function RemoveScrollSideCar(props) {
       }
     }
   }, []);
-  var shouldCancel = reactExports.useCallback(function(name, delta, target, should) {
-    var event = { name, delta, target, should, shadowParent: getOutermostShadowParent(target) };
+  var shouldCancel = reactExports.useCallback(function(name2, delta, target, should) {
+    var event = { name: name2, delta, target, should, shadowParent: getOutermostShadowParent(target) };
     shouldPreventQueue.current.push(event);
     setTimeout(function() {
       shouldPreventQueue.current = shouldPreventQueue.current.filter(function(e3) {
@@ -25515,6 +25559,4436 @@ function AlertDialogCancel({
     }
   );
 }
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const getDefaultsFromPostinstall = () => void 0;
+var define_process_env_default = {};
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const stringToByteArray$1 = function(str) {
+  const out = [];
+  let p2 = 0;
+  for (let i2 = 0; i2 < str.length; i2++) {
+    let c2 = str.charCodeAt(i2);
+    if (c2 < 128) {
+      out[p2++] = c2;
+    } else if (c2 < 2048) {
+      out[p2++] = c2 >> 6 | 192;
+      out[p2++] = c2 & 63 | 128;
+    } else if ((c2 & 64512) === 55296 && i2 + 1 < str.length && (str.charCodeAt(i2 + 1) & 64512) === 56320) {
+      c2 = 65536 + ((c2 & 1023) << 10) + (str.charCodeAt(++i2) & 1023);
+      out[p2++] = c2 >> 18 | 240;
+      out[p2++] = c2 >> 12 & 63 | 128;
+      out[p2++] = c2 >> 6 & 63 | 128;
+      out[p2++] = c2 & 63 | 128;
+    } else {
+      out[p2++] = c2 >> 12 | 224;
+      out[p2++] = c2 >> 6 & 63 | 128;
+      out[p2++] = c2 & 63 | 128;
+    }
+  }
+  return out;
+};
+const byteArrayToString = function(bytes) {
+  const out = [];
+  let pos = 0, c2 = 0;
+  while (pos < bytes.length) {
+    const c1 = bytes[pos++];
+    if (c1 < 128) {
+      out[c2++] = String.fromCharCode(c1);
+    } else if (c1 > 191 && c1 < 224) {
+      const c22 = bytes[pos++];
+      out[c2++] = String.fromCharCode((c1 & 31) << 6 | c22 & 63);
+    } else if (c1 > 239 && c1 < 365) {
+      const c22 = bytes[pos++];
+      const c3 = bytes[pos++];
+      const c4 = bytes[pos++];
+      const u2 = ((c1 & 7) << 18 | (c22 & 63) << 12 | (c3 & 63) << 6 | c4 & 63) - 65536;
+      out[c2++] = String.fromCharCode(55296 + (u2 >> 10));
+      out[c2++] = String.fromCharCode(56320 + (u2 & 1023));
+    } else {
+      const c22 = bytes[pos++];
+      const c3 = bytes[pos++];
+      out[c2++] = String.fromCharCode((c1 & 15) << 12 | (c22 & 63) << 6 | c3 & 63);
+    }
+  }
+  return out.join("");
+};
+const base64$1 = {
+  /**
+   * Maps bytes to characters.
+   */
+  byteToCharMap_: null,
+  /**
+   * Maps characters to bytes.
+   */
+  charToByteMap_: null,
+  /**
+   * Maps bytes to websafe characters.
+   * @private
+   */
+  byteToCharMapWebSafe_: null,
+  /**
+   * Maps websafe characters to bytes.
+   * @private
+   */
+  charToByteMapWebSafe_: null,
+  /**
+   * Our default alphabet, shared between
+   * ENCODED_VALS and ENCODED_VALS_WEBSAFE
+   */
+  ENCODED_VALS_BASE: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+  /**
+   * Our default alphabet. Value 64 (=) is special; it means "nothing."
+   */
+  get ENCODED_VALS() {
+    return this.ENCODED_VALS_BASE + "+/=";
+  },
+  /**
+   * Our websafe alphabet.
+   */
+  get ENCODED_VALS_WEBSAFE() {
+    return this.ENCODED_VALS_BASE + "-_.";
+  },
+  /**
+   * Whether this browser supports the atob and btoa functions. This extension
+   * started at Mozilla but is now implemented by many browsers. We use the
+   * ASSUME_* variables to avoid pulling in the full useragent detection library
+   * but still allowing the standard per-browser compilations.
+   *
+   */
+  HAS_NATIVE_SUPPORT: typeof atob === "function",
+  /**
+   * Base64-encode an array of bytes.
+   *
+   * @param input An array of bytes (numbers with
+   *     value in [0, 255]) to encode.
+   * @param webSafe Boolean indicating we should use the
+   *     alternative alphabet.
+   * @return The base64 encoded string.
+   */
+  encodeByteArray(input, webSafe) {
+    if (!Array.isArray(input)) {
+      throw Error("encodeByteArray takes an array as a parameter");
+    }
+    this.init_();
+    const byteToCharMap = webSafe ? this.byteToCharMapWebSafe_ : this.byteToCharMap_;
+    const output = [];
+    for (let i2 = 0; i2 < input.length; i2 += 3) {
+      const byte1 = input[i2];
+      const haveByte2 = i2 + 1 < input.length;
+      const byte2 = haveByte2 ? input[i2 + 1] : 0;
+      const haveByte3 = i2 + 2 < input.length;
+      const byte3 = haveByte3 ? input[i2 + 2] : 0;
+      const outByte1 = byte1 >> 2;
+      const outByte2 = (byte1 & 3) << 4 | byte2 >> 4;
+      let outByte3 = (byte2 & 15) << 2 | byte3 >> 6;
+      let outByte4 = byte3 & 63;
+      if (!haveByte3) {
+        outByte4 = 64;
+        if (!haveByte2) {
+          outByte3 = 64;
+        }
+      }
+      output.push(byteToCharMap[outByte1], byteToCharMap[outByte2], byteToCharMap[outByte3], byteToCharMap[outByte4]);
+    }
+    return output.join("");
+  },
+  /**
+   * Base64-encode a string.
+   *
+   * @param input A string to encode.
+   * @param webSafe If true, we should use the
+   *     alternative alphabet.
+   * @return The base64 encoded string.
+   */
+  encodeString(input, webSafe) {
+    if (this.HAS_NATIVE_SUPPORT && !webSafe) {
+      return btoa(input);
+    }
+    return this.encodeByteArray(stringToByteArray$1(input), webSafe);
+  },
+  /**
+   * Base64-decode a string.
+   *
+   * @param input to decode.
+   * @param webSafe True if we should use the
+   *     alternative alphabet.
+   * @return string representing the decoded value.
+   */
+  decodeString(input, webSafe) {
+    if (this.HAS_NATIVE_SUPPORT && !webSafe) {
+      return atob(input);
+    }
+    return byteArrayToString(this.decodeStringToByteArray(input, webSafe));
+  },
+  /**
+   * Base64-decode a string.
+   *
+   * In base-64 decoding, groups of four characters are converted into three
+   * bytes.  If the encoder did not apply padding, the input length may not
+   * be a multiple of 4.
+   *
+   * In this case, the last group will have fewer than 4 characters, and
+   * padding will be inferred.  If the group has one or two characters, it decodes
+   * to one byte.  If the group has three characters, it decodes to two bytes.
+   *
+   * @param input Input to decode.
+   * @param webSafe True if we should use the web-safe alphabet.
+   * @return bytes representing the decoded value.
+   */
+  decodeStringToByteArray(input, webSafe) {
+    this.init_();
+    const charToByteMap = webSafe ? this.charToByteMapWebSafe_ : this.charToByteMap_;
+    const output = [];
+    for (let i2 = 0; i2 < input.length; ) {
+      const byte1 = charToByteMap[input.charAt(i2++)];
+      const haveByte2 = i2 < input.length;
+      const byte2 = haveByte2 ? charToByteMap[input.charAt(i2)] : 0;
+      ++i2;
+      const haveByte3 = i2 < input.length;
+      const byte3 = haveByte3 ? charToByteMap[input.charAt(i2)] : 64;
+      ++i2;
+      const haveByte4 = i2 < input.length;
+      const byte4 = haveByte4 ? charToByteMap[input.charAt(i2)] : 64;
+      ++i2;
+      if (byte1 == null || byte2 == null || byte3 == null || byte4 == null) {
+        throw new DecodeBase64StringError();
+      }
+      const outByte1 = byte1 << 2 | byte2 >> 4;
+      output.push(outByte1);
+      if (byte3 !== 64) {
+        const outByte2 = byte2 << 4 & 240 | byte3 >> 2;
+        output.push(outByte2);
+        if (byte4 !== 64) {
+          const outByte3 = byte3 << 6 & 192 | byte4;
+          output.push(outByte3);
+        }
+      }
+    }
+    return output;
+  },
+  /**
+   * Lazy static initialization function. Called before
+   * accessing any of the static map variables.
+   * @private
+   */
+  init_() {
+    if (!this.byteToCharMap_) {
+      this.byteToCharMap_ = {};
+      this.charToByteMap_ = {};
+      this.byteToCharMapWebSafe_ = {};
+      this.charToByteMapWebSafe_ = {};
+      for (let i2 = 0; i2 < this.ENCODED_VALS.length; i2++) {
+        this.byteToCharMap_[i2] = this.ENCODED_VALS.charAt(i2);
+        this.charToByteMap_[this.byteToCharMap_[i2]] = i2;
+        this.byteToCharMapWebSafe_[i2] = this.ENCODED_VALS_WEBSAFE.charAt(i2);
+        this.charToByteMapWebSafe_[this.byteToCharMapWebSafe_[i2]] = i2;
+        if (i2 >= this.ENCODED_VALS_BASE.length) {
+          this.charToByteMap_[this.ENCODED_VALS_WEBSAFE.charAt(i2)] = i2;
+          this.charToByteMapWebSafe_[this.ENCODED_VALS.charAt(i2)] = i2;
+        }
+      }
+    }
+  }
+};
+class DecodeBase64StringError extends Error {
+  constructor() {
+    super(...arguments);
+    this.name = "DecodeBase64StringError";
+  }
+}
+const base64Encode = function(str) {
+  const utf8Bytes = stringToByteArray$1(str);
+  return base64$1.encodeByteArray(utf8Bytes, true);
+};
+const base64urlEncodeWithoutPadding = function(str) {
+  return base64Encode(str).replace(/\./g, "");
+};
+const base64Decode = function(str) {
+  try {
+    return base64$1.decodeString(str, true);
+  } catch (e3) {
+    console.error("base64Decode failed: ", e3);
+  }
+  return null;
+};
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function getGlobal() {
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
+  throw new Error("Unable to locate global object.");
+}
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const getDefaultsFromGlobal = () => getGlobal().__FIREBASE_DEFAULTS__;
+const getDefaultsFromEnvVariable = () => {
+  if (typeof process === "undefined" || typeof define_process_env_default === "undefined") {
+    return;
+  }
+  const defaultsJsonString = define_process_env_default.__FIREBASE_DEFAULTS__;
+  if (defaultsJsonString) {
+    return JSON.parse(defaultsJsonString);
+  }
+};
+const getDefaultsFromCookie = () => {
+  if (typeof document === "undefined") {
+    return;
+  }
+  let match;
+  try {
+    match = document.cookie.match(/__FIREBASE_DEFAULTS__=([^;]+)/);
+  } catch (e3) {
+    return;
+  }
+  const decoded = match && base64Decode(match[1]);
+  return decoded && JSON.parse(decoded);
+};
+const getDefaults = () => {
+  try {
+    return getDefaultsFromPostinstall() || getDefaultsFromGlobal() || getDefaultsFromEnvVariable() || getDefaultsFromCookie();
+  } catch (e3) {
+    console.info(`Unable to get __FIREBASE_DEFAULTS__ due to: ${e3}`);
+    return;
+  }
+};
+const getDefaultAppConfig = () => {
+  var _a3;
+  return (_a3 = getDefaults()) == null ? void 0 : _a3.config;
+};
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class Deferred {
+  constructor() {
+    this.reject = () => {
+    };
+    this.resolve = () => {
+    };
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+  /**
+   * Our API internals are not promisified and cannot because our callback APIs have subtle expectations around
+   * invoking promises inline, which Promises are forbidden to do. This method accepts an optional node-style callback
+   * and returns a node-style callback which will resolve or reject the Deferred's promise.
+   */
+  wrapCallback(callback) {
+    return (error, value) => {
+      if (error) {
+        this.reject(error);
+      } else {
+        this.resolve(value);
+      }
+      if (typeof callback === "function") {
+        this.promise.catch(() => {
+        });
+        if (callback.length === 1) {
+          callback(error);
+        } else {
+          callback(error, value);
+        }
+      }
+    };
+  }
+}
+function isIndexedDBAvailable() {
+  try {
+    return typeof indexedDB === "object";
+  } catch (e3) {
+    return false;
+  }
+}
+function validateIndexedDBOpenable() {
+  return new Promise((resolve, reject) => {
+    try {
+      let preExist = true;
+      const DB_CHECK_NAME = "validate-browser-context-for-indexeddb-analytics-module";
+      const request = self.indexedDB.open(DB_CHECK_NAME);
+      request.onsuccess = () => {
+        request.result.close();
+        if (!preExist) {
+          self.indexedDB.deleteDatabase(DB_CHECK_NAME);
+        }
+        resolve(true);
+      };
+      request.onupgradeneeded = () => {
+        preExist = false;
+      };
+      request.onerror = () => {
+        var _a3;
+        reject(((_a3 = request.error) == null ? void 0 : _a3.message) || "");
+      };
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+function areCookiesEnabled() {
+  if (typeof navigator === "undefined" || !navigator.cookieEnabled) {
+    return false;
+  }
+  return true;
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const ERROR_NAME = "FirebaseError";
+class FirebaseError extends Error {
+  constructor(code, message, customData) {
+    super(message);
+    this.code = code;
+    this.customData = customData;
+    this.name = ERROR_NAME;
+    Object.setPrototypeOf(this, FirebaseError.prototype);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ErrorFactory.prototype.create);
+    }
+  }
+}
+class ErrorFactory {
+  constructor(service, serviceName, errors) {
+    this.service = service;
+    this.serviceName = serviceName;
+    this.errors = errors;
+  }
+  create(code, ...data) {
+    const customData = data[0] || {};
+    const fullCode = `${this.service}/${code}`;
+    const template = this.errors[code];
+    const message = template ? replaceTemplate(template, customData) : "Error";
+    const fullMessage = `${this.serviceName}: ${message} (${fullCode}).`;
+    const error = new FirebaseError(fullCode, fullMessage, customData);
+    return error;
+  }
+}
+function replaceTemplate(template, data) {
+  return template.replace(PATTERN, (_, key) => {
+    const value = data[key];
+    return value != null ? String(value) : `<${key}?>`;
+  });
+}
+const PATTERN = /\{\$([^}]+)}/g;
+function deepEqual$3(a2, b2) {
+  if (a2 === b2) {
+    return true;
+  }
+  const aKeys = Object.keys(a2);
+  const bKeys = Object.keys(b2);
+  for (const k2 of aKeys) {
+    if (!bKeys.includes(k2)) {
+      return false;
+    }
+    const aProp = a2[k2];
+    const bProp = b2[k2];
+    if (isObject$c(aProp) && isObject$c(bProp)) {
+      if (!deepEqual$3(aProp, bProp)) {
+        return false;
+      }
+    } else if (aProp !== bProp) {
+      return false;
+    }
+  }
+  for (const k2 of bKeys) {
+    if (!aKeys.includes(k2)) {
+      return false;
+    }
+  }
+  return true;
+}
+function isObject$c(thing) {
+  return thing !== null && typeof thing === "object";
+}
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function getModularInstance(service) {
+  if (service && service._delegate) {
+    return service._delegate;
+  } else {
+    return service;
+  }
+}
+class Component {
+  /**
+   *
+   * @param name The public service name, e.g. app, auth, firestore, database
+   * @param instanceFactory Service factory responsible for creating the public interface
+   * @param type whether the service provided by the component is public or private
+   */
+  constructor(name2, instanceFactory, type) {
+    this.name = name2;
+    this.instanceFactory = instanceFactory;
+    this.type = type;
+    this.multipleInstances = false;
+    this.serviceProps = {};
+    this.instantiationMode = "LAZY";
+    this.onInstanceCreated = null;
+  }
+  setInstantiationMode(mode) {
+    this.instantiationMode = mode;
+    return this;
+  }
+  setMultipleInstances(multipleInstances) {
+    this.multipleInstances = multipleInstances;
+    return this;
+  }
+  setServiceProps(props) {
+    this.serviceProps = props;
+    return this;
+  }
+  setInstanceCreatedCallback(callback) {
+    this.onInstanceCreated = callback;
+    return this;
+  }
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DEFAULT_ENTRY_NAME$1 = "[DEFAULT]";
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+let Provider$1 = class Provider {
+  constructor(name2, container) {
+    this.name = name2;
+    this.container = container;
+    this.component = null;
+    this.instances = /* @__PURE__ */ new Map();
+    this.instancesDeferred = /* @__PURE__ */ new Map();
+    this.instancesOptions = /* @__PURE__ */ new Map();
+    this.onInitCallbacks = /* @__PURE__ */ new Map();
+  }
+  /**
+   * @param identifier A provider can provide multiple instances of a service
+   * if this.component.multipleInstances is true.
+   */
+  get(identifier) {
+    const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
+    if (!this.instancesDeferred.has(normalizedIdentifier)) {
+      const deferred = new Deferred();
+      this.instancesDeferred.set(normalizedIdentifier, deferred);
+      if (this.isInitialized(normalizedIdentifier) || this.shouldAutoInitialize()) {
+        try {
+          const instance = this.getOrInitializeService({
+            instanceIdentifier: normalizedIdentifier
+          });
+          if (instance) {
+            deferred.resolve(instance);
+          }
+        } catch (e3) {
+        }
+      }
+    }
+    return this.instancesDeferred.get(normalizedIdentifier).promise;
+  }
+  getImmediate(options) {
+    const normalizedIdentifier = this.normalizeInstanceIdentifier(options == null ? void 0 : options.identifier);
+    const optional2 = (options == null ? void 0 : options.optional) ?? false;
+    if (this.isInitialized(normalizedIdentifier) || this.shouldAutoInitialize()) {
+      try {
+        return this.getOrInitializeService({
+          instanceIdentifier: normalizedIdentifier
+        });
+      } catch (e3) {
+        if (optional2) {
+          return null;
+        } else {
+          throw e3;
+        }
+      }
+    } else {
+      if (optional2) {
+        return null;
+      } else {
+        throw Error(`Service ${this.name} is not available`);
+      }
+    }
+  }
+  getComponent() {
+    return this.component;
+  }
+  setComponent(component) {
+    if (component.name !== this.name) {
+      throw Error(`Mismatching Component ${component.name} for Provider ${this.name}.`);
+    }
+    if (this.component) {
+      throw Error(`Component for ${this.name} has already been provided`);
+    }
+    this.component = component;
+    if (!this.shouldAutoInitialize()) {
+      return;
+    }
+    if (isComponentEager(component)) {
+      try {
+        this.getOrInitializeService({ instanceIdentifier: DEFAULT_ENTRY_NAME$1 });
+      } catch (e3) {
+      }
+    }
+    for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()) {
+      const normalizedIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
+      try {
+        const instance = this.getOrInitializeService({
+          instanceIdentifier: normalizedIdentifier
+        });
+        instanceDeferred.resolve(instance);
+      } catch (e3) {
+      }
+    }
+  }
+  clearInstance(identifier = DEFAULT_ENTRY_NAME$1) {
+    this.instancesDeferred.delete(identifier);
+    this.instancesOptions.delete(identifier);
+    this.instances.delete(identifier);
+  }
+  // app.delete() will call this method on every provider to delete the services
+  // TODO: should we mark the provider as deleted?
+  async delete() {
+    const services = Array.from(this.instances.values());
+    await Promise.all([
+      ...services.filter((service) => "INTERNAL" in service).map((service) => service.INTERNAL.delete()),
+      ...services.filter((service) => "_delete" in service).map((service) => service._delete())
+    ]);
+  }
+  isComponentSet() {
+    return this.component != null;
+  }
+  isInitialized(identifier = DEFAULT_ENTRY_NAME$1) {
+    return this.instances.has(identifier);
+  }
+  getOptions(identifier = DEFAULT_ENTRY_NAME$1) {
+    return this.instancesOptions.get(identifier) || {};
+  }
+  initialize(opts = {}) {
+    const { options = {} } = opts;
+    const normalizedIdentifier = this.normalizeInstanceIdentifier(opts.instanceIdentifier);
+    if (this.isInitialized(normalizedIdentifier)) {
+      throw Error(`${this.name}(${normalizedIdentifier}) has already been initialized`);
+    }
+    if (!this.isComponentSet()) {
+      throw Error(`Component ${this.name} has not been registered yet`);
+    }
+    const instance = this.getOrInitializeService({
+      instanceIdentifier: normalizedIdentifier,
+      options
+    });
+    for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()) {
+      const normalizedDeferredIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
+      if (normalizedIdentifier === normalizedDeferredIdentifier) {
+        instanceDeferred.resolve(instance);
+      }
+    }
+    return instance;
+  }
+  /**
+   *
+   * @param callback - a function that will be invoked  after the provider has been initialized by calling provider.initialize().
+   * The function is invoked SYNCHRONOUSLY, so it should not execute any longrunning tasks in order to not block the program.
+   *
+   * @param identifier An optional instance identifier
+   * @returns a function to unregister the callback
+   */
+  onInit(callback, identifier) {
+    const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
+    const existingCallbacks = this.onInitCallbacks.get(normalizedIdentifier) ?? /* @__PURE__ */ new Set();
+    existingCallbacks.add(callback);
+    this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
+    const existingInstance = this.instances.get(normalizedIdentifier);
+    if (existingInstance) {
+      callback(existingInstance, normalizedIdentifier);
+    }
+    return () => {
+      existingCallbacks.delete(callback);
+    };
+  }
+  /**
+   * Invoke onInit callbacks synchronously
+   * @param instance the service instance`
+   */
+  invokeOnInitCallbacks(instance, identifier) {
+    const callbacks = this.onInitCallbacks.get(identifier);
+    if (!callbacks) {
+      return;
+    }
+    for (const callback of callbacks) {
+      try {
+        callback(instance, identifier);
+      } catch {
+      }
+    }
+  }
+  getOrInitializeService({ instanceIdentifier, options = {} }) {
+    let instance = this.instances.get(instanceIdentifier);
+    if (!instance && this.component) {
+      instance = this.component.instanceFactory(this.container, {
+        instanceIdentifier: normalizeIdentifierForFactory(instanceIdentifier),
+        options
+      });
+      this.instances.set(instanceIdentifier, instance);
+      this.instancesOptions.set(instanceIdentifier, options);
+      this.invokeOnInitCallbacks(instance, instanceIdentifier);
+      if (this.component.onInstanceCreated) {
+        try {
+          this.component.onInstanceCreated(this.container, instanceIdentifier, instance);
+        } catch {
+        }
+      }
+    }
+    return instance || null;
+  }
+  normalizeInstanceIdentifier(identifier = DEFAULT_ENTRY_NAME$1) {
+    if (this.component) {
+      return this.component.multipleInstances ? identifier : DEFAULT_ENTRY_NAME$1;
+    } else {
+      return identifier;
+    }
+  }
+  shouldAutoInitialize() {
+    return !!this.component && this.component.instantiationMode !== "EXPLICIT";
+  }
+};
+function normalizeIdentifierForFactory(identifier) {
+  return identifier === DEFAULT_ENTRY_NAME$1 ? void 0 : identifier;
+}
+function isComponentEager(component) {
+  return component.instantiationMode === "EAGER";
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class ComponentContainer {
+  constructor(name2) {
+    this.name = name2;
+    this.providers = /* @__PURE__ */ new Map();
+  }
+  /**
+   *
+   * @param component Component being added
+   * @param overwrite When a component with the same name has already been registered,
+   * if overwrite is true: overwrite the existing component with the new component and create a new
+   * provider with the new component. It can be useful in tests where you want to use different mocks
+   * for different tests.
+   * if overwrite is false: throw an exception
+   */
+  addComponent(component) {
+    const provider = this.getProvider(component.name);
+    if (provider.isComponentSet()) {
+      throw new Error(`Component ${component.name} has already been registered with ${this.name}`);
+    }
+    provider.setComponent(component);
+  }
+  addOrOverwriteComponent(component) {
+    const provider = this.getProvider(component.name);
+    if (provider.isComponentSet()) {
+      this.providers.delete(component.name);
+    }
+    this.addComponent(component);
+  }
+  /**
+   * getProvider provides a type safe interface where it can only be called with a field name
+   * present in NameServiceMapping interface.
+   *
+   * Firebase SDKs providing services should extend NameServiceMapping interface to register
+   * themselves.
+   */
+  getProvider(name2) {
+    if (this.providers.has(name2)) {
+      return this.providers.get(name2);
+    }
+    const provider = new Provider$1(name2, this);
+    this.providers.set(name2, provider);
+    return provider;
+  }
+  getProviders() {
+    return Array.from(this.providers.values());
+  }
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var LogLevel;
+(function(LogLevel2) {
+  LogLevel2[LogLevel2["DEBUG"] = 0] = "DEBUG";
+  LogLevel2[LogLevel2["VERBOSE"] = 1] = "VERBOSE";
+  LogLevel2[LogLevel2["INFO"] = 2] = "INFO";
+  LogLevel2[LogLevel2["WARN"] = 3] = "WARN";
+  LogLevel2[LogLevel2["ERROR"] = 4] = "ERROR";
+  LogLevel2[LogLevel2["SILENT"] = 5] = "SILENT";
+})(LogLevel || (LogLevel = {}));
+const levelStringToEnum = {
+  "debug": LogLevel.DEBUG,
+  "verbose": LogLevel.VERBOSE,
+  "info": LogLevel.INFO,
+  "warn": LogLevel.WARN,
+  "error": LogLevel.ERROR,
+  "silent": LogLevel.SILENT
+};
+const defaultLogLevel = LogLevel.INFO;
+const ConsoleMethod = {
+  [LogLevel.DEBUG]: "log",
+  [LogLevel.VERBOSE]: "log",
+  [LogLevel.INFO]: "info",
+  [LogLevel.WARN]: "warn",
+  [LogLevel.ERROR]: "error"
+};
+const defaultLogHandler = (instance, logType, ...args) => {
+  if (logType < instance.logLevel) {
+    return;
+  }
+  const now2 = (/* @__PURE__ */ new Date()).toISOString();
+  const method = ConsoleMethod[logType];
+  if (method) {
+    console[method](`[${now2}]  ${instance.name}:`, ...args);
+  } else {
+    throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
+  }
+};
+class Logger {
+  /**
+   * Gives you an instance of a Logger to capture messages according to
+   * Firebase's logging scheme.
+   *
+   * @param name The name that the logs will be associated with
+   */
+  constructor(name2) {
+    this.name = name2;
+    this._logLevel = defaultLogLevel;
+    this._logHandler = defaultLogHandler;
+    this._userLogHandler = null;
+  }
+  get logLevel() {
+    return this._logLevel;
+  }
+  set logLevel(val) {
+    if (!(val in LogLevel)) {
+      throw new TypeError(`Invalid value "${val}" assigned to \`logLevel\``);
+    }
+    this._logLevel = val;
+  }
+  // Workaround for setter/getter having to be the same type.
+  setLogLevel(val) {
+    this._logLevel = typeof val === "string" ? levelStringToEnum[val] : val;
+  }
+  get logHandler() {
+    return this._logHandler;
+  }
+  set logHandler(val) {
+    if (typeof val !== "function") {
+      throw new TypeError("Value assigned to `logHandler` must be a function");
+    }
+    this._logHandler = val;
+  }
+  get userLogHandler() {
+    return this._userLogHandler;
+  }
+  set userLogHandler(val) {
+    this._userLogHandler = val;
+  }
+  /**
+   * The functions below are all based on the `console` interface
+   */
+  debug(...args) {
+    this._userLogHandler && this._userLogHandler(this, LogLevel.DEBUG, ...args);
+    this._logHandler(this, LogLevel.DEBUG, ...args);
+  }
+  log(...args) {
+    this._userLogHandler && this._userLogHandler(this, LogLevel.VERBOSE, ...args);
+    this._logHandler(this, LogLevel.VERBOSE, ...args);
+  }
+  info(...args) {
+    this._userLogHandler && this._userLogHandler(this, LogLevel.INFO, ...args);
+    this._logHandler(this, LogLevel.INFO, ...args);
+  }
+  warn(...args) {
+    this._userLogHandler && this._userLogHandler(this, LogLevel.WARN, ...args);
+    this._logHandler(this, LogLevel.WARN, ...args);
+  }
+  error(...args) {
+    this._userLogHandler && this._userLogHandler(this, LogLevel.ERROR, ...args);
+    this._logHandler(this, LogLevel.ERROR, ...args);
+  }
+}
+const instanceOfAny = (object2, constructors) => constructors.some((c2) => object2 instanceof c2);
+let idbProxyableTypes;
+let cursorAdvanceMethods;
+function getIdbProxyableTypes() {
+  return idbProxyableTypes || (idbProxyableTypes = [
+    IDBDatabase,
+    IDBObjectStore,
+    IDBIndex,
+    IDBCursor,
+    IDBTransaction
+  ]);
+}
+function getCursorAdvanceMethods() {
+  return cursorAdvanceMethods || (cursorAdvanceMethods = [
+    IDBCursor.prototype.advance,
+    IDBCursor.prototype.continue,
+    IDBCursor.prototype.continuePrimaryKey
+  ]);
+}
+const cursorRequestMap = /* @__PURE__ */ new WeakMap();
+const transactionDoneMap = /* @__PURE__ */ new WeakMap();
+const transactionStoreNamesMap = /* @__PURE__ */ new WeakMap();
+const transformCache = /* @__PURE__ */ new WeakMap();
+const reverseTransformCache = /* @__PURE__ */ new WeakMap();
+function promisifyRequest(request) {
+  const promise = new Promise((resolve, reject) => {
+    const unlisten = () => {
+      request.removeEventListener("success", success);
+      request.removeEventListener("error", error);
+    };
+    const success = () => {
+      resolve(wrap(request.result));
+      unlisten();
+    };
+    const error = () => {
+      reject(request.error);
+      unlisten();
+    };
+    request.addEventListener("success", success);
+    request.addEventListener("error", error);
+  });
+  promise.then((value) => {
+    if (value instanceof IDBCursor) {
+      cursorRequestMap.set(value, request);
+    }
+  }).catch(() => {
+  });
+  reverseTransformCache.set(promise, request);
+  return promise;
+}
+function cacheDonePromiseForTransaction(tx) {
+  if (transactionDoneMap.has(tx))
+    return;
+  const done = new Promise((resolve, reject) => {
+    const unlisten = () => {
+      tx.removeEventListener("complete", complete);
+      tx.removeEventListener("error", error);
+      tx.removeEventListener("abort", error);
+    };
+    const complete = () => {
+      resolve();
+      unlisten();
+    };
+    const error = () => {
+      reject(tx.error || new DOMException("AbortError", "AbortError"));
+      unlisten();
+    };
+    tx.addEventListener("complete", complete);
+    tx.addEventListener("error", error);
+    tx.addEventListener("abort", error);
+  });
+  transactionDoneMap.set(tx, done);
+}
+let idbProxyTraps = {
+  get(target, prop, receiver) {
+    if (target instanceof IDBTransaction) {
+      if (prop === "done")
+        return transactionDoneMap.get(target);
+      if (prop === "objectStoreNames") {
+        return target.objectStoreNames || transactionStoreNamesMap.get(target);
+      }
+      if (prop === "store") {
+        return receiver.objectStoreNames[1] ? void 0 : receiver.objectStore(receiver.objectStoreNames[0]);
+      }
+    }
+    return wrap(target[prop]);
+  },
+  set(target, prop, value) {
+    target[prop] = value;
+    return true;
+  },
+  has(target, prop) {
+    if (target instanceof IDBTransaction && (prop === "done" || prop === "store")) {
+      return true;
+    }
+    return prop in target;
+  }
+};
+function replaceTraps(callback) {
+  idbProxyTraps = callback(idbProxyTraps);
+}
+function wrapFunction(func) {
+  if (func === IDBDatabase.prototype.transaction && !("objectStoreNames" in IDBTransaction.prototype)) {
+    return function(storeNames, ...args) {
+      const tx = func.call(unwrap(this), storeNames, ...args);
+      transactionStoreNamesMap.set(tx, storeNames.sort ? storeNames.sort() : [storeNames]);
+      return wrap(tx);
+    };
+  }
+  if (getCursorAdvanceMethods().includes(func)) {
+    return function(...args) {
+      func.apply(unwrap(this), args);
+      return wrap(cursorRequestMap.get(this));
+    };
+  }
+  return function(...args) {
+    return wrap(func.apply(unwrap(this), args));
+  };
+}
+function transformCachableValue(value) {
+  if (typeof value === "function")
+    return wrapFunction(value);
+  if (value instanceof IDBTransaction)
+    cacheDonePromiseForTransaction(value);
+  if (instanceOfAny(value, getIdbProxyableTypes()))
+    return new Proxy(value, idbProxyTraps);
+  return value;
+}
+function wrap(value) {
+  if (value instanceof IDBRequest)
+    return promisifyRequest(value);
+  if (transformCache.has(value))
+    return transformCache.get(value);
+  const newValue = transformCachableValue(value);
+  if (newValue !== value) {
+    transformCache.set(value, newValue);
+    reverseTransformCache.set(newValue, value);
+  }
+  return newValue;
+}
+const unwrap = (value) => reverseTransformCache.get(value);
+function openDB(name2, version2, { blocked, upgrade, blocking, terminated } = {}) {
+  const request = indexedDB.open(name2, version2);
+  const openPromise = wrap(request);
+  if (upgrade) {
+    request.addEventListener("upgradeneeded", (event) => {
+      upgrade(wrap(request.result), event.oldVersion, event.newVersion, wrap(request.transaction), event);
+    });
+  }
+  if (blocked) {
+    request.addEventListener("blocked", (event) => blocked(
+      // Casting due to https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1405
+      event.oldVersion,
+      event.newVersion,
+      event
+    ));
+  }
+  openPromise.then((db) => {
+    if (terminated)
+      db.addEventListener("close", () => terminated());
+    if (blocking) {
+      db.addEventListener("versionchange", (event) => blocking(event.oldVersion, event.newVersion, event));
+    }
+  }).catch(() => {
+  });
+  return openPromise;
+}
+function deleteDB(name2, { blocked } = {}) {
+  const request = indexedDB.deleteDatabase(name2);
+  if (blocked) {
+    request.addEventListener("blocked", (event) => blocked(
+      // Casting due to https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1405
+      event.oldVersion,
+      event
+    ));
+  }
+  return wrap(request).then(() => void 0);
+}
+const readMethods = ["get", "getKey", "getAll", "getAllKeys", "count"];
+const writeMethods = ["put", "add", "delete", "clear"];
+const cachedMethods = /* @__PURE__ */ new Map();
+function getMethod(target, prop) {
+  if (!(target instanceof IDBDatabase && !(prop in target) && typeof prop === "string")) {
+    return;
+  }
+  if (cachedMethods.get(prop))
+    return cachedMethods.get(prop);
+  const targetFuncName = prop.replace(/FromIndex$/, "");
+  const useIndex = prop !== targetFuncName;
+  const isWrite = writeMethods.includes(targetFuncName);
+  if (
+    // Bail if the target doesn't exist on the target. Eg, getAll isn't in Edge.
+    !(targetFuncName in (useIndex ? IDBIndex : IDBObjectStore).prototype) || !(isWrite || readMethods.includes(targetFuncName))
+  ) {
+    return;
+  }
+  const method = async function(storeName, ...args) {
+    const tx = this.transaction(storeName, isWrite ? "readwrite" : "readonly");
+    let target2 = tx.store;
+    if (useIndex)
+      target2 = target2.index(args.shift());
+    return (await Promise.all([
+      target2[targetFuncName](...args),
+      isWrite && tx.done
+    ]))[0];
+  };
+  cachedMethods.set(prop, method);
+  return method;
+}
+replaceTraps((oldTraps) => ({
+  ...oldTraps,
+  get: (target, prop, receiver) => getMethod(target, prop) || oldTraps.get(target, prop, receiver),
+  has: (target, prop) => !!getMethod(target, prop) || oldTraps.has(target, prop)
+}));
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class PlatformLoggerServiceImpl {
+  constructor(container) {
+    this.container = container;
+  }
+  // In initial implementation, this will be called by installations on
+  // auth token refresh, and installations will send this string.
+  getPlatformInfoString() {
+    const providers = this.container.getProviders();
+    return providers.map((provider) => {
+      if (isVersionServiceProvider(provider)) {
+        const service = provider.getImmediate();
+        return `${service.library}/${service.version}`;
+      } else {
+        return null;
+      }
+    }).filter((logString) => logString).join(" ");
+  }
+}
+function isVersionServiceProvider(provider) {
+  const component = provider.getComponent();
+  return (component == null ? void 0 : component.type) === "VERSION";
+}
+const name$q = "@firebase/app";
+const version$1$1 = "0.15.1";
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const logger = new Logger("@firebase/app");
+const name$p = "@firebase/app-compat";
+const name$o = "@firebase/analytics-compat";
+const name$n = "@firebase/analytics";
+const name$m = "@firebase/app-check-compat";
+const name$l = "@firebase/app-check";
+const name$k = "@firebase/auth";
+const name$j = "@firebase/auth-compat";
+const name$i = "@firebase/database";
+const name$h = "@firebase/data-connect";
+const name$g = "@firebase/database-compat";
+const name$f = "@firebase/functions";
+const name$e = "@firebase/functions-compat";
+const name$d = "@firebase/installations";
+const name$c = "@firebase/installations-compat";
+const name$b = "@firebase/messaging";
+const name$a = "@firebase/messaging-compat";
+const name$9 = "@firebase/performance";
+const name$8 = "@firebase/performance-compat";
+const name$7 = "@firebase/remote-config";
+const name$6 = "@firebase/remote-config-compat";
+const name$5 = "@firebase/storage";
+const name$4 = "@firebase/storage-compat";
+const name$3 = "@firebase/firestore";
+const name$2$1 = "@firebase/ai";
+const name$1$1 = "@firebase/firestore-compat";
+const name$r = "firebase";
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DEFAULT_ENTRY_NAME = "[DEFAULT]";
+const PLATFORM_LOG_STRING = {
+  [name$q]: "fire-core",
+  [name$p]: "fire-core-compat",
+  [name$n]: "fire-analytics",
+  [name$o]: "fire-analytics-compat",
+  [name$l]: "fire-app-check",
+  [name$m]: "fire-app-check-compat",
+  [name$k]: "fire-auth",
+  [name$j]: "fire-auth-compat",
+  [name$i]: "fire-rtdb",
+  [name$h]: "fire-data-connect",
+  [name$g]: "fire-rtdb-compat",
+  [name$f]: "fire-fn",
+  [name$e]: "fire-fn-compat",
+  [name$d]: "fire-iid",
+  [name$c]: "fire-iid-compat",
+  [name$b]: "fire-fcm",
+  [name$a]: "fire-fcm-compat",
+  [name$9]: "fire-perf",
+  [name$8]: "fire-perf-compat",
+  [name$7]: "fire-rc",
+  [name$6]: "fire-rc-compat",
+  [name$5]: "fire-gcs",
+  [name$4]: "fire-gcs-compat",
+  [name$3]: "fire-fst",
+  [name$1$1]: "fire-fst-compat",
+  [name$2$1]: "fire-vertex",
+  "fire-js": "fire-js",
+  // Platform identifier for JS SDK.
+  [name$r]: "fire-js-all"
+};
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const _apps = /* @__PURE__ */ new Map();
+const _serverApps = /* @__PURE__ */ new Map();
+const _components = /* @__PURE__ */ new Map();
+function _addComponent(app, component) {
+  try {
+    app.container.addComponent(component);
+  } catch (e3) {
+    logger.debug(`Component ${component.name} failed to register with FirebaseApp ${app.name}`, e3);
+  }
+}
+function _registerComponent(component) {
+  const componentName = component.name;
+  if (_components.has(componentName)) {
+    logger.debug(`There were multiple attempts to register component ${componentName}.`);
+    return false;
+  }
+  _components.set(componentName, component);
+  for (const app of _apps.values()) {
+    _addComponent(app, component);
+  }
+  for (const serverApp of _serverApps.values()) {
+    _addComponent(serverApp, component);
+  }
+  return true;
+}
+function _getProvider(app, name2) {
+  const heartbeatController = app.container.getProvider("heartbeat").getImmediate({ optional: true });
+  if (heartbeatController) {
+    void heartbeatController.triggerHeartbeat();
+  }
+  return app.container.getProvider(name2);
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const ERRORS = {
+  [
+    "no-app"
+    /* AppError.NO_APP */
+  ]: "No Firebase App '{$appName}' has been created - call initializeApp() first",
+  [
+    "bad-app-name"
+    /* AppError.BAD_APP_NAME */
+  ]: "Illegal App name: '{$appName}'",
+  [
+    "duplicate-app"
+    /* AppError.DUPLICATE_APP */
+  ]: "Firebase App named '{$appName}' already exists with different options or config",
+  [
+    "app-deleted"
+    /* AppError.APP_DELETED */
+  ]: "Firebase App named '{$appName}' already deleted",
+  [
+    "server-app-deleted"
+    /* AppError.SERVER_APP_DELETED */
+  ]: "Firebase Server App has been deleted",
+  [
+    "no-options"
+    /* AppError.NO_OPTIONS */
+  ]: "Need to provide options, when not being deployed to hosting via source.",
+  [
+    "invalid-app-argument"
+    /* AppError.INVALID_APP_ARGUMENT */
+  ]: "firebase.{$appName}() takes either no argument or a Firebase App instance.",
+  [
+    "invalid-log-argument"
+    /* AppError.INVALID_LOG_ARGUMENT */
+  ]: "First argument to `onLog` must be null or a function.",
+  [
+    "idb-open"
+    /* AppError.IDB_OPEN */
+  ]: "Error thrown when opening IndexedDB. Original error: {$originalErrorMessage}.",
+  [
+    "idb-get"
+    /* AppError.IDB_GET */
+  ]: "Error thrown when reading from IndexedDB. Original error: {$originalErrorMessage}.",
+  [
+    "idb-set"
+    /* AppError.IDB_WRITE */
+  ]: "Error thrown when writing to IndexedDB. Original error: {$originalErrorMessage}.",
+  [
+    "idb-delete"
+    /* AppError.IDB_DELETE */
+  ]: "Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}.",
+  [
+    "finalization-registry-not-supported"
+    /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */
+  ]: "FirebaseServerApp deleteOnDeref field defined but the JS runtime does not support FinalizationRegistry.",
+  [
+    "invalid-server-app-environment"
+    /* AppError.INVALID_SERVER_APP_ENVIRONMENT */
+  ]: "FirebaseServerApp is not for use in browser environments."
+};
+const ERROR_FACTORY$2 = new ErrorFactory("app", "Firebase", ERRORS);
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class FirebaseAppImpl {
+  constructor(options, config2, container) {
+    this._isDeleted = false;
+    this._options = { ...options };
+    this._config = { ...config2 };
+    this._name = config2.name;
+    this._automaticDataCollectionEnabled = config2.automaticDataCollectionEnabled;
+    this._container = container;
+    this.container.addComponent(new Component(
+      "app",
+      () => this,
+      "PUBLIC"
+      /* ComponentType.PUBLIC */
+    ));
+  }
+  get automaticDataCollectionEnabled() {
+    this.checkDestroyed();
+    return this._automaticDataCollectionEnabled;
+  }
+  set automaticDataCollectionEnabled(val) {
+    this.checkDestroyed();
+    this._automaticDataCollectionEnabled = val;
+  }
+  get name() {
+    this.checkDestroyed();
+    return this._name;
+  }
+  get options() {
+    this.checkDestroyed();
+    return this._options;
+  }
+  get config() {
+    this.checkDestroyed();
+    return this._config;
+  }
+  get container() {
+    return this._container;
+  }
+  get isDeleted() {
+    return this._isDeleted;
+  }
+  set isDeleted(val) {
+    this._isDeleted = val;
+  }
+  /**
+   * This function will throw an Error if the App has already been deleted -
+   * use before performing API actions on the App.
+   */
+  checkDestroyed() {
+    if (this.isDeleted) {
+      throw ERROR_FACTORY$2.create("app-deleted", { appName: this._name });
+    }
+  }
+}
+function initializeApp(_options, rawConfig = {}) {
+  let options = _options;
+  if (typeof rawConfig !== "object") {
+    const name3 = rawConfig;
+    rawConfig = { name: name3 };
+  }
+  const config2 = {
+    name: DEFAULT_ENTRY_NAME,
+    automaticDataCollectionEnabled: true,
+    ...rawConfig
+  };
+  const name2 = config2.name;
+  if (typeof name2 !== "string" || !name2) {
+    throw ERROR_FACTORY$2.create("bad-app-name", {
+      appName: String(name2)
+    });
+  }
+  options || (options = getDefaultAppConfig());
+  if (!options) {
+    throw ERROR_FACTORY$2.create(
+      "no-options"
+      /* AppError.NO_OPTIONS */
+    );
+  }
+  const existingApp = _apps.get(name2);
+  if (existingApp) {
+    if (deepEqual$3(options, existingApp.options) && deepEqual$3(config2, existingApp.config)) {
+      return existingApp;
+    } else {
+      throw ERROR_FACTORY$2.create("duplicate-app", { appName: name2 });
+    }
+  }
+  const container = new ComponentContainer(name2);
+  for (const component of _components.values()) {
+    container.addComponent(component);
+  }
+  const newApp = new FirebaseAppImpl(options, config2, container);
+  _apps.set(name2, newApp);
+  return newApp;
+}
+function getApp(name2 = DEFAULT_ENTRY_NAME) {
+  const app = _apps.get(name2);
+  if (!app && name2 === DEFAULT_ENTRY_NAME && getDefaultAppConfig()) {
+    return initializeApp();
+  }
+  if (!app) {
+    throw ERROR_FACTORY$2.create("no-app", { appName: name2 });
+  }
+  return app;
+}
+function getApps() {
+  return Array.from(_apps.values());
+}
+function registerVersion(libraryKeyOrName, version2, variant) {
+  let library = PLATFORM_LOG_STRING[libraryKeyOrName] ?? libraryKeyOrName;
+  if (variant) {
+    library += `-${variant}`;
+  }
+  const libraryMismatch = library.match(/\s|\//);
+  const versionMismatch = version2.match(/\s|\//);
+  if (libraryMismatch || versionMismatch) {
+    const warning2 = [
+      `Unable to register library "${library}" with version "${version2}":`
+    ];
+    if (libraryMismatch) {
+      warning2.push(`library name "${library}" contains illegal characters (whitespace or "/")`);
+    }
+    if (libraryMismatch && versionMismatch) {
+      warning2.push("and");
+    }
+    if (versionMismatch) {
+      warning2.push(`version name "${version2}" contains illegal characters (whitespace or "/")`);
+    }
+    logger.warn(warning2.join(" "));
+    return;
+  }
+  _registerComponent(new Component(
+    `${library}-version`,
+    () => ({ library, version: version2 }),
+    "VERSION"
+    /* ComponentType.VERSION */
+  ));
+}
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DB_NAME = "firebase-heartbeat-database";
+const DB_VERSION = 1;
+const STORE_NAME = "firebase-heartbeat-store";
+let dbPromise$2 = null;
+function getDbPromise$2() {
+  if (!dbPromise$2) {
+    dbPromise$2 = openDB(DB_NAME, DB_VERSION, {
+      upgrade: (db, oldVersion) => {
+        switch (oldVersion) {
+          case 0:
+            try {
+              db.createObjectStore(STORE_NAME);
+            } catch (e3) {
+              console.warn(e3);
+            }
+        }
+      }
+    }).catch((e3) => {
+      throw ERROR_FACTORY$2.create("idb-open", {
+        originalErrorMessage: e3.message
+      });
+    });
+  }
+  return dbPromise$2;
+}
+async function readHeartbeatsFromIndexedDB(app) {
+  try {
+    const db = await getDbPromise$2();
+    const tx = db.transaction(STORE_NAME);
+    const result = await tx.objectStore(STORE_NAME).get(computeKey(app));
+    await tx.done;
+    return result;
+  } catch (e3) {
+    if (e3 instanceof FirebaseError) {
+      logger.warn(e3.message);
+    } else {
+      const idbGetError = ERROR_FACTORY$2.create("idb-get", {
+        originalErrorMessage: e3 == null ? void 0 : e3.message
+      });
+      logger.warn(idbGetError.message);
+    }
+  }
+}
+async function writeHeartbeatsToIndexedDB(app, heartbeatObject) {
+  try {
+    const db = await getDbPromise$2();
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const objectStore = tx.objectStore(STORE_NAME);
+    await objectStore.put(heartbeatObject, computeKey(app));
+    await tx.done;
+  } catch (e3) {
+    if (e3 instanceof FirebaseError) {
+      logger.warn(e3.message);
+    } else {
+      const idbGetError = ERROR_FACTORY$2.create("idb-set", {
+        originalErrorMessage: e3 == null ? void 0 : e3.message
+      });
+      logger.warn(idbGetError.message);
+    }
+  }
+}
+function computeKey(app) {
+  return `${app.name}!${app.options.appId}`;
+}
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const MAX_HEADER_BYTES = 1024;
+const MAX_NUM_STORED_HEARTBEATS = 30;
+class HeartbeatServiceImpl {
+  constructor(container) {
+    this.container = container;
+    this._heartbeatsCache = null;
+    const app = this.container.getProvider("app").getImmediate();
+    this._storage = new HeartbeatStorageImpl(app);
+    this._heartbeatsCachePromise = this._storage.read().then((result) => {
+      this._heartbeatsCache = result;
+      return result;
+    });
+  }
+  /**
+   * Called to report a heartbeat. The function will generate
+   * a HeartbeatsByUserAgent object, update heartbeatsCache, and persist it
+   * to IndexedDB.
+   * Note that we only store one heartbeat per day. So if a heartbeat for today is
+   * already logged, subsequent calls to this function in the same day will be ignored.
+   */
+  async triggerHeartbeat() {
+    var _a3, _b2;
+    try {
+      const platformLogger = this.container.getProvider("platform-logger").getImmediate();
+      const agent = platformLogger.getPlatformInfoString();
+      const date2 = getUTCDateString();
+      if (((_a3 = this._heartbeatsCache) == null ? void 0 : _a3.heartbeats) == null) {
+        this._heartbeatsCache = await this._heartbeatsCachePromise;
+        if (((_b2 = this._heartbeatsCache) == null ? void 0 : _b2.heartbeats) == null) {
+          return;
+        }
+      }
+      if (this._heartbeatsCache.lastSentHeartbeatDate === date2 || this._heartbeatsCache.heartbeats.some((singleDateHeartbeat) => singleDateHeartbeat.date === date2)) {
+        return;
+      } else {
+        this._heartbeatsCache.heartbeats.push({ date: date2, agent });
+        if (this._heartbeatsCache.heartbeats.length > MAX_NUM_STORED_HEARTBEATS) {
+          const earliestHeartbeatIdx = getEarliestHeartbeatIdx(this._heartbeatsCache.heartbeats);
+          this._heartbeatsCache.heartbeats.splice(earliestHeartbeatIdx, 1);
+        }
+      }
+      return this._storage.overwrite(this._heartbeatsCache);
+    } catch (e3) {
+      logger.warn(e3);
+    }
+  }
+  /**
+   * Returns a base64 encoded string which can be attached to the heartbeat-specific header directly.
+   * It also clears all heartbeats from memory as well as in IndexedDB.
+   *
+   * NOTE: Consuming product SDKs should not send the header if this method
+   * returns an empty string.
+   */
+  async getHeartbeatsHeader() {
+    var _a3;
+    try {
+      if (this._heartbeatsCache === null) {
+        await this._heartbeatsCachePromise;
+      }
+      if (((_a3 = this._heartbeatsCache) == null ? void 0 : _a3.heartbeats) == null || this._heartbeatsCache.heartbeats.length === 0) {
+        return "";
+      }
+      const date2 = getUTCDateString();
+      const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader(this._heartbeatsCache.heartbeats);
+      const headerString = base64urlEncodeWithoutPadding(JSON.stringify({ version: 2, heartbeats: heartbeatsToSend }));
+      this._heartbeatsCache.lastSentHeartbeatDate = date2;
+      if (unsentEntries.length > 0) {
+        this._heartbeatsCache.heartbeats = unsentEntries;
+        await this._storage.overwrite(this._heartbeatsCache);
+      } else {
+        this._heartbeatsCache.heartbeats = [];
+        void this._storage.overwrite(this._heartbeatsCache);
+      }
+      return headerString;
+    } catch (e3) {
+      logger.warn(e3);
+      return "";
+    }
+  }
+}
+function getUTCDateString() {
+  const today = /* @__PURE__ */ new Date();
+  return today.toISOString().substring(0, 10);
+}
+function extractHeartbeatsForHeader(heartbeatsCache, maxSize = MAX_HEADER_BYTES) {
+  const heartbeatsToSend = [];
+  let unsentEntries = heartbeatsCache.slice();
+  for (const singleDateHeartbeat of heartbeatsCache) {
+    const heartbeatEntry = heartbeatsToSend.find((hb) => hb.agent === singleDateHeartbeat.agent);
+    if (!heartbeatEntry) {
+      heartbeatsToSend.push({
+        agent: singleDateHeartbeat.agent,
+        dates: [singleDateHeartbeat.date]
+      });
+      if (countBytes(heartbeatsToSend) > maxSize) {
+        heartbeatsToSend.pop();
+        break;
+      }
+    } else {
+      heartbeatEntry.dates.push(singleDateHeartbeat.date);
+      if (countBytes(heartbeatsToSend) > maxSize) {
+        heartbeatEntry.dates.pop();
+        break;
+      }
+    }
+    unsentEntries = unsentEntries.slice(1);
+  }
+  return {
+    heartbeatsToSend,
+    unsentEntries
+  };
+}
+class HeartbeatStorageImpl {
+  constructor(app) {
+    this.app = app;
+    this._canUseIndexedDBPromise = this.runIndexedDBEnvironmentCheck();
+  }
+  async runIndexedDBEnvironmentCheck() {
+    if (!isIndexedDBAvailable()) {
+      return false;
+    } else {
+      return validateIndexedDBOpenable().then(() => true).catch(() => false);
+    }
+  }
+  /**
+   * Read all heartbeats.
+   */
+  async read() {
+    const canUseIndexedDB = await this._canUseIndexedDBPromise;
+    if (!canUseIndexedDB) {
+      return { heartbeats: [] };
+    } else {
+      const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
+      if (idbHeartbeatObject == null ? void 0 : idbHeartbeatObject.heartbeats) {
+        return idbHeartbeatObject;
+      } else {
+        return { heartbeats: [] };
+      }
+    }
+  }
+  // overwrite the storage with the provided heartbeats
+  async overwrite(heartbeatsObject) {
+    const canUseIndexedDB = await this._canUseIndexedDBPromise;
+    if (!canUseIndexedDB) {
+      return;
+    } else {
+      const existingHeartbeatsObject = await this.read();
+      return writeHeartbeatsToIndexedDB(this.app, {
+        lastSentHeartbeatDate: heartbeatsObject.lastSentHeartbeatDate ?? existingHeartbeatsObject.lastSentHeartbeatDate,
+        heartbeats: heartbeatsObject.heartbeats
+      });
+    }
+  }
+  // add heartbeats
+  async add(heartbeatsObject) {
+    const canUseIndexedDB = await this._canUseIndexedDBPromise;
+    if (!canUseIndexedDB) {
+      return;
+    } else {
+      const existingHeartbeatsObject = await this.read();
+      return writeHeartbeatsToIndexedDB(this.app, {
+        lastSentHeartbeatDate: heartbeatsObject.lastSentHeartbeatDate ?? existingHeartbeatsObject.lastSentHeartbeatDate,
+        heartbeats: [
+          ...existingHeartbeatsObject.heartbeats,
+          ...heartbeatsObject.heartbeats
+        ]
+      });
+    }
+  }
+}
+function countBytes(heartbeatsCache) {
+  return base64urlEncodeWithoutPadding(
+    // heartbeatsCache wrapper properties
+    JSON.stringify({ version: 2, heartbeats: heartbeatsCache })
+  ).length;
+}
+function getEarliestHeartbeatIdx(heartbeats) {
+  if (heartbeats.length === 0) {
+    return -1;
+  }
+  let earliestHeartbeatIdx = 0;
+  let earliestHeartbeatDate = heartbeats[0].date;
+  for (let i2 = 1; i2 < heartbeats.length; i2++) {
+    if (heartbeats[i2].date < earliestHeartbeatDate) {
+      earliestHeartbeatDate = heartbeats[i2].date;
+      earliestHeartbeatIdx = i2;
+    }
+  }
+  return earliestHeartbeatIdx;
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function registerCoreComponents(variant) {
+  _registerComponent(new Component(
+    "platform-logger",
+    (container) => new PlatformLoggerServiceImpl(container),
+    "PRIVATE"
+    /* ComponentType.PRIVATE */
+  ));
+  _registerComponent(new Component(
+    "heartbeat",
+    (container) => new HeartbeatServiceImpl(container),
+    "PRIVATE"
+    /* ComponentType.PRIVATE */
+  ));
+  registerVersion(name$q, version$1$1, variant);
+  registerVersion(name$q, version$1$1, "esm2020");
+  registerVersion("fire-js", "");
+}
+registerCoreComponents("");
+var name$2 = "firebase";
+var version$3 = "12.16.0";
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+registerVersion(name$2, version$3, "app");
+const name$1 = "@firebase/installations";
+const version$2 = "0.6.22";
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const PENDING_TIMEOUT_MS = 1e4;
+const PACKAGE_VERSION = `w:${version$2}`;
+const INTERNAL_AUTH_VERSION = "FIS_v2";
+const INSTALLATIONS_API_URL = "https://firebaseinstallations.googleapis.com/v1";
+const TOKEN_EXPIRATION_BUFFER = 60 * 60 * 1e3;
+const SERVICE = "installations";
+const SERVICE_NAME = "Installations";
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const ERROR_DESCRIPTION_MAP = {
+  [
+    "missing-app-config-values"
+    /* ErrorCode.MISSING_APP_CONFIG_VALUES */
+  ]: 'Missing App configuration value: "{$valueName}"',
+  [
+    "not-registered"
+    /* ErrorCode.NOT_REGISTERED */
+  ]: "Firebase Installation is not registered.",
+  [
+    "installation-not-found"
+    /* ErrorCode.INSTALLATION_NOT_FOUND */
+  ]: "Firebase Installation not found.",
+  [
+    "request-failed"
+    /* ErrorCode.REQUEST_FAILED */
+  ]: '{$requestName} request failed with error "{$serverCode} {$serverStatus}: {$serverMessage}"',
+  [
+    "app-offline"
+    /* ErrorCode.APP_OFFLINE */
+  ]: "Could not process request. Application offline.",
+  [
+    "delete-pending-registration"
+    /* ErrorCode.DELETE_PENDING_REGISTRATION */
+  ]: "Can't delete installation while there is a pending registration request."
+};
+const ERROR_FACTORY$1 = new ErrorFactory(SERVICE, SERVICE_NAME, ERROR_DESCRIPTION_MAP);
+function isServerError(error) {
+  return error instanceof FirebaseError && error.code.includes(
+    "request-failed"
+    /* ErrorCode.REQUEST_FAILED */
+  );
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function getInstallationsEndpoint({ projectId }) {
+  return `${INSTALLATIONS_API_URL}/projects/${projectId}/installations`;
+}
+function extractAuthTokenInfoFromResponse(response) {
+  return {
+    token: response.token,
+    requestStatus: 2,
+    expiresIn: getExpiresInFromResponseExpiresIn(response.expiresIn),
+    creationTime: Date.now()
+  };
+}
+async function getErrorFromResponse(requestName, response) {
+  const responseJson = await response.json();
+  const errorData = responseJson.error;
+  return ERROR_FACTORY$1.create("request-failed", {
+    requestName,
+    serverCode: errorData.code,
+    serverMessage: errorData.message,
+    serverStatus: errorData.status
+  });
+}
+function getHeaders$1({ apiKey }) {
+  return new Headers({
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "x-goog-api-key": apiKey
+  });
+}
+function getHeadersWithAuth(appConfig, { refreshToken }) {
+  const headers = getHeaders$1(appConfig);
+  headers.append("Authorization", getAuthorizationHeader(refreshToken));
+  return headers;
+}
+async function retryIfServerError(fn) {
+  const result = await fn();
+  if (result.status >= 500 && result.status < 600) {
+    return fn();
+  }
+  return result;
+}
+function getExpiresInFromResponseExpiresIn(responseExpiresIn) {
+  return Number(responseExpiresIn.replace("s", "000"));
+}
+function getAuthorizationHeader(refreshToken) {
+  return `${INTERNAL_AUTH_VERSION} ${refreshToken}`;
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function createInstallationRequest({ appConfig, heartbeatServiceProvider }, { fid }) {
+  const endpoint = getInstallationsEndpoint(appConfig);
+  const headers = getHeaders$1(appConfig);
+  const heartbeatService = heartbeatServiceProvider.getImmediate({
+    optional: true
+  });
+  if (heartbeatService) {
+    const heartbeatsHeader = await heartbeatService.getHeartbeatsHeader();
+    if (heartbeatsHeader) {
+      headers.append("x-firebase-client", heartbeatsHeader);
+    }
+  }
+  const body = {
+    fid,
+    authVersion: INTERNAL_AUTH_VERSION,
+    appId: appConfig.appId,
+    sdkVersion: PACKAGE_VERSION
+  };
+  const request = {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body)
+  };
+  const response = await retryIfServerError(() => fetch(endpoint, request));
+  if (response.ok) {
+    const responseValue = await response.json();
+    const registeredInstallationEntry = {
+      fid: responseValue.fid || fid,
+      registrationStatus: 2,
+      refreshToken: responseValue.refreshToken,
+      authToken: extractAuthTokenInfoFromResponse(responseValue.authToken)
+    };
+    return registeredInstallationEntry;
+  } else {
+    throw await getErrorFromResponse("Create Installation", response);
+  }
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function bufferToBase64UrlSafe(array2) {
+  const b64 = btoa(String.fromCharCode(...array2));
+  return b64.replace(/\+/g, "-").replace(/\//g, "_");
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const VALID_FID_PATTERN = /^[cdef][\w-]{21}$/;
+const INVALID_FID = "";
+function generateFid() {
+  try {
+    const fidByteArray = new Uint8Array(17);
+    const crypto = self.crypto || self.msCrypto;
+    crypto.getRandomValues(fidByteArray);
+    fidByteArray[0] = 112 + fidByteArray[0] % 16;
+    const fid = encode$1(fidByteArray);
+    return VALID_FID_PATTERN.test(fid) ? fid : INVALID_FID;
+  } catch {
+    return INVALID_FID;
+  }
+}
+function encode$1(fidByteArray) {
+  const b64String = bufferToBase64UrlSafe(fidByteArray);
+  return b64String.substr(0, 22);
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function getKey$1(appConfig) {
+  return `${appConfig.appName}!${appConfig.appId}`;
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const fidChangeCallbacks = /* @__PURE__ */ new Map();
+function fidChanged(appConfig, fid) {
+  const key = getKey$1(appConfig);
+  callFidChangeCallbacks(key, fid);
+  broadcastFidChange(key, fid);
+}
+function addCallback(appConfig, callback) {
+  getBroadcastChannel();
+  const key = getKey$1(appConfig);
+  let callbackSet = fidChangeCallbacks.get(key);
+  if (!callbackSet) {
+    callbackSet = /* @__PURE__ */ new Set();
+    fidChangeCallbacks.set(key, callbackSet);
+  }
+  callbackSet.add(callback);
+}
+function removeCallback(appConfig, callback) {
+  const key = getKey$1(appConfig);
+  const callbackSet = fidChangeCallbacks.get(key);
+  if (!callbackSet) {
+    return;
+  }
+  callbackSet.delete(callback);
+  if (callbackSet.size === 0) {
+    fidChangeCallbacks.delete(key);
+  }
+  closeBroadcastChannel();
+}
+function callFidChangeCallbacks(key, fid) {
+  const callbacks = fidChangeCallbacks.get(key);
+  if (!callbacks) {
+    return;
+  }
+  for (const callback of callbacks) {
+    callback(fid);
+  }
+}
+function broadcastFidChange(key, fid) {
+  const channel = getBroadcastChannel();
+  if (channel) {
+    channel.postMessage({ key, fid });
+  }
+  closeBroadcastChannel();
+}
+let broadcastChannel = null;
+function getBroadcastChannel() {
+  if (!broadcastChannel && "BroadcastChannel" in self) {
+    broadcastChannel = new BroadcastChannel("[Firebase] FID Change");
+    broadcastChannel.onmessage = (e3) => {
+      callFidChangeCallbacks(e3.data.key, e3.data.fid);
+    };
+  }
+  return broadcastChannel;
+}
+function closeBroadcastChannel() {
+  if (fidChangeCallbacks.size === 0 && broadcastChannel) {
+    broadcastChannel.close();
+    broadcastChannel = null;
+  }
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DATABASE_NAME$1 = "firebase-installations-database";
+const DATABASE_VERSION$1 = 1;
+const OBJECT_STORE_NAME = "firebase-installations-store";
+let dbPromise$1 = null;
+function getDbPromise$1() {
+  if (!dbPromise$1) {
+    dbPromise$1 = openDB(DATABASE_NAME$1, DATABASE_VERSION$1, {
+      upgrade: (db, oldVersion) => {
+        switch (oldVersion) {
+          case 0:
+            db.createObjectStore(OBJECT_STORE_NAME);
+        }
+      }
+    });
+  }
+  return dbPromise$1;
+}
+async function set$1(appConfig, value) {
+  const key = getKey$1(appConfig);
+  const db = await getDbPromise$1();
+  const tx = db.transaction(OBJECT_STORE_NAME, "readwrite");
+  const objectStore = tx.objectStore(OBJECT_STORE_NAME);
+  const oldValue = await objectStore.get(key);
+  await objectStore.put(value, key);
+  await tx.done;
+  if (!oldValue || oldValue.fid !== value.fid) {
+    fidChanged(appConfig, value.fid);
+  }
+  return value;
+}
+async function remove(appConfig) {
+  const key = getKey$1(appConfig);
+  const db = await getDbPromise$1();
+  const tx = db.transaction(OBJECT_STORE_NAME, "readwrite");
+  await tx.objectStore(OBJECT_STORE_NAME).delete(key);
+  await tx.done;
+}
+async function update(appConfig, updateFn) {
+  const key = getKey$1(appConfig);
+  const db = await getDbPromise$1();
+  const tx = db.transaction(OBJECT_STORE_NAME, "readwrite");
+  const store = tx.objectStore(OBJECT_STORE_NAME);
+  const oldValue = await store.get(key);
+  const newValue = updateFn(oldValue);
+  if (newValue === void 0) {
+    await store.delete(key);
+  } else {
+    await store.put(newValue, key);
+  }
+  await tx.done;
+  if (newValue && (!oldValue || oldValue.fid !== newValue.fid)) {
+    fidChanged(appConfig, newValue.fid);
+  }
+  return newValue;
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function getInstallationEntry(installations) {
+  let registrationPromise;
+  const installationEntry = await update(installations.appConfig, (oldEntry) => {
+    const installationEntry2 = updateOrCreateInstallationEntry(oldEntry);
+    const entryWithPromise = triggerRegistrationIfNecessary(installations, installationEntry2);
+    registrationPromise = entryWithPromise.registrationPromise;
+    return entryWithPromise.installationEntry;
+  });
+  if (installationEntry.fid === INVALID_FID) {
+    return { installationEntry: await registrationPromise };
+  }
+  return {
+    installationEntry,
+    registrationPromise
+  };
+}
+function updateOrCreateInstallationEntry(oldEntry) {
+  const entry = oldEntry || {
+    fid: generateFid(),
+    registrationStatus: 0
+    /* RequestStatus.NOT_STARTED */
+  };
+  return clearTimedOutRequest(entry);
+}
+function triggerRegistrationIfNecessary(installations, installationEntry) {
+  if (installationEntry.registrationStatus === 0) {
+    if (!navigator.onLine) {
+      const registrationPromiseWithError = Promise.reject(ERROR_FACTORY$1.create(
+        "app-offline"
+        /* ErrorCode.APP_OFFLINE */
+      ));
+      return {
+        installationEntry,
+        registrationPromise: registrationPromiseWithError
+      };
+    }
+    const inProgressEntry = {
+      fid: installationEntry.fid,
+      registrationStatus: 1,
+      registrationTime: Date.now()
+    };
+    const registrationPromise = registerInstallation(installations, inProgressEntry);
+    return { installationEntry: inProgressEntry, registrationPromise };
+  } else if (installationEntry.registrationStatus === 1) {
+    return {
+      installationEntry,
+      registrationPromise: waitUntilFidRegistration(installations)
+    };
+  } else {
+    return { installationEntry };
+  }
+}
+async function registerInstallation(installations, installationEntry) {
+  try {
+    const registeredInstallationEntry = await createInstallationRequest(installations, installationEntry);
+    return set$1(installations.appConfig, registeredInstallationEntry);
+  } catch (e3) {
+    if (isServerError(e3) && e3.customData.serverCode === 409) {
+      await remove(installations.appConfig);
+    } else {
+      await set$1(installations.appConfig, {
+        fid: installationEntry.fid,
+        registrationStatus: 0
+        /* RequestStatus.NOT_STARTED */
+      });
+    }
+    throw e3;
+  }
+}
+async function waitUntilFidRegistration(installations) {
+  let entry = await updateInstallationRequest(installations.appConfig);
+  while (entry.registrationStatus === 1) {
+    await sleep(100);
+    entry = await updateInstallationRequest(installations.appConfig);
+  }
+  if (entry.registrationStatus === 0) {
+    const { installationEntry, registrationPromise } = await getInstallationEntry(installations);
+    if (registrationPromise) {
+      return registrationPromise;
+    } else {
+      return installationEntry;
+    }
+  }
+  return entry;
+}
+function updateInstallationRequest(appConfig) {
+  return update(appConfig, (oldEntry) => {
+    if (!oldEntry) {
+      throw ERROR_FACTORY$1.create(
+        "installation-not-found"
+        /* ErrorCode.INSTALLATION_NOT_FOUND */
+      );
+    }
+    return clearTimedOutRequest(oldEntry);
+  });
+}
+function clearTimedOutRequest(entry) {
+  if (hasInstallationRequestTimedOut(entry)) {
+    return {
+      fid: entry.fid,
+      registrationStatus: 0
+      /* RequestStatus.NOT_STARTED */
+    };
+  }
+  return entry;
+}
+function hasInstallationRequestTimedOut(installationEntry) {
+  return installationEntry.registrationStatus === 1 && installationEntry.registrationTime + PENDING_TIMEOUT_MS < Date.now();
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function generateAuthTokenRequest({ appConfig, heartbeatServiceProvider }, installationEntry) {
+  const endpoint = getGenerateAuthTokenEndpoint(appConfig, installationEntry);
+  const headers = getHeadersWithAuth(appConfig, installationEntry);
+  const heartbeatService = heartbeatServiceProvider.getImmediate({
+    optional: true
+  });
+  if (heartbeatService) {
+    const heartbeatsHeader = await heartbeatService.getHeartbeatsHeader();
+    if (heartbeatsHeader) {
+      headers.append("x-firebase-client", heartbeatsHeader);
+    }
+  }
+  const body = {
+    installation: {
+      sdkVersion: PACKAGE_VERSION,
+      appId: appConfig.appId
+    }
+  };
+  const request = {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body)
+  };
+  const response = await retryIfServerError(() => fetch(endpoint, request));
+  if (response.ok) {
+    const responseValue = await response.json();
+    const completedAuthToken = extractAuthTokenInfoFromResponse(responseValue);
+    return completedAuthToken;
+  } else {
+    throw await getErrorFromResponse("Generate Auth Token", response);
+  }
+}
+function getGenerateAuthTokenEndpoint(appConfig, { fid }) {
+  return `${getInstallationsEndpoint(appConfig)}/${fid}/authTokens:generate`;
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function refreshAuthToken(installations, forceRefresh = false) {
+  let tokenPromise;
+  const entry = await update(installations.appConfig, (oldEntry) => {
+    if (!isEntryRegistered(oldEntry)) {
+      throw ERROR_FACTORY$1.create(
+        "not-registered"
+        /* ErrorCode.NOT_REGISTERED */
+      );
+    }
+    const oldAuthToken = oldEntry.authToken;
+    if (!forceRefresh && isAuthTokenValid(oldAuthToken)) {
+      return oldEntry;
+    } else if (oldAuthToken.requestStatus === 1) {
+      tokenPromise = waitUntilAuthTokenRequest(installations, forceRefresh);
+      return oldEntry;
+    } else {
+      if (!navigator.onLine) {
+        throw ERROR_FACTORY$1.create(
+          "app-offline"
+          /* ErrorCode.APP_OFFLINE */
+        );
+      }
+      const inProgressEntry = makeAuthTokenRequestInProgressEntry(oldEntry);
+      tokenPromise = fetchAuthTokenFromServer(installations, inProgressEntry);
+      return inProgressEntry;
+    }
+  });
+  const authToken = tokenPromise ? await tokenPromise : entry.authToken;
+  return authToken;
+}
+async function waitUntilAuthTokenRequest(installations, forceRefresh) {
+  let entry = await updateAuthTokenRequest(installations.appConfig);
+  while (entry.authToken.requestStatus === 1) {
+    await sleep(100);
+    entry = await updateAuthTokenRequest(installations.appConfig);
+  }
+  const authToken = entry.authToken;
+  if (authToken.requestStatus === 0) {
+    return refreshAuthToken(installations, forceRefresh);
+  } else {
+    return authToken;
+  }
+}
+function updateAuthTokenRequest(appConfig) {
+  return update(appConfig, (oldEntry) => {
+    if (!isEntryRegistered(oldEntry)) {
+      throw ERROR_FACTORY$1.create(
+        "not-registered"
+        /* ErrorCode.NOT_REGISTERED */
+      );
+    }
+    const oldAuthToken = oldEntry.authToken;
+    if (hasAuthTokenRequestTimedOut(oldAuthToken)) {
+      return {
+        ...oldEntry,
+        authToken: {
+          requestStatus: 0
+          /* RequestStatus.NOT_STARTED */
+        }
+      };
+    }
+    return oldEntry;
+  });
+}
+async function fetchAuthTokenFromServer(installations, installationEntry) {
+  try {
+    const authToken = await generateAuthTokenRequest(installations, installationEntry);
+    const updatedInstallationEntry = {
+      ...installationEntry,
+      authToken
+    };
+    await set$1(installations.appConfig, updatedInstallationEntry);
+    return authToken;
+  } catch (e3) {
+    if (isServerError(e3) && (e3.customData.serverCode === 401 || e3.customData.serverCode === 404)) {
+      await remove(installations.appConfig);
+    } else {
+      const updatedInstallationEntry = {
+        ...installationEntry,
+        authToken: {
+          requestStatus: 0
+          /* RequestStatus.NOT_STARTED */
+        }
+      };
+      await set$1(installations.appConfig, updatedInstallationEntry);
+    }
+    throw e3;
+  }
+}
+function isEntryRegistered(installationEntry) {
+  return installationEntry !== void 0 && installationEntry.registrationStatus === 2;
+}
+function isAuthTokenValid(authToken) {
+  return authToken.requestStatus === 2 && !isAuthTokenExpired(authToken);
+}
+function isAuthTokenExpired(authToken) {
+  const now2 = Date.now();
+  return now2 < authToken.creationTime || authToken.creationTime + authToken.expiresIn < now2 + TOKEN_EXPIRATION_BUFFER;
+}
+function makeAuthTokenRequestInProgressEntry(oldEntry) {
+  const inProgressAuthToken = {
+    requestStatus: 1,
+    requestTime: Date.now()
+  };
+  return {
+    ...oldEntry,
+    authToken: inProgressAuthToken
+  };
+}
+function hasAuthTokenRequestTimedOut(authToken) {
+  return authToken.requestStatus === 1 && authToken.requestTime + PENDING_TIMEOUT_MS < Date.now();
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function getId(installations) {
+  const installationsImpl = installations;
+  const { installationEntry, registrationPromise } = await getInstallationEntry(installationsImpl);
+  if (registrationPromise) {
+    registrationPromise.catch(console.error);
+  } else {
+    refreshAuthToken(installationsImpl).catch(console.error);
+  }
+  return installationEntry.fid;
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function getToken$2(installations, forceRefresh = false) {
+  const installationsImpl = installations;
+  await completeInstallationRegistration(installationsImpl);
+  const authToken = await refreshAuthToken(installationsImpl, forceRefresh);
+  return authToken.token;
+}
+async function completeInstallationRegistration(installations) {
+  const { registrationPromise } = await getInstallationEntry(installations);
+  if (registrationPromise) {
+    await registrationPromise;
+  }
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function onIdChange(installations, callback) {
+  const { appConfig } = installations;
+  addCallback(appConfig, callback);
+  return () => {
+    removeCallback(appConfig, callback);
+  };
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function extractAppConfig$1(app) {
+  if (!app || !app.options) {
+    throw getMissingValueError$1("App Configuration");
+  }
+  if (!app.name) {
+    throw getMissingValueError$1("App Name");
+  }
+  const configKeys = [
+    "projectId",
+    "apiKey",
+    "appId"
+  ];
+  for (const keyName of configKeys) {
+    if (!app.options[keyName]) {
+      throw getMissingValueError$1(keyName);
+    }
+  }
+  return {
+    appName: app.name,
+    projectId: app.options.projectId,
+    apiKey: app.options.apiKey,
+    appId: app.options.appId
+  };
+}
+function getMissingValueError$1(valueName) {
+  return ERROR_FACTORY$1.create("missing-app-config-values", {
+    valueName
+  });
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const INSTALLATIONS_NAME = "installations";
+const INSTALLATIONS_NAME_INTERNAL = "installations-internal";
+const publicFactory = (container) => {
+  const app = container.getProvider("app").getImmediate();
+  const appConfig = extractAppConfig$1(app);
+  const heartbeatServiceProvider = _getProvider(app, "heartbeat");
+  const installationsImpl = {
+    app,
+    appConfig,
+    heartbeatServiceProvider,
+    _delete: () => Promise.resolve()
+  };
+  return installationsImpl;
+};
+const internalFactory = (container) => {
+  const app = container.getProvider("app").getImmediate();
+  const installations = _getProvider(app, INSTALLATIONS_NAME).getImmediate();
+  const installationsInternal = {
+    getId: () => getId(installations),
+    getToken: (forceRefresh) => getToken$2(installations, forceRefresh)
+  };
+  return installationsInternal;
+};
+function registerInstallations() {
+  _registerComponent(new Component(
+    INSTALLATIONS_NAME,
+    publicFactory,
+    "PUBLIC"
+    /* ComponentType.PUBLIC */
+  ));
+  _registerComponent(new Component(
+    INSTALLATIONS_NAME_INTERNAL,
+    internalFactory,
+    "PRIVATE"
+    /* ComponentType.PRIVATE */
+  ));
+}
+registerInstallations();
+registerVersion(name$1, version$2);
+registerVersion(name$1, version$2, "esm2020");
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DEFAULT_SW_PATH = "/firebase-messaging-sw.js";
+const DEFAULT_SW_SCOPE = "/firebase-cloud-messaging-push-scope";
+const DEFAULT_VAPID_KEY = "BDOU99-h67HcA6JeFXHbSNMu7e2yNNu3RzoMj8TM4W88jITfq7ZmPvIM1Iv-4_l2LxQcYwhqby2xGpWwzjfAnG4";
+const ENDPOINT = "https://fcmregistrations.googleapis.com/v1";
+const CONSOLE_CAMPAIGN_ID = "google.c.a.c_id";
+const CONSOLE_CAMPAIGN_NAME = "google.c.a.c_l";
+const CONSOLE_CAMPAIGN_TIME = "google.c.a.ts";
+const CONSOLE_CAMPAIGN_ANALYTICS_ENABLED = "google.c.a.e";
+const DEFAULT_REGISTRATION_TIMEOUT = 1e4;
+var MessageType$1;
+(function(MessageType2) {
+  MessageType2[MessageType2["DATA_MESSAGE"] = 1] = "DATA_MESSAGE";
+  MessageType2[MessageType2["DISPLAY_NOTIFICATION"] = 3] = "DISPLAY_NOTIFICATION";
+})(MessageType$1 || (MessageType$1 = {}));
+/**
+ * @license
+ * Copyright 2018 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+var MessageType;
+(function(MessageType2) {
+  MessageType2["PUSH_RECEIVED"] = "push-received";
+  MessageType2["NOTIFICATION_CLICKED"] = "notification-clicked";
+  MessageType2["FID_REGISTERED"] = "fid-registered";
+})(MessageType || (MessageType = {}));
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function arrayToBase64(array2) {
+  const uint8Array = new Uint8Array(array2);
+  const base64String = btoa(String.fromCharCode(...uint8Array));
+  return base64String.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+}
+function base64ToArray(base64String) {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4);
+  const base642 = (base64String + padding).replace(/\-/g, "+").replace(/_/g, "/");
+  const rawData = atob(base642);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i2 = 0; i2 < rawData.length; ++i2) {
+    outputArray[i2] = rawData.charCodeAt(i2);
+  }
+  return outputArray;
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const OLD_DB_NAME = "fcm_token_details_db";
+const OLD_DB_VERSION = 5;
+const OLD_OBJECT_STORE_NAME = "fcm_token_object_Store";
+async function migrateOldDatabase(senderId) {
+  if ("databases" in indexedDB) {
+    const databases = await indexedDB.databases();
+    const dbNames = databases.map((db2) => db2.name);
+    if (!dbNames.includes(OLD_DB_NAME)) {
+      return null;
+    }
+  }
+  let tokenDetails = null;
+  const db = await openDB(OLD_DB_NAME, OLD_DB_VERSION, {
+    upgrade: async (db2, oldVersion, newVersion, upgradeTransaction) => {
+      if (oldVersion < 2) {
+        return;
+      }
+      if (!db2.objectStoreNames.contains(OLD_OBJECT_STORE_NAME)) {
+        return;
+      }
+      const objectStore = upgradeTransaction.objectStore(OLD_OBJECT_STORE_NAME);
+      const value = await objectStore.index("fcmSenderId").get(senderId);
+      await objectStore.clear();
+      if (!value) {
+        return;
+      }
+      if (oldVersion === 2) {
+        const oldDetails = value;
+        if (!oldDetails.auth || !oldDetails.p256dh || !oldDetails.endpoint) {
+          return;
+        }
+        tokenDetails = {
+          token: oldDetails.fcmToken,
+          createTime: oldDetails.createTime ?? Date.now(),
+          subscriptionOptions: {
+            auth: oldDetails.auth,
+            p256dh: oldDetails.p256dh,
+            endpoint: oldDetails.endpoint,
+            swScope: oldDetails.swScope,
+            vapidKey: typeof oldDetails.vapidKey === "string" ? oldDetails.vapidKey : arrayToBase64(oldDetails.vapidKey)
+          }
+        };
+      } else if (oldVersion === 3) {
+        const oldDetails = value;
+        tokenDetails = {
+          token: oldDetails.fcmToken,
+          createTime: oldDetails.createTime,
+          subscriptionOptions: {
+            auth: arrayToBase64(oldDetails.auth),
+            p256dh: arrayToBase64(oldDetails.p256dh),
+            endpoint: oldDetails.endpoint,
+            swScope: oldDetails.swScope,
+            vapidKey: arrayToBase64(oldDetails.vapidKey)
+          }
+        };
+      } else if (oldVersion === 4) {
+        const oldDetails = value;
+        tokenDetails = {
+          token: oldDetails.fcmToken,
+          createTime: oldDetails.createTime,
+          subscriptionOptions: {
+            auth: arrayToBase64(oldDetails.auth),
+            p256dh: arrayToBase64(oldDetails.p256dh),
+            endpoint: oldDetails.endpoint,
+            swScope: oldDetails.swScope,
+            vapidKey: arrayToBase64(oldDetails.vapidKey)
+          }
+        };
+      }
+    }
+  });
+  db.close();
+  await deleteDB(OLD_DB_NAME);
+  await deleteDB("fcm_vapid_details_db");
+  await deleteDB("undefined");
+  return checkTokenDetails(tokenDetails) ? tokenDetails : null;
+}
+function checkTokenDetails(tokenDetails) {
+  if (!tokenDetails || !tokenDetails.subscriptionOptions) {
+    return false;
+  }
+  const { subscriptionOptions } = tokenDetails;
+  return typeof tokenDetails.createTime === "number" && tokenDetails.createTime > 0 && typeof tokenDetails.token === "string" && tokenDetails.token.length > 0 && typeof subscriptionOptions.auth === "string" && subscriptionOptions.auth.length > 0 && typeof subscriptionOptions.p256dh === "string" && subscriptionOptions.p256dh.length > 0 && typeof subscriptionOptions.endpoint === "string" && subscriptionOptions.endpoint.length > 0 && typeof subscriptionOptions.swScope === "string" && subscriptionOptions.swScope.length > 0 && typeof subscriptionOptions.vapidKey === "string" && subscriptionOptions.vapidKey.length > 0;
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const ERROR_MAP = {
+  [
+    "missing-app-config-values"
+    /* ErrorCode.MISSING_APP_CONFIG_VALUES */
+  ]: 'Missing App configuration value: "{$valueName}"',
+  [
+    "only-available-in-window"
+    /* ErrorCode.AVAILABLE_IN_WINDOW */
+  ]: "This method is available in a Window context.",
+  [
+    "only-available-in-sw"
+    /* ErrorCode.AVAILABLE_IN_SW */
+  ]: "This method is available in a service worker context.",
+  [
+    "permission-default"
+    /* ErrorCode.PERMISSION_DEFAULT */
+  ]: "The notification permission was not granted and dismissed instead.",
+  [
+    "permission-blocked"
+    /* ErrorCode.PERMISSION_BLOCKED */
+  ]: "The notification permission was not granted and blocked instead.",
+  [
+    "unsupported-browser"
+    /* ErrorCode.UNSUPPORTED_BROWSER */
+  ]: "This browser doesn't support the API's required to use the Firebase SDK.",
+  [
+    "indexed-db-unsupported"
+    /* ErrorCode.INDEXED_DB_UNSUPPORTED */
+  ]: "This browser doesn't support indexedDb.open() (ex. Safari iFrame, Firefox Private Browsing, etc)",
+  [
+    "failed-service-worker-registration"
+    /* ErrorCode.FAILED_DEFAULT_REGISTRATION */
+  ]: "We are unable to register the default service worker. {$browserErrorMessage}",
+  [
+    "token-subscribe-failed"
+    /* ErrorCode.TOKEN_SUBSCRIBE_FAILED */
+  ]: "A problem occurred while subscribing the user to FCM: {$errorInfo}",
+  [
+    "token-subscribe-no-token"
+    /* ErrorCode.TOKEN_SUBSCRIBE_NO_TOKEN */
+  ]: "FCM returned no token when subscribing the user to push.",
+  [
+    "fid-registration-failed"
+    /* ErrorCode.FID_REGISTRATION_FAILED */
+  ]: "A problem occurred while creating an FCM registration via FID: {$errorInfo}",
+  [
+    "fid-unregister-failed"
+    /* ErrorCode.FID_UNREGISTER_FAILED */
+  ]: "A problem occurred while unregistering the FCM registration via FID: {$errorInfo}",
+  [
+    "fid-registration-idb-schema-unavailable"
+    /* ErrorCode.FID_REGISTRATION_IDB_SCHEMA_UNAVAILABLE */
+  ]: "Unable to read or persist FID registration metadata because the messaging IndexedDB schema is unavailable (for example, the database could not be upgraded to the latest version).",
+  [
+    "token-unsubscribe-failed"
+    /* ErrorCode.TOKEN_UNSUBSCRIBE_FAILED */
+  ]: "A problem occurred while unsubscribing the user from FCM: {$errorInfo}",
+  [
+    "token-update-failed"
+    /* ErrorCode.TOKEN_UPDATE_FAILED */
+  ]: "A problem occurred while updating the user from FCM: {$errorInfo}",
+  [
+    "token-update-no-token"
+    /* ErrorCode.TOKEN_UPDATE_NO_TOKEN */
+  ]: "FCM returned no token when updating the user to push.",
+  [
+    "use-sw-after-get-token"
+    /* ErrorCode.USE_SW_AFTER_GET_TOKEN */
+  ]: "The useServiceWorker() method may only be called once and must be called before calling getToken() to ensure your service worker is used.",
+  [
+    "invalid-sw-registration"
+    /* ErrorCode.INVALID_SW_REGISTRATION */
+  ]: "The input to useServiceWorker() must be a ServiceWorkerRegistration.",
+  [
+    "invalid-bg-handler"
+    /* ErrorCode.INVALID_BG_HANDLER */
+  ]: "The input to setBackgroundMessageHandler() must be a function.",
+  [
+    "invalid-vapid-key"
+    /* ErrorCode.INVALID_VAPID_KEY */
+  ]: "The public VAPID key must be a string.",
+  [
+    "use-vapid-key-after-get-token"
+    /* ErrorCode.USE_VAPID_KEY_AFTER_GET_TOKEN */
+  ]: "The usePublicVapidKey() method may only be called once and must be called before calling getToken() to ensure your VAPID key is used.",
+  [
+    "invalid-on-registered-handler"
+    /* ErrorCode.INVALID_ON_REGISTERED_HANDLER */
+  ]: "No onRegistered callback handler was provided or registered. Implement onRegistered() before register()."
+};
+const ERROR_FACTORY = new ErrorFactory("messaging", "Messaging", ERROR_MAP);
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DATABASE_NAME = "firebase-messaging-database";
+const DATABASE_VERSION = 2;
+const TOKEN_OBJECT_STORE_NAME = "firebase-messaging-store";
+const FID_REGISTRATION_OBJECT_STORE_NAME = "firebase-messaging-fid-registration-store";
+const defaultIdb = { openDB, deleteDB };
+let idbImpl = defaultIdb;
+let dbPromise = null;
+function migrateMessagingDb(upgradeDb, oldVersion, targetSchemaVersion) {
+  switch (oldVersion) {
+    case 0:
+      upgradeDb.createObjectStore(TOKEN_OBJECT_STORE_NAME);
+      if (targetSchemaVersion === 1) {
+        break;
+      }
+    case 1:
+      if (targetSchemaVersion === 2) {
+        upgradeDb.createObjectStore(FID_REGISTRATION_OBJECT_STORE_NAME);
+      }
+  }
+}
+function createOpenDbOptions(targetSchemaVersion) {
+  return {
+    upgrade: (upgradeDb, oldVersion) => {
+      migrateMessagingDb(upgradeDb, oldVersion, targetSchemaVersion);
+    },
+    blocked: () => {
+    },
+    blocking: (_currentVersion, _blockedVersion, event) => {
+      var _a3;
+      dbPromise = null;
+      (_a3 = event.target) == null ? void 0 : _a3.close();
+    },
+    terminated: () => {
+      dbPromise = null;
+    }
+  };
+}
+function getDbPromise() {
+  if (!dbPromise) {
+    const openLatest = idbImpl.openDB(DATABASE_NAME, DATABASE_VERSION, createOpenDbOptions(2));
+    dbPromise = openLatest.catch(() => idbImpl.openDB(DATABASE_NAME, DATABASE_VERSION - 1, createOpenDbOptions(1)));
+  }
+  return dbPromise;
+}
+function hasObjectStore(db, storeName) {
+  return db.objectStoreNames.contains(storeName);
+}
+function assertFidRegistrationObjectStore(db) {
+  if (!hasObjectStore(db, FID_REGISTRATION_OBJECT_STORE_NAME)) {
+    throw ERROR_FACTORY.create(
+      "fid-registration-idb-schema-unavailable"
+      /* ErrorCode.FID_REGISTRATION_IDB_SCHEMA_UNAVAILABLE */
+    );
+  }
+}
+async function dbGet(firebaseDependencies) {
+  const key = getKey(firebaseDependencies);
+  const db = await getDbPromise();
+  const tokenDetails = await db.transaction(TOKEN_OBJECT_STORE_NAME).objectStore(TOKEN_OBJECT_STORE_NAME).get(key);
+  if (tokenDetails) {
+    return tokenDetails;
+  } else {
+    const oldTokenDetails = await migrateOldDatabase(firebaseDependencies.appConfig.senderId);
+    if (oldTokenDetails) {
+      await dbSet(firebaseDependencies, oldTokenDetails);
+      return oldTokenDetails;
+    }
+  }
+}
+async function dbSet(firebaseDependencies, tokenDetails) {
+  const key = getKey(firebaseDependencies);
+  const db = await getDbPromise();
+  const stores = [TOKEN_OBJECT_STORE_NAME];
+  const hasFidStore = hasObjectStore(db, FID_REGISTRATION_OBJECT_STORE_NAME);
+  if (hasFidStore) {
+    stores.push(FID_REGISTRATION_OBJECT_STORE_NAME);
+  }
+  const tx = db.transaction(stores, "readwrite");
+  await tx.objectStore(TOKEN_OBJECT_STORE_NAME).put(tokenDetails, key);
+  if (hasFidStore) {
+    await tx.objectStore(FID_REGISTRATION_OBJECT_STORE_NAME).delete(key);
+  }
+  await tx.done;
+  return tokenDetails;
+}
+async function dbGetFidRegistration(firebaseDependencies) {
+  const key = getKey(firebaseDependencies);
+  const db = await getDbPromise();
+  assertFidRegistrationObjectStore(db);
+  return await db.transaction(FID_REGISTRATION_OBJECT_STORE_NAME).objectStore(FID_REGISTRATION_OBJECT_STORE_NAME).get(key);
+}
+async function dbSetFidRegistration(firebaseDependencies, details) {
+  const key = getKey(firebaseDependencies);
+  const db = await getDbPromise();
+  assertFidRegistrationObjectStore(db);
+  const tx = db.transaction([TOKEN_OBJECT_STORE_NAME, FID_REGISTRATION_OBJECT_STORE_NAME], "readwrite");
+  await tx.objectStore(FID_REGISTRATION_OBJECT_STORE_NAME).put(details, key);
+  await tx.objectStore(TOKEN_OBJECT_STORE_NAME).delete(key);
+  await tx.done;
+  return details;
+}
+function getKey({ appConfig }) {
+  return appConfig.appId;
+}
+const name = "@firebase/messaging";
+const version$1 = "0.13.0";
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const FID_REGISTRATION_FETCH_MAX_ATTEMPTS = 3;
+const FID_REGISTRATION_FETCH_BASE_BACKOFF_MS = 1e3;
+async function requestGetToken(firebaseDependencies, subscriptionOptions) {
+  const headers = await getHeaders(firebaseDependencies);
+  const body = getBody(
+    subscriptionOptions,
+    firebaseDependencies.appConfig.appName,
+    /* includeSdkVersion= */
+    false
+  );
+  const subscribeOptions = {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body)
+  };
+  let responseData;
+  try {
+    const response = await fetch(getEndpoint(firebaseDependencies.appConfig), subscribeOptions);
+    responseData = await response.json();
+  } catch (err) {
+    throw ERROR_FACTORY.create("token-subscribe-failed", {
+      errorInfo: err == null ? void 0 : err.toString()
+    });
+  }
+  if (responseData.error) {
+    const message = responseData.error.message;
+    throw ERROR_FACTORY.create("token-subscribe-failed", {
+      errorInfo: message
+    });
+  }
+  if (!responseData.token) {
+    throw ERROR_FACTORY.create(
+      "token-subscribe-no-token"
+      /* ErrorCode.TOKEN_SUBSCRIBE_NO_TOKEN */
+    );
+  }
+  return responseData.token;
+}
+async function requestCreateRegistration(firebaseDependencies, subscriptionOptions) {
+  var _a3;
+  const headers = await getHeaders(firebaseDependencies);
+  const body = getBody(
+    subscriptionOptions,
+    firebaseDependencies.appConfig.appName,
+    /* includeSdkVersion= */
+    true
+  );
+  const subscribeOptions = {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body)
+  };
+  let response;
+  try {
+    response = await fetchWithExponentialRetry(() => fetch(getEndpoint(firebaseDependencies.appConfig), subscribeOptions), FID_REGISTRATION_FETCH_MAX_ATTEMPTS, FID_REGISTRATION_FETCH_BASE_BACKOFF_MS);
+  } catch (err) {
+    throw ERROR_FACTORY.create("fid-registration-failed", {
+      errorInfo: err == null ? void 0 : err.toString()
+    });
+  }
+  if (response.ok) {
+    const responseFid = await parseCreateRegistrationSuccessFid(response);
+    return { responseFid };
+  }
+  let responseData;
+  try {
+    responseData = await response.json();
+  } catch (err) {
+    throw ERROR_FACTORY.create("fid-registration-failed", {
+      errorInfo: response.statusText
+    });
+  }
+  const message = ((_a3 = responseData.error) == null ? void 0 : _a3.message) ?? response.statusText;
+  throw ERROR_FACTORY.create("fid-registration-failed", {
+    errorInfo: message
+  });
+}
+async function parseCreateRegistrationSuccessFid(response) {
+  const text2 = await response.text();
+  if (!text2.trim()) {
+    throw ERROR_FACTORY.create("fid-registration-failed", {
+      errorInfo: "CreateRegistration succeeded but response body is empty"
+    });
+  }
+  let data;
+  try {
+    data = JSON.parse(text2);
+  } catch {
+    throw ERROR_FACTORY.create("fid-registration-failed", {
+      errorInfo: "CreateRegistration succeeded but response body is not valid JSON"
+    });
+  }
+  const name2 = data.name;
+  if (typeof name2 !== "string" || name2.length === 0) {
+    throw ERROR_FACTORY.create("fid-registration-failed", {
+      errorInfo: "CreateRegistration succeeded but response did not include a non-empty name"
+    });
+  }
+  return parseFidFromRegistrationResourceName(name2);
+}
+const REGISTRATIONS_NAME_SEGMENT = "/registrations/";
+function parseFidFromRegistrationResourceName(name2) {
+  const segmentIndex = name2.indexOf(REGISTRATIONS_NAME_SEGMENT);
+  if (segmentIndex !== -1) {
+    const fid = name2.slice(segmentIndex + REGISTRATIONS_NAME_SEGMENT.length);
+    if (fid.length > 0) {
+      return fid;
+    }
+  }
+  throw ERROR_FACTORY.create("fid-registration-failed", {
+    errorInfo: "CreateRegistration succeeded but response name is not a valid registration resource name"
+  });
+}
+async function requestUpdateToken(firebaseDependencies, tokenDetails) {
+  const headers = await getHeaders(firebaseDependencies);
+  const body = getBody(
+    tokenDetails.subscriptionOptions,
+    firebaseDependencies.appConfig.appName,
+    /* includeSdkVersion= */
+    false
+  );
+  const updateOptions2 = {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(body)
+  };
+  let responseData;
+  try {
+    const response = await fetch(`${getEndpoint(firebaseDependencies.appConfig)}/${tokenDetails.token}`, updateOptions2);
+    responseData = await response.json();
+  } catch (err) {
+    throw ERROR_FACTORY.create("token-update-failed", {
+      errorInfo: err == null ? void 0 : err.toString()
+    });
+  }
+  if (responseData.error) {
+    const message = responseData.error.message;
+    throw ERROR_FACTORY.create("token-update-failed", {
+      errorInfo: message
+    });
+  }
+  if (!responseData.token) {
+    throw ERROR_FACTORY.create(
+      "token-update-no-token"
+      /* ErrorCode.TOKEN_UPDATE_NO_TOKEN */
+    );
+  }
+  return responseData.token;
+}
+async function requestDeleteToken(firebaseDependencies, token) {
+  const headers = await getHeaders(firebaseDependencies);
+  const unsubscribeOptions = {
+    method: "DELETE",
+    headers
+  };
+  try {
+    const response = await fetch(`${getEndpoint(firebaseDependencies.appConfig)}/${token}`, unsubscribeOptions);
+    const responseData = await response.json();
+    if (responseData.error) {
+      const message = responseData.error.message;
+      throw ERROR_FACTORY.create("token-unsubscribe-failed", {
+        errorInfo: message
+      });
+    }
+  } catch (err) {
+    throw ERROR_FACTORY.create("token-unsubscribe-failed", {
+      errorInfo: err == null ? void 0 : err.toString()
+    });
+  }
+}
+async function fetchWithExponentialRetry(operation, maxAttempts, baseBackoffMs) {
+  let lastError;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      return await operation();
+    } catch (err) {
+      lastError = err;
+      if (attempt < maxAttempts - 1) {
+        const delayMs = baseBackoffMs * Math.pow(2, attempt);
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+  throw lastError;
+}
+function getEndpoint({ projectId }) {
+  return `${ENDPOINT}/projects/${projectId}/registrations`;
+}
+async function getHeaders({ appConfig, installations }) {
+  const authToken = await installations.getToken();
+  return new Headers({
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "x-goog-api-key": appConfig.apiKey,
+    "x-goog-firebase-installations-auth": `FIS ${authToken}`
+  });
+}
+function getRegistrationOrigin(swScope, appNameFallback) {
+  var _a3, _b2;
+  try {
+    if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(swScope)) {
+      return new URL(swScope).host;
+    }
+  } catch {
+  }
+  try {
+    if (typeof self !== "undefined" && ((_a3 = self.location) == null ? void 0 : _a3.href)) {
+      return new URL(swScope, self.location.origin).host;
+    }
+  } catch {
+  }
+  if (typeof self !== "undefined" && ((_b2 = self.location) == null ? void 0 : _b2.host)) {
+    return self.location.host;
+  }
+  return appNameFallback;
+}
+function getBody({ p256dh, auth, endpoint, vapidKey, swScope }, appNameFallback, includeSdkVersion) {
+  const body = {
+    web: {
+      origin: getRegistrationOrigin(swScope, appNameFallback),
+      endpoint,
+      auth,
+      p256dh
+    }
+  };
+  if (includeSdkVersion) {
+    body.fcm_sdk_version = version$1;
+  }
+  if (vapidKey !== DEFAULT_VAPID_KEY) {
+    body.web.applicationPubKey = vapidKey;
+  }
+  return body;
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const TOKEN_EXPIRATION_MS = 7 * 24 * 60 * 60 * 1e3;
+async function getTokenInternal(messaging) {
+  const pushSubscription = await getPushSubscription$1(messaging.swRegistration, messaging.vapidKey);
+  const subscriptionOptions = {
+    vapidKey: messaging.vapidKey,
+    swScope: messaging.swRegistration.scope,
+    endpoint: pushSubscription.endpoint,
+    auth: arrayToBase64(pushSubscription.getKey("auth")),
+    p256dh: arrayToBase64(pushSubscription.getKey("p256dh"))
+  };
+  const tokenDetails = await dbGet(messaging.firebaseDependencies);
+  if (!tokenDetails) {
+    return getNewToken(messaging.firebaseDependencies, subscriptionOptions);
+  } else if (!isTokenValid(tokenDetails.subscriptionOptions, subscriptionOptions)) {
+    try {
+      await requestDeleteToken(messaging.firebaseDependencies, tokenDetails.token);
+    } catch (e3) {
+      console.warn(e3);
+    }
+    return getNewToken(messaging.firebaseDependencies, subscriptionOptions);
+  } else if (Date.now() >= tokenDetails.createTime + TOKEN_EXPIRATION_MS) {
+    return updateToken(messaging, {
+      token: tokenDetails.token,
+      createTime: Date.now(),
+      subscriptionOptions
+    });
+  } else {
+    return tokenDetails.token;
+  }
+}
+async function updateToken(messaging, tokenDetails) {
+  try {
+    const updatedToken = await requestUpdateToken(messaging.firebaseDependencies, tokenDetails);
+    const updatedTokenDetails = {
+      ...tokenDetails,
+      token: updatedToken,
+      createTime: Date.now()
+    };
+    await dbSet(messaging.firebaseDependencies, updatedTokenDetails);
+    return updatedToken;
+  } catch (e3) {
+    throw e3;
+  }
+}
+async function getNewToken(firebaseDependencies, subscriptionOptions) {
+  const token = await requestGetToken(firebaseDependencies, subscriptionOptions);
+  const tokenDetails = {
+    token,
+    createTime: Date.now(),
+    subscriptionOptions
+  };
+  await dbSet(firebaseDependencies, tokenDetails);
+  return tokenDetails.token;
+}
+async function getPushSubscription$1(swRegistration, vapidKey) {
+  const subscription = await swRegistration.pushManager.getSubscription();
+  if (subscription) {
+    return subscription;
+  }
+  return swRegistration.pushManager.subscribe({
+    userVisibleOnly: true,
+    // Chrome <= 75 doesn't support base64-encoded VAPID key. For backward compatibility, VAPID key
+    // submitted to pushManager#subscribe must be of type Uint8Array.
+    applicationServerKey: base64ToArray(vapidKey)
+  });
+}
+function isTokenValid(dbOptions, currentOptions) {
+  const isVapidKeyEqual = currentOptions.vapidKey === dbOptions.vapidKey;
+  const isEndpointEqual = currentOptions.endpoint === dbOptions.endpoint;
+  const isAuthEqual = currentOptions.auth === dbOptions.auth;
+  const isP256dhEqual = currentOptions.p256dh === dbOptions.p256dh;
+  return isVapidKeyEqual && isEndpointEqual && isAuthEqual && isP256dhEqual;
+}
+function notifyOnRegistered(messaging, fid) {
+  const handler = messaging.onRegisteredHandler;
+  if (!handler) {
+    return;
+  }
+  if (typeof handler === "function") {
+    handler(fid);
+  } else {
+    handler.next(fid);
+  }
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function registerDefaultSw(messaging) {
+  try {
+    messaging.swRegistration = await navigator.serviceWorker.register(DEFAULT_SW_PATH, {
+      scope: DEFAULT_SW_SCOPE
+    });
+    messaging.swRegistration.update().catch(() => {
+    });
+    await waitForRegistrationActive(messaging.swRegistration);
+  } catch (e3) {
+    throw ERROR_FACTORY.create("failed-service-worker-registration", {
+      browserErrorMessage: e3 == null ? void 0 : e3.message
+    });
+  }
+}
+async function waitForRegistrationActive(registration) {
+  return new Promise((resolve, reject) => {
+    const rejectTimeout = setTimeout(() => reject(new Error(`Service worker not registered after ${DEFAULT_REGISTRATION_TIMEOUT} ms`)), DEFAULT_REGISTRATION_TIMEOUT);
+    const incomingSw = registration.installing || registration.waiting;
+    if (registration.active) {
+      clearTimeout(rejectTimeout);
+      resolve();
+    } else if (incomingSw) {
+      incomingSw.onstatechange = (ev) => {
+        var _a3;
+        if (((_a3 = ev.target) == null ? void 0 : _a3.state) === "activated") {
+          incomingSw.onstatechange = null;
+          clearTimeout(rejectTimeout);
+          resolve();
+        }
+      };
+    } else {
+      clearTimeout(rejectTimeout);
+      reject(new Error("No incoming service worker found."));
+    }
+  });
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function updateSwReg(messaging, swRegistration) {
+  if (!swRegistration && !messaging.swRegistration) {
+    await registerDefaultSw(messaging);
+  }
+  if (!swRegistration && !!messaging.swRegistration) {
+    return;
+  }
+  if (!(swRegistration instanceof ServiceWorkerRegistration)) {
+    throw ERROR_FACTORY.create(
+      "invalid-sw-registration"
+      /* ErrorCode.INVALID_SW_REGISTRATION */
+    );
+  }
+  messaging.swRegistration = swRegistration;
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function updateVapidKey(messaging, vapidKey) {
+  if (!!vapidKey) {
+    messaging.vapidKey = vapidKey;
+  } else if (!messaging.vapidKey) {
+    messaging.vapidKey = DEFAULT_VAPID_KEY;
+  }
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const FID_REGISTRATION_FID_MATCH_MAX_ATTEMPTS = 3;
+async function registerFcmRegistrationWithFid(messaging, expectedFid) {
+  const pushSubscription = await getPushSubscription(messaging.swRegistration, messaging.vapidKey);
+  const subscriptionOptions = {
+    vapidKey: messaging.vapidKey,
+    swScope: messaging.swRegistration.scope,
+    endpoint: pushSubscription.endpoint,
+    auth: arrayToBase64(pushSubscription.getKey("auth")),
+    p256dh: arrayToBase64(pushSubscription.getKey("p256dh"))
+  };
+  const installations = messaging.firebaseDependencies.installations;
+  for (let attempt = 0; attempt < FID_REGISTRATION_FID_MATCH_MAX_ATTEMPTS; attempt++) {
+    const { responseFid } = await requestCreateRegistration(messaging.firebaseDependencies, subscriptionOptions);
+    if (responseFid === expectedFid) {
+      return;
+    }
+    if (attempt < FID_REGISTRATION_FID_MATCH_MAX_ATTEMPTS - 1) {
+      await installations.getToken(true);
+    }
+  }
+  throw ERROR_FACTORY.create("fid-registration-failed", {
+    errorInfo: "CreateRegistration response FID does not match Firebase Installation ID"
+  });
+}
+async function getPushSubscription(swRegistration, vapidKey) {
+  const subscription = await swRegistration.pushManager.getSubscription();
+  if (subscription) {
+    return subscription;
+  }
+  return swRegistration.pushManager.subscribe({
+    userVisibleOnly: true,
+    // `PushManager.subscribe` expects a `BufferSource`; `base64ToArray` produces a typed array.
+    // Cast to satisfy the lib typing differences across TS DOM versions.
+    applicationServerKey: base64ToArray(vapidKey)
+  });
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const FID_REGISTRATION_REFRESH_MS = 7 * 24 * 60 * 60 * 1e3;
+async function register$1(messaging, options) {
+  if (!navigator) {
+    throw ERROR_FACTORY.create(
+      "only-available-in-window"
+      /* ErrorCode.AVAILABLE_IN_WINDOW */
+    );
+  }
+  if (Notification.permission === "default") {
+    await Notification.requestPermission();
+  }
+  if (Notification.permission !== "granted") {
+    throw ERROR_FACTORY.create(
+      "permission-blocked"
+      /* ErrorCode.PERMISSION_BLOCKED */
+    );
+  }
+  if (!messaging.onRegisteredHandler) {
+    throw ERROR_FACTORY.create(
+      "invalid-on-registered-handler"
+      /* ErrorCode.INVALID_ON_REGISTERED_HANDLER */
+    );
+  }
+  await updateVapidKey(messaging, options == null ? void 0 : options.vapidKey);
+  await updateSwReg(messaging, options == null ? void 0 : options.serviceWorkerRegistration);
+  const prev = messaging._registerNotifyChain.catch(() => {
+  });
+  messaging._registerNotifyChain = prev.then(async () => {
+    const fid = await messaging.firebaseDependencies.installations.getId();
+    const stored = await dbGetFidRegistration(messaging.firebaseDependencies);
+    const now2 = Date.now();
+    const shouldRefresh = !stored || stored.fid !== fid || now2 >= stored.lastRegisterTime + FID_REGISTRATION_REFRESH_MS;
+    if (shouldRefresh) {
+      await registerFcmRegistrationWithFid(messaging, fid);
+      await dbSetFidRegistration(messaging.firebaseDependencies, {
+        fid,
+        lastRegisterTime: now2,
+        vapidKey: messaging.vapidKey
+      });
+    }
+    const handler = messaging.onRegisteredHandler;
+    if (!handler) {
+      throw ERROR_FACTORY.create(
+        "invalid-on-registered-handler"
+        /* ErrorCode.INVALID_ON_REGISTERED_HANDLER */
+      );
+    }
+    notifyOnRegistered(messaging, fid);
+  });
+  return messaging._registerNotifyChain;
+}
+/**
+ * @license
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function subscribeFidChangeRegistration(messaging, installations) {
+  return onIdChange(installations, () => {
+    void (async () => {
+      if (!messaging.onRegisteredHandler) {
+        return;
+      }
+      const stored = await dbGetFidRegistration(messaging.firebaseDependencies);
+      if (!stored) {
+        return;
+      }
+      await register$1(messaging).catch(() => {
+      });
+    })();
+  });
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function externalizePayload(internalPayload) {
+  const payload = {
+    from: internalPayload.from,
+    // eslint-disable-next-line camelcase
+    collapseKey: internalPayload.collapse_key,
+    // eslint-disable-next-line camelcase
+    messageId: internalPayload.fcmMessageId
+  };
+  propagateNotificationPayload(payload, internalPayload);
+  propagateDataPayload(payload, internalPayload);
+  propagateFcmOptions(payload, internalPayload);
+  return payload;
+}
+function propagateNotificationPayload(payload, messagePayloadInternal) {
+  if (!messagePayloadInternal.notification) {
+    return;
+  }
+  payload.notification = {};
+  const title = messagePayloadInternal.notification.title;
+  if (!!title) {
+    payload.notification.title = title;
+  }
+  const body = messagePayloadInternal.notification.body;
+  if (!!body) {
+    payload.notification.body = body;
+  }
+  const image = messagePayloadInternal.notification.image;
+  if (!!image) {
+    payload.notification.image = image;
+  }
+  const icon = messagePayloadInternal.notification.icon;
+  if (!!icon) {
+    payload.notification.icon = icon;
+  }
+}
+function propagateDataPayload(payload, messagePayloadInternal) {
+  if (!messagePayloadInternal.data) {
+    return;
+  }
+  payload.data = messagePayloadInternal.data;
+}
+function propagateFcmOptions(payload, messagePayloadInternal) {
+  var _a3, _b2, _c2, _d2;
+  if (!messagePayloadInternal.fcmOptions && !((_a3 = messagePayloadInternal.notification) == null ? void 0 : _a3.click_action)) {
+    return;
+  }
+  payload.fcmOptions = {};
+  const link = ((_b2 = messagePayloadInternal.fcmOptions) == null ? void 0 : _b2.link) ?? ((_c2 = messagePayloadInternal.notification) == null ? void 0 : _c2.click_action);
+  if (!!link) {
+    payload.fcmOptions.link = link;
+  }
+  const analyticsLabel = (_d2 = messagePayloadInternal.fcmOptions) == null ? void 0 : _d2.analytics_label;
+  if (!!analyticsLabel) {
+    payload.fcmOptions.analyticsLabel = analyticsLabel;
+  }
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function isConsoleMessage(data) {
+  return typeof data === "object" && !!data && CONSOLE_CAMPAIGN_ID in data;
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function extractAppConfig(app) {
+  if (!app || !app.options) {
+    throw getMissingValueError("App Configuration Object");
+  }
+  if (!app.name) {
+    throw getMissingValueError("App Name");
+  }
+  const configKeys = [
+    "projectId",
+    "apiKey",
+    "appId",
+    "messagingSenderId"
+  ];
+  const { options } = app;
+  for (const keyName of configKeys) {
+    if (!options[keyName]) {
+      throw getMissingValueError(keyName);
+    }
+  }
+  return {
+    appName: app.name,
+    projectId: options.projectId,
+    apiKey: options.apiKey,
+    appId: options.appId,
+    senderId: options.messagingSenderId
+  };
+}
+function getMissingValueError(valueName) {
+  return ERROR_FACTORY.create("missing-app-config-values", {
+    valueName
+  });
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class MessagingService {
+  constructor(app, installations, analyticsProvider) {
+    this.deliveryMetricsExportedToBigQueryEnabled = false;
+    this.onBackgroundMessageHandler = null;
+    this.onMessageHandler = null;
+    this.onRegisteredHandler = null;
+    this.onUnregisteredHandler = null;
+    this._registerNotifyChain = Promise.resolve();
+    this._fidChangeUnsubscribe = null;
+    this.logEvents = [];
+    this.logQueue = { state: "stopped" };
+    const appConfig = extractAppConfig(app);
+    this.firebaseDependencies = {
+      app,
+      appConfig,
+      installations,
+      analyticsProvider
+    };
+  }
+  _delete() {
+    if (this._fidChangeUnsubscribe) {
+      this._fidChangeUnsubscribe();
+      this._fidChangeUnsubscribe = null;
+    }
+    if (this.logQueue.state === "scheduled") {
+      clearTimeout(this.logQueue.timerId);
+    }
+    this.logQueue = { state: "stopped" };
+    return Promise.resolve();
+  }
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function getToken$1(messaging, options) {
+  if (!navigator) {
+    throw ERROR_FACTORY.create(
+      "only-available-in-window"
+      /* ErrorCode.AVAILABLE_IN_WINDOW */
+    );
+  }
+  if (Notification.permission === "default") {
+    await Notification.requestPermission();
+  }
+  if (Notification.permission !== "granted") {
+    throw ERROR_FACTORY.create(
+      "permission-blocked"
+      /* ErrorCode.PERMISSION_BLOCKED */
+    );
+  }
+  await updateVapidKey(messaging, options == null ? void 0 : options.vapidKey);
+  await updateSwReg(messaging, options == null ? void 0 : options.serviceWorkerRegistration);
+  return getTokenInternal(messaging);
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function logToScion(messaging, messageType, data) {
+  const eventType = getEventType(messageType);
+  const analytics = await messaging.firebaseDependencies.analyticsProvider.get();
+  analytics.logEvent(eventType, {
+    /* eslint-disable camelcase */
+    message_id: data[CONSOLE_CAMPAIGN_ID],
+    message_name: data[CONSOLE_CAMPAIGN_NAME],
+    message_time: data[CONSOLE_CAMPAIGN_TIME],
+    message_device_time: Math.floor(Date.now() / 1e3)
+    /* eslint-enable camelcase */
+  });
+}
+function getEventType(messageType) {
+  switch (messageType) {
+    case MessageType.NOTIFICATION_CLICKED:
+      return "notification_open";
+    case MessageType.PUSH_RECEIVED:
+      return "notification_foreground";
+    default:
+      throw new Error();
+  }
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function messageEventListener(messaging, event) {
+  const internalPayload = event.data;
+  if (!internalPayload.isFirebaseMessaging) {
+    return;
+  }
+  if (messaging.onMessageHandler && internalPayload.messageType === MessageType.PUSH_RECEIVED) {
+    if (typeof messaging.onMessageHandler === "function") {
+      messaging.onMessageHandler(externalizePayload(internalPayload));
+    } else {
+      messaging.onMessageHandler.next(externalizePayload(internalPayload));
+    }
+  }
+  if (messaging.onRegisteredHandler && internalPayload.messageType === MessageType.FID_REGISTERED) {
+    const fid = internalPayload.fid;
+    if (typeof messaging.onRegisteredHandler === "function") {
+      messaging.onRegisteredHandler(fid);
+    } else {
+      messaging.onRegisteredHandler.next(fid);
+    }
+  }
+  const dataPayload = internalPayload.data;
+  if (isConsoleMessage(dataPayload) && dataPayload[CONSOLE_CAMPAIGN_ANALYTICS_ENABLED] === "1") {
+    await logToScion(messaging, internalPayload.messageType, dataPayload);
+  }
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const WindowMessagingFactory = (container) => {
+  const messaging = new MessagingService(container.getProvider("app").getImmediate(), container.getProvider("installations-internal").getImmediate(), container.getProvider("analytics-internal"));
+  navigator.serviceWorker.addEventListener("message", (e3) => messageEventListener(messaging, e3));
+  messaging._fidChangeUnsubscribe = subscribeFidChangeRegistration(messaging, container.getProvider("installations").getImmediate());
+  return messaging;
+};
+const WindowMessagingInternalFactory = (container) => {
+  const messaging = container.getProvider("messaging").getImmediate();
+  const messagingInternal = {
+    getToken: (options) => getToken$1(messaging, options),
+    register: (options) => register$1(messaging, options)
+  };
+  return messagingInternal;
+};
+function registerMessagingInWindow() {
+  _registerComponent(new Component(
+    "messaging",
+    WindowMessagingFactory,
+    "PUBLIC"
+    /* ComponentType.PUBLIC */
+  ));
+  _registerComponent(new Component(
+    "messaging-internal",
+    WindowMessagingInternalFactory,
+    "PRIVATE"
+    /* ComponentType.PRIVATE */
+  ));
+  registerVersion(name, version$1);
+  registerVersion(name, version$1, "esm2020");
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function isWindowSupported() {
+  try {
+    await validateIndexedDBOpenable();
+  } catch (e3) {
+    return false;
+  }
+  return typeof window !== "undefined" && isIndexedDBAvailable() && areCookiesEnabled() && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window && "fetch" in window && ServiceWorkerRegistration.prototype.hasOwnProperty("showNotification") && PushSubscription.prototype.hasOwnProperty("getKey");
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function onMessage$1(messaging, nextOrObserver) {
+  if (!navigator) {
+    throw ERROR_FACTORY.create(
+      "only-available-in-window"
+      /* ErrorCode.AVAILABLE_IN_WINDOW */
+    );
+  }
+  messaging.onMessageHandler = nextOrObserver;
+  return () => {
+    messaging.onMessageHandler = null;
+  };
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function getMessagingInWindow(app = getApp()) {
+  isWindowSupported().then((isSupported) => {
+    if (!isSupported) {
+      throw ERROR_FACTORY.create(
+        "unsupported-browser"
+        /* ErrorCode.UNSUPPORTED_BROWSER */
+      );
+    }
+  }, (_) => {
+    throw ERROR_FACTORY.create(
+      "indexed-db-unsupported"
+      /* ErrorCode.INDEXED_DB_UNSUPPORTED */
+    );
+  });
+  return _getProvider(getModularInstance(app), "messaging").getImmediate();
+}
+async function getToken(messaging, options) {
+  messaging = getModularInstance(messaging);
+  return getToken$1(messaging, options);
+}
+function onMessage(messaging, nextOrObserver) {
+  messaging = getModularInstance(messaging);
+  return onMessage$1(messaging, nextOrObserver);
+}
+registerMessagingInWindow();
+const firebaseConfig = {
+  apiKey: "AIzaSyAnaabNWpMyKoVJbosYSgOghrFbkhHgRm4",
+  projectId: "bikaner-bakeryy",
+  messagingSenderId: "874721357177",
+  appId: "1:874721357177:android:a581a9e90d6d87099793a8"
+};
+const firebaseVapidKey = "BEwpCg_JfAfLwtkbQXAKIpWa0ugAySmZcAiA8BEgtUCDFiLUkyD0haUN-nNdqCENDxfeaEAeSbSzO6ea3fRlmsU";
+let foregroundListenerStarted = false;
+let setupPromise = null;
+const hasFirebaseConfig = () => Boolean(
+  firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.messagingSenderId && firebaseConfig.appId && firebaseVapidKey
+);
+const getFirebaseApp = () => {
+  if (getApps().length > 0) {
+    return getApps()[0];
+  }
+  return initializeApp(firebaseConfig);
+};
+const getServiceWorkerRegistration = async () => {
+  if (!("serviceWorker" in navigator)) {
+    return null;
+  }
+  return navigator.serviceWorker.register(
+    new URL("data:text/javascript;base64,aW1wb3J0IHsgaW5pdGlhbGl6ZUFwcCB9IGZyb20gImZpcmViYXNlL2FwcCI7CmltcG9ydCB7IGdldE1lc3NhZ2luZywgb25CYWNrZ3JvdW5kTWVzc2FnZSB9IGZyb20gImZpcmViYXNlL21lc3NhZ2luZy9zdyI7Cgpjb25zdCBmaXJlYmFzZUNvbmZpZyA9IHsKICBhcGlLZXk6IGltcG9ydC5tZXRhLmVudi5WSVRFX0ZJUkVCQVNFX0FQSV9LRVksCiAgcHJvamVjdElkOiBpbXBvcnQubWV0YS5lbnYuVklURV9GSVJFQkFTRV9QUk9KRUNUX0lELAogIG1lc3NhZ2luZ1NlbmRlcklkOiBpbXBvcnQubWV0YS5lbnYuVklURV9GSVJFQkFTRV9NRVNTQUdJTkdfU0VOREVSX0lELAogIGFwcElkOiBpbXBvcnQubWV0YS5lbnYuVklURV9GSVJFQkFTRV9BUFBfSUQsCn07Cgpjb25zdCBoYXNGaXJlYmFzZUNvbmZpZyA9CiAgZmlyZWJhc2VDb25maWcuYXBpS2V5ICYmCiAgZmlyZWJhc2VDb25maWcucHJvamVjdElkICYmCiAgZmlyZWJhc2VDb25maWcubWVzc2FnaW5nU2VuZGVySWQgJiYKICBmaXJlYmFzZUNvbmZpZy5hcHBJZDsKCmlmIChoYXNGaXJlYmFzZUNvbmZpZykgewogIGNvbnN0IGFwcCA9IGluaXRpYWxpemVBcHAoZmlyZWJhc2VDb25maWcpOwogIGNvbnN0IG1lc3NhZ2luZyA9IGdldE1lc3NhZ2luZyhhcHApOwoKICBvbkJhY2tncm91bmRNZXNzYWdlKG1lc3NhZ2luZywgKHBheWxvYWQpID0+IHsKICAgIGNvbnN0IHRpdGxlID0KICAgICAgcGF5bG9hZC5ub3RpZmljYXRpb24/LnRpdGxlIHx8CiAgICAgIHBheWxvYWQuZGF0YT8udGl0bGUgfHwKICAgICAgIkFkbWluIG5vdGlmaWNhdGlvbiI7CiAgICBjb25zdCBib2R5ID0gcGF5bG9hZC5ub3RpZmljYXRpb24/LmJvZHkgfHwgcGF5bG9hZC5kYXRhPy5ib2R5IHx8ICIiOwogICAgY29uc3QgbGluayA9IHBheWxvYWQuZGF0YT8uY2xpY2tfYWN0aW9uIHx8ICIvIjsKCiAgICBzZWxmLnJlZ2lzdHJhdGlvbi5zaG93Tm90aWZpY2F0aW9uKHRpdGxlLCB7CiAgICAgIGJvZHksCiAgICAgIGljb246ICIvYXNzZXRzL2Zhdmljb24uaWNvIiwKICAgICAgZGF0YTogeyBsaW5rIH0sCiAgICB9KTsKICB9KTsKfQoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCJub3RpZmljYXRpb25jbGljayIsIChldmVudCkgPT4gewogIGV2ZW50Lm5vdGlmaWNhdGlvbi5jbG9zZSgpOwoKICBjb25zdCBsaW5rID0gZXZlbnQubm90aWZpY2F0aW9uLmRhdGE/LmxpbmsgfHwgIi8iOwoKICBldmVudC53YWl0VW50aWwoCiAgICBzZWxmLmNsaWVudHMKICAgICAgLm1hdGNoQWxsKHsgdHlwZTogIndpbmRvdyIsIGluY2x1ZGVVbmNvbnRyb2xsZWQ6IHRydWUgfSkKICAgICAgLnRoZW4oKGNsaWVudExpc3QpID0+IHsKICAgICAgICBjb25zdCBleGlzdGluZ0NsaWVudCA9IGNsaWVudExpc3QuZmluZCgoY2xpZW50KSA9PgogICAgICAgICAgY2xpZW50LnVybC5pbmNsdWRlcyhzZWxmLmxvY2F0aW9uLm9yaWdpbiksCiAgICAgICAgKTsKCiAgICAgICAgaWYgKGV4aXN0aW5nQ2xpZW50KSB7CiAgICAgICAgICBleGlzdGluZ0NsaWVudC5mb2N1cygpOwogICAgICAgICAgZXhpc3RpbmdDbGllbnQubmF2aWdhdGUobGluayk7CiAgICAgICAgICByZXR1cm47CiAgICAgICAgfQoKICAgICAgICByZXR1cm4gc2VsZi5jbGllbnRzLm9wZW5XaW5kb3cobGluayk7CiAgICAgIH0pLAogICk7Cn0pOwo=", import.meta.url),
+    { type: "module" }
+  );
+};
+const showForegroundNotification = async (payload) => {
+  var _a3, _b2, _c2, _d2, _e2, _f2;
+  const title = ((_a3 = payload.notification) == null ? void 0 : _a3.title) || ((_b2 = payload.data) == null ? void 0 : _b2.title) || "Admin notification";
+  const body = ((_c2 = payload.notification) == null ? void 0 : _c2.body) || ((_d2 = payload.data) == null ? void 0 : _d2.body) || "";
+  const link = ((_e2 = payload.data) == null ? void 0 : _e2.click_action) || ((_f2 = payload.fcmOptions) == null ? void 0 : _f2.link) || "/";
+  const options = {
+    body,
+    icon: "/assets/favicon.ico",
+    data: { link }
+  };
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    await registration.showNotification(title, options);
+  } catch {
+    new Notification(title, options);
+  }
+};
+const startForegroundListener = async () => {
+  if (foregroundListenerStarted) {
+    return;
+  }
+  const supported = await isWindowSupported();
+  if (!supported || !hasFirebaseConfig()) {
+    return;
+  }
+  foregroundListenerStarted = true;
+  const messaging = getMessagingInWindow(getFirebaseApp());
+  onMessage(messaging, (payload) => {
+    if (Notification.permission === "granted") {
+      showForegroundNotification(payload);
+    }
+    window.dispatchEvent(
+      new CustomEvent("admin-fcm-notification", { detail: payload })
+    );
+  });
+};
+const setupAdminFirebaseNotifications = async () => {
+  if (setupPromise) {
+    return setupPromise;
+  }
+  setupPromise = (async () => {
+    if (typeof window === "undefined" || !("Notification" in window) || !hasFirebaseConfig()) {
+      return null;
+    }
+    const supported = await isWindowSupported();
+    if (!supported) {
+      return null;
+    }
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      return null;
+    }
+    const serviceWorkerRegistration = await getServiceWorkerRegistration();
+    if (!serviceWorkerRegistration) {
+      return null;
+    }
+    const messaging = getMessagingInWindow(getFirebaseApp());
+    const fcmToken = await getToken(messaging, {
+      vapidKey: firebaseVapidKey,
+      serviceWorkerRegistration
+    });
+    await startForegroundListener();
+    return fcmToken || null;
+  })().catch((error) => {
+    console.error("Failed to setup admin Firebase notifications:", error);
+    setupPromise = null;
+    return null;
+  });
+  return setupPromise;
+};
 function transformMongoResponse(data) {
   if (!data) return data;
   if (Array.isArray(data)) {
@@ -25780,7 +30254,10 @@ const put = (url, data, options) => apiClient.put(url, data, options);
 const patch = (url, data, options) => apiClient.patch(url, data, options);
 const del = (url, options) => apiClient.delete(url, options);
 const upload = (url, formData, onProgress, method) => apiClient.upload(url, formData, onProgress, method);
-const BASE_URL = "https://bikanerapi.codeeratech.in";
+const BASE_URL = (
+  // "http://localhost:9020";
+  "https://bikanerapi.codeeratech.in"
+);
 const ENDPOINTS = {
   // Authentication
   LOGIN: `${BASE_URL}/auth/login`,
@@ -25889,9 +30366,10 @@ const ENDPOINTS = {
   BANNERS_UPDATE: (id2) => `${BASE_URL}/banners/${id2}`,
   BANNERS_DELETE: (id2) => `${BASE_URL}/banners/${id2}`,
   // Notifications
-  GET_NOTIFICATIONS: `${BASE_URL}/notifications`,
-  MARK_NOTIFICATION_READ: (id2) => `${BASE_URL}/notifications/${id2}/read`,
-  DELETE_NOTIFICATION: (id2) => `${BASE_URL}/notifications/${id2}`
+  GET_NOTIFICATIONS: `${BASE_URL}/admin-notifications`,
+  MARK_ALL_NOTIFICATIONS_READ: `${BASE_URL}/admin-notifications/read`,
+  MARK_NOTIFICATION_READ: (id2) => `${BASE_URL}/admin-notifications/${id2}/read`,
+  DELETE_NOTIFICATION: (id2) => `${BASE_URL}/admin-notifications/${id2}`
 };
 const authService = {
   /**
@@ -25902,8 +30380,15 @@ const authService = {
     console.log("🌐 AuthService: Endpoint:", ENDPOINTS.LOGIN);
     console.log("🌐 AuthService: Credentials:", { mobile: credentials.mobile });
     try {
-      const response = await post(ENDPOINTS.LOGIN, credentials);
-      console.log("🌐 AuthService: Response received:", { success: response.success, hasToken: !!response.token });
+      const fcmToken = await setupAdminFirebaseNotifications();
+      const response = await post(ENDPOINTS.LOGIN, {
+        ...credentials,
+        fcmToken
+      });
+      console.log("🌐 AuthService: Response received:", {
+        success: response.success,
+        hasToken: !!response.token
+      });
       if (response.token) {
         console.log("🌐 AuthService: Storing token and user data...");
         apiClient.setAuthToken(response.token);
@@ -25955,7 +30440,7 @@ function createJSONStorage(getStorage, options) {
     return;
   }
   const persistStorage = {
-    getItem: (name) => {
+    getItem: (name2) => {
       var _a3;
       const parse2 = (str2) => {
         if (str2 === null) {
@@ -25963,14 +30448,14 @@ function createJSONStorage(getStorage, options) {
         }
         return JSON.parse(str2, void 0);
       };
-      const str = (_a3 = storage.getItem(name)) != null ? _a3 : null;
+      const str = (_a3 = storage.getItem(name2)) != null ? _a3 : null;
       if (str instanceof Promise) {
         return str.then(parse2);
       }
       return parse2(str);
     },
-    setItem: (name, newValue) => storage.setItem(name, JSON.stringify(newValue, void 0)),
-    removeItem: (name) => storage.removeItem(name)
+    setItem: (name2, newValue) => storage.setItem(name2, JSON.stringify(newValue, void 0)),
+    removeItem: (name2) => storage.removeItem(name2)
   };
   return persistStorage;
 }
@@ -26158,7 +30643,10 @@ const useAuthStore = create()(
         try {
           console.log("📡 AuthStore: Calling authService.login...");
           const response = await authService.login({ mobile, password });
-          console.log("📥 AuthStore: Received response:", { success: response.success, hasUser: !!response.user });
+          console.log("📥 AuthStore: Received response:", {
+            success: response.success,
+            hasUser: !!response.user
+          });
           if (response.success && response.user) {
             const user = {
               id: response.user.id,
@@ -26172,13 +30660,19 @@ const useAuthStore = create()(
               status: response.user.status,
               createdAt: (/* @__PURE__ */ new Date()).toISOString()
             };
-            console.log("✨ AuthStore: User transformed, setting state...", { role: user.role, permissionCount: user.permissions.length });
+            console.log("✨ AuthStore: User transformed, setting state...", {
+              role: user.role,
+              permissionCount: user.permissions.length
+            });
             set2({
               user,
               isAuthenticated: true,
               rememberMe,
               isLoading: false
             });
+            if (user.role === "Admin") {
+              setupAdminFirebaseNotifications();
+            }
             console.log("✅ AuthStore: Login successful!");
             return { success: true };
           }
@@ -26326,9 +30820,9 @@ function getContrastColor(hex2) {
   return luminance > 0.5 ? "#000000" : "#ffffff";
 }
 function applyColorSet(root2, colors) {
-  const set2 = (name, hex2) => {
+  const set2 = (name2, hex2) => {
     const oklch = hexToOklch(hex2);
-    if (oklch) root2.style.setProperty(name, oklch);
+    if (oklch) root2.style.setProperty(name2, oklch);
   };
   set2("--primary", colors.primary);
   set2("--primary-foreground", getContrastColor(colors.primary));
@@ -27088,6 +31582,47 @@ const sellerApplicationService = {
     return put(
       ENDPOINTS.REJECT_SELLER_APPLICATION(id2),
       { reason }
+    );
+  }
+};
+const notificationService = {
+  /**
+   * Get admin notifications with pagination
+   * @param params - Pagination parameters (page, limit)
+   * @returns Promise with notification list and pagination
+   */
+  async getNotifications(params) {
+    return get$4(
+      ENDPOINTS.GET_NOTIFICATIONS,
+      params ? { ...params } : void 0
+    );
+  },
+  /**
+   * Mark a notification as read
+   * @param notificationId - ID of the notification to mark as read
+   * @returns Promise with success response
+   */
+  async markAsRead(notificationId) {
+    return put(
+      ENDPOINTS.MARK_NOTIFICATION_READ(notificationId),
+      {}
+    );
+  },
+  /**
+   * Mark all admin notifications as read
+   * @returns Promise with success response
+   */
+  async markAllAsRead() {
+    return put(ENDPOINTS.MARK_ALL_NOTIFICATIONS_READ, {});
+  },
+  /**
+   * Delete a notification
+   * @param notificationId - ID of the notification to delete
+   * @returns Promise with success response
+   */
+  async deleteNotification(notificationId) {
+    return del(
+      ENDPOINTS.DELETE_NOTIFICATION(notificationId)
     );
   }
 };
@@ -27882,14 +32417,14 @@ function createContextScope(scopeName, createContextScopeDeps = []) {
     BaseContext.displayName = rootComponentName + "Context";
     const index2 = defaultContexts.length;
     defaultContexts = [...defaultContexts, defaultContext];
-    const Provider2 = (props) => {
+    const Provider3 = (props) => {
       var _a3;
       const { scope, children, ...context } = props;
       const Context = ((_a3 = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a3[index2]) || BaseContext;
       const value = reactExports.useMemo(() => context, Object.values(context));
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Context.Provider, { value, children });
     };
-    Provider2.displayName = rootComponentName + "Provider";
+    Provider3.displayName = rootComponentName + "Provider";
     function useContext2(consumerName, scope) {
       var _a3;
       const Context = ((_a3 = scope == null ? void 0 : scope[scopeName]) == null ? void 0 : _a3[index2]) || BaseContext;
@@ -27898,7 +32433,7 @@ function createContextScope(scopeName, createContextScopeDeps = []) {
       if (defaultContext !== void 0) return defaultContext;
       throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
     }
-    return [Provider2, useContext2];
+    return [Provider3, useContext2];
   }
   const createScope = () => {
     const scopeContexts = defaultContexts.map((defaultContext) => {
@@ -28131,8 +32666,8 @@ function AvatarFallback({
     }
   );
 }
-function createCollection(name) {
-  const PROVIDER_NAME2 = name + "CollectionProvider";
+function createCollection(name2) {
+  const PROVIDER_NAME2 = name2 + "CollectionProvider";
   const [createCollectionContext, createCollectionScope2] = createContextScope$1(PROVIDER_NAME2);
   const [CollectionProviderImpl, useCollectionContext] = createCollectionContext(
     PROVIDER_NAME2,
@@ -28145,7 +32680,7 @@ function createCollection(name) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(CollectionProviderImpl, { scope, itemMap, collectionRef: ref, children });
   };
   CollectionProvider.displayName = PROVIDER_NAME2;
-  const COLLECTION_SLOT_NAME = name + "CollectionSlot";
+  const COLLECTION_SLOT_NAME = name2 + "CollectionSlot";
   const CollectionSlotImpl = /* @__PURE__ */ createSlot(COLLECTION_SLOT_NAME);
   const CollectionSlot = React$4.forwardRef(
     (props, forwardedRef) => {
@@ -28156,7 +32691,7 @@ function createCollection(name) {
     }
   );
   CollectionSlot.displayName = COLLECTION_SLOT_NAME;
-  const ITEM_SLOT_NAME = name + "CollectionItemSlot";
+  const ITEM_SLOT_NAME = name2 + "CollectionItemSlot";
   const ITEM_DATA_ATTR = "data-radix-collection-item";
   const CollectionItemSlotImpl = /* @__PURE__ */ createSlot(ITEM_SLOT_NAME);
   const CollectionItemSlot = React$4.forwardRef(
@@ -28174,7 +32709,7 @@ function createCollection(name) {
   );
   CollectionItemSlot.displayName = ITEM_SLOT_NAME;
   function useCollection2(scope) {
-    const context = useCollectionContext(name + "CollectionConsumer", scope);
+    const context = useCollectionContext(name2 + "CollectionConsumer", scope);
     const getItems = React$4.useCallback(() => {
       const collectionNode = context.collectionRef.current;
       if (!collectionNode) return [];
@@ -28467,7 +33002,7 @@ const computePosition$1 = async (reference, floating, config2) => {
       continue;
     }
     const {
-      name,
+      name: name2,
       fn
     } = currentMiddleware;
     const {
@@ -28491,8 +33026,8 @@ const computePosition$1 = async (reference, floating, config2) => {
     });
     x2 = nextX != null ? nextX : x2;
     y2 = nextY != null ? nextY : y2;
-    middlewareData[name] = {
-      ...middlewareData[name],
+    middlewareData[name2] = {
+      ...middlewareData[name2],
       ...data
     };
     if (reset && resetCount < MAX_RESET_COUNT) {
@@ -29715,7 +34250,7 @@ function observeMove(element, onMove) {
   refresh(true);
   return cleanup;
 }
-function autoUpdate(reference, floating, update, options) {
+function autoUpdate(reference, floating, update2, options) {
   if (options === void 0) {
     options = {};
   }
@@ -29729,12 +34264,12 @@ function autoUpdate(reference, floating, update, options) {
   const referenceEl = unwrapElement(reference);
   const ancestors = ancestorScroll || ancestorResize ? [...referenceEl ? getOverflowAncestors(referenceEl) : [], ...floating ? getOverflowAncestors(floating) : []] : [];
   ancestors.forEach((ancestor) => {
-    ancestorScroll && ancestor.addEventListener("scroll", update, {
+    ancestorScroll && ancestor.addEventListener("scroll", update2, {
       passive: true
     });
-    ancestorResize && ancestor.addEventListener("resize", update);
+    ancestorResize && ancestor.addEventListener("resize", update2);
   });
-  const cleanupIo = referenceEl && layoutShift ? observeMove(referenceEl, update) : null;
+  const cleanupIo = referenceEl && layoutShift ? observeMove(referenceEl, update2) : null;
   let reobserveFrame = -1;
   let resizeObserver = null;
   if (elementResize) {
@@ -29748,7 +34283,7 @@ function autoUpdate(reference, floating, update, options) {
           (_resizeObserver = resizeObserver) == null || _resizeObserver.observe(floating);
         });
       }
-      update();
+      update2();
     });
     if (referenceEl && !animationFrame) {
       resizeObserver.observe(referenceEl);
@@ -29765,17 +34300,17 @@ function autoUpdate(reference, floating, update, options) {
   function frameLoop() {
     const nextRefRect = getBoundingClientRect(reference);
     if (prevRefRect && !rectsAreEqual(prevRefRect, nextRefRect)) {
-      update();
+      update2();
     }
     prevRefRect = nextRefRect;
     frameId = requestAnimationFrame(frameLoop);
   }
-  update();
+  update2();
   return () => {
     var _resizeObserver2;
     ancestors.forEach((ancestor) => {
-      ancestorScroll && ancestor.removeEventListener("scroll", update);
-      ancestorResize && ancestor.removeEventListener("resize", update);
+      ancestorScroll && ancestor.removeEventListener("scroll", update2);
+      ancestorResize && ancestor.removeEventListener("resize", update2);
     });
     cleanupIo == null || cleanupIo();
     (_resizeObserver2 = resizeObserver) == null || _resizeObserver2.disconnect();
@@ -29928,7 +34463,7 @@ function useFloating(options) {
   const whileElementsMountedRef = useLatestRef(whileElementsMounted);
   const platformRef = useLatestRef(platform2);
   const openRef = useLatestRef(open);
-  const update = reactExports.useCallback(() => {
+  const update2 = reactExports.useCallback(() => {
     if (!referenceRef.current || !floatingRef.current) {
       return;
     }
@@ -29978,11 +34513,11 @@ function useFloating(options) {
     if (floatingEl) floatingRef.current = floatingEl;
     if (referenceEl && floatingEl) {
       if (whileElementsMountedRef.current) {
-        return whileElementsMountedRef.current(referenceEl, floatingEl, update);
+        return whileElementsMountedRef.current(referenceEl, floatingEl, update2);
       }
-      update();
+      update2();
     }
-  }, [referenceEl, floatingEl, update, whileElementsMountedRef, hasWhileElementsMounted]);
+  }, [referenceEl, floatingEl, update2, whileElementsMountedRef, hasWhileElementsMounted]);
   const refs = reactExports.useMemo(() => ({
     reference: referenceRef,
     floating: floatingRef,
@@ -30021,11 +34556,11 @@ function useFloating(options) {
   }, [strategy, transform2, elements.floating, data.x, data.y]);
   return reactExports.useMemo(() => ({
     ...data,
-    update,
+    update: update2,
     refs,
     elements,
     floatingStyles
-  }), [data, update, refs, elements, floatingStyles]);
+  }), [data, update2, refs, elements, floatingStyles]);
 }
 const arrow$1 = (options) => {
   function isRef(value) {
@@ -31757,16 +36292,157 @@ function DropdownMenuSeparator({
     }
   );
 }
+const formatNotificationTime = (value) => {
+  const createdAt = new Date(value).getTime();
+  const diffInSeconds = Math.max(
+    Math.floor((Date.now() - createdAt) / 1e3),
+    0
+  );
+  if (diffInSeconds < 60) return "Just now";
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours}h ago`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) return `${diffInDays}d ago`;
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "2-digit",
+    month: "short"
+  }).format(new Date(value));
+};
+const getNotificationIcon = (notification) => {
+  if (notification.type === "seller_application") {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Store2, { className: "h-4 w-4" });
+  }
+  if (notification.type === "bulk_order") {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "h-4 w-4" });
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(ShoppingBag, { className: "h-4 w-4" });
+};
 function Header() {
   var _a3;
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, logout, isAuthenticated } = useAuthStore();
+  const [notifications, setNotifications] = reactExports.useState([]);
+  const [unreadCount, setUnreadCount] = reactExports.useState(0);
+  const [isLoadingNotifications, setIsLoadingNotifications] = reactExports.useState(false);
   const handleLogout = () => {
     logout();
     navigate({ to: "/login" });
   };
   const { darkMode, toggleDarkMode } = useThemeStore();
   const { setMobileDrawerOpen } = useUIStore();
+  const hasUnreadNotifications = unreadCount > 0;
+  const visibleUnreadCount = reactExports.useMemo(
+    () => unreadCount > 99 ? "99+" : unreadCount.toString(),
+    [unreadCount]
+  );
+  const loadNotifications = reactExports.useCallback(async () => {
+    if (!isAuthenticated) return;
+    setIsLoadingNotifications(true);
+    try {
+      const response = await notificationService.getNotifications({
+        page: 1,
+        limit: 8
+      });
+      setNotifications(response.data || []);
+      setUnreadCount(response.unreadCount || 0);
+    } catch (error) {
+      console.error("Failed to load admin notifications:", error);
+    } finally {
+      setIsLoadingNotifications(false);
+    }
+  }, [isAuthenticated]);
+  reactExports.useEffect(() => {
+    loadNotifications();
+    if (!isAuthenticated) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
+    }
+    const intervalId = window.setInterval(loadNotifications, 3e4);
+    return () => window.clearInterval(intervalId);
+  }, [isAuthenticated, loadNotifications]);
+  reactExports.useEffect(() => {
+    if (isAuthenticated && (user == null ? void 0 : user.role) === "Admin") {
+      setupAdminFirebaseNotifications();
+    }
+  }, [isAuthenticated, user == null ? void 0 : user.role]);
+  reactExports.useEffect(() => {
+    const handleFirebaseNotification = () => {
+      loadNotifications();
+    };
+    window.addEventListener(
+      "admin-fcm-notification",
+      handleFirebaseNotification
+    );
+    return () => window.removeEventListener(
+      "admin-fcm-notification",
+      handleFirebaseNotification
+    );
+  }, [loadNotifications]);
+  const handleNotificationClick = async (notification) => {
+    if (!notification.read) {
+      setNotifications(
+        (currentNotifications) => currentNotifications.map(
+          (item) => item.id === notification.id ? { ...item, read: true } : item
+        )
+      );
+      setUnreadCount((currentCount) => Math.max(currentCount - 1, 0));
+      try {
+        await notificationService.markAsRead(notification.id);
+      } catch (error) {
+        console.error("Failed to mark admin notification as read:", error);
+        loadNotifications();
+      }
+    }
+    if (notification.link) {
+      navigate({ to: notification.link });
+    }
+  };
+  const handleMarkAllAsRead = async () => {
+    if (!hasUnreadNotifications) return;
+    const previousNotifications = notifications;
+    const previousUnreadCount = unreadCount;
+    setNotifications(
+      (currentNotifications) => currentNotifications.map((notification) => ({
+        ...notification,
+        read: true
+      }))
+    );
+    setUnreadCount(0);
+    try {
+      await notificationService.markAllAsRead();
+    } catch (error) {
+      console.error("Failed to mark admin notifications as read:", error);
+      setNotifications(previousNotifications);
+      setUnreadCount(previousUnreadCount);
+    }
+  };
+  const handleDeleteNotification = async (notificationId, event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const notificationToDelete = notifications.find(
+      (notification) => notification.id === notificationId
+    );
+    const previousNotifications = notifications;
+    const previousUnreadCount = unreadCount;
+    setNotifications(
+      (currentNotifications) => currentNotifications.filter(
+        (notification) => notification.id !== notificationId
+      )
+    );
+    if (notificationToDelete && !notificationToDelete.read) {
+      setUnreadCount((currentCount) => Math.max(currentCount - 1, 0));
+    }
+    try {
+      await notificationService.deleteNotification(notificationId);
+    } catch (error) {
+      console.error("Failed to delete admin notification:", error);
+      setNotifications(previousNotifications);
+      setUnreadCount(previousUnreadCount);
+    }
+  };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-border bg-card/80 backdrop-blur-md px-4 lg:px-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       Button,
@@ -31816,19 +36492,87 @@ function Header() {
           children: darkMode ? /* @__PURE__ */ jsxRuntimeExports.jsx(Sun, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Moon, { className: "h-4 w-4" })
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        Button,
-        {
-          variant: "ghost",
-          size: "icon",
-          className: "relative",
-          "data-ocid": "header.notifications",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Bell, { className: "h-4 w-4" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive" })
-          ]
-        }
-      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { onOpenChange: (open) => open && loadNotifications(), children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Button,
+          {
+            variant: "ghost",
+            size: "icon",
+            className: "relative",
+            "data-ocid": "header.notifications",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Bell, { className: "h-4 w-4" }),
+              hasUnreadNotifications && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute -top-1 -right-1 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold leading-none text-destructive-foreground", children: visibleUnreadCount }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Notifications" })
+            ]
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          DropdownMenuContent,
+          {
+            className: "w-96 max-w-[calc(100vw-2rem)]",
+            align: "end",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 px-2 py-1.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuLabel, { className: "p-0", children: "Admin notifications" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    variant: "ghost",
+                    size: "sm",
+                    className: "h-8 gap-2 px-2 text-xs",
+                    onClick: handleMarkAllAsRead,
+                    disabled: !hasUnreadNotifications,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(CheckCheck, { className: "h-3.5 w-3.5" }),
+                      "Mark read"
+                    ]
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-h-96 overflow-y-auto py-1", children: isLoadingNotifications && notifications.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-3 py-8 text-center text-sm text-muted-foreground", children: "Loading notifications..." }) : notifications.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-3 py-8 text-center text-sm text-muted-foreground", children: "No admin notifications yet" }) : notifications.map((notification) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                DropdownMenuItem,
+                {
+                  className: "flex cursor-pointer items-start gap-3 px-3 py-3",
+                  onSelect: () => handleNotificationClick(notification),
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "span",
+                      {
+                        className: `mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${notification.read ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"}`,
+                        children: getNotificationIcon(notification)
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "min-w-0 flex-1 space-y-1", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex items-start justify-between gap-2", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "line-clamp-1 text-sm font-medium", children: notification.title }),
+                        !notification.read && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-1 h-2 w-2 shrink-0 rounded-full bg-destructive" })
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "line-clamp-2 text-xs leading-5 text-muted-foreground", children: notification.message }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] text-muted-foreground", children: formatNotificationTime(notification.createdAt) })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      Button,
+                      {
+                        variant: "ghost",
+                        size: "icon",
+                        className: "h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive",
+                        onClick: (event) => handleDeleteNotification(notification.id, event),
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-3.5 w-3.5" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Delete notification" })
+                        ]
+                      }
+                    )
+                  ]
+                },
+                notification.id
+              )) })
+            ]
+          }
+        )
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           Button,
@@ -36633,7 +41377,7 @@ var Select$1 = (props) => {
     defaultValue,
     onValueChange,
     dir,
-    name,
+    name: name2,
     autoComplete,
     disabled,
     required: required2,
@@ -36703,7 +41447,7 @@ var Select$1 = (props) => {
             "aria-hidden": true,
             required: required2,
             tabIndex: -1,
-            name,
+            name: name2,
             autoComplete,
             value,
             onChange: (event) => setValue(event.target.value),
@@ -38855,7 +43599,7 @@ function createRenderBatcher(scheduleNextBatch, allowKeepAlive) {
     acc[key] = createRenderStep(flagRunNextFrame);
     return acc;
   }, {});
-  const { setup, read, resolveKeyframes, preUpdate, update, preRender, render, postRender } = steps;
+  const { setup, read, resolveKeyframes, preUpdate, update: update2, preRender, render, postRender } = steps;
   const processBatch = () => {
     const useManualTiming = MotionGlobalConfig.useManualTiming;
     const timestamp = useManualTiming ? state.timestamp : performance.now();
@@ -38869,7 +43613,7 @@ function createRenderBatcher(scheduleNextBatch, allowKeepAlive) {
     read.process(state);
     resolveKeyframes.process(state);
     preUpdate.process(state);
-    update.process(state);
+    update2.process(state);
     preRender.process(state);
     render.process(state);
     postRender.process(state);
@@ -39292,8 +44036,8 @@ function mix(from, to, p2) {
   const mixer = getMixer(from);
   return mixer(from, to);
 }
-const frameloopDriver = (update) => {
-  const passTimestamp = ({ timestamp }) => update(timestamp);
+const frameloopDriver = (update2) => {
+  const passTimestamp = ({ timestamp }) => update2(timestamp);
   return {
     start: (keepAlive = true) => frame.update(passTimestamp, keepAlive),
     stop: () => cancelFrame(passTimestamp),
@@ -40095,12 +44839,12 @@ const matrix3dParsers = {
   skewY: (v2) => radToDeg(Math.atan(v2[1])),
   skew: (v2) => (Math.abs(v2[1]) + Math.abs(v2[4])) / 2
 };
-function defaultTransformValue(name) {
-  return name.includes("scale") ? 1 : 0;
+function defaultTransformValue(name2) {
+  return name2.includes("scale") ? 1 : 0;
 }
-function parseValueFromTransform(transform2, name) {
+function parseValueFromTransform(transform2, name2) {
   if (!transform2 || transform2 === "none") {
-    return defaultTransformValue(name);
+    return defaultTransformValue(name2);
   }
   const matrix3dMatch = transform2.match(/^matrix3d\(([-\d.e\s,]+)\)$/u);
   let parsers;
@@ -40114,15 +44858,15 @@ function parseValueFromTransform(transform2, name) {
     match = matrix2dMatch;
   }
   if (!match) {
-    return defaultTransformValue(name);
+    return defaultTransformValue(name2);
   }
-  const valueParser = parsers[name];
+  const valueParser = parsers[name2];
   const values = match[1].split(",").map(convertTransformToNumber);
   return typeof valueParser === "function" ? valueParser(values) : values[valueParser];
 }
-const readTransformValue = (instance, name) => {
+const readTransformValue = (instance, name2) => {
   const { transform: transform2 = "none" } = getComputedStyle(instance);
-  return parseValueFromTransform(transform2, name);
+  return parseValueFromTransform(transform2, name2);
 };
 function convertTransformToNumber(value) {
   return parseFloat(value.trim());
@@ -40235,13 +44979,13 @@ function flushKeyframeResolvers() {
   isForced = false;
 }
 class KeyframeResolver {
-  constructor(unresolvedKeyframes, onComplete, name, motionValue2, element, isAsync = false) {
+  constructor(unresolvedKeyframes, onComplete, name2, motionValue2, element, isAsync = false) {
     this.state = "pending";
     this.isAsync = false;
     this.needsMeasurement = false;
     this.unresolvedKeyframes = [...unresolvedKeyframes];
     this.onComplete = onComplete;
-    this.name = name;
+    this.name = name2;
     this.motionValue = motionValue2;
     this.element = element;
     this.isAsync = isAsync;
@@ -40261,14 +45005,14 @@ class KeyframeResolver {
     }
   }
   readKeyframes() {
-    const { unresolvedKeyframes, name, element, motionValue: motionValue2 } = this;
+    const { unresolvedKeyframes, name: name2, element, motionValue: motionValue2 } = this;
     if (unresolvedKeyframes[0] === null) {
       const currentValue = motionValue2 == null ? void 0 : motionValue2.get();
       const finalKeyframe = unresolvedKeyframes[unresolvedKeyframes.length - 1];
       if (currentValue !== void 0) {
         unresolvedKeyframes[0] = currentValue;
-      } else if (element && name) {
-        const valueAsRead = element.readValue(name, finalKeyframe);
+      } else if (element && name2) {
+        const valueAsRead = element.readValue(name2, finalKeyframe);
         if (valueAsRead !== void 0 && valueAsRead !== null) {
           unresolvedKeyframes[0] = valueAsRead;
         }
@@ -40306,9 +45050,9 @@ class KeyframeResolver {
       this.scheduleResolve();
   }
 }
-const isCSSVar = (name) => name.startsWith("--");
-function setStyle(element, name, value) {
-  isCSSVar(name) ? element.style.setProperty(name, value) : element.style[name] = value;
+const isCSSVar = (name2) => name2.startsWith("--");
+function setStyle(element, name2, value) {
+  isCSSVar(name2) ? element.style.setProperty(name2, value) : element.style[name2] = value;
 }
 const supportsFlags = {};
 function memoSupports(callback, supportsFlag) {
@@ -40391,13 +45135,13 @@ class NativeAnimation extends WithPromise {
     this.manualStartTime = null;
     if (!options)
       return;
-    const { element, name, keyframes: keyframes2, pseudoElement, allowFlatten = false, finalKeyframe, onComplete } = options;
+    const { element, name: name2, keyframes: keyframes2, pseudoElement, allowFlatten = false, finalKeyframe, onComplete } = options;
     this.isPseudoElement = Boolean(pseudoElement);
     this.allowFlatten = allowFlatten;
     this.options = options;
     invariant(typeof options.type !== "string");
     const transition = applyGeneratorOptions(options);
-    this.animation = startWaapiAnimation(element, name, keyframes2, transition, pseudoElement);
+    this.animation = startWaapiAnimation(element, name2, keyframes2, transition, pseudoElement);
     if (transition.autoplay === false) {
       this.animation.pause();
     }
@@ -40408,7 +45152,7 @@ class NativeAnimation extends WithPromise {
         if (this.updateMotionValue) {
           this.updateMotionValue(keyframe);
         }
-        setStyle(element, name, keyframe);
+        setStyle(element, name2, keyframe);
         this.animation.cancel();
       }
       onComplete == null ? void 0 : onComplete();
@@ -40582,15 +45326,15 @@ class NativeAnimationExtended extends NativeAnimation {
     const sampleTime = Math.max(sampleDelta, time$3.now() - this.startTime);
     const delta = clamp(0, sampleDelta, sampleTime - sampleDelta);
     const current = sampleAnimation.sample(sampleTime).value;
-    const { name } = this.options;
-    if (element && name)
-      setStyle(element, name, current);
+    const { name: name2 } = this.options;
+    if (element && name2)
+      setStyle(element, name2, current);
     motionValue2.setWithVelocity(sampleAnimation.sample(Math.max(0, sampleTime - delta)).value, current, delta);
     sampleAnimation.stop();
   }
 }
-const isAnimatable = (value, name) => {
-  if (name === "zIndex")
+const isAnimatable = (value, name2) => {
+  if (name2 === "zIndex")
     return false;
   if (typeof value === "number" || Array.isArray(value))
     return true;
@@ -40610,16 +45354,16 @@ function hasKeyframesChanged(keyframes2) {
       return true;
   }
 }
-function canAnimate(keyframes2, name, type, velocity) {
+function canAnimate(keyframes2, name2, type, velocity) {
   const originKeyframe = keyframes2[0];
   if (originKeyframe === null) {
     return false;
   }
-  if (name === "display" || name === "visibility")
+  if (name2 === "display" || name2 === "visibility")
     return true;
   const targetKeyframe = keyframes2[keyframes2.length - 1];
-  const isOriginAnimatable = isAnimatable(originKeyframe, name);
-  const isTargetAnimatable = isAnimatable(targetKeyframe, name);
+  const isOriginAnimatable = isAnimatable(originKeyframe, name2);
+  const isTargetAnimatable = isAnimatable(targetKeyframe, name2);
   if (!isOriginAnimatable || !isTargetAnimatable) {
     return false;
   }
@@ -40662,17 +45406,17 @@ const colorProperties = /* @__PURE__ */ new Set([
 const supportsWaapi = /* @__PURE__ */ memo(() => Object.hasOwnProperty.call(Element.prototype, "animate"));
 function supportsBrowserAnimation(options) {
   var _a3;
-  const { motionValue: motionValue2, name, repeatDelay, repeatType, damping, type, keyframes: keyframes2 } = options;
+  const { motionValue: motionValue2, name: name2, repeatDelay, repeatType, damping, type, keyframes: keyframes2 } = options;
   const subject = (_a3 = motionValue2 == null ? void 0 : motionValue2.owner) == null ? void 0 : _a3.current;
   if (!(subject instanceof HTMLElement)) {
     return false;
   }
   const { onUpdate, transformTemplate } = motionValue2.owner.getProps();
-  return supportsWaapi() && name && /**
+  return supportsWaapi() && name2 && /**
    * Force WAAPI for color properties with browser-only color formats
    * (oklch, oklab, lab, lch, etc.) that the JS animation path can't parse.
    */
-  (acceleratedValues.has(name) || colorProperties.has(name) && hasBrowserOnlyColors(keyframes2)) && (name !== "transform" || !transformTemplate) && /**
+  (acceleratedValues.has(name2) || colorProperties.has(name2) && hasBrowserOnlyColors(keyframes2)) && (name2 !== "transform" || !transformTemplate) && /**
    * If we're outputting values to onUpdate then we can't use WAAPI as there's
    * no way to read the value from WAAPI every frame.
    */
@@ -40680,7 +45424,7 @@ function supportsBrowserAnimation(options) {
 }
 const MAX_RESOLVE_DELAY = 40;
 class AsyncMotionValueAnimation extends WithPromise {
-  constructor({ autoplay = true, delay: delay2 = 0, type = "keyframes", repeat = 0, repeatDelay = 0, repeatType = "loop", keyframes: keyframes2, name, motionValue: motionValue2, element, ...options }) {
+  constructor({ autoplay = true, delay: delay2 = 0, type = "keyframes", repeat = 0, repeatDelay = 0, repeatType = "loop", keyframes: keyframes2, name: name2, motionValue: motionValue2, element, ...options }) {
     var _a3;
     super();
     this.stop = () => {
@@ -40699,22 +45443,22 @@ class AsyncMotionValueAnimation extends WithPromise {
       repeat,
       repeatDelay,
       repeatType,
-      name,
+      name: name2,
       motionValue: motionValue2,
       element,
       ...options
     };
     const KeyframeResolver$1 = (element == null ? void 0 : element.KeyframeResolver) || KeyframeResolver;
-    this.keyframeResolver = new KeyframeResolver$1(keyframes2, (resolvedKeyframes, finalKeyframe, forced) => this.onKeyframesResolved(resolvedKeyframes, finalKeyframe, optionsWithDefaults, !forced), name, motionValue2, element);
+    this.keyframeResolver = new KeyframeResolver$1(keyframes2, (resolvedKeyframes, finalKeyframe, forced) => this.onKeyframesResolved(resolvedKeyframes, finalKeyframe, optionsWithDefaults, !forced), name2, motionValue2, element);
     (_a3 = this.keyframeResolver) == null ? void 0 : _a3.scheduleResolve();
   }
   onKeyframesResolved(keyframes2, finalKeyframe, options, sync) {
     var _a3, _b2;
     this.keyframeResolver = void 0;
-    const { name, type, velocity, delay: delay2, isHandoff, onUpdate } = options;
+    const { name: name2, type, velocity, delay: delay2, isHandoff, onUpdate } = options;
     this.resolvedAt = time$3.now();
     let canAnimateValue = true;
-    if (!canAnimate(keyframes2, name, type, velocity)) {
+    if (!canAnimate(keyframes2, name2, type, velocity)) {
       canAnimateValue = false;
       if (MotionGlobalConfig.instantAnimations || !delay2) {
         onUpdate == null ? void 0 : onUpdate(getFinalKeyframe(keyframes2, options, finalKeyframe));
@@ -40913,8 +45657,8 @@ function isTransitionDefined(transition) {
   }
   return false;
 }
-const animateMotionValue = (name, value, target, transition = {}, element, isHandoff) => (onComplete) => {
-  const valueTransition = getValueTransition(transition, name) || {};
+const animateMotionValue = (name2, value, target, transition = {}, element, isHandoff) => (onComplete) => {
+  const valueTransition = getValueTransition(transition, name2) || {};
   const delay2 = valueTransition.delay || transition.delay || 0;
   let { elapsed = 0 } = transition;
   elapsed = elapsed - /* @__PURE__ */ secondsToMilliseconds(delay2);
@@ -40932,12 +45676,12 @@ const animateMotionValue = (name, value, target, transition = {}, element, isHan
       onComplete();
       valueTransition.onComplete && valueTransition.onComplete();
     },
-    name,
+    name: name2,
     motionValue: value,
     element: isHandoff ? void 0 : element
   };
   if (!isTransitionDefined(valueTransition)) {
-    Object.assign(options, getDefaultTransition(name, options));
+    Object.assign(options, getDefaultTransition(name2, options));
   }
   options.duration && (options.duration = /* @__PURE__ */ secondsToMilliseconds(options.duration));
   options.repeatDelay && (options.repeatDelay = /* @__PURE__ */ secondsToMilliseconds(options.repeatDelay));
@@ -41450,17 +46194,17 @@ function isNone(value) {
 }
 const maxDefaults = /* @__PURE__ */ new Set(["brightness", "contrast", "saturate", "opacity"]);
 function applyDefaultFilter(v2) {
-  const [name, value] = v2.slice(0, -1).split("(");
-  if (name === "drop-shadow")
+  const [name2, value] = v2.slice(0, -1).split("(");
+  if (name2 === "drop-shadow")
     return v2;
   const [number2] = value.match(floatRegex) || [];
   if (!number2)
     return v2;
   const unit2 = value.replace(number2, "");
-  let defaultValue = maxDefaults.has(name) ? 1 : 0;
+  let defaultValue = maxDefaults.has(name2) ? 1 : 0;
   if (number2 !== value)
     defaultValue *= 100;
-  return name + "(" + defaultValue + unit2 + ")";
+  return name2 + "(" + defaultValue + unit2 + ")";
 }
 const functionRegex = /\b([a-z-]*)\(.*?\)/gu;
 const filter = {
@@ -41599,7 +46343,7 @@ function getAnimatableNone(key, value) {
   return defaultValueType.getAnimatableNone ? defaultValueType.getAnimatableNone(value) : void 0;
 }
 const invalidTemplates = /* @__PURE__ */ new Set(["auto", "none", "0"]);
-function makeNoneKeyframesAnimatable(unresolvedKeyframes, noneKeyframeIndexes, name) {
+function makeNoneKeyframesAnimatable(unresolvedKeyframes, noneKeyframeIndexes, name2) {
   let i2 = 0;
   let animatableTemplate = void 0;
   while (i2 < unresolvedKeyframes.length && !animatableTemplate) {
@@ -41609,18 +46353,18 @@ function makeNoneKeyframesAnimatable(unresolvedKeyframes, noneKeyframeIndexes, n
     }
     i2++;
   }
-  if (animatableTemplate && name) {
+  if (animatableTemplate && name2) {
     for (const noneIndex of noneKeyframeIndexes) {
-      unresolvedKeyframes[noneIndex] = getAnimatableNone(name, animatableTemplate);
+      unresolvedKeyframes[noneIndex] = getAnimatableNone(name2, animatableTemplate);
     }
   }
 }
 class DOMKeyframesResolver extends KeyframeResolver {
-  constructor(unresolvedKeyframes, onComplete, name, motionValue2, element) {
-    super(unresolvedKeyframes, onComplete, name, motionValue2, element, true);
+  constructor(unresolvedKeyframes, onComplete, name2, motionValue2, element) {
+    super(unresolvedKeyframes, onComplete, name2, motionValue2, element, true);
   }
   readKeyframes() {
-    const { unresolvedKeyframes, element, name } = this;
+    const { unresolvedKeyframes, element, name: name2 } = this;
     if (!element || !element.current)
       return;
     super.readKeyframes();
@@ -41640,7 +46384,7 @@ class DOMKeyframesResolver extends KeyframeResolver {
       }
     }
     this.resolveNoneKeyframes();
-    if (!positionalKeys.has(name) || unresolvedKeyframes.length !== 2) {
+    if (!positionalKeys.has(name2) || unresolvedKeyframes.length !== 2) {
       return;
     }
     const [origin, target] = unresolvedKeyframes;
@@ -41648,7 +46392,7 @@ class DOMKeyframesResolver extends KeyframeResolver {
     const targetType = findDimensionValueType(target);
     const originHasVar = containsCSSVariable(origin);
     const targetHasVar = containsCSSVariable(target);
-    if (originHasVar !== targetHasVar && positionalValues[name]) {
+    if (originHasVar !== targetHasVar && positionalValues[name2]) {
       this.needsMeasurement = true;
       return;
     }
@@ -41661,12 +46405,12 @@ class DOMKeyframesResolver extends KeyframeResolver {
           unresolvedKeyframes[i2] = parseFloat(value);
         }
       }
-    } else if (positionalValues[name]) {
+    } else if (positionalValues[name2]) {
       this.needsMeasurement = true;
     }
   }
   resolveNoneKeyframes() {
-    const { unresolvedKeyframes, name } = this;
+    const { unresolvedKeyframes, name: name2 } = this;
     const noneKeyframeIndexes = [];
     for (let i2 = 0; i2 < unresolvedKeyframes.length; i2++) {
       if (unresolvedKeyframes[i2] === null || isNone(unresolvedKeyframes[i2])) {
@@ -41674,33 +46418,33 @@ class DOMKeyframesResolver extends KeyframeResolver {
       }
     }
     if (noneKeyframeIndexes.length) {
-      makeNoneKeyframesAnimatable(unresolvedKeyframes, noneKeyframeIndexes, name);
+      makeNoneKeyframesAnimatable(unresolvedKeyframes, noneKeyframeIndexes, name2);
     }
   }
   measureInitialState() {
-    const { element, unresolvedKeyframes, name } = this;
+    const { element, unresolvedKeyframes, name: name2 } = this;
     if (!element || !element.current)
       return;
-    if (name === "height") {
+    if (name2 === "height") {
       this.suspendedScrollY = window.pageYOffset;
     }
-    this.measuredOrigin = positionalValues[name](element.measureViewportBox(), window.getComputedStyle(element.current));
+    this.measuredOrigin = positionalValues[name2](element.measureViewportBox(), window.getComputedStyle(element.current));
     unresolvedKeyframes[0] = this.measuredOrigin;
     const measureKeyframe = unresolvedKeyframes[unresolvedKeyframes.length - 1];
     if (measureKeyframe !== void 0) {
-      element.getValue(name, measureKeyframe).jump(measureKeyframe, false);
+      element.getValue(name2, measureKeyframe).jump(measureKeyframe, false);
     }
   }
   measureEndState() {
     var _a3;
-    const { element, name, unresolvedKeyframes } = this;
+    const { element, name: name2, unresolvedKeyframes } = this;
     if (!element || !element.current)
       return;
-    const value = element.getValue(name);
+    const value = element.getValue(name2);
     value && value.jump(this.measuredOrigin, false);
     const finalKeyframeIndex = unresolvedKeyframes.length - 1;
     const finalKeyframe = unresolvedKeyframes[finalKeyframeIndex];
-    unresolvedKeyframes[finalKeyframeIndex] = positionalValues[name](element.measureViewportBox(), window.getComputedStyle(element.current));
+    unresolvedKeyframes[finalKeyframeIndex] = positionalValues[name2](element.measureViewportBox(), window.getComputedStyle(element.current));
     if (finalKeyframe !== null && this.finalKeyframe === void 0) {
       this.finalKeyframe = finalKeyframe;
     }
@@ -42067,7 +46811,7 @@ const variantPriorityOrder = [
 ];
 const variantProps = ["initial", ...variantPriorityOrder];
 function isControllingVariants(props) {
-  return isAnimationControls(props.animate) || variantProps.some((name) => isVariantLabel(props[name]));
+  return isAnimationControls(props.animate) || variantProps.some((name2) => isVariantLabel(props[name2]));
 }
 function isVariantNode(props) {
   return Boolean(isControllingVariants(props) || props.variants);
@@ -42237,7 +46981,7 @@ class VisualElement {
     this.projection && this.projection.unmount();
     cancelFrame(this.notifyUpdate);
     cancelFrame(this.render);
-    this.valueSubscriptions.forEach((remove) => remove());
+    this.valueSubscriptions.forEach((remove2) => remove2());
     this.valueSubscriptions.clear();
     this.removeFromVariantTree && this.removeFromVariantTree();
     (_a3 = this.parent) == null ? void 0 : _a3.removeChild(this);
@@ -42386,8 +47130,8 @@ class VisualElement {
   /**
    * Returns the variant definition with a given name.
    */
-  getVariant(name) {
-    return this.props.variants ? this.props.variants[name] : void 0;
+  getVariant(name2) {
+    return this.props.variants ? this.props.variants[name2] : void 0;
   }
   /**
    * Returns the defined default transition on this component.
@@ -43022,10 +47766,10 @@ function getVariantContext(visualElement) {
   }
   const context = {};
   for (let i2 = 0; i2 < numVariantProps; i2++) {
-    const name = variantProps[i2];
-    const prop = visualElement.props[name];
+    const name2 = variantProps[i2];
+    const prop = visualElement.props[name2];
     if (isVariantLabel(prop) || prop === false) {
-      context[name] = prop;
+      context[name2] = prop;
     }
   }
   return context;
@@ -43687,18 +48431,18 @@ function createProjectionNode$1({ attachResizeListener, defaultParent, measureSc
       if (this.root === this)
         this.nodes = new FlatTree();
     }
-    addEventListener(name, handler) {
-      if (!this.eventHandlers.has(name)) {
-        this.eventHandlers.set(name, new SubscriptionManager());
+    addEventListener(name2, handler) {
+      if (!this.eventHandlers.has(name2)) {
+        this.eventHandlers.set(name2, new SubscriptionManager());
       }
-      return this.eventHandlers.get(name).add(handler);
+      return this.eventHandlers.get(name2).add(handler);
     }
-    notifyListeners(name, ...args) {
-      const subscriptionManager = this.eventHandlers.get(name);
+    notifyListeners(name2, ...args) {
+      const subscriptionManager = this.eventHandlers.get(name2);
       subscriptionManager && subscriptionManager.notify(...args);
     }
-    hasListeners(name) {
-      return this.eventHandlers.has(name);
+    hasListeners(name2) {
+      return this.eventHandlers.has(name2);
     }
     /**
      * Lifecycles
@@ -44764,7 +49508,7 @@ function initFeatureDefinitions() {
   const initialFeatureDefinitions = {};
   for (const key in featureProps) {
     initialFeatureDefinitions[key] = {
-      isEnabled: (props) => featureProps[key].some((name) => !!props[name])
+      isEnabled: (props) => featureProps[key].some((name2) => !!props[name2])
     };
   }
   setFeatureDefinitions(initialFeatureDefinitions);
@@ -46422,7 +51166,7 @@ class InViewFeature extends Feature {
   }
 }
 function hasViewportOptionChanged({ viewport = {} }, { viewport: prevViewport = {} } = {}) {
-  return (name) => viewport[name] !== prevViewport[name];
+  return (name2) => viewport[name2] !== prevViewport[name2];
 }
 const gestureAnimations = {
   inView: {
@@ -46483,7 +51227,7 @@ function CheckboxProvider(props) {
     defaultChecked,
     disabled,
     form,
-    name,
+    name: name2,
     onCheckedChange,
     required: required2,
     value = "on",
@@ -46509,7 +51253,7 @@ function CheckboxProvider(props) {
     setChecked,
     control,
     setControl,
-    name,
+    name: name2,
     form,
     value,
     hasConsumerStoppedPropagationRef,
@@ -46585,7 +51329,7 @@ var Checkbox$1 = reactExports.forwardRef(
   (props, forwardedRef) => {
     const {
       __scopeCheckbox,
-      name,
+      name: name2,
       checked,
       defaultChecked,
       required: required2,
@@ -46604,7 +51348,7 @@ var Checkbox$1 = reactExports.forwardRef(
         disabled,
         required: required2,
         onCheckedChange,
-        name,
+        name: name2,
         form,
         value,
         internal_do_not_use_render: ({ isFormControl }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
@@ -46662,7 +51406,7 @@ var CheckboxBubbleInput = reactExports.forwardRef(
       defaultChecked,
       required: required2,
       disabled,
-      name,
+      name: name2,
       value,
       form,
       bubbleInput,
@@ -46697,7 +51441,7 @@ var CheckboxBubbleInput = reactExports.forwardRef(
         defaultChecked: defaultChecked ?? defaultCheckedRef.current,
         required: required2,
         disabled,
-        name,
+        name: name2,
         value,
         form,
         ...props,
@@ -46759,8 +51503,8 @@ var isNullOrUndefined = (value) => value == null;
 const isObjectType = (value) => typeof value === "object";
 var isObject$a = (value) => !isNullOrUndefined(value) && !Array.isArray(value) && isObjectType(value) && !isDateObject(value);
 var getEventValue = (event) => isObject$a(event) && event.target ? isCheckBoxInput(event.target) ? event.target.checked : event.target.value : event;
-var getNodeParentName = (name) => name.substring(0, name.search(/\.\d+(\.|$)/)) || name;
-var isNameInFieldArray = (names, name) => names.has(getNodeParentName(name));
+var getNodeParentName = (name2) => name2.substring(0, name2.search(/\.\d+(\.|$)/)) || name2;
+var isNameInFieldArray = (names, name2) => names.has(getNodeParentName(name2));
 var isPlainObject$3 = (tempObject) => {
   const prototypeCopy = tempObject.constructor && tempObject.constructor.prototype;
   return isObject$a(prototypeCopy) && prototypeCopy.hasOwnProperty("isPrototypeOf");
@@ -46868,7 +51612,7 @@ var getProxyFormState = (formState, control, localProxyFormState, isRoot = true)
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? React$4.useLayoutEffect : React$4.useEffect;
 function useFormState(props) {
   const formControl = useFormControlContext();
-  const { control = formControl, disabled, name, exact } = props || {};
+  const { control = formControl, disabled, name: name2, exact } = props || {};
   const [formState, updateFormState] = React$4.useState(control._formState);
   const _localProxyFormState = React$4.useRef({
     isDirty: false,
@@ -46881,7 +51625,7 @@ function useFormState(props) {
     errors: false
   });
   useIsomorphicLayoutEffect(() => control._subscribe({
-    name,
+    name: name2,
     formState: _localProxyFormState.current,
     exact,
     callback: (formState2) => {
@@ -46890,7 +51634,7 @@ function useFormState(props) {
         ...formState2
       });
     }
-  }), [name, disabled, exact]);
+  }), [name2, disabled, exact]);
   React$4.useEffect(() => {
     _localProxyFormState.current.isValid && control._setValid(true);
   }, [control]);
@@ -46942,24 +51686,24 @@ function deepEqual$1(object1, object2, _internal_visited = /* @__PURE__ */ new W
 }
 function useWatch(props) {
   const formControl = useFormControlContext();
-  const { control = formControl, name, defaultValue, disabled, exact, compute } = props || {};
+  const { control = formControl, name: name2, defaultValue, disabled, exact, compute } = props || {};
   const _defaultValue = React$4.useRef(defaultValue);
   const _compute = React$4.useRef(compute);
   const _computeFormValues = React$4.useRef(void 0);
   const _prevControl = React$4.useRef(control);
-  const _prevName = React$4.useRef(name);
+  const _prevName = React$4.useRef(name2);
   _compute.current = compute;
   const [value, updateValue] = React$4.useState(() => {
-    const defaultValue2 = control._getWatch(name, _defaultValue.current);
+    const defaultValue2 = control._getWatch(name2, _defaultValue.current);
     return _compute.current ? _compute.current(defaultValue2) : defaultValue2;
   });
   const getCurrentOutput = React$4.useCallback((values) => {
-    const formValues = generateWatchOutput(name, control._names, values || control._formValues, false, _defaultValue.current);
+    const formValues = generateWatchOutput(name2, control._names, values || control._formValues, false, _defaultValue.current);
     return _compute.current ? _compute.current(formValues) : formValues;
-  }, [control._formValues, control._names, name]);
+  }, [control._formValues, control._names, name2]);
   const refreshValue = React$4.useCallback((values) => {
     if (!disabled) {
-      const formValues = generateWatchOutput(name, control._names, values || control._formValues, false, _defaultValue.current);
+      const formValues = generateWatchOutput(name2, control._names, values || control._formValues, false, _defaultValue.current);
       if (_compute.current) {
         const computedFormValues = _compute.current(formValues);
         if (!deepEqual$1(computedFormValues, _computeFormValues.current)) {
@@ -46970,15 +51714,15 @@ function useWatch(props) {
         updateValue(formValues);
       }
     }
-  }, [control._formValues, control._names, disabled, name]);
+  }, [control._formValues, control._names, disabled, name2]);
   useIsomorphicLayoutEffect(() => {
-    if (_prevControl.current !== control || !deepEqual$1(_prevName.current, name)) {
+    if (_prevControl.current !== control || !deepEqual$1(_prevName.current, name2)) {
       _prevControl.current = control;
-      _prevName.current = name;
+      _prevName.current = name2;
       refreshValue();
     }
     return control._subscribe({
-      name,
+      name: name2,
       formState: {
         values: true
       },
@@ -46987,7 +51731,7 @@ function useWatch(props) {
         refreshValue(formState.values);
       }
     });
-  }, [control, exact, name, refreshValue]);
+  }, [control, exact, name2, refreshValue]);
   React$4.useEffect(() => control._removeUnmounted());
   const controlChanged = _prevControl.current !== control;
   const prevName = _prevName.current;
@@ -46995,31 +51739,31 @@ function useWatch(props) {
     if (disabled) {
       return null;
     }
-    const nameChanged = !controlChanged && !deepEqual$1(prevName, name);
+    const nameChanged = !controlChanged && !deepEqual$1(prevName, name2);
     const shouldReturnImmediate = controlChanged || nameChanged;
     return shouldReturnImmediate ? getCurrentOutput() : null;
-  }, [disabled, controlChanged, name, prevName, getCurrentOutput]);
+  }, [disabled, controlChanged, name2, prevName, getCurrentOutput]);
   return computedOutput !== null ? computedOutput : value;
 }
 function useController(props) {
   const formControl = useFormControlContext();
-  const { name, disabled, control = formControl, shouldUnregister, defaultValue, exact = true } = props;
-  const isArrayField = isNameInFieldArray(control._names.array, name);
-  const defaultValueMemo = React$4.useMemo(() => get$3(control._formValues, name, get$3(control._defaultValues, name, defaultValue)), [control, name, defaultValue]);
+  const { name: name2, disabled, control = formControl, shouldUnregister, defaultValue, exact = true } = props;
+  const isArrayField = isNameInFieldArray(control._names.array, name2);
+  const defaultValueMemo = React$4.useMemo(() => get$3(control._formValues, name2, get$3(control._defaultValues, name2, defaultValue)), [control, name2, defaultValue]);
   const value = useWatch({
     control,
-    name,
+    name: name2,
     defaultValue: defaultValueMemo,
     exact
   });
   const formState = useFormState({
     control,
-    name,
+    name: name2,
     exact
   });
   const _props = React$4.useRef(props);
   const _previousNameRef = React$4.useRef(void 0);
-  const _registerProps = React$4.useRef(control.register(name, {
+  const _registerProps = React$4.useRef(control.register(name2, {
     ...props.rules,
     value,
     ...isBoolean$2(props.disabled) ? { disabled: props.disabled } : {}
@@ -47028,41 +51772,41 @@ function useController(props) {
   const fieldState = React$4.useMemo(() => Object.defineProperties({}, {
     invalid: {
       enumerable: true,
-      get: () => !!get$3(formState.errors, name)
+      get: () => !!get$3(formState.errors, name2)
     },
     isDirty: {
       enumerable: true,
-      get: () => !!get$3(formState.dirtyFields, name)
+      get: () => !!get$3(formState.dirtyFields, name2)
     },
     isTouched: {
       enumerable: true,
-      get: () => !!get$3(formState.touchedFields, name)
+      get: () => !!get$3(formState.touchedFields, name2)
     },
     isValidating: {
       enumerable: true,
-      get: () => !!get$3(formState.validatingFields, name)
+      get: () => !!get$3(formState.validatingFields, name2)
     },
     error: {
       enumerable: true,
-      get: () => get$3(formState.errors, name)
+      get: () => get$3(formState.errors, name2)
     }
-  }), [formState, name]);
+  }), [formState, name2]);
   const onChange = React$4.useCallback((event) => _registerProps.current.onChange({
     target: {
       value: getEventValue(event),
-      name
+      name: name2
     },
     type: EVENTS.CHANGE
-  }), [name]);
+  }), [name2]);
   const onBlur = React$4.useCallback(() => _registerProps.current.onBlur({
     target: {
-      value: get$3(control._formValues, name),
-      name
+      value: get$3(control._formValues, name2),
+      name: name2
     },
     type: EVENTS.BLUR
-  }), [name, control._formValues]);
+  }), [name2, control._formValues]);
   const ref = React$4.useCallback((elm) => {
-    const field2 = get$3(control._fields, name);
+    const field2 = get$3(control._fields, name2);
     if (field2 && field2._f && elm) {
       field2._f.ref = {
         focus: () => isFunction$4(elm.focus) && elm.focus(),
@@ -47071,51 +51815,51 @@ function useController(props) {
         reportValidity: () => isFunction$4(elm.reportValidity) && elm.reportValidity()
       };
     }
-  }, [control._fields, name]);
+  }, [control._fields, name2]);
   const field = React$4.useMemo(() => ({
-    name,
+    name: name2,
     value,
     ...isBoolean$2(disabled) || formState.disabled ? { disabled: formState.disabled || disabled } : {},
     onChange,
     onBlur,
     ref
-  }), [name, disabled, formState.disabled, onChange, onBlur, ref, value]);
+  }), [name2, disabled, formState.disabled, onChange, onBlur, ref, value]);
   React$4.useEffect(() => {
     const _shouldUnregisterField = control._options.shouldUnregister || shouldUnregister;
     const previousName = _previousNameRef.current;
-    if (previousName && previousName !== name && !isArrayField) {
+    if (previousName && previousName !== name2 && !isArrayField) {
       control.unregister(previousName);
     }
-    control.register(name, {
+    control.register(name2, {
       ..._props.current.rules,
       ...isBoolean$2(_props.current.disabled) ? { disabled: _props.current.disabled } : {}
     });
-    const updateMounted = (name2, value2) => {
-      const field2 = get$3(control._fields, name2);
+    const updateMounted = (name3, value2) => {
+      const field2 = get$3(control._fields, name3);
       if (field2 && field2._f) {
         field2._f.mount = value2;
       }
     };
-    updateMounted(name, true);
+    updateMounted(name2, true);
     if (_shouldUnregisterField) {
-      const value2 = cloneObject(get$3(control._options.defaultValues, name, _props.current.defaultValue));
-      set(control._defaultValues, name, value2);
-      if (isUndefined(get$3(control._formValues, name))) {
-        set(control._formValues, name, value2);
+      const value2 = cloneObject(get$3(control._options.defaultValues, name2, _props.current.defaultValue));
+      set(control._defaultValues, name2, value2);
+      if (isUndefined(get$3(control._formValues, name2))) {
+        set(control._formValues, name2, value2);
       }
     }
-    !isArrayField && control.register(name);
-    _previousNameRef.current = name;
+    !isArrayField && control.register(name2);
+    _previousNameRef.current = name2;
     return () => {
-      (isArrayField ? _shouldUnregisterField && !control._state.action : _shouldUnregisterField) ? control.unregister(name) : updateMounted(name, false);
+      (isArrayField ? _shouldUnregisterField && !control._state.action : _shouldUnregisterField) ? control.unregister(name2) : updateMounted(name2, false);
     };
-  }, [name, control, isArrayField, shouldUnregister]);
+  }, [name2, control, isArrayField, shouldUnregister]);
   React$4.useEffect(() => {
     control._setDisabledField({
       disabled,
-      name
+      name: name2
     });
-  }, [disabled, name, control]);
+  }, [disabled, name2, control]);
   return React$4.useMemo(() => ({
     field,
     formState,
@@ -47168,10 +51912,10 @@ const FormProvider = (props) => {
     React$4.createElement(HookFormControlContext.Provider, { value: control }, children)
   );
 };
-var appendErrors = (name, validateAllFieldCriteria, errors, type, message) => validateAllFieldCriteria ? {
-  ...errors[name],
+var appendErrors = (name2, validateAllFieldCriteria, errors, type, message) => validateAllFieldCriteria ? {
+  ...errors[name2],
   types: {
-    ...errors[name] && errors[name].types ? errors[name].types : {},
+    ...errors[name2] && errors[name2].types ? errors[name2].types : {},
     [type]: message || true
   }
 } : {};
@@ -47350,9 +52094,9 @@ function getFieldValue(_f2) {
 }
 var getResolverOptions = (fieldsNames, _fields, criteriaMode, shouldUseNativeValidation) => {
   const fields = {};
-  for (const name of fieldsNames) {
-    const field = get$3(_fields, name);
-    field && set(fields, name, field._f);
+  for (const name2 of fieldsNames) {
+    const field = get$3(_fields, name2);
+    field && set(fields, name2, field._f);
   }
   return {
     criteriaMode,
@@ -47373,7 +52117,7 @@ var getValidationModes = (mode) => ({
 const ASYNC_FUNCTION = "AsyncFunction";
 var hasPromiseValidation = (fieldReference) => !!fieldReference && !!fieldReference.validate && !!(isFunction$4(fieldReference.validate) && fieldReference.validate.constructor.name === ASYNC_FUNCTION || isObject$a(fieldReference.validate) && Object.values(fieldReference.validate).find((validateFunction) => validateFunction.constructor.name === ASYNC_FUNCTION));
 var hasValidation = (options) => options.mount && (options.required || options.min || options.max || options.maxLength || options.minLength || options.pattern || options.validate);
-var isWatched = (name, _names, isBlurEvent) => !isBlurEvent && (_names.watchAll || _names.watch.has(name) || [..._names.watch].some((watchName) => name.startsWith(watchName) && /^\.\w+/.test(name.slice(watchName.length))));
+var isWatched = (name2, _names, isBlurEvent) => !isBlurEvent && (_names.watchAll || _names.watch.has(name2) || [..._names.watch].some((watchName) => name2.startsWith(watchName) && /^\.\w+/.test(name2.slice(watchName.length))));
 const iterateFieldsByAction = (fields, action, fieldsNames, abortEarly) => {
   for (const key of fieldsNames || Object.keys(fields)) {
     const field = get$3(fields, key);
@@ -47398,21 +52142,21 @@ const iterateFieldsByAction = (fields, action, fieldsNames, abortEarly) => {
   }
   return;
 };
-function schemaErrorLookup(errors, _fields, name) {
-  const error = get$3(errors, name);
-  if (error || isKey$4(name)) {
+function schemaErrorLookup(errors, _fields, name2) {
+  const error = get$3(errors, name2);
+  if (error || isKey$4(name2)) {
     return {
       error,
-      name
+      name: name2
     };
   }
-  const names = name.split(".");
+  const names = name2.split(".");
   while (names.length) {
     const fieldName = names.join(".");
     const field = get$3(_fields, fieldName);
     const foundError = get$3(errors, fieldName);
-    if (field && !Array.isArray(field) && name !== fieldName) {
-      return { name };
+    if (field && !Array.isArray(field) && name2 !== fieldName) {
+      return { name: name2 };
     }
     if (foundError && foundError.type) {
       return {
@@ -47429,15 +52173,15 @@ function schemaErrorLookup(errors, _fields, name) {
     names.pop();
   }
   return {
-    name
+    name: name2
   };
 }
 var shouldRenderFormState = (formStateData, _proxyFormState, updateFormState, isRoot) => {
   updateFormState(formStateData);
-  const { name, ...formState } = formStateData;
+  const { name: name2, ...formState } = formStateData;
   return isEmptyObject(formState) || Object.keys(formState).length >= Object.keys(_proxyFormState).length || Object.keys(formState).find((key) => _proxyFormState[key] === (!isRoot || VALIDATION_MODE.all));
 };
-var shouldSubscribeByName = (name, signalName, exact) => !name || !signalName || name === signalName || convertToArrayPayload(name).some((currentName) => currentName && (exact ? currentName === signalName : currentName.startsWith(signalName) || signalName.startsWith(currentName)));
+var shouldSubscribeByName = (name2, signalName, exact) => !name2 || !signalName || name2 === signalName || convertToArrayPayload(name2).some((currentName) => currentName && (exact ? currentName === signalName : currentName.startsWith(signalName) || signalName.startsWith(currentName)));
 var skipValidation = (isBlurEvent, isTouched, isSubmitted, reValidateMode, mode) => {
   if (mode.isOnAll) {
     return false;
@@ -47450,11 +52194,11 @@ var skipValidation = (isBlurEvent, isTouched, isSubmitted, reValidateMode, mode)
   }
   return true;
 };
-var unsetEmptyArray = (ref, name) => !compact(get$3(ref, name)).length && unset(ref, name);
-var updateFieldArrayRootError = (errors, error, name) => {
-  const fieldArrayErrors = convertToArrayPayload(get$3(errors, name));
-  set(fieldArrayErrors, ROOT_ERROR_TYPE, error[name]);
-  set(errors, name, fieldArrayErrors);
+var unsetEmptyArray = (ref, name2) => !compact(get$3(ref, name2)).length && unset(ref, name2);
+var updateFieldArrayRootError = (errors, error, name2) => {
+  const fieldArrayErrors = convertToArrayPayload(get$3(errors, name2));
+  set(fieldArrayErrors, ROOT_ERROR_TYPE, error[name2]);
+  set(errors, name2, fieldArrayErrors);
   return errors;
 };
 function getValidateError(result, ref, type = "validate") {
@@ -47471,9 +52215,9 @@ var getValueAndMessage = (validationData) => isObject$a(validationData) && !isRe
   message: ""
 };
 var validateField = async (field, disabledFieldNames, formValues, validateAllFieldCriteria, shouldUseNativeValidation, isFieldArray) => {
-  const { ref, refs, required: required2, maxLength, minLength, min: min2, max: max2, pattern, validate, name, valueAsNumber, mount } = field._f;
-  const inputValue = get$3(formValues, name);
-  if (!mount || disabledFieldNames.has(name)) {
+  const { ref, refs, required: required2, maxLength, minLength, min: min2, max: max2, pattern, validate, name: name2, valueAsNumber, mount } = field._f;
+  const inputValue = get$3(formValues, name2);
+  if (!mount || disabledFieldNames.has(name2)) {
     return {};
   }
   const inputRef = refs ? refs[0] : ref;
@@ -47488,10 +52232,10 @@ var validateField = async (field, disabledFieldNames, formValues, validateAllFie
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox2 = isRadio || isCheckBox;
   const isEmpty = (valueAsNumber || isFileInput(ref)) && isUndefined(ref.value) && isUndefined(inputValue) || isHTMLElement(ref) && ref.value === "" || inputValue === "" || Array.isArray(inputValue) && !inputValue.length;
-  const appendErrorsCurry = appendErrors.bind(null, name, validateAllFieldCriteria, error);
+  const appendErrorsCurry = appendErrors.bind(null, name2, validateAllFieldCriteria, error);
   const getMinMaxMessage = (exceedMax, maxLengthMessage, minLengthMessage, maxType = INPUT_VALIDATION_RULES.maxLength, minType = INPUT_VALIDATION_RULES.minLength) => {
     const message = exceedMax ? maxLengthMessage : minLengthMessage;
-    error[name] = {
+    error[name2] = {
       type: exceedMax ? maxType : minType,
       message,
       ref,
@@ -47501,7 +52245,7 @@ var validateField = async (field, disabledFieldNames, formValues, validateAllFie
   if (isFieldArray ? !Array.isArray(inputValue) || !inputValue.length : required2 && (!isRadioOrCheckbox2 && (isEmpty || isNullOrUndefined(inputValue)) || isBoolean$2(inputValue) && !inputValue || isCheckBox && !getCheckboxValue(refs).isValid || isRadio && !getRadioValue(refs).isValid)) {
     const { value, message } = isString$2(required2) ? { value: !!required2, message: required2 } : getValueAndMessage(required2);
     if (value) {
-      error[name] = {
+      error[name2] = {
         type: INPUT_VALIDATION_RULES.required,
         message,
         ref: inputRef,
@@ -47541,7 +52285,7 @@ var validateField = async (field, disabledFieldNames, formValues, validateAllFie
     if (exceedMax || exceedMin) {
       getMinMaxMessage(!!exceedMax, maxOutput.message, minOutput.message, INPUT_VALIDATION_RULES.max, INPUT_VALIDATION_RULES.min);
       if (!validateAllFieldCriteria) {
-        setCustomValidity(error[name].message);
+        setCustomValidity(error[name2].message);
         return error;
       }
     }
@@ -47554,7 +52298,7 @@ var validateField = async (field, disabledFieldNames, formValues, validateAllFie
     if (exceedMax || exceedMin) {
       getMinMaxMessage(exceedMax, maxLengthOutput.message, minLengthOutput.message);
       if (!validateAllFieldCriteria) {
-        setCustomValidity(error[name].message);
+        setCustomValidity(error[name2].message);
         return error;
       }
     }
@@ -47562,7 +52306,7 @@ var validateField = async (field, disabledFieldNames, formValues, validateAllFie
   if (pattern && !isEmpty && isString$2(inputValue)) {
     const { value: patternValue, message } = getValueAndMessage(pattern);
     if (isRegex(patternValue) && !inputValue.match(patternValue)) {
-      error[name] = {
+      error[name2] = {
         type: INPUT_VALIDATION_RULES.pattern,
         message,
         ref,
@@ -47579,7 +52323,7 @@ var validateField = async (field, disabledFieldNames, formValues, validateAllFie
       const result = await validate(inputValue, formValues);
       const validateError = getValidateError(result, inputRef);
       if (validateError) {
-        error[name] = {
+        error[name2] = {
           ...validateError,
           ...appendErrorsCurry(INPUT_VALIDATION_RULES.validate, validateError.message)
         };
@@ -47602,12 +52346,12 @@ var validateField = async (field, disabledFieldNames, formValues, validateAllFie
           };
           setCustomValidity(validateError.message);
           if (validateAllFieldCriteria) {
-            error[name] = validationResult;
+            error[name2] = validationResult;
           }
         }
       }
       if (!isEmptyObject(validationResult)) {
-        error[name] = {
+        error[name2] = {
           ref: inputRef,
           ...validationResult
         };
@@ -47713,9 +52457,9 @@ function createFormControl(props = {}) {
   };
   const _updateIsValidating = (names, isValidating) => {
     if (!_options.disabled && (_proxyFormState.isValidating || _proxyFormState.validatingFields || _proxySubscribeFormState.isValidating || _proxySubscribeFormState.validatingFields)) {
-      (names || Array.from(_names.mount)).forEach((name) => {
-        if (name) {
-          isValidating ? set(_formState.validatingFields, name, isValidating) : unset(_formState.validatingFields, name);
+      (names || Array.from(_names.mount)).forEach((name2) => {
+        if (name2) {
+          isValidating ? set(_formState.validatingFields, name2, isValidating) : unset(_formState.validatingFields, name2);
         }
       });
       _subjects.state.next({
@@ -47724,40 +52468,40 @@ function createFormControl(props = {}) {
       });
     }
   };
-  const _setFieldArray = (name, values = [], method, args, shouldSetValues = true, shouldUpdateFieldsAndState = true) => {
+  const _setFieldArray = (name2, values = [], method, args, shouldSetValues = true, shouldUpdateFieldsAndState = true) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
-      if (shouldUpdateFieldsAndState && Array.isArray(get$3(_fields, name))) {
-        const fieldValues = method(get$3(_fields, name), args.argA, args.argB);
-        shouldSetValues && set(_fields, name, fieldValues);
+      if (shouldUpdateFieldsAndState && Array.isArray(get$3(_fields, name2))) {
+        const fieldValues = method(get$3(_fields, name2), args.argA, args.argB);
+        shouldSetValues && set(_fields, name2, fieldValues);
       }
-      if (shouldUpdateFieldsAndState && Array.isArray(get$3(_formState.errors, name))) {
-        const errors = method(get$3(_formState.errors, name), args.argA, args.argB);
-        shouldSetValues && set(_formState.errors, name, errors);
-        unsetEmptyArray(_formState.errors, name);
+      if (shouldUpdateFieldsAndState && Array.isArray(get$3(_formState.errors, name2))) {
+        const errors = method(get$3(_formState.errors, name2), args.argA, args.argB);
+        shouldSetValues && set(_formState.errors, name2, errors);
+        unsetEmptyArray(_formState.errors, name2);
       }
-      if ((_proxyFormState.touchedFields || _proxySubscribeFormState.touchedFields) && shouldUpdateFieldsAndState && Array.isArray(get$3(_formState.touchedFields, name))) {
-        const touchedFields = method(get$3(_formState.touchedFields, name), args.argA, args.argB);
-        shouldSetValues && set(_formState.touchedFields, name, touchedFields);
+      if ((_proxyFormState.touchedFields || _proxySubscribeFormState.touchedFields) && shouldUpdateFieldsAndState && Array.isArray(get$3(_formState.touchedFields, name2))) {
+        const touchedFields = method(get$3(_formState.touchedFields, name2), args.argA, args.argB);
+        shouldSetValues && set(_formState.touchedFields, name2, touchedFields);
       }
       if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
         const fullDirtyFields = getDirtyFields(_defaultValues, _formValues);
-        const rootName = getNodeParentName(name);
+        const rootName = getNodeParentName(name2);
         set(_formState.dirtyFields, rootName, get$3(fullDirtyFields, rootName));
       }
       _subjects.state.next({
-        name,
-        isDirty: _getDirty(name, values),
+        name: name2,
+        isDirty: _getDirty(name2, values),
         dirtyFields: _formState.dirtyFields,
         errors: _formState.errors,
         isValid: _formState.isValid
       });
     } else {
-      set(_formValues, name, values);
+      set(_formValues, name2, values);
     }
   };
-  const updateErrors = (name, error) => {
-    set(_formState.errors, name, error);
+  const updateErrors = (name2, error) => {
+    set(_formState.errors, name2, error);
     _subjects.state.next({
       errors: _formState.errors
     });
@@ -47769,19 +52513,19 @@ function createFormControl(props = {}) {
       isValid: false
     });
   };
-  const updateValidAndValue = (name, shouldSkipSetValueAs, value, ref) => {
-    const field = get$3(_fields, name);
+  const updateValidAndValue = (name2, shouldSkipSetValueAs, value, ref) => {
+    const field = get$3(_fields, name2);
     if (field) {
-      const defaultValue = get$3(_formValues, name, isUndefined(value) ? get$3(_defaultValues, name) : value);
-      isUndefined(defaultValue) || ref && ref.defaultChecked || shouldSkipSetValueAs ? set(_formValues, name, shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f)) : setFieldValue(name, defaultValue);
+      const defaultValue = get$3(_formValues, name2, isUndefined(value) ? get$3(_defaultValues, name2) : value);
+      isUndefined(defaultValue) || ref && ref.defaultChecked || shouldSkipSetValueAs ? set(_formValues, name2, shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f)) : setFieldValue(name2, defaultValue);
       _state.mount && !_state.action && _setValid();
     }
   };
-  const updateTouchAndDirty = (name, fieldValue, isBlurEvent, shouldDirty, shouldRender) => {
+  const updateTouchAndDirty = (name2, fieldValue, isBlurEvent, shouldDirty, shouldRender) => {
     let shouldUpdateField = false;
     let isPreviousDirty = false;
     const output = {
-      name
+      name: name2
     };
     if (!_options.disabled) {
       if (!isBlurEvent || shouldDirty) {
@@ -47790,16 +52534,16 @@ function createFormControl(props = {}) {
           _formState.isDirty = output.isDirty = _getDirty();
           shouldUpdateField = isPreviousDirty !== output.isDirty;
         }
-        const isCurrentFieldPristine = deepEqual$1(get$3(_defaultValues, name), fieldValue);
-        isPreviousDirty = !!get$3(_formState.dirtyFields, name);
-        isCurrentFieldPristine ? unset(_formState.dirtyFields, name) : set(_formState.dirtyFields, name, true);
+        const isCurrentFieldPristine = deepEqual$1(get$3(_defaultValues, name2), fieldValue);
+        isPreviousDirty = !!get$3(_formState.dirtyFields, name2);
+        isCurrentFieldPristine ? unset(_formState.dirtyFields, name2) : set(_formState.dirtyFields, name2, true);
         output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField = shouldUpdateField || (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) && isPreviousDirty !== !isCurrentFieldPristine;
       }
       if (isBlurEvent) {
-        const isPreviousFieldTouched = get$3(_formState.touchedFields, name);
+        const isPreviousFieldTouched = get$3(_formState.touchedFields, name2);
         if (!isPreviousFieldTouched) {
-          set(_formState.touchedFields, name, isBlurEvent);
+          set(_formState.touchedFields, name2, isBlurEvent);
           output.touchedFields = _formState.touchedFields;
           shouldUpdateField = shouldUpdateField || (_proxyFormState.touchedFields || _proxySubscribeFormState.touchedFields) && isPreviousFieldTouched !== isBlurEvent;
         }
@@ -47808,23 +52552,23 @@ function createFormControl(props = {}) {
     }
     return shouldUpdateField ? output : {};
   };
-  const shouldRenderByError = (name, isValid, error, fieldState) => {
-    const previousFieldError = get$3(_formState.errors, name);
+  const shouldRenderByError = (name2, isValid, error, fieldState) => {
+    const previousFieldError = get$3(_formState.errors, name2);
     const shouldUpdateValid = (_proxyFormState.isValid || _proxySubscribeFormState.isValid) && isBoolean$2(isValid) && _formState.isValid !== isValid;
     if (_options.delayError && error) {
-      delayErrorCallback = debounce2(() => updateErrors(name, error));
+      delayErrorCallback = debounce2(() => updateErrors(name2, error));
       delayErrorCallback(_options.delayError);
     } else {
       clearTimeout(timer);
       delayErrorCallback = null;
-      error ? set(_formState.errors, name, error) : unset(_formState.errors, name);
+      error ? set(_formState.errors, name2, error) : unset(_formState.errors, name2);
     }
     if ((error ? !deepEqual$1(previousFieldError, error) : previousFieldError) || !isEmptyObject(fieldState) || shouldUpdateValid) {
       const updatedFormState = {
         ...fieldState,
         ...shouldUpdateValid && isBoolean$2(isValid) ? { isValid } : {},
         errors: _formState.errors,
-        name
+        name: name2
       };
       _formState = {
         ..._formState,
@@ -47833,29 +52577,29 @@ function createFormControl(props = {}) {
       _subjects.state.next(updatedFormState);
     }
   };
-  const _runSchema = async (name) => {
-    _updateIsValidating(name, true);
-    return await _options.resolver(_formValues, _options.context, getResolverOptions(name || _names.mount, _fields, _options.criteriaMode, _options.shouldUseNativeValidation));
+  const _runSchema = async (name2) => {
+    _updateIsValidating(name2, true);
+    return await _options.resolver(_formValues, _options.context, getResolverOptions(name2 || _names.mount, _fields, _options.criteriaMode, _options.shouldUseNativeValidation));
   };
   const executeSchemaAndUpdateState = async (names) => {
     const { errors } = await _runSchema(names);
     _updateIsValidating(names);
     if (names) {
-      for (const name of names) {
-        const error = get$3(errors, name);
-        error ? set(_formState.errors, name, error) : unset(_formState.errors, name);
+      for (const name2 of names) {
+        const error = get$3(errors, name2);
+        error ? set(_formState.errors, name2, error) : unset(_formState.errors, name2);
       }
     } else {
       _formState.errors = errors;
     }
     return errors;
   };
-  const validateForm = async ({ name, eventType }) => {
+  const validateForm = async ({ name: name2, eventType }) => {
     if (props.validate) {
       const result = await props.validate({
         formValues: _formValues,
         formState: _formState,
-        name,
+        name: name2,
         eventType
       });
       if (isObject$a(result)) {
@@ -47880,14 +52624,14 @@ function createFormControl(props = {}) {
     }
     return true;
   };
-  const executeBuiltInValidation = async ({ fields, onlyCheckValid, name, eventType, context = {
+  const executeBuiltInValidation = async ({ fields, onlyCheckValid, name: name2, eventType, context = {
     valid: true,
     runRootValidation: false
   } }) => {
     if (props.validate) {
       context.runRootValidation = true;
       const result = await validateForm({
-        name,
+        name: name2,
         eventType
       });
       if (!result) {
@@ -47897,8 +52641,8 @@ function createFormControl(props = {}) {
         }
       }
     }
-    for (const name2 in fields) {
-      const field = fields[name2];
+    for (const name3 in fields) {
+      const field = fields[name3];
       if (field) {
         const { _f: _f2, ...fieldValue } = field;
         if (_f2) {
@@ -47926,7 +52670,7 @@ function createFormControl(props = {}) {
           context,
           onlyCheckValid,
           fields: fieldValue,
-          name: name2,
+          name: name3,
           eventType
         });
       }
@@ -47934,24 +52678,24 @@ function createFormControl(props = {}) {
     return context.valid;
   };
   const _removeUnmounted = () => {
-    for (const name of _names.unMount) {
-      const field = get$3(_fields, name);
-      field && (field._f.refs ? field._f.refs.every((ref) => !live(ref)) : !live(field._f.ref)) && unregister(name);
+    for (const name2 of _names.unMount) {
+      const field = get$3(_fields, name2);
+      field && (field._f.refs ? field._f.refs.every((ref) => !live(ref)) : !live(field._f.ref)) && unregister(name2);
     }
     _names.unMount = /* @__PURE__ */ new Set();
   };
-  const _getDirty = (name, data) => !_options.disabled && (name && data && set(_formValues, name, data), !deepEqual$1(getValues(), _defaultValues));
+  const _getDirty = (name2, data) => !_options.disabled && (name2 && data && set(_formValues, name2, data), !deepEqual$1(getValues(), _defaultValues));
   const _getWatch = (names, defaultValue, isGlobal) => generateWatchOutput(names, _names, {
     ..._state.mount ? _formValues : isUndefined(defaultValue) ? _defaultValues : isString$2(names) ? { [names]: defaultValue } : defaultValue
   }, isGlobal, defaultValue);
-  const _getFieldArray = (name) => compact(get$3(_state.mount ? _formValues : _defaultValues, name, _options.shouldUnregister ? get$3(_defaultValues, name, []) : []));
-  const setFieldValue = (name, value, options = {}) => {
-    const field = get$3(_fields, name);
+  const _getFieldArray = (name2) => compact(get$3(_state.mount ? _formValues : _defaultValues, name2, _options.shouldUnregister ? get$3(_defaultValues, name2, []) : []));
+  const setFieldValue = (name2, value, options = {}) => {
+    const field = get$3(_fields, name2);
     let fieldValue = value;
     if (field) {
       const fieldReference = field._f;
       if (fieldReference) {
-        !fieldReference.disabled && set(_formValues, name, getFieldValueAs(value, fieldReference));
+        !fieldReference.disabled && set(_formValues, name2, getFieldValueAs(value, fieldReference));
         fieldValue = isHTMLElement(fieldReference.ref) && isNullOrUndefined(value) ? "" : value;
         if (isMultipleSelect(fieldReference.ref)) {
           [...fieldReference.ref.options].forEach((optionRef) => optionRef.selected = fieldValue.includes(optionRef.value));
@@ -47975,56 +52719,56 @@ function createFormControl(props = {}) {
           fieldReference.ref.value = fieldValue;
           if (!fieldReference.ref.type) {
             _subjects.state.next({
-              name,
+              name: name2,
               values: cloneObject(_formValues)
             });
           }
         }
       }
     }
-    (options.shouldDirty || options.shouldTouch) && updateTouchAndDirty(name, fieldValue, options.shouldTouch, options.shouldDirty, true);
-    options.shouldValidate && trigger(name);
+    (options.shouldDirty || options.shouldTouch) && updateTouchAndDirty(name2, fieldValue, options.shouldTouch, options.shouldDirty, true);
+    options.shouldValidate && trigger(name2);
   };
-  const setValues = (name, value, options) => {
+  const setValues = (name2, value, options) => {
     for (const fieldKey in value) {
       if (!value.hasOwnProperty(fieldKey)) {
         return;
       }
       const fieldValue = value[fieldKey];
-      const fieldName = name + "." + fieldKey;
+      const fieldName = name2 + "." + fieldKey;
       const field = get$3(_fields, fieldName);
-      (_names.array.has(name) || isObject$a(fieldValue) || field && !field._f) && !isDateObject(fieldValue) ? setValues(fieldName, fieldValue, options) : setFieldValue(fieldName, fieldValue, options);
+      (_names.array.has(name2) || isObject$a(fieldValue) || field && !field._f) && !isDateObject(fieldValue) ? setValues(fieldName, fieldValue, options) : setFieldValue(fieldName, fieldValue, options);
     }
   };
-  const setValue = (name, value, options = {}) => {
-    const field = get$3(_fields, name);
-    const isFieldArray = _names.array.has(name);
+  const setValue = (name2, value, options = {}) => {
+    const field = get$3(_fields, name2);
+    const isFieldArray = _names.array.has(name2);
     const cloneValue = cloneObject(value);
-    set(_formValues, name, cloneValue);
+    set(_formValues, name2, cloneValue);
     if (isFieldArray) {
       _subjects.array.next({
-        name,
+        name: name2,
         values: cloneObject(_formValues)
       });
       if ((_proxyFormState.isDirty || _proxyFormState.dirtyFields || _proxySubscribeFormState.isDirty || _proxySubscribeFormState.dirtyFields) && options.shouldDirty) {
         _subjects.state.next({
-          name,
+          name: name2,
           dirtyFields: getDirtyFields(_defaultValues, _formValues),
-          isDirty: _getDirty(name, cloneValue)
+          isDirty: _getDirty(name2, cloneValue)
         });
       }
     } else {
-      field && !field._f && !isNullOrUndefined(cloneValue) ? setValues(name, cloneValue, options) : setFieldValue(name, cloneValue, options);
+      field && !field._f && !isNullOrUndefined(cloneValue) ? setValues(name2, cloneValue, options) : setFieldValue(name2, cloneValue, options);
     }
-    if (isWatched(name, _names)) {
+    if (isWatched(name2, _names)) {
       _subjects.state.next({
         ..._formState,
-        name,
+        name: name2,
         values: cloneObject(_formValues)
       });
     } else {
       _subjects.state.next({
-        name: _state.mount ? name : void 0,
+        name: _state.mount ? name2 : void 0,
         values: cloneObject(_formValues)
       });
     }
@@ -48032,11 +52776,11 @@ function createFormControl(props = {}) {
   const onChange = async (event) => {
     _state.mount = true;
     const target = event.target;
-    let name = target.name;
+    let name2 = target.name;
     let isFieldValueUpdated = true;
-    const field = get$3(_fields, name);
+    const field = get$3(_fields, name2);
     const _updateIsFieldValueUpdated = (fieldValue) => {
-      isFieldValueUpdated = Number.isNaN(fieldValue) || isDateObject(fieldValue) && isNaN(fieldValue.getTime()) || deepEqual$1(fieldValue, get$3(_formValues, name, fieldValue));
+      isFieldValueUpdated = Number.isNaN(fieldValue) || isDateObject(fieldValue) && isNaN(fieldValue.getTime()) || deepEqual$1(fieldValue, get$3(_formValues, name2, fieldValue));
     };
     const validationModeBeforeSubmit = getValidationModes(_options.mode);
     const validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
@@ -48045,9 +52789,9 @@ function createFormControl(props = {}) {
       let isValid;
       const fieldValue = target.type ? getFieldValue(field._f) : getEventValue(event);
       const isBlurEvent = event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
-      const shouldSkipValidation = !hasValidation(field._f) && !props.validate && !_options.resolver && !get$3(_formState.errors, name) && !field._f.deps || skipValidation(isBlurEvent, get$3(_formState.touchedFields, name), _formState.isSubmitted, validationModeAfterSubmit, validationModeBeforeSubmit);
-      const watched = isWatched(name, _names, isBlurEvent);
-      set(_formValues, name, fieldValue);
+      const shouldSkipValidation = !hasValidation(field._f) && !props.validate && !_options.resolver && !get$3(_formState.errors, name2) && !field._f.deps || skipValidation(isBlurEvent, get$3(_formState.touchedFields, name2), _formState.isSubmitted, validationModeAfterSubmit, validationModeBeforeSubmit);
+      const watched = isWatched(name2, _names, isBlurEvent);
+      set(_formValues, name2, fieldValue);
       if (isBlurEvent) {
         if (!target || !target.readOnly) {
           field._f.onBlur && field._f.onBlur(event);
@@ -48056,10 +52800,10 @@ function createFormControl(props = {}) {
       } else if (field._f.onChange) {
         field._f.onChange(event);
       }
-      const fieldState = updateTouchAndDirty(name, fieldValue, isBlurEvent);
+      const fieldState = updateTouchAndDirty(name2, fieldValue, isBlurEvent);
       const shouldRender = !isEmptyObject(fieldState) || watched;
       !isBlurEvent && _subjects.state.next({
-        name,
+        name: name2,
         type: event.type,
         values: cloneObject(_formValues)
       });
@@ -48073,30 +52817,30 @@ function createFormControl(props = {}) {
             _setValid();
           }
         }
-        return shouldRender && _subjects.state.next({ name, ...watched ? {} : fieldState });
+        return shouldRender && _subjects.state.next({ name: name2, ...watched ? {} : fieldState });
       }
       if (!_options.resolver && props.validate) {
         await validateForm({
-          name,
+          name: name2,
           eventType: event.type
         });
       }
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
       if (_options.resolver) {
-        const { errors } = await _runSchema([name]);
-        _updateIsValidating([name]);
+        const { errors } = await _runSchema([name2]);
+        _updateIsValidating([name2]);
         _updateIsFieldValueUpdated(fieldValue);
         if (isFieldValueUpdated) {
-          const previousErrorLookupResult = schemaErrorLookup(_formState.errors, _fields, name);
-          const errorLookupResult = schemaErrorLookup(errors, _fields, previousErrorLookupResult.name || name);
+          const previousErrorLookupResult = schemaErrorLookup(_formState.errors, _fields, name2);
+          const errorLookupResult = schemaErrorLookup(errors, _fields, previousErrorLookupResult.name || name2);
           error = errorLookupResult.error;
-          name = errorLookupResult.name;
+          name2 = errorLookupResult.name;
           isValid = isEmptyObject(errors);
         }
       } else {
-        _updateIsValidating([name], true);
-        error = (await validateField(field, _names.disabled, _formValues, shouldDisplayAllAssociatedErrors, _options.shouldUseNativeValidation))[name];
-        _updateIsValidating([name]);
+        _updateIsValidating([name2], true);
+        error = (await validateField(field, _names.disabled, _formValues, shouldDisplayAllAssociatedErrors, _options.shouldUseNativeValidation))[name2];
+        _updateIsValidating([name2]);
         _updateIsFieldValueUpdated(fieldValue);
         if (isFieldValueUpdated) {
           if (error) {
@@ -48105,7 +52849,7 @@ function createFormControl(props = {}) {
             isValid = await executeBuiltInValidation({
               fields: _fields,
               onlyCheckValid: true,
-              name,
+              name: name2,
               eventType: event.type
             });
           }
@@ -48113,7 +52857,7 @@ function createFormControl(props = {}) {
       }
       if (isFieldValueUpdated) {
         field._f.deps && (!Array.isArray(field._f.deps) || field._f.deps.length > 0) && trigger(field._f.deps);
-        shouldRenderByError(name, isValid, error, fieldState);
+        shouldRenderByError(name2, isValid, error, fieldState);
       }
     }
   };
@@ -48124,15 +52868,15 @@ function createFormControl(props = {}) {
     }
     return;
   };
-  const trigger = async (name, options = {}) => {
+  const trigger = async (name2, options = {}) => {
     let isValid;
     let validationResult;
-    const fieldNames = convertToArrayPayload(name);
+    const fieldNames = convertToArrayPayload(name2);
     if (_options.resolver) {
-      const errors = await executeSchemaAndUpdateState(isUndefined(name) ? name : fieldNames);
+      const errors = await executeSchemaAndUpdateState(isUndefined(name2) ? name2 : fieldNames);
       isValid = isEmptyObject(errors);
-      validationResult = name ? !fieldNames.some((name2) => get$3(errors, name2)) : isValid;
-    } else if (name) {
+      validationResult = name2 ? !fieldNames.some((name3) => get$3(errors, name3)) : isValid;
+    } else if (name2) {
       validationResult = (await Promise.all(fieldNames.map(async (fieldName) => {
         const field = get$3(_fields, fieldName);
         return await executeBuiltInValidation({
@@ -48144,16 +52888,16 @@ function createFormControl(props = {}) {
     } else {
       validationResult = isValid = await executeBuiltInValidation({
         fields: _fields,
-        name,
+        name: name2,
         eventType: EVENTS.TRIGGER
       });
     }
     _subjects.state.next({
-      ...!isString$2(name) || (_proxyFormState.isValid || _proxySubscribeFormState.isValid) && isValid !== _formState.isValid ? {} : { name },
-      ..._options.resolver || !name ? { isValid } : {},
+      ...!isString$2(name2) || (_proxyFormState.isValid || _proxySubscribeFormState.isValid) && isValid !== _formState.isValid ? {} : { name: name2 },
+      ..._options.resolver || !name2 ? { isValid } : {},
       errors: _formState.errors
     });
-    options.shouldFocus && !validationResult && iterateFieldsByAction(_fields, _focusInput, name ? fieldNames : _names.mount);
+    options.shouldFocus && !validationResult && iterateFieldsByAction(_fields, _focusInput, name2 ? fieldNames : _names.mount);
     return validationResult;
   };
   const getValues = (fieldNames, config2) => {
@@ -48163,17 +52907,17 @@ function createFormControl(props = {}) {
     if (config2) {
       values = extractFormValues(config2.dirtyFields ? _formState.dirtyFields : _formState.touchedFields, values);
     }
-    return isUndefined(fieldNames) ? values : isString$2(fieldNames) ? get$3(values, fieldNames) : fieldNames.map((name) => get$3(values, name));
+    return isUndefined(fieldNames) ? values : isString$2(fieldNames) ? get$3(values, fieldNames) : fieldNames.map((name2) => get$3(values, name2));
   };
-  const getFieldState = (name, formState) => ({
-    invalid: !!get$3((formState || _formState).errors, name),
-    isDirty: !!get$3((formState || _formState).dirtyFields, name),
-    error: get$3((formState || _formState).errors, name),
-    isValidating: !!get$3(_formState.validatingFields, name),
-    isTouched: !!get$3((formState || _formState).touchedFields, name)
+  const getFieldState = (name2, formState) => ({
+    invalid: !!get$3((formState || _formState).errors, name2),
+    isDirty: !!get$3((formState || _formState).dirtyFields, name2),
+    error: get$3((formState || _formState).errors, name2),
+    isValidating: !!get$3(_formState.validatingFields, name2),
+    isTouched: !!get$3((formState || _formState).touchedFields, name2)
   });
-  const clearErrors = (name) => {
-    const names = name ? convertToArrayPayload(name) : void 0;
+  const clearErrors = (name2) => {
+    const names = name2 ? convertToArrayPayload(name2) : void 0;
     names === null || names === void 0 ? void 0 : names.forEach((inputName) => unset(_formState.errors, inputName));
     if (names) {
       names.forEach((inputName) => {
@@ -48188,25 +52932,25 @@ function createFormControl(props = {}) {
       });
     }
   };
-  const setError = (name, error, options) => {
-    const ref = (get$3(_fields, name, { _f: {} })._f || {}).ref;
-    const currentError = get$3(_formState.errors, name) || {};
+  const setError = (name2, error, options) => {
+    const ref = (get$3(_fields, name2, { _f: {} })._f || {}).ref;
+    const currentError = get$3(_formState.errors, name2) || {};
     const { ref: currentRef, message, type, ...restOfErrorTree } = currentError;
-    set(_formState.errors, name, {
+    set(_formState.errors, name2, {
       ...restOfErrorTree,
       ...error,
       ref
     });
     _subjects.state.next({
-      name,
+      name: name2,
       errors: _formState.errors,
       isValid: false
     });
     options && options.shouldFocus && ref && ref.focus && ref.focus();
   };
-  const watch = (name, defaultValue) => isFunction$4(name) ? _subjects.state.subscribe({
-    next: (payload) => "values" in payload && name(_getWatch(void 0, defaultValue), payload)
-  }) : _getWatch(name, defaultValue, true);
+  const watch = (name2, defaultValue) => isFunction$4(name2) ? _subjects.state.subscribe({
+    next: (payload) => "values" in payload && name2(_getWatch(void 0, defaultValue), payload)
+  }) : _getWatch(name2, defaultValue, true);
   const _subscribe = (props2) => _subjects.state.subscribe({
     next: (formState) => {
       if (shouldSubscribeByName(props2.name, formState.name, props2.exact) && shouldRenderFormState(formState, props2.formState || _proxyFormState, _setFormState, props2.reRenderRoot)) {
@@ -48233,8 +52977,8 @@ function createFormControl(props = {}) {
       }
     });
   };
-  const unregister = (name, options = {}) => {
-    for (const fieldName of name ? convertToArrayPayload(name) : _names.mount) {
+  const unregister = (name2, options = {}) => {
+    for (const fieldName of name2 ? convertToArrayPayload(name2) : _names.mount) {
       _names.mount.delete(fieldName);
       _names.array.delete(fieldName);
       if (!options.keepValue) {
@@ -48256,35 +53000,35 @@ function createFormControl(props = {}) {
     });
     !options.keepIsValid && _setValid();
   };
-  const _setDisabledField = ({ disabled, name }) => {
-    if (isBoolean$2(disabled) && _state.mount || !!disabled || _names.disabled.has(name)) {
-      const wasDisabled = _names.disabled.has(name);
+  const _setDisabledField = ({ disabled, name: name2 }) => {
+    if (isBoolean$2(disabled) && _state.mount || !!disabled || _names.disabled.has(name2)) {
+      const wasDisabled = _names.disabled.has(name2);
       const isDisabled = !!disabled;
       const disabledStateChanged = wasDisabled !== isDisabled;
-      disabled ? _names.disabled.add(name) : _names.disabled.delete(name);
+      disabled ? _names.disabled.add(name2) : _names.disabled.delete(name2);
       disabledStateChanged && _state.mount && !_state.action && _setValid();
     }
   };
-  const register = (name, options = {}) => {
-    let field = get$3(_fields, name);
+  const register = (name2, options = {}) => {
+    let field = get$3(_fields, name2);
     const disabledIsDefined = isBoolean$2(options.disabled) || isBoolean$2(_options.disabled);
-    set(_fields, name, {
+    set(_fields, name2, {
       ...field || {},
       _f: {
-        ...field && field._f ? field._f : { ref: { name } },
-        name,
+        ...field && field._f ? field._f : { ref: { name: name2 } },
+        name: name2,
         mount: true,
         ...options
       }
     });
-    _names.mount.add(name);
+    _names.mount.add(name2);
     if (field) {
       _setDisabledField({
         disabled: isBoolean$2(options.disabled) ? options.disabled : _options.disabled,
-        name
+        name: name2
       });
     } else {
-      updateValidAndValue(name, true, options.value);
+      updateValidAndValue(name2, true, options.value);
     }
     return {
       ...disabledIsDefined ? { disabled: options.disabled || _options.disabled } : {},
@@ -48296,39 +53040,39 @@ function createFormControl(props = {}) {
         maxLength: getRuleValue(options.maxLength),
         pattern: getRuleValue(options.pattern)
       } : {},
-      name,
+      name: name2,
       onChange,
       onBlur: onChange,
       ref: (ref) => {
         if (ref) {
-          register(name, options);
-          field = get$3(_fields, name);
+          register(name2, options);
+          field = get$3(_fields, name2);
           const fieldRef = isUndefined(ref.value) ? ref.querySelectorAll ? ref.querySelectorAll("input,select,textarea")[0] || ref : ref : ref;
           const radioOrCheckbox = isRadioOrCheckbox(fieldRef);
           const refs = field._f.refs || [];
           if (radioOrCheckbox ? refs.find((option) => option === fieldRef) : fieldRef === field._f.ref) {
             return;
           }
-          set(_fields, name, {
+          set(_fields, name2, {
             _f: {
               ...field._f,
               ...radioOrCheckbox ? {
                 refs: [
                   ...refs.filter(live),
                   fieldRef,
-                  ...Array.isArray(get$3(_defaultValues, name)) ? [{}] : []
+                  ...Array.isArray(get$3(_defaultValues, name2)) ? [{}] : []
                 ],
-                ref: { type: fieldRef.type, name }
+                ref: { type: fieldRef.type, name: name2 }
               } : { ref: fieldRef }
             }
           });
-          updateValidAndValue(name, false, void 0, fieldRef);
+          updateValidAndValue(name2, false, void 0, fieldRef);
         } else {
-          field = get$3(_fields, name, {});
+          field = get$3(_fields, name2, {});
           if (field._f) {
             field._f.mount = false;
           }
-          (_options.shouldUnregister || options.shouldUnregister) && !(isNameInFieldArray(_names.array, name) && _state.action) && _names.unMount.add(name);
+          (_options.shouldUnregister || options.shouldUnregister) && !(isNameInFieldArray(_names.array, name2) && _state.action) && _names.unMount.add(name2);
         }
       }
     };
@@ -48337,8 +53081,8 @@ function createFormControl(props = {}) {
   const _disableForm = (disabled) => {
     if (isBoolean$2(disabled)) {
       _subjects.state.next({ disabled });
-      iterateFieldsByAction(_fields, (ref, name) => {
-        const currentField = get$3(_fields, name);
+      iterateFieldsByAction(_fields, (ref, name2) => {
+        const currentField = get$3(_fields, name2);
         if (currentField) {
           ref.disabled = currentField._f.disabled || disabled;
           if (Array.isArray(currentField._f.refs)) {
@@ -48372,8 +53116,8 @@ function createFormControl(props = {}) {
       });
     }
     if (_names.disabled.size) {
-      for (const name of _names.disabled) {
-        unset(fieldValues, name);
+      for (const name2 of _names.disabled) {
+        unset(fieldValues, name2);
       }
     }
     unset(_formState.errors, ROOT_ERROR_TYPE);
@@ -48404,23 +53148,23 @@ function createFormControl(props = {}) {
       throw onValidError;
     }
   };
-  const resetField = (name, options = {}) => {
-    if (get$3(_fields, name)) {
+  const resetField = (name2, options = {}) => {
+    if (get$3(_fields, name2)) {
       if (isUndefined(options.defaultValue)) {
-        setValue(name, cloneObject(get$3(_defaultValues, name)));
+        setValue(name2, cloneObject(get$3(_defaultValues, name2)));
       } else {
-        setValue(name, options.defaultValue);
-        set(_defaultValues, name, cloneObject(options.defaultValue));
+        setValue(name2, options.defaultValue);
+        set(_defaultValues, name2, cloneObject(options.defaultValue));
       }
       if (!options.keepTouched) {
-        unset(_formState.touchedFields, name);
+        unset(_formState.touchedFields, name2);
       }
       if (!options.keepDirty) {
-        unset(_formState.dirtyFields, name);
-        _formState.isDirty = options.defaultValue ? _getDirty(name, cloneObject(get$3(_defaultValues, name))) : _getDirty();
+        unset(_formState.dirtyFields, name2);
+        _formState.isDirty = options.defaultValue ? _getDirty(name2, cloneObject(get$3(_defaultValues, name2))) : _getDirty();
       }
       if (!options.keepError) {
-        unset(_formState.errors, name);
+        unset(_formState.errors, name2);
         _proxyFormState.isValid && _setValid();
       }
       _subjects.state.next({ ..._formState });
@@ -48452,8 +53196,8 @@ function createFormControl(props = {}) {
         }
       } else {
         if (isWeb && isUndefined(formValues)) {
-          for (const name of _names.mount) {
-            const field = get$3(_fields, name);
+          for (const name2 of _names.mount) {
+            const field = get$3(_fields, name2);
             if (field && field._f) {
               const fieldReference = Array.isArray(field._f.refs) ? field._f.refs[0] : field._f.ref;
               if (isHTMLElement(fieldReference)) {
@@ -48511,8 +53255,8 @@ function createFormControl(props = {}) {
     });
   };
   const reset = (formValues, keepStateOptions) => _reset(isFunction$4(formValues) ? formValues(_formValues) : formValues, { ..._options.resetOptions, ...keepStateOptions });
-  const setFocus = (name, options = {}) => {
-    const field = get$3(_fields, name);
+  const setFocus = (name2, options = {}) => {
+    const field = get$3(_fields, name2);
     const fieldReference = field && field._f;
     if (fieldReference) {
       const fieldRef = fieldReference.refs ? fieldReference.refs[0] : fieldReference.ref;
@@ -48727,7 +53471,7 @@ function useForm(props = {}) {
   return _formControl.current;
 }
 function FormInput({
-  name,
+  name: name2,
   label,
   description,
   className,
@@ -48738,15 +53482,15 @@ function FormInput({
     register,
     formState: { errors }
   } = useFormContext();
-  const error = (_a3 = errors[name]) == null ? void 0 : _a3.message;
+  const error = (_a3 = errors[name2]) == null ? void 0 : _a3.message;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: name, children: label }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: name2, children: label }),
     description && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: description }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       Input,
       {
-        id: name,
-        ...register(name),
+        id: name2,
+        ...register(name2),
         ...props,
         className: cn(
           error && "border-destructive focus-visible:ring-destructive",
@@ -48758,7 +53502,7 @@ function FormInput({
   ] });
 }
 function FormTextarea({
-  name,
+  name: name2,
   label,
   description,
   className,
@@ -48769,15 +53513,15 @@ function FormTextarea({
     register,
     formState: { errors }
   } = useFormContext();
-  const error = (_a3 = errors[name]) == null ? void 0 : _a3.message;
+  const error = (_a3 = errors[name2]) == null ? void 0 : _a3.message;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: name, children: label }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: name2, children: label }),
     description && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: description }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       Textarea,
       {
-        id: name,
-        ...register(name),
+        id: name2,
+        ...register(name2),
         ...props,
         className: cn(
           error && "border-destructive focus-visible:ring-destructive",
@@ -48789,7 +53533,7 @@ function FormTextarea({
   ] });
 }
 function FormSelect({
-  name,
+  name: name2,
   label,
   description,
   options,
@@ -48800,20 +53544,20 @@ function FormSelect({
     control,
     formState: { errors }
   } = useFormContext();
-  const error = (_a3 = errors[name]) == null ? void 0 : _a3.message;
+  const error = (_a3 = errors[name2]) == null ? void 0 : _a3.message;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: name, children: label }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: name2, children: label }),
     description && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: description }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       Controller,
       {
-        name,
+        name: name2,
         control,
         render: ({ field }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { onValueChange: field.onChange, defaultValue: field.value, children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             SelectTrigger,
             {
-              id: name,
+              id: name2,
               className: cn(
                 error && "border-destructive focus-visible:ring-destructive"
               ),
@@ -48827,24 +53571,24 @@ function FormSelect({
     error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-destructive", children: error })
   ] });
 }
-function FormCheckbox({ name, label, description }) {
+function FormCheckbox({ name: name2, label, description }) {
   var _a3;
   const {
     control,
     formState: { errors }
   } = useFormContext();
-  const error = (_a3 = errors[name]) == null ? void 0 : _a3.message;
+  const error = (_a3 = errors[name2]) == null ? void 0 : _a3.message;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       Controller,
       {
-        name,
+        name: name2,
         control,
         render: ({ field }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Checkbox,
             {
-              id: name,
+              id: name2,
               checked: field.value,
               onCheckedChange: field.onChange
             }
@@ -48853,7 +53597,7 @@ function FormCheckbox({ name, label, description }) {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               Label$1,
               {
-                htmlFor: name,
+                htmlFor: name2,
                 className: "text-sm font-normal cursor-pointer",
                 children: label
               }
@@ -48867,7 +53611,7 @@ function FormCheckbox({ name, label, description }) {
   ] });
 }
 var _a$1;
-function $constructor(name, initializer2, params) {
+function $constructor(name2, initializer2, params) {
   function init(inst, def) {
     if (!inst._zod) {
       Object.defineProperty(inst, "_zod", {
@@ -48879,10 +53623,10 @@ function $constructor(name, initializer2, params) {
         enumerable: false
       });
     }
-    if (inst._zod.traits.has(name)) {
+    if (inst._zod.traits.has(name2)) {
       return;
     }
-    inst._zod.traits.add(name);
+    inst._zod.traits.add(name2);
     initializer2(inst, def);
     const proto = _.prototype;
     const keys2 = Object.keys(proto);
@@ -48896,7 +53640,7 @@ function $constructor(name, initializer2, params) {
   const Parent = (params == null ? void 0 : params.Parent) ?? Object;
   class Definition extends Parent {
   }
-  Object.defineProperty(Definition, "name", { value: name });
+  Object.defineProperty(Definition, "name", { value: name2 });
   function _(def) {
     var _a3;
     const inst = (params == null ? void 0 : params.Parent) ? new Definition() : this;
@@ -48913,10 +53657,10 @@ function $constructor(name, initializer2, params) {
       var _a3, _b2;
       if ((params == null ? void 0 : params.Parent) && inst instanceof params.Parent)
         return true;
-      return (_b2 = (_a3 = inst == null ? void 0 : inst._zod) == null ? void 0 : _a3.traits) == null ? void 0 : _b2.has(name);
+      return (_b2 = (_a3 = inst == null ? void 0 : inst._zod) == null ? void 0 : _a3.traits) == null ? void 0 : _b2.has(name2);
     }
   });
-  Object.defineProperty(_, "name", { value: name });
+  Object.defineProperty(_, "name", { value: name2 });
   return _;
 }
 class $ZodAsyncError extends Error {
@@ -48925,8 +53669,8 @@ class $ZodAsyncError extends Error {
   }
 }
 class $ZodEncodeError extends Error {
-  constructor(name) {
-    super(`Encountered unidirectional transform during encode: ${name}`);
+  constructor(name2) {
+    super(`Encountered unidirectional transform during encode: ${name2}`);
     this.name = "ZodEncodeError";
   }
 }
@@ -54049,8 +58793,8 @@ var leafletSrc = { exports: {} };
       return -1;
     }
     var emptyImageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-    function getPrefixed(name) {
-      return window["webkit" + name] || window["moz" + name] || window["ms" + name];
+    function getPrefixed(name2) {
+      return window["webkit" + name2] || window["moz" + name2] || window["ms" + name2];
     }
     var lastTime = 0;
     function timeoutDefer(fn) {
@@ -55108,8 +59852,8 @@ var leafletSrc = { exports: {} };
     var EPSG900913 = extend2({}, EPSG3857, {
       code: "EPSG:900913"
     });
-    function svgCreate(name) {
-      return document.createElementNS("http://www.w3.org/2000/svg", name);
+    function svgCreate(name2) {
+      return document.createElementNS("http://www.w3.org/2000/svg", name2);
     }
     function pointsToPath(rings, closed) {
       var str = "", i2, j, len, len2, points, p2;
@@ -55383,7 +60127,7 @@ var leafletSrc = { exports: {} };
       }
       return el;
     }
-    function remove(el) {
+    function remove2(el) {
       var parent = el.parentNode;
       if (parent) {
         parent.removeChild(el);
@@ -55406,36 +60150,36 @@ var leafletSrc = { exports: {} };
         parent.insertBefore(el, parent.firstChild);
       }
     }
-    function hasClass(el, name) {
+    function hasClass(el, name2) {
       if (el.classList !== void 0) {
-        return el.classList.contains(name);
+        return el.classList.contains(name2);
       }
       var className = getClass(el);
-      return className.length > 0 && new RegExp("(^|\\s)" + name + "(\\s|$)").test(className);
+      return className.length > 0 && new RegExp("(^|\\s)" + name2 + "(\\s|$)").test(className);
     }
-    function addClass(el, name) {
+    function addClass(el, name2) {
       if (el.classList !== void 0) {
-        var classes = splitWords(name);
+        var classes = splitWords(name2);
         for (var i2 = 0, len = classes.length; i2 < len; i2++) {
           el.classList.add(classes[i2]);
         }
-      } else if (!hasClass(el, name)) {
+      } else if (!hasClass(el, name2)) {
         var className = getClass(el);
-        setClass(el, (className ? className + " " : "") + name);
+        setClass(el, (className ? className + " " : "") + name2);
       }
     }
-    function removeClass(el, name) {
+    function removeClass(el, name2) {
       if (el.classList !== void 0) {
-        el.classList.remove(name);
+        el.classList.remove(name2);
       } else {
-        setClass(el, trim((" " + getClass(el) + " ").replace(" " + name + " ", " ")));
+        setClass(el, trim((" " + getClass(el) + " ").replace(" " + name2 + " ", " ")));
       }
     }
-    function setClass(el, name) {
+    function setClass(el, name2) {
       if (el.className.baseVal === void 0) {
-        el.className = name;
+        el.className = name2;
       } else {
-        el.className.baseVal = name;
+        el.className.baseVal = name2;
       }
     }
     function getClass(el) {
@@ -55572,7 +60316,7 @@ var leafletSrc = { exports: {} };
       get: get2,
       getStyle,
       create: create$1,
-      remove,
+      remove: remove2,
       empty,
       toFront,
       toBack,
@@ -56373,13 +61117,13 @@ var leafletSrc = { exports: {} };
       // @section Other Methods
       // @method addHandler(name: String, HandlerClass: Function): this
       // Adds a new `Handler` to the map, given its name and constructor function.
-      addHandler: function(name, HandlerClass) {
+      addHandler: function(name2, HandlerClass) {
         if (!HandlerClass) {
           return this;
         }
-        var handler = this[name] = new HandlerClass(this);
+        var handler = this[name2] = new HandlerClass(this);
         this._handlers.push(handler);
-        if (this.options[name]) {
+        if (this.options[name2]) {
           handler.enable();
         }
         return this;
@@ -56405,7 +61149,7 @@ var leafletSrc = { exports: {} };
           this.stopLocate();
         }
         this._stop();
-        remove(this._mapPane);
+        remove2(this._mapPane);
         if (this._clearControlPos) {
           this._clearControlPos();
         }
@@ -56422,7 +61166,7 @@ var leafletSrc = { exports: {} };
           this._layers[i2].remove();
         }
         for (i2 in this._panes) {
-          remove(this._panes[i2]);
+          remove2(this._panes[i2]);
         }
         this._layers = [];
         this._panes = [];
@@ -56435,10 +61179,10 @@ var leafletSrc = { exports: {} };
       // Creates a new [map pane](#map-pane) with the given name if it doesn't exist already,
       // then returns it. The pane is created as a child of `container`, or
       // as a child of the main map pane if not set.
-      createPane: function(name, container) {
-        var className = "leaflet-pane" + (name ? " leaflet-" + name.replace("Pane", "") + "-pane" : ""), pane = create$1("div", className, container || this._mapPane);
-        if (name) {
-          this._panes[name] = pane;
+      createPane: function(name2, container) {
+        var className = "leaflet-pane" + (name2 ? " leaflet-" + name2.replace("Pane", "") + "-pane" : ""), pane = create$1("div", className, container || this._mapPane);
+        if (name2) {
+          this._panes[name2] = pane;
         }
         return pane;
       },
@@ -56769,16 +61513,16 @@ var leafletSrc = { exports: {} };
       },
       // DOM event handling
       // @section Interaction events
-      _initEvents: function(remove2) {
+      _initEvents: function(remove3) {
         this._targets = {};
         this._targets[stamp(this._container)] = this;
-        var onOff = remove2 ? off : on;
+        var onOff = remove3 ? off : on;
         onOff(this._container, "click dblclick mousedown mouseup mouseover mouseout mousemove contextmenu keypress keydown keyup", this._handleDOMEvent, this);
         if (this.options.trackResize) {
           onOff(window, "resize", this._onResize, this);
         }
         if (Browser.any3d && this.options.transform3DLimit) {
-          (remove2 ? this.off : this.on).call(this, "moveend", this._onMoveEnd);
+          (remove3 ? this.off : this.on).call(this, "moveend", this._onMoveEnd);
         }
       },
       _onResize: function() {
@@ -57011,7 +61755,7 @@ var leafletSrc = { exports: {} };
         this._on("unload", this._destroyAnimProxy, this);
       },
       _destroyAnimProxy: function() {
-        remove(this._proxy);
+        remove2(this._proxy);
         this.off("load moveend", this._animMoveEnd, this);
         delete this._proxy;
       },
@@ -57145,7 +61889,7 @@ var leafletSrc = { exports: {} };
         if (!this._map) {
           return this;
         }
-        remove(this._container);
+        remove2(this._container);
         if (this.onRemove) {
           this.onRemove(this._map);
         }
@@ -57188,9 +61932,9 @@ var leafletSrc = { exports: {} };
       },
       _clearControlPos: function() {
         for (var i2 in this._controlCorners) {
-          remove(this._controlCorners[i2]);
+          remove2(this._controlCorners[i2]);
         }
-        remove(this._controlContainer);
+        remove2(this._controlContainer);
         delete this._controlCorners;
         delete this._controlContainer;
       }
@@ -57259,14 +62003,14 @@ var leafletSrc = { exports: {} };
       },
       // @method addBaseLayer(layer: Layer, name: String): this
       // Adds a base layer (radio button entry) with the given name to the control.
-      addBaseLayer: function(layer, name) {
-        this._addLayer(layer, name);
+      addBaseLayer: function(layer, name2) {
+        this._addLayer(layer, name2);
         return this._map ? this._update() : this;
       },
       // @method addOverlay(layer: Layer, name: String): this
       // Adds an overlay (checkbox entry) with the given name to the control.
-      addOverlay: function(layer, name) {
-        this._addLayer(layer, name, true);
+      addOverlay: function(layer, name2) {
+        this._addLayer(layer, name2, true);
         return this._map ? this._update() : this;
       },
       // @method removeLayer(layer: Layer): this
@@ -57344,13 +62088,13 @@ var leafletSrc = { exports: {} };
           }
         }
       },
-      _addLayer: function(layer, name, overlay) {
+      _addLayer: function(layer, name2, overlay) {
         if (this._map) {
           layer.on("add remove", this._onLayerChange, this);
         }
         this._layers.push({
           layer,
-          name,
+          name: name2,
           overlay
         });
         if (this.options.sortLayers) {
@@ -57397,8 +62141,8 @@ var leafletSrc = { exports: {} };
         }
       },
       // IE7 bugs out if you create a radio dynamically, so you have to do it this hacky way (see https://stackoverflow.com/a/119079)
-      _createRadioElement: function(name, checked) {
-        var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' + name + '"' + (checked ? ' checked="checked"' : "") + "/>";
+      _createRadioElement: function(name2, checked) {
+        var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' + name2 + '"' + (checked ? ' checked="checked"' : "") + "/>";
         var radioFragment = document.createElement("div");
         radioFragment.innerHTML = radioHtml;
         return radioFragment.firstChild;
@@ -57416,12 +62160,12 @@ var leafletSrc = { exports: {} };
         this._layerControlInputs.push(input);
         input.layerId = stamp(obj.layer);
         on(input, "click", this._onInputClick, this);
-        var name = document.createElement("span");
-        name.innerHTML = " " + obj.name;
+        var name2 = document.createElement("span");
+        name2.innerHTML = " " + obj.name;
         var holder = document.createElement("span");
         label.appendChild(holder);
         holder.appendChild(input);
-        holder.appendChild(name);
+        holder.appendChild(name2);
         var container = obj.overlay ? this._overlaysList : this._baseLayersList;
         container.appendChild(label);
         this._checkDisabledLayers();
@@ -57811,8 +62555,8 @@ var leafletSrc = { exports: {} };
       // @method removeHooks()
       // Called when the handler is disabled, should remove the event hooks added previously.
     });
-    Handler.addTo = function(map2, name) {
-      map2.addHandler(name, this);
+    Handler.addTo = function(map2, name2) {
+      map2.addHandler(name2, this);
       return this;
     };
     var Mixin = { Events };
@@ -58345,8 +63089,8 @@ var leafletSrc = { exports: {} };
       },
       // @method getPane(name? : String): HTMLElement
       // Returns the `HTMLElement` representing the named pane on the map. If `name` is omitted, returns the pane for this layer.
-      getPane: function(name) {
-        return this._map.getPane(name ? this.options[name] || name : this.options.pane);
+      getPane: function(name2) {
+        return this._map.getPane(name2 ? this.options[name2] || name2 : this.options.pane);
       },
       addInteractiveTarget: function(targetEl) {
         this._map._targets[stamp(targetEl)] = this;
@@ -58694,29 +63438,29 @@ var leafletSrc = { exports: {} };
       createShadow: function(oldIcon) {
         return this._createIcon("shadow", oldIcon);
       },
-      _createIcon: function(name, oldIcon) {
-        var src = this._getIconUrl(name);
+      _createIcon: function(name2, oldIcon) {
+        var src = this._getIconUrl(name2);
         if (!src) {
-          if (name === "icon") {
+          if (name2 === "icon") {
             throw new Error("iconUrl not set in Icon options (see the docs).");
           }
           return null;
         }
         var img = this._createImg(src, oldIcon && oldIcon.tagName === "IMG" ? oldIcon : null);
-        this._setIconStyles(img, name);
+        this._setIconStyles(img, name2);
         if (this.options.crossOrigin || this.options.crossOrigin === "") {
           img.crossOrigin = this.options.crossOrigin === true ? "" : this.options.crossOrigin;
         }
         return img;
       },
-      _setIconStyles: function(img, name) {
+      _setIconStyles: function(img, name2) {
         var options = this.options;
-        var sizeOption = options[name + "Size"];
+        var sizeOption = options[name2 + "Size"];
         if (typeof sizeOption === "number") {
           sizeOption = [sizeOption, sizeOption];
         }
-        var size2 = toPoint(sizeOption), anchor = toPoint(name === "shadow" && options.shadowAnchor || options.iconAnchor || size2 && size2.divideBy(2, true));
-        img.className = "leaflet-marker-" + name + " " + (options.className || "");
+        var size2 = toPoint(sizeOption), anchor = toPoint(name2 === "shadow" && options.shadowAnchor || options.iconAnchor || size2 && size2.divideBy(2, true));
+        img.className = "leaflet-marker-" + name2 + " " + (options.className || "");
         if (anchor) {
           img.style.marginLeft = -anchor.x + "px";
           img.style.marginTop = -anchor.y + "px";
@@ -58731,8 +63475,8 @@ var leafletSrc = { exports: {} };
         el.src = src;
         return el;
       },
-      _getIconUrl: function(name) {
-        return Browser.retina && this.options[name + "RetinaUrl"] || this.options[name + "Url"];
+      _getIconUrl: function(name2) {
+        return Browser.retina && this.options[name2 + "RetinaUrl"] || this.options[name2 + "Url"];
       }
     });
     function icon(options) {
@@ -58749,11 +63493,11 @@ var leafletSrc = { exports: {} };
         tooltipAnchor: [16, -28],
         shadowSize: [41, 41]
       },
-      _getIconUrl: function(name) {
+      _getIconUrl: function(name2) {
         if (typeof IconDefault.imagePath !== "string") {
           IconDefault.imagePath = this._detectIconPath();
         }
-        return (this.options.imagePath || IconDefault.imagePath) + Icon2.prototype._getIconUrl.call(this, name);
+        return (this.options.imagePath || IconDefault.imagePath) + Icon2.prototype._getIconUrl.call(this, name2);
       },
       _stripUrl: function(path) {
         var strip = function(str, re2, idx) {
@@ -59061,13 +63805,13 @@ var leafletSrc = { exports: {} };
         if (this.options.autoPanOnFocus) {
           off(this._icon, "focus", this._panOnFocus, this);
         }
-        remove(this._icon);
+        remove2(this._icon);
         this.removeInteractiveTarget(this._icon);
         this._icon = null;
       },
       _removeShadow: function() {
         if (this._shadow) {
-          remove(this._shadow);
+          remove2(this._shadow);
         }
         this._shadow = null;
       },
@@ -59996,7 +64740,7 @@ var leafletSrc = { exports: {} };
         this._reset();
       },
       onRemove: function() {
-        remove(this._image);
+        remove2(this._image);
         if (this.options.interactive) {
           this.removeInteractiveTarget(this._image);
         }
@@ -60324,9 +65068,9 @@ var leafletSrc = { exports: {} };
       onRemove: function(map2) {
         if (map2._fadeAnimated) {
           setOpacity(this._container, 0);
-          this._removeTimeout = setTimeout(bind(remove, void 0, this._container), 200);
+          this._removeTimeout = setTimeout(bind(remove2, void 0, this._container), 200);
         } else {
-          remove(this._container);
+          remove2(this._container);
         }
         if (this.options.interactive) {
           removeClass(this._container, "leaflet-interactive");
@@ -60982,11 +65726,11 @@ var leafletSrc = { exports: {} };
         }
         return this;
       },
-      _initTooltipInteractions: function(remove2) {
-        if (!remove2 && this._tooltipHandlersAdded) {
+      _initTooltipInteractions: function(remove3) {
+        if (!remove3 && this._tooltipHandlersAdded) {
           return;
         }
-        var onOff = remove2 ? "off" : "on", events = {
+        var onOff = remove3 ? "off" : "on", events = {
           remove: this.closeTooltip,
           move: this._moveTooltip
         };
@@ -61006,7 +65750,7 @@ var leafletSrc = { exports: {} };
           events.mousemove = this._moveTooltip;
         }
         this[onOff](events);
-        this._tooltipHandlersAdded = !remove2;
+        this._tooltipHandlersAdded = !remove3;
       },
       // @method openTooltip(latlng?: LatLng): this
       // Opens the bound tooltip at the specified `latlng` or at the default tooltip anchor if no `latlng` is passed.
@@ -61223,7 +65967,7 @@ var leafletSrc = { exports: {} };
       },
       onRemove: function(map2) {
         this._removeAllTiles();
-        remove(this._container);
+        remove2(this._container);
         map2._removeZoomLimit(this);
         this._container = null;
         this._tileZoom = void 0;
@@ -61394,7 +66138,7 @@ var leafletSrc = { exports: {} };
             this._levels[z2].el.style.zIndex = maxZoom - Math.abs(zoom2 - z2);
             this._onUpdateLevel(z2);
           } else {
-            remove(this._levels[z2].el);
+            remove2(this._levels[z2].el);
             this._removeTilesAtZoom(z2);
             this._onRemoveLevel(z2);
             delete this._levels[z2];
@@ -61461,7 +66205,7 @@ var leafletSrc = { exports: {} };
       },
       _invalidateAll: function() {
         for (var z2 in this._levels) {
-          remove(this._levels[z2].el);
+          remove2(this._levels[z2].el);
           this._onRemoveLevel(Number(z2));
           delete this._levels[z2];
         }
@@ -61685,7 +66429,7 @@ var leafletSrc = { exports: {} };
         if (!tile) {
           return;
         }
-        remove(tile.el);
+        remove2(tile.el);
         delete this._tiles[key];
         this.fire("tileunload", {
           tile: tile.el,
@@ -61949,7 +66693,7 @@ var leafletSrc = { exports: {} };
             if (!tile.complete) {
               tile.src = emptyImageUrl;
               var coords = this._tiles[i2].coords;
-              remove(tile);
+              remove2(tile);
               delete this._tiles[i2];
               this.fire("tileabort", {
                 tile,
@@ -62160,7 +66904,7 @@ var leafletSrc = { exports: {} };
       _destroyContainer: function() {
         cancelAnimFrame(this._redrawRequest);
         delete this._ctx;
-        remove(this._container);
+        remove2(this._container);
         off(this._container);
         delete this._container;
       },
@@ -62482,13 +67226,13 @@ var leafletSrc = { exports: {} };
     var vmlCreate = function() {
       try {
         document.namespaces.add("lvml", "urn:schemas-microsoft-com:vml");
-        return function(name) {
-          return document.createElement("<lvml:" + name + ' class="lvml">');
+        return function(name2) {
+          return document.createElement("<lvml:" + name2 + ' class="lvml">');
         };
       } catch (e3) {
       }
-      return function(name) {
-        return document.createElement("<" + name + ' xmlns="urn:schemas-microsoft.com:vml" class="lvml">');
+      return function(name2) {
+        return document.createElement("<" + name2 + ' xmlns="urn:schemas-microsoft.com:vml" class="lvml">');
       };
     }();
     var vmlMixin = {
@@ -62520,7 +67264,7 @@ var leafletSrc = { exports: {} };
       },
       _removePath: function(layer) {
         var container = layer._container;
-        remove(container);
+        remove2(container);
         layer.removeInteractiveTarget(container);
         delete this._layers[stamp(layer)];
       },
@@ -62582,7 +67326,7 @@ var leafletSrc = { exports: {} };
         this._container.appendChild(this._rootGroup);
       },
       _destroyContainer: function() {
-        remove(this._container);
+        remove2(this._container);
         off(this._container);
         delete this._container;
         delete this._rootGroup;
@@ -62623,7 +67367,7 @@ var leafletSrc = { exports: {} };
         layer.addInteractiveTarget(layer._path);
       },
       _removePath: function(layer) {
-        remove(layer._path);
+        remove2(layer._path);
         layer.removeInteractiveTarget(layer._path);
         delete this._layers[stamp(layer)];
       },
@@ -62703,14 +67447,14 @@ var leafletSrc = { exports: {} };
         }
         return renderer;
       },
-      _getPaneRenderer: function(name) {
-        if (name === "overlayPane" || name === void 0) {
+      _getPaneRenderer: function(name2) {
+        if (name2 === "overlayPane" || name2 === void 0) {
           return false;
         }
-        var renderer = this._paneRenderers[name];
+        var renderer = this._paneRenderers[name2];
         if (renderer === void 0) {
-          renderer = this._createRenderer({ pane: name });
-          this._paneRenderers[name] = renderer;
+          renderer = this._createRenderer({ pane: name2 });
+          this._paneRenderers[name2] = renderer;
         }
         return renderer;
       },
@@ -62773,7 +67517,7 @@ var leafletSrc = { exports: {} };
         return this._moved;
       },
       _destroy: function() {
-        remove(this._pane);
+        remove2(this._pane);
         delete this._pane;
       },
       _resetState: function() {
@@ -62817,7 +67561,7 @@ var leafletSrc = { exports: {} };
       },
       _finish: function() {
         if (this._moved) {
-          remove(this._box);
+          remove2(this._box);
           removeClass(this._container, "leaflet-crosshair");
         }
         enableTextSelection();
@@ -67210,8 +71954,8 @@ var symbolFactories = {
 };
 var RADIAN$2 = Math.PI / 180;
 var getSymbolFactory = function getSymbolFactory2(type) {
-  var name = "symbol".concat(upperFirst$1(type));
-  return symbolFactories[name] || symbolCircle;
+  var name2 = "symbol".concat(upperFirst$1(type));
+  return symbolFactories[name2] || symbolCircle;
 };
 var calculateAreaSize = function calculateAreaSize2(size2, sizeType, type) {
   if (sizeType === "area") {
@@ -69032,11 +73776,11 @@ var DefaultTooltipContent = function DefaultTooltipContent2(props) {
           color: entry.color || "#000"
         }, itemStyle);
         var finalFormatter = entry.formatter || formatter || defaultFormatter;
-        var value = entry.value, name = entry.name;
+        var value = entry.value, name2 = entry.name;
         var finalValue = value;
-        var finalName = name;
+        var finalName = name2;
         if (finalFormatter && finalValue != null && finalName != null) {
-          var formatted = finalFormatter(value, name, entry, i2, payload);
+          var formatted = finalFormatter(value, name2, entry, i2, payload);
           if (Array.isArray(formatted)) {
             var _formatted = _slicedToArray$c(formatted, 2);
             finalValue = _formatted[0];
@@ -72817,7 +77561,7 @@ function formatRe(names) {
   return new RegExp("^(?:" + names.map(requote).join("|") + ")", "i");
 }
 function formatLookup(names) {
-  return new Map(names.map((name, i2) => [name.toLowerCase(), i2]));
+  return new Map(names.map((name2, i2) => [name2.toLowerCase(), i2]));
 }
 function parseWeekdayNumberSunday(d2, string2, i2) {
   var n2 = numberRe.exec(string2.slice(i2, i2 + 1));
@@ -75000,13 +79744,13 @@ var getLegendProps = function getLegendProps2(_ref) {
       var item = _ref3.item;
       var itemDefaultProps = item.type.defaultProps;
       var itemProps = itemDefaultProps !== void 0 ? _objectSpread$u(_objectSpread$u({}, itemDefaultProps), item.props) : {};
-      var dataKey = itemProps.dataKey, name = itemProps.name, legendType = itemProps.legendType, hide2 = itemProps.hide;
+      var dataKey = itemProps.dataKey, name2 = itemProps.name, legendType = itemProps.legendType, hide2 = itemProps.hide;
       return {
         inactive: hide2,
         dataKey,
         type: legendProps.iconType || legendType || "square",
         color: getMainColorOfGraphicItem(item),
-        value: name || dataKey,
+        value: name2 || dataKey,
         // @ts-expect-error property strokeDasharray is required in Payload but optional in props
         payload: itemProps
       };
@@ -75543,10 +80287,10 @@ var parseScale = function parseScale2(axis, chartType, hasBar) {
     };
   }
   if (isString$1(scale2)) {
-    var name = "scale".concat(upperFirst$1(scale2));
+    var name2 = "scale".concat(upperFirst$1(scale2));
     return {
-      scale: (d3Scales[name] || point)(),
-      realScaleType: d3Scales[name] ? name : "point"
+      scale: (d3Scales[name2] || point)(),
+      realScaleType: d3Scales[name2] ? name2 : "point"
     };
   }
   return isFunction$3(scale2) ? {
@@ -75881,12 +80625,12 @@ var parseDomainOfCategoryAxis = function parseDomainOfCategoryAxis2(specifiedDom
 };
 var getTooltipItem = function getTooltipItem2(graphicalItem, payload) {
   var defaultedProps = graphicalItem.type.defaultProps ? _objectSpread$t(_objectSpread$t({}, graphicalItem.type.defaultProps), graphicalItem.props) : graphicalItem.props;
-  var dataKey = defaultedProps.dataKey, name = defaultedProps.name, unit2 = defaultedProps.unit, formatter = defaultedProps.formatter, tooltipType = defaultedProps.tooltipType, chartType = defaultedProps.chartType, hide2 = defaultedProps.hide;
+  var dataKey = defaultedProps.dataKey, name2 = defaultedProps.name, unit2 = defaultedProps.unit, formatter = defaultedProps.formatter, tooltipType = defaultedProps.tooltipType, chartType = defaultedProps.chartType, hide2 = defaultedProps.hide;
   return _objectSpread$t(_objectSpread$t({}, filterProps(graphicalItem, false)), {}, {
     dataKey,
     unit: unit2,
     formatter,
-    name: name || dataKey,
+    name: name2 || dataKey,
     color: getMainColorOfGraphicItem(graphicalItem),
     value: getValueByDataKey(payload, dataKey),
     type: tooltipType,
@@ -77164,11 +81908,11 @@ var getCurveFactory = function getCurveFactory2(type, layout2) {
   if (isFunction$3(type)) {
     return type;
   }
-  var name = "curve".concat(upperFirst$1(type));
-  if ((name === "curveMonotone" || name === "curveBump") && layout2) {
-    return CURVE_FACTORIES["".concat(name).concat(layout2 === "vertical" ? "Y" : "X")];
+  var name2 = "curve".concat(upperFirst$1(type));
+  if ((name2 === "curveMonotone" || name2 === "curveBump") && layout2) {
+    return CURVE_FACTORIES["".concat(name2).concat(layout2 === "vertical" ? "Y" : "X")];
   }
-  return CURVE_FACTORIES[name] || curveLinear;
+  return CURVE_FACTORIES[name2] || curveLinear;
 };
 var getPath$1 = function getPath(_ref) {
   var _ref$type = _ref.type, type = _ref$type === void 0 ? "linear" : _ref$type, _ref$points = _ref.points, points = _ref$points === void 0 ? [] : _ref$points, baseLine = _ref.baseLine, layout2 = _ref.layout, _ref$connectNulls = _ref.connectNulls, connectNulls = _ref$connectNulls === void 0 ? false : _ref$connectNulls;
@@ -77875,8 +82619,8 @@ var getIntersectionKeys = function getIntersectionKeys2(preObj, nextObj) {
 var identity2 = function identity22(param) {
   return param;
 };
-var getDashCase = function getDashCase2(name) {
-  return name.replace(/([A-Z])/g, function(v2) {
+var getDashCase = function getDashCase2(name2) {
+  return name2.replace(/([A-Z])/g, function(v2) {
     return "-".concat(v2.toLowerCase());
   });
 };
@@ -78243,7 +82987,7 @@ const configUpdate = function(from, to, easing, duration2, render) {
   var cafId = -1;
   var preTime;
   var beginTime;
-  var update = function update2() {
+  var update2 = function update3() {
     return null;
   };
   var getCurrStyle = function getCurrStyle2() {
@@ -78264,7 +83008,7 @@ const configUpdate = function(from, to, easing, duration2, render) {
     render(_objectSpread$m(_objectSpread$m(_objectSpread$m({}, from), to), getCurrStyle()));
     preTime = now2;
     if (!shouldStopAnimation()) {
-      cafId = requestAnimationFrame(update);
+      cafId = requestAnimationFrame(update2);
     }
   };
   var timingUpdate = function timingUpdate2(now2) {
@@ -78277,7 +83021,7 @@ const configUpdate = function(from, to, easing, duration2, render) {
     }, timingStyle);
     render(_objectSpread$m(_objectSpread$m(_objectSpread$m({}, from), to), currStyle));
     if (t2 < 1) {
-      cafId = requestAnimationFrame(update);
+      cafId = requestAnimationFrame(update2);
     } else {
       var finalStyle = mapObject(function(key, val) {
         return alpha.apply(void 0, _toConsumableArray$4(val).concat([easing(1)]));
@@ -78285,9 +83029,9 @@ const configUpdate = function(from, to, easing, duration2, render) {
       render(_objectSpread$m(_objectSpread$m(_objectSpread$m({}, from), to), finalStyle));
     }
   };
-  update = easing.isStepper ? stepperUpdate : timingUpdate;
+  update2 = easing.isStepper ? stepperUpdate : timingUpdate;
   return function() {
-    requestAnimationFrame(update);
+    requestAnimationFrame(update2);
     return function() {
       cancelAnimationFrame(cafId);
     };
@@ -80869,7 +85613,7 @@ _defineProperty$h(Pie, "getComposedData", function(_ref4) {
     var prev;
     sectors = pieData.map(function(entry, i2) {
       var val = getValueByDataKey(entry, realDataKey, 0);
-      var name = getValueByDataKey(entry, nameKey, i2);
+      var name2 = getValueByDataKey(entry, nameKey, i2);
       var percent2 = (isNumber(val) ? val : 0) / sum2;
       var tempStartAngle;
       if (i2) {
@@ -80881,7 +85625,7 @@ _defineProperty$h(Pie, "getComposedData", function(_ref4) {
       var midAngle = (tempStartAngle + tempEndAngle) / 2;
       var middleRadius = (coordinate.innerRadius + coordinate.outerRadius) / 2;
       var tooltipPayload = [{
-        name,
+        name: name2,
         value: val,
         payload: entry,
         dataKey: realDataKey,
@@ -80891,7 +85635,7 @@ _defineProperty$h(Pie, "getComposedData", function(_ref4) {
       prev = _objectSpread$e(_objectSpread$e(_objectSpread$e({
         percent: percent2,
         cornerRadius,
-        name,
+        name: name2,
         tooltipPayload,
         midAngle,
         middleRadius,
@@ -81010,14 +85754,14 @@ function _toPrimitive$g(t2, r2) {
   return ("string" === r2 ? String : Number)(t2);
 }
 var PREFIX_LIST = ["Webkit", "Moz", "O", "ms"];
-var generatePrefixStyle = function generatePrefixStyle2(name, value) {
-  var camelName = name.replace(/(\w)/, function(v2) {
+var generatePrefixStyle = function generatePrefixStyle2(name2, value) {
+  var camelName = name2.replace(/(\w)/, function(v2) {
     return v2.toUpperCase();
   });
   var result = PREFIX_LIST.reduce(function(res, entry) {
     return _objectSpread$d(_objectSpread$d({}, res), {}, _defineProperty$g({}, entry + camelName, value));
   }, {});
-  result[name] = value;
+  result[name2] = value;
   return result;
 };
 function _typeof$f(o2) {
@@ -85608,10 +90352,10 @@ var eventemitter3 = { exports: {} };
     this._eventsCount = 0;
   }
   EventEmitter2.prototype.eventNames = function eventNames() {
-    var names = [], events, name;
+    var names = [], events, name2;
     if (this._eventsCount === 0) return names;
-    for (name in events = this._events) {
-      if (has.call(events, name)) names.push(prefix2 ? name.slice(1) : name);
+    for (name2 in events = this._events) {
+      if (has.call(events, name2)) names.push(prefix2 ? name2.slice(1) : name2);
     }
     if (Object.getOwnPropertySymbols) {
       return names.concat(Object.getOwnPropertySymbols(events));
@@ -86591,8 +91335,8 @@ var hasGraphicalBarItem = function hasGraphicalBarItem2(graphicalItems) {
     return false;
   }
   return graphicalItems.some(function(item) {
-    var name = getDisplayName(item && item.type);
-    return name && name.indexOf("Bar") >= 0;
+    var name2 = getDisplayName(item && item.type);
+    return name2 && name2.indexOf("Bar") >= 0;
   });
 };
 var getAxisNameByLayout = function getAxisNameByLayout2(layout2) {
@@ -86769,8 +91513,8 @@ var generateCategoricalChart = function generateCategoricalChart2(_ref6) {
     var graphicalItems = findAllByType(children, GraphicalChild);
     var stackGroups = getStackGroupsByAxisId(data, graphicalItems, "".concat(numericAxisName, "Id"), "".concat(cateAxisName, "Id"), stackOffset, reverseStackOrder);
     var axisObj = axisComponents.reduce(function(result, entry) {
-      var name = "".concat(entry.axisType, "Map");
-      return _objectSpread(_objectSpread({}, result), {}, _defineProperty({}, name, getAxisMap(props, _objectSpread(_objectSpread({}, entry), {}, {
+      var name2 = "".concat(entry.axisType, "Map");
+      return _objectSpread(_objectSpread({}, result), {}, _defineProperty({}, name2, getAxisMap(props, _objectSpread(_objectSpread({}, entry), {}, {
         graphicalItems,
         stackGroups: entry.axisType === numericAxisName && stackGroups,
         dataStartIndex,
@@ -88735,7 +93479,7 @@ var Switch$1 = reactExports.forwardRef(
   (props, forwardedRef) => {
     const {
       __scopeSwitch,
-      name,
+      name: name2,
       checked: checkedProp,
       defaultChecked,
       required: required2,
@@ -88783,7 +93527,7 @@ var Switch$1 = reactExports.forwardRef(
         {
           control: button,
           bubbles: !hasConsumerStoppedPropagationRef.current,
-          name,
+          name: name2,
           value,
           checked,
           required: required2,
@@ -89263,11 +94007,11 @@ function OfferManagementPage() {
     });
   };
   const handleSubmit = async () => {
-    const name = form.name.trim();
+    const name2 = form.name.trim();
     const discountValue = Number(form.discountValue);
     const minCartValue = Number(form.minCartValue || 0);
     const priority = Number(form.priority || 1);
-    if (!name) {
+    if (!name2) {
       alert2.error("Offer name is required.");
       return;
     }
@@ -89314,7 +94058,7 @@ function OfferManagementPage() {
     try {
       setIsSaving(true);
       const payload = {
-        name,
+        name: name2,
         description: form.description.trim(),
         offerType: form.offerType,
         discountValue: form.offerType === "flat_discount" || form.offerType === "percentage_discount" ? discountValue : void 0,
@@ -92871,7 +97615,7 @@ function getHullPresorted(points) {
     return upperHull.concat(lowerHull);
   }
 }
-var Provider = TooltipProvider$1;
+var Provider2 = TooltipProvider$1;
 var Root3 = Tooltip$1;
 var Trigger = TooltipTrigger$1;
 var Portal = TooltipPortal;
@@ -92882,7 +97626,7 @@ function TooltipProvider({
   ...props
 }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Provider,
+    Provider2,
     {
       "data-slot": "tooltip-provider",
       delayDuration,
@@ -93475,7 +98219,7 @@ function lighten(hex2, percent2) {
   const B = Math.min(255, (num & 255) + amt);
   return `#${(16777216 + R * 65536 + G * 256 + B).toString(16).slice(1)}`;
 }
-function makePreset(name, description, primary, secondary, accent, destructive) {
+function makePreset(name2, description, primary, secondary, accent, destructive) {
   const isWarm = primary === "#D4A017" || primary === "#a855f7" || primary === "#6366f1";
   const lightBg = isWarm ? "#fdf8f0" : "#f8fafc";
   const lightSidebar = isWarm ? "#faf5eb" : "#f8fafc";
@@ -93549,7 +98293,7 @@ function makePreset(name, description, primary, secondary, accent, destructive) 
     chart4: "#f472b6",
     chart5: "#fb923c"
   };
-  return { name, description, light, dark };
+  return { name: name2, description, light, dark };
 }
 const themePresets = [
   makePreset(
@@ -94384,11 +99128,11 @@ function UsersPage() {
     setErrors({});
   };
   const filteredStaff = staff.filter((s2) => {
-    const name = s2.name || "";
+    const name2 = s2.name || "";
     const mobile = s2.mobile || "";
     const email2 = s2.email || "";
     const normalizedSearch = searchTerm.toLowerCase();
-    const matchesSearch = name.toLowerCase().includes(normalizedSearch) || mobile.includes(searchTerm) || email2.toLowerCase().includes(normalizedSearch);
+    const matchesSearch = name2.toLowerCase().includes(normalizedSearch) || mobile.includes(searchTerm) || email2.toLowerCase().includes(normalizedSearch);
     const matchesRole = roleFilter === "all" || s2.roleId === roleFilter;
     const matchesStatus = statusFilter === "all" || s2.status === statusFilter;
     return matchesSearch && matchesRole && matchesStatus;

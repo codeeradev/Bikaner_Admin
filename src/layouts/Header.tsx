@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { setupAdminFirebaseNotifications } from "@/services/adminFirebaseMessaging";
 import { useAuthStore, useThemeStore, useUIStore } from "@/store";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
@@ -117,6 +118,29 @@ export function Header() {
 
     return () => window.clearInterval(intervalId);
   }, [isAuthenticated, loadNotifications]);
+
+  useEffect(() => {
+    if (isAuthenticated && user?.role === "Admin") {
+      setupAdminFirebaseNotifications();
+    }
+  }, [isAuthenticated, user?.role]);
+
+  useEffect(() => {
+    const handleFirebaseNotification = () => {
+      loadNotifications();
+    };
+
+    window.addEventListener(
+      "admin-fcm-notification",
+      handleFirebaseNotification,
+    );
+
+    return () =>
+      window.removeEventListener(
+        "admin-fcm-notification",
+        handleFirebaseNotification,
+      );
+  }, [loadNotifications]);
 
   const handleNotificationClick = async (notification: HeaderNotification) => {
     if (!notification.read) {

@@ -1,4 +1,5 @@
 import { authService } from "@/api/services/authService";
+import { setupAdminFirebaseNotifications } from "@/services/adminFirebaseMessaging";
 import type { User } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -34,20 +35,23 @@ export const useAuthStore = create<AuthState>()(
       login: async (mobile: string, password: string, rememberMe: boolean) => {
         console.log("🔑 AuthStore: Starting login...", { mobile });
         set({ isLoading: true });
-        
+
         try {
           console.log("📡 AuthStore: Calling authService.login...");
           const response = await authService.login({ mobile, password });
-          console.log("📥 AuthStore: Received response:", { success: response.success, hasUser: !!response.user });
-          
+          console.log("📥 AuthStore: Received response:", {
+            success: response.success,
+            hasUser: !!response.user,
+          });
+
           if (response.success && response.user) {
             // Transform backend user to frontend User type
             const user: User = {
               id: response.user.id,
               name: response.user.name,
-              email: response.user.email || '',
+              email: response.user.email || "",
               phone: response.user.mobile,
-              avatar: response.user.profileImage || '',
+              avatar: response.user.profileImage || "",
               role: response.user.role,
               roleId: response.user.roleId,
               permissions: response.user.permissions || [],
@@ -55,14 +59,21 @@ export const useAuthStore = create<AuthState>()(
               createdAt: new Date().toISOString(),
             };
 
-            console.log("✨ AuthStore: User transformed, setting state...", { role: user.role, permissionCount: user.permissions.length });
-            
+            console.log("✨ AuthStore: User transformed, setting state...", {
+              role: user.role,
+              permissionCount: user.permissions.length,
+            });
+
             set({
               user,
               isAuthenticated: true,
               rememberMe,
               isLoading: false,
             });
+
+            if (user.role === "Admin") {
+              setupAdminFirebaseNotifications();
+            }
 
             console.log("✅ AuthStore: Login successful!");
             return { success: true };
@@ -74,9 +85,9 @@ export const useAuthStore = create<AuthState>()(
         } catch (error: any) {
           console.error("💥 AuthStore: Login error:", error);
           set({ isLoading: false });
-          return { 
-            success: false, 
-            error: error.message || "An error occurred during login" 
+          return {
+            success: false,
+            error: error.message || "An error occurred during login",
           };
         }
       },
@@ -85,7 +96,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           await authService.logout();
         } catch (error) {
-          console.error('Logout error:', error);
+          console.error("Logout error:", error);
         } finally {
           set({
             user: null,
@@ -103,27 +114,27 @@ export const useAuthStore = create<AuthState>()(
       hasPermission: (permission: string) => {
         const { user } = get();
         if (!user) return false;
-        if (user.role === 'Admin') return true; // Admin has all permissions
+        if (user.role === "Admin") return true; // Admin has all permissions
         return user.permissions.includes(permission);
       },
 
       hasAnyPermission: (permissions: string[]) => {
         const { user } = get();
         if (!user) return false;
-        if (user.role === 'Admin') return true;
-        return permissions.some(p => user.permissions.includes(p));
+        if (user.role === "Admin") return true;
+        return permissions.some((p) => user.permissions.includes(p));
       },
 
       hasAllPermissions: (permissions: string[]) => {
         const { user } = get();
         if (!user) return false;
-        if (user.role === 'Admin') return true;
-        return permissions.every(p => user.permissions.includes(p));
+        if (user.role === "Admin") return true;
+        return permissions.every((p) => user.permissions.includes(p));
       },
 
       isAdmin: () => {
         const { user } = get();
-        return user?.role === 'Admin';
+        return user?.role === "Admin";
       },
     }),
     {

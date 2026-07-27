@@ -1,9 +1,11 @@
+import { setupAdminFirebaseNotifications } from "@/services/adminFirebaseMessaging";
 import { apiClient, post } from "../apiClient";
 import { ENDPOINTS } from "../endpoints";
 
 export interface LoginCredentials {
   mobile: string;
   password: string;
+  fcmToken?: string | null;
 }
 
 export interface LoginResponse {
@@ -31,10 +33,17 @@ export const authService = {
     console.log("🌐 AuthService: Starting login request...");
     console.log("🌐 AuthService: Endpoint:", ENDPOINTS.LOGIN);
     console.log("🌐 AuthService: Credentials:", { mobile: credentials.mobile });
-    
+
     try {
-      const response = await post<LoginResponse>(ENDPOINTS.LOGIN, credentials);
-      console.log("🌐 AuthService: Response received:", { success: response.success, hasToken: !!response.token });
+      const fcmToken = await setupAdminFirebaseNotifications();
+      const response = await post<LoginResponse>(ENDPOINTS.LOGIN, {
+        ...credentials,
+        fcmToken,
+      });
+      console.log("🌐 AuthService: Response received:", {
+        success: response.success,
+        hasToken: !!response.token,
+      });
 
       // Store the token
       if (response.token) {
