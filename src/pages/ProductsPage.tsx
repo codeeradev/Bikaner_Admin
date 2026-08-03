@@ -95,9 +95,16 @@ export function ProductsPage() {
   const openEditModal = (product: Product) => {
     setEditingProduct(product);
     setImageFile(null);
+    
+    // Extract categoryId - handle both string and object formats
+    let categoryId = product.categoryId;
+    if (typeof categoryId === "object" && categoryId !== null) {
+      categoryId = (categoryId as any)._id || (categoryId as any).id || "";
+    }
+    
     reset({
       name: product.name,
-      categoryId: product.categoryId,
+      categoryId: categoryId as string,
       description: product.description,
       sku: product.sku,
       unitValue: product.unitValue,
@@ -202,7 +209,13 @@ export function ProductsPage() {
     {
       accessorKey: "category",
       header: "Category",
-      cell: ({ row }) => row.original.category?.name || "N/A",
+      cell: ({ row }) => {
+        const category = row.original.category || row.original.categoryId;
+        if (typeof category === "object" && category !== null) {
+          return category.name || "N/A";
+        }
+        return "N/A";
+      },
     },
     {
       accessorKey: "mrp",

@@ -16,7 +16,7 @@ export interface BulkPriceTier {
 
 export interface Product {
   id: string;
-  categoryId: string;
+  categoryId: string | { _id: string; id?: string; name: string };
   name: string;
   description?: string;
   sku?: string;
