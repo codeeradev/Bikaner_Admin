@@ -110,6 +110,7 @@ const settingsSchema = z
     razorpayKeySecret: z.string().optional(),
     razorpayWebhookSecret: z.string().optional(),
     enableRazorpayForSellers: z.boolean(),
+    enableRazorpayForUser: z.boolean(),
     termsAndConditions: z.string().optional(),
     privacyPolicy: z.string().optional(),
     aboutUs: z.string().optional(),
@@ -151,6 +152,7 @@ const defaultValues: SettingsFormData = {
   razorpayKeySecret: "",
   razorpayWebhookSecret: "",
   enableRazorpayForSellers: false,
+  enableRazorpayForUser: false,
   termsAndConditions: "",
   privacyPolicy: "",
   aboutUs: "",
@@ -237,6 +239,7 @@ export function SettingsPage() {
           razorpayKeySecret: settings.razorpayKeySecret || "",
           razorpayWebhookSecret: settings.razorpayWebhookSecret || "",
           enableRazorpayForSellers: settings.enableRazorpayForSellers || false,
+          enableRazorpayForUser: settings.enableRazorpayForUser || false,
           termsAndConditions: settings.termsAndConditions || "",
           privacyPolicy: settings.privacyPolicy || "",
           aboutUs: settings.aboutUs || "",
@@ -321,6 +324,7 @@ export function SettingsPage() {
         razorpayKeySecret: data.razorpayKeySecret?.trim() || "",
         razorpayWebhookSecret: data.razorpayWebhookSecret?.trim() || "",
         enableRazorpayForSellers: data.enableRazorpayForSellers,
+        enableRazorpayForUser: data.enableRazorpayForUser,
         termsAndConditions: data.termsAndConditions || "",
         privacyPolicy: data.privacyPolicy || "",
         aboutUs: data.aboutUs || "",
@@ -700,6 +704,21 @@ export function SettingsPage() {
                         id="enableRazorpayForSellers"
                         checked={methods.watch("enableRazorpayForSellers")}
                         onCheckedChange={(checked) => methods.setValue("enableRazorpayForSellers", checked)}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between rounded-md border p-3">
+                      <div className="space-y-0.5">
+                        <label htmlFor="enableRazorpayForUser" className="text-sm font-medium">
+                          Enable Razorpay for Users
+                        </label>
+                        <p className="text-xs text-muted-foreground">
+                          Allow regular users to make payments via Razorpay
+                        </p>
+                      </div>
+                      <Switch
+                        id="enableRazorpayForUser"
+                        checked={methods.watch("enableRazorpayForUser")}
+                        onCheckedChange={(checked) => methods.setValue("enableRazorpayForUser", checked)}
                       />
                     </div>
                   </CardContent>

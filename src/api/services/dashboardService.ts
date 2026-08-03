@@ -38,10 +38,10 @@ interface InventoryStatusResponse {
   data: InventoryItem[];
 }
 
-interface RevenueByRegionResponse {
+interface TotalRevenueResponse {
   success: boolean;
   message?: string;
-  data: RevenueByRegion[];
+  data: TotalRevenue;
 }
 
 interface MonthlyTrendsResponse {
@@ -129,16 +129,16 @@ export interface InventoryItem {
   expiryDate: string;
 }
 
-export interface RevenueByRegion {
-  region: string;
+export interface TotalRevenue {
   revenue: number;
   orders: number;
+  days: number;
 }
 
 export interface MonthlyTrend {
   month: string;
-  production: number;
   sales: number;
+  orders: number;
 }
 
 export interface DashboardSellerApplication {
@@ -213,18 +213,18 @@ export const dashboardService = {
   },
 
   /**
-   * Get revenue by region
+   * Get total revenue
    */
-  async getRevenueByRegion(days?: number): Promise<RevenueByRegion[]> {
+  async getTotalRevenue(days?: number): Promise<TotalRevenue> {
     const params: Record<string, number> = {};
     if (days !== undefined) params.days = days;
 
     const response = ensureSuccess(
-      await get<RevenueByRegionResponse>(
-        ENDPOINTS.GET_DASHBOARD_REVENUE_BY_REGION,
+      await get<TotalRevenueResponse>(
+        ENDPOINTS.GET_DASHBOARD_TOTAL_REVENUE,
         params,
       ),
-      "Failed to fetch revenue by region",
+      "Failed to fetch total revenue",
     );
     return response.data;
   },

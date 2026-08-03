@@ -5,7 +5,7 @@ import type {
   RecentOrder,
   TopProduct,
   InventoryItem as DashboardInventoryItem,
-  RevenueByRegion,
+  TotalRevenue,
   MonthlyTrend,
   DashboardSellerApplication,
 } from "@/api/services/dashboardService";
@@ -100,11 +100,28 @@ const orderColumns: ColumnDef<RecentOrder>[] = [
     header: "Date",
     cell: ({ row }) => new Date(row.getValue("date")).toLocaleDateString(),
   },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => (
+      <Button size="sm" variant="outline" asChild>
+        <a href="/orders">Manage</a>
+      </Button>
+    ),
+  },
 ];
 
 const franchiseColumns: ColumnDef<DashboardSellerApplication>[] = [
-  { accessorKey: "applicantName", header: "Applicant" },
-  { accessorKey: "businessName", header: "Business" },
+  { 
+    accessorKey: "applicantName", 
+    header: "Applicant",
+    cell: ({ row }) => row.getValue("applicantName") || "N/A"
+  },
+  { 
+    accessorKey: "businessName", 
+    header: "Business",
+    cell: ({ row }) => row.getValue("businessName") || "N/A"
+  },
   {
     accessorKey: "requestDate",
     header: "Date",
@@ -177,7 +194,7 @@ export function DashboardPage() {
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
   const [inventoryItems, setInventoryItems] = useState<DashboardInventoryItem[]>([]);
-  const [revenueByRegion, setRevenueByRegion] = useState<RevenueByRegion[]>([]);
+  const [totalRevenue, setTotalRevenue] = useState<TotalRevenue | null>(null);
   const [monthlyTrends, setMonthlyTrends] = useState<MonthlyTrend[]>([]);
   const [sellerApplications, setSellerApplications] = useState<DashboardSellerApplication[]>([]);
   
@@ -206,7 +223,7 @@ export function DashboardPage() {
         dashboardService.getRecentOrders(8),
         dashboardService.getTopProducts(5, 30),
         dashboardService.getInventoryStatus(),
-        dashboardService.getRevenueByRegion(30),
+        dashboardService.getTotalRevenue(30),
         dashboardService.getMonthlyTrends(6),
         dashboardService.getRecentSellerApplications(5),
       ]);
@@ -225,7 +242,7 @@ export function DashboardPage() {
       setRecentOrders(orders);
       setTopProducts(products);
       setInventoryItems(inventory);
-      setRevenueByRegion(revenue);
+      setTotalRevenue(revenue);
       setMonthlyTrends(trends);
       setSellerApplications(applications);
       
@@ -311,7 +328,7 @@ export function DashboardPage() {
         },
         {
           title: "Monthly Revenue",
-          value: `₹${(dashboardStats.sales.month.amount / 100000).toFixed(1)}L`,
+          value: `₹${dashboardStats.sales.month.amount.toLocaleString()}`,
           icon: BarChart3,
           trend: {
             value: dashboardStats.sales.month.trend,
@@ -410,45 +427,37 @@ export function DashboardPage() {
 
           {/* Charts Row */}
           <div className="grid gap-6 lg:grid-cols-3">
-            {/* Revenue by Region */}
+            {/* Revenue */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
               className="rounded-lg border border-border bg-card p-6"
             >
-              <h3 className="text-lg font-semibold mb-4">Revenue by Region</h3>
-              {revenueByRegion.length > 0 ? (
-                <ResponsiveContainer width="100%" height={260}>
-                  <PieChart>
-                    <Pie
-                      data={revenueByRegion}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={90}
-                      paddingAngle={4}
-                      dataKey="revenue"
-                      nameKey="region"
-                    >
-                      {revenueByRegion.map((entry, index) => (
-                        <Cell
-                          key={`cell-${entry.region}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "oklch(var(--card))",
-                        border: "1px solid oklch(var(--border))",
-                        borderRadius: "8px",
-                      }}
-                      formatter={(value: number) => [`₹${value}L`, "Revenue"]}
-                    />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+              <h3 className="text-lg font-semibold mb-4">Revenue (Last 30 Days)</h3>
+              {totalRevenue ? (
+                <div className="h-[260px] flex flex-col items-center justify-center space-y-4">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-primary">
+                      ₹{totalRevenue.revenue.toLocaleString()}
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-2">
+                      Last {totalRevenue.days} Days
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 w-full mt-4">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                      <span className="text-sm text-muted-foreground">Total Orders</span>
+                      <span className="text-lg font-semibold">{totalRevenue.orders}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                      <span className="text-sm text-muted-foreground">Avg. Order Value</span>
+                      <span className="text-lg font-semibold">
+                        ₹{totalRevenue.orders > 0 ? Math.round(totalRevenue.revenue / totalRevenue.orders).toLocaleString() : 0}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <div className="h-[260px] flex items-center justify-center text-muted-foreground">
                   No revenue data available
@@ -456,7 +465,7 @@ export function DashboardPage() {
               )}
             </motion.div>
 
-            {/* Production vs Sales */}
+            {/* Monthly Sales */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -464,24 +473,12 @@ export function DashboardPage() {
               className="rounded-lg border border-border bg-card p-6 lg:col-span-2"
             >
               <h3 className="text-lg font-semibold mb-4">
-                Monthly Trends (Lakhs)
+                Monthly Sales Trends
               </h3>
               {monthlyTrends.length > 0 ? (
                 <ResponsiveContainer width="100%" height={260}>
                   <AreaChart data={monthlyTrends}>
                     <defs>
-                      <linearGradient id="prodGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop
-                          offset="5%"
-                          stopColor="oklch(var(--chart-1))"
-                          stopOpacity={0.3}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="oklch(var(--chart-1))"
-                          stopOpacity={0}
-                        />
-                      </linearGradient>
                       <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
                         <stop
                           offset="5%"
@@ -511,17 +508,9 @@ export function DashboardPage() {
                         border: "1px solid oklch(var(--border))",
                         borderRadius: "8px",
                       }}
-                      formatter={(value: number) => [`₹${value}L`, ""]}
+                      formatter={(value: number) => [`₹${value.toLocaleString()}`, "Sales"]}
                     />
                     <Legend />
-                    <Area
-                      type="monotone"
-                      dataKey="production"
-                      name="Production"
-                      stroke="oklch(var(--chart-1))"
-                      fill="url(#prodGradient)"
-                      strokeWidth={2}
-                    />
                     <Area
                       type="monotone"
                       dataKey="sales"
