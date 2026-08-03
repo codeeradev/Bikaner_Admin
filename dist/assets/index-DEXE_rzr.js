@@ -30344,6 +30344,12 @@ const ENDPOINTS = {
   // Dashboard
   GET_DASHBOARD_STATS: `${BASE_URL}/dashboard/stats`,
   GET_DASHBOARD_CHARTS: `${BASE_URL}/dashboard/charts`,
+  GET_DASHBOARD_RECENT_ORDERS: `${BASE_URL}/dashboard/recent-orders`,
+  GET_DASHBOARD_TOP_PRODUCTS: `${BASE_URL}/dashboard/top-products`,
+  GET_DASHBOARD_INVENTORY_STATUS: `${BASE_URL}/dashboard/inventory-status`,
+  GET_DASHBOARD_REVENUE_BY_REGION: `${BASE_URL}/dashboard/revenue-by-region`,
+  GET_DASHBOARD_MONTHLY_TRENDS: `${BASE_URL}/dashboard/monthly-trends`,
+  GET_DASHBOARD_SELLER_APPLICATIONS: `${BASE_URL}/dashboard/seller-applications`,
   // Theme
   GET_THEME: `${BASE_URL}/theme`,
   UPDATE_THEME: `${BASE_URL}/theme`,
@@ -31296,7 +31302,7 @@ const zoneService = {
     return del(ENDPOINTS.DELETE_ZONE(id2));
   }
 };
-const ensureSuccess$1 = (response, fallbackMessage) => {
+const ensureSuccess$2 = (response, fallbackMessage) => {
   if (!response.success) {
     throw new Error(response.message || fallbackMessage);
   }
@@ -31324,7 +31330,7 @@ const toOrderListItem = (order) => {
 };
 const orderService = {
   async getOrders(params) {
-    const response = ensureSuccess$1(
+    const response = ensureSuccess$2(
       await get$4(ENDPOINTS.GET_ORDERS, params),
       "Failed to fetch orders"
     );
@@ -31334,7 +31340,7 @@ const orderService = {
     };
   },
   async getNormalOrders() {
-    const response = ensureSuccess$1(
+    const response = ensureSuccess$2(
       await get$4(ENDPOINTS.GET_NORMAL_ORDERS, {
         limit: 100
       }),
@@ -31343,7 +31349,7 @@ const orderService = {
     return response.data.map(toOrderListItem);
   },
   async getBulkOrders() {
-    const response = ensureSuccess$1(
+    const response = ensureSuccess$2(
       await get$4(ENDPOINTS.GET_BULK_ORDERS, {
         limit: 100
       }),
@@ -31352,7 +31358,7 @@ const orderService = {
     return response.data.map(toOrderListItem);
   },
   async updateOrderStatus(id2, orderStatus, cancelReason) {
-    return ensureSuccess$1(
+    return ensureSuccess$2(
       await put(ENDPOINTS.UPDATE_ORDER_STATUS(id2), {
         orderStatus,
         cancelReason
@@ -31361,7 +31367,7 @@ const orderService = {
     );
   },
   async cancelOrder(id2, cancelReason) {
-    return ensureSuccess$1(
+    return ensureSuccess$2(
       await put(ENDPOINTS.CANCEL_ORDER(id2), { cancelReason }),
       "Failed to cancel order"
     );
@@ -31626,7 +31632,7 @@ const notificationService = {
     );
   }
 };
-const ensureSuccess = (response, fallbackMessage) => {
+const ensureSuccess$1 = (response, fallbackMessage) => {
   if (!response.success) {
     throw new Error(response.message || fallbackMessage);
   }
@@ -31634,36 +31640,142 @@ const ensureSuccess = (response, fallbackMessage) => {
 };
 const offerService = {
   async getOffers() {
-    const response = ensureSuccess(
+    const response = ensureSuccess$1(
       await get$4(ENDPOINTS.GET_OFFERS, { limit: 100 }),
       "Failed to fetch offers"
     );
     return response.data;
   },
   async getOfferById(id2) {
-    const response = ensureSuccess(
+    const response = ensureSuccess$1(
       await get$4(ENDPOINTS.GET_OFFER(id2)),
       "Failed to fetch offer"
     );
     return response.data;
   },
   async createOffer(data) {
-    return ensureSuccess(
+    return ensureSuccess$1(
       await post(ENDPOINTS.CREATE_OFFER, data),
       "Failed to create offer"
     );
   },
   async updateOffer(id2, data) {
-    return ensureSuccess(
+    return ensureSuccess$1(
       await put(ENDPOINTS.UPDATE_OFFER(id2), data),
       "Failed to update offer"
     );
   },
   async deleteOffer(id2) {
-    return ensureSuccess(
+    return ensureSuccess$1(
       await del(ENDPOINTS.DELETE_OFFER(id2)),
       "Failed to delete offer"
     );
+  }
+};
+const ensureSuccess = (response, fallbackMessage) => {
+  if (!response.success) {
+    throw new Error(response.message || fallbackMessage);
+  }
+  return response;
+};
+const dashboardService = {
+  /**
+   * Get dashboard statistics
+   */
+  async getStats() {
+    const response = ensureSuccess(
+      await get$4(ENDPOINTS.GET_DASHBOARD_STATS),
+      "Failed to fetch dashboard stats"
+    );
+    return response.data;
+  },
+  /**
+   * Get recent orders
+   */
+  async getRecentOrders(limit) {
+    const params = {};
+    if (limit !== void 0) params.limit = limit;
+    const response = ensureSuccess(
+      await get$4(
+        ENDPOINTS.GET_DASHBOARD_RECENT_ORDERS,
+        params
+      ),
+      "Failed to fetch recent orders"
+    );
+    return response.data;
+  },
+  /**
+   * Get top selling products
+   */
+  async getTopProducts(limit, days) {
+    const params = {};
+    if (limit !== void 0) params.limit = limit;
+    if (days !== void 0) params.days = days;
+    const response = ensureSuccess(
+      await get$4(
+        ENDPOINTS.GET_DASHBOARD_TOP_PRODUCTS,
+        params
+      ),
+      "Failed to fetch top products"
+    );
+    return response.data;
+  },
+  /**
+   * Get inventory status
+   */
+  async getInventoryStatus() {
+    const response = ensureSuccess(
+      await get$4(
+        ENDPOINTS.GET_DASHBOARD_INVENTORY_STATUS
+      ),
+      "Failed to fetch inventory status"
+    );
+    return response.data;
+  },
+  /**
+   * Get revenue by region
+   */
+  async getRevenueByRegion(days) {
+    const params = {};
+    if (days !== void 0) params.days = days;
+    const response = ensureSuccess(
+      await get$4(
+        ENDPOINTS.GET_DASHBOARD_REVENUE_BY_REGION,
+        params
+      ),
+      "Failed to fetch revenue by region"
+    );
+    return response.data;
+  },
+  /**
+   * Get monthly trends
+   */
+  async getMonthlyTrends(months) {
+    const params = {};
+    if (months !== void 0) params.months = months;
+    const response = ensureSuccess(
+      await get$4(
+        ENDPOINTS.GET_DASHBOARD_MONTHLY_TRENDS,
+        params
+      ),
+      "Failed to fetch monthly trends"
+    );
+    return response.data;
+  },
+  /**
+   * Get recent seller applications
+   */
+  async getRecentSellerApplications(limit) {
+    const params = {};
+    if (limit !== void 0) params.limit = limit;
+    const response = ensureSuccess(
+      await get$4(
+        ENDPOINTS.GET_DASHBOARD_SELLER_APPLICATIONS,
+        params
+      ),
+      "Failed to fetch seller applications"
+    );
+    return response.data;
   }
 };
 const useCategoryStore = create((set2, get2) => ({
@@ -40939,7 +41051,7 @@ function DataTable({
         " results"
       ] })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg border border-border overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm table-fixed", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg border border-border overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-muted/50", children: table.getHeaderGroups().map((headerGroup) => /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: headerGroup.headers.map((header, index2) => {
         const isActionsColumn = header.id === "actions";
         const isStatusColumn = header.column.id === "status" || header.column.id === "isActive";
@@ -40947,9 +41059,9 @@ function DataTable({
           "th",
           {
             className: cn(
-              "px-4 py-3 font-medium text-muted-foreground",
-              isActionsColumn && "w-32 text-right",
-              isStatusColumn && "w-32 text-center",
+              "px-4 py-3 font-medium text-muted-foreground whitespace-nowrap",
+              isActionsColumn && "w-auto text-right",
+              isStatusColumn && "w-auto text-center",
               !isActionsColumn && !isStatusColumn && "text-left"
             ),
             children: header.isPlaceholder ? null : /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -43122,12 +43234,12 @@ function OrdersTable({
     {
       accessorKey: "orderNumber",
       header: "Order",
-      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono text-xs", children: row.getValue("orderNumber") })
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono text-xs whitespace-nowrap", children: row.getValue("orderNumber") })
     },
     {
       accessorKey: "customerName",
       header: "Customer",
-      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-[150px]", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: row.original.customerName }),
         row.original.customerMobile && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: row.original.customerMobile })
       ] })
@@ -43135,25 +43247,33 @@ function OrdersTable({
     {
       accessorKey: "orderType",
       header: "Type",
-      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: "outline", className: "capitalize", children: row.getValue("orderType") })
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: "outline", className: "capitalize whitespace-nowrap", children: row.getValue("orderType") })
     },
-    { accessorKey: "productCount", header: "Products" },
-    { accessorKey: "quantity", header: "Qty" },
+    {
+      accessorKey: "productCount",
+      header: "Products",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "whitespace-nowrap", children: row.getValue("productCount") })
+    },
+    {
+      accessorKey: "quantity",
+      header: "Qty",
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "whitespace-nowrap", children: row.getValue("quantity") })
+    },
     {
       accessorKey: "amount",
       header: "Amount",
-      cell: ({ row }) => new Intl.NumberFormat("en-IN", {
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "whitespace-nowrap", children: new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
         maximumFractionDigits: 0
-      }).format(Number(row.getValue("amount")))
+      }).format(Number(row.getValue("amount"))) })
     },
     {
       accessorKey: "paymentStatus",
       header: "Payment",
       cell: ({ row }) => {
         const status = row.getValue("paymentStatus");
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: paymentVariants[status] || "secondary", children: status });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: paymentVariants[status] || "secondary", className: "whitespace-nowrap", children: status });
       }
     },
     {
@@ -43161,13 +43281,13 @@ function OrdersTable({
       header: "Status",
       cell: ({ row }) => {
         const status = row.getValue("orderStatus");
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: orderVariants[status] || "secondary", children: statusLabels[status] || status });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: orderVariants[status] || "secondary", className: "whitespace-nowrap", children: statusLabels[status] || status });
       }
     },
     {
       accessorKey: "date",
       header: "Date",
-      cell: ({ row }) => row.getValue("date") ? new Date(row.getValue("date")).toLocaleDateString() : "—"
+      cell: ({ row }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "whitespace-nowrap", children: row.getValue("date") ? new Date(row.getValue("date")).toLocaleDateString() : "—" })
     },
     {
       id: "actions",
@@ -43175,7 +43295,7 @@ function OrdersTable({
       cell: ({ row }) => {
         const status = row.getValue("orderStatus");
         const isTerminal = status === "delivered" || status === "cancelled";
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-2 min-w-[200px]", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Button,
             {
@@ -43195,6 +43315,7 @@ function OrdersTable({
                 variant: "outline",
                 size: "sm",
                 disabled: isTerminal || isUpdating,
+                className: "whitespace-nowrap",
                 children: [
                   "Change Status",
                   /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "ml-1 h-3 w-3" })
@@ -43246,7 +43367,7 @@ function OrdersTable({
     }
   ];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col sm:flex-row justify-end gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
       Button,
       {
         type: "button",
@@ -43254,13 +43375,14 @@ function OrdersTable({
         size: "sm",
         onClick: loadOrders,
         disabled: isLoading,
+        className: "w-full sm:w-auto",
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "mr-2 h-4 w-4" }),
           "Refresh"
         ]
       }
     ) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       DataTable,
       {
         columns: orderColumns2,
@@ -43269,7 +43391,7 @@ function OrdersTable({
         searchPlaceholder,
         emptyMessage
       }
-    ),
+    ) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       Dialog,
       {
@@ -43289,17 +43411,18 @@ function OrdersTable({
               "?"
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "flex-col sm:flex-row gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               Button,
               {
                 variant: "outline",
                 disabled: isUpdating,
                 onClick: () => setConfirmDialog({ ...confirmDialog, open: false }),
+                className: "w-full sm:w-auto",
                 children: "Cancel"
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleConfirmStatusChange, disabled: isUpdating, children: "Confirm" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleConfirmStatusChange, disabled: isUpdating, className: "w-full sm:w-auto", children: "Confirm" })
           ] })
         ] })
       }
@@ -43331,13 +43454,14 @@ function OrdersTable({
               }
             )
           ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "flex-col sm:flex-row gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               Button,
               {
                 variant: "outline",
                 disabled: isUpdating,
                 onClick: () => setCancelDialog({ ...cancelDialog, open: false, reason: "" }),
+                className: "w-full sm:w-auto",
                 children: "Cancel"
               }
             ),
@@ -43347,6 +43471,7 @@ function OrdersTable({
                 variant: "destructive",
                 onClick: handleCancelOrder,
                 disabled: isUpdating,
+                className: "w-full sm:w-auto",
                 children: "Cancel Order"
               }
             )
@@ -69061,445 +69186,6 @@ function Progress({
     }
   );
 }
-const mockDashboardStats = {
-  walletBalance: 45230.75
-};
-const mockFmcgStats = {
-  totalOrders: 1456,
-  todaySales: 284750,
-  inventoryStatus: 87,
-  lowStockAlerts: 12,
-  topSellingProduct: "Marie Gold",
-  distributorPerformance: 94,
-  retailerActivity: 312,
-  revenueAnalytics: 245.89,
-  deliveryTracking: 89,
-  productionMetrics: 78
-};
-const mockRecentOrders = [
-  {
-    id: "ORD-2024-001",
-    customerName: "Sharma Distributors",
-    productCount: 3,
-    quantity: 150,
-    amount: 45250,
-    paymentStatus: "paid",
-    orderStatus: "delivered",
-    date: "2024-06-18T10:30:00Z"
-  },
-  {
-    id: "ORD-2024-002",
-    customerName: "Patel Retail Mart",
-    productCount: 2,
-    quantity: 80,
-    amount: 18990,
-    paymentStatus: "pending",
-    orderStatus: "processing",
-    date: "2024-06-18T09:15:00Z"
-  },
-  {
-    id: "ORD-2024-003",
-    customerName: "Gupta Wholesale",
-    productCount: 5,
-    quantity: 250,
-    amount: 87550,
-    paymentStatus: "paid",
-    orderStatus: "shipped",
-    date: "2024-06-17T16:45:00Z"
-  },
-  {
-    id: "ORD-2024-004",
-    customerName: "Kirana King Stores",
-    productCount: 1,
-    quantity: 500,
-    amount: 69950,
-    paymentStatus: "failed",
-    orderStatus: "pending",
-    date: "2024-06-17T14:20:00Z"
-  },
-  {
-    id: "ORD-2024-005",
-    customerName: "Agarwal Supermart",
-    productCount: 4,
-    quantity: 120,
-    amount: 32400,
-    paymentStatus: "paid",
-    orderStatus: "confirmed",
-    date: "2024-06-16T11:00:00Z"
-  },
-  {
-    id: "ORD-2024-006",
-    customerName: "Verma General Store",
-    productCount: 2,
-    quantity: 60,
-    amount: 15600,
-    paymentStatus: "refunded",
-    orderStatus: "cancelled",
-    date: "2024-06-16T08:30:00Z"
-  },
-  {
-    id: "ORD-2024-007",
-    customerName: "Reddy Distribution",
-    productCount: 3,
-    quantity: 180,
-    amount: 54e3,
-    paymentStatus: "paid",
-    orderStatus: "packed",
-    date: "2024-06-15T15:00:00Z"
-  },
-  {
-    id: "ORD-2024-008",
-    customerName: "Singh Brothers Retail",
-    productCount: 6,
-    quantity: 300,
-    amount: 12e4,
-    paymentStatus: "pending",
-    orderStatus: "pending",
-    date: "2024-06-15T10:45:00Z"
-  }
-];
-const mockRecentFranchiseRequests = [
-  {
-    id: "FRQ-001",
-    applicantName: "Ramesh Kumar",
-    email: "ramesh@biscuitmart.com",
-    phone: "+91-98765-43201",
-    address: "45 Gandhi Road, Jaipur, Rajasthan",
-    businessName: "Kumar Biscuit Mart",
-    requestDate: "2024-06-18T08:00:00Z",
-    status: "pending"
-  },
-  {
-    id: "FRQ-002",
-    applicantName: "Priya Sharma",
-    email: "priya@snackshack.in",
-    phone: "+91-98765-43202",
-    address: "78 MG Road, Bangalore, Karnataka",
-    businessName: "Sharma Snack Shack",
-    requestDate: "2024-06-17T14:30:00Z",
-    status: "pending"
-  },
-  {
-    id: "FRQ-003",
-    applicantName: "Mohammed Ali",
-    email: "ali@biscuitworld.com",
-    phone: "+91-98765-43203",
-    address: "22 Park Street, Kolkata, West Bengal",
-    businessName: "Ali Biscuit World",
-    requestDate: "2024-06-16T11:00:00Z",
-    status: "approved"
-  },
-  {
-    id: "FRQ-004",
-    applicantName: "Lakshmi Iyer",
-    email: "lakshmi@bakersdelight.in",
-    phone: "+91-98765-43204",
-    address: "33 Anna Salai, Chennai, Tamil Nadu",
-    businessName: "Iyer Bakers Delight",
-    requestDate: "2024-06-15T09:45:00Z",
-    status: "pending"
-  },
-  {
-    id: "FRQ-005",
-    applicantName: "Harpreet Singh",
-    email: "harpreet@punjabfoods.com",
-    phone: "+91-98765-43205",
-    address: "12 GT Road, Amritsar, Punjab",
-    businessName: "Singh Punjab Foods",
-    requestDate: "2024-06-14T16:20:00Z",
-    status: "rejected"
-  }
-];
-const mockInventoryItems = [
-  {
-    product: "Marie Gold",
-    sku: "BB-MG-001",
-    stockLevel: 4500,
-    maxStock: 5e3,
-    reorderPoint: 1e3,
-    status: "healthy",
-    warehouse: "Jaipur WH",
-    expiryDate: "2024-12-15"
-  },
-  {
-    product: "Bourbon",
-    sku: "BB-BB-002",
-    stockLevel: 3200,
-    maxStock: 5e3,
-    reorderPoint: 1e3,
-    status: "healthy",
-    warehouse: "Delhi WH",
-    expiryDate: "2024-11-20"
-  },
-  {
-    product: "Nice Biscuit",
-    sku: "BB-NB-003",
-    stockLevel: 850,
-    maxStock: 4e3,
-    reorderPoint: 1e3,
-    status: "low",
-    warehouse: "Mumbai WH",
-    expiryDate: "2024-10-10"
-  },
-  {
-    product: "Glucose",
-    sku: "BB-GL-004",
-    stockLevel: 6200,
-    maxStock: 8e3,
-    reorderPoint: 2e3,
-    status: "healthy",
-    warehouse: "Jaipur WH",
-    expiryDate: "2025-01-05"
-  },
-  {
-    product: "Krackjack",
-    sku: "BB-KJ-005",
-    stockLevel: 420,
-    maxStock: 3e3,
-    reorderPoint: 800,
-    status: "critical",
-    warehouse: "Bangalore WH",
-    expiryDate: "2024-09-28"
-  },
-  {
-    product: "Parle-G",
-    sku: "BB-PG-006",
-    stockLevel: 7800,
-    maxStock: 1e4,
-    reorderPoint: 2500,
-    status: "healthy",
-    warehouse: "Delhi WH",
-    expiryDate: "2025-02-15"
-  },
-  {
-    product: "Cream Cracker",
-    sku: "BB-CC-007",
-    stockLevel: 950,
-    maxStock: 3500,
-    reorderPoint: 900,
-    status: "low",
-    warehouse: "Chennai WH",
-    expiryDate: "2024-11-01"
-  },
-  {
-    product: "Digestive",
-    sku: "BB-DG-008",
-    stockLevel: 2100,
-    maxStock: 4e3,
-    reorderPoint: 1e3,
-    status: "healthy",
-    warehouse: "Mumbai WH",
-    expiryDate: "2024-12-20"
-  },
-  {
-    product: "Butter Cookies",
-    sku: "BB-BC-009",
-    stockLevel: 380,
-    maxStock: 2500,
-    reorderPoint: 600,
-    status: "critical",
-    warehouse: "Kolkata WH",
-    expiryDate: "2024-09-15"
-  },
-  {
-    product: "Fruit Biscuit",
-    sku: "BB-FB-010",
-    stockLevel: 1200,
-    maxStock: 3e3,
-    reorderPoint: 800,
-    status: "low",
-    warehouse: "Bangalore WH",
-    expiryDate: "2024-10-25"
-  }
-];
-const mockTopProducts = [
-  {
-    name: "Marie Gold",
-    sku: "BB-MG-001",
-    unitsSold: 45200,
-    revenue: 904e3,
-    growth: 12.5,
-    region: "North India"
-  },
-  {
-    name: "Parle-G",
-    sku: "BB-PG-006",
-    unitsSold: 38900,
-    revenue: 389e3,
-    growth: 8.3,
-    region: "All India"
-  },
-  {
-    name: "Bourbon",
-    sku: "BB-BB-002",
-    unitsSold: 28400,
-    revenue: 568e3,
-    growth: -2.1,
-    region: "South India"
-  },
-  {
-    name: "Glucose",
-    sku: "BB-GL-004",
-    unitsSold: 22100,
-    revenue: 331500,
-    growth: 15.7,
-    region: "West India"
-  },
-  {
-    name: "Krackjack",
-    sku: "BB-KJ-005",
-    unitsSold: 18700,
-    revenue: 280500,
-    growth: 5.4,
-    region: "East India"
-  }
-];
-const mockDeliveries = [
-  {
-    id: "DEL-001",
-    destination: "Jaipur, Rajasthan",
-    distributor: "Sharma Distributors",
-    items: 150,
-    status: "in_transit",
-    eta: "2024-06-19",
-    progress: 65
-  },
-  {
-    id: "DEL-002",
-    destination: "Bangalore, Karnataka",
-    distributor: "Patel Retail Mart",
-    items: 80,
-    status: "out_for_delivery",
-    eta: "2024-06-18",
-    progress: 90
-  },
-  {
-    id: "DEL-003",
-    destination: "Delhi, NCR",
-    distributor: "Gupta Wholesale",
-    items: 250,
-    status: "delivered",
-    eta: "2024-06-18",
-    progress: 100
-  },
-  {
-    id: "DEL-004",
-    destination: "Mumbai, Maharashtra",
-    distributor: "Agarwal Supermart",
-    items: 120,
-    status: "delayed",
-    eta: "2024-06-20",
-    progress: 45
-  },
-  {
-    id: "DEL-005",
-    destination: "Kolkata, West Bengal",
-    distributor: "Reddy Distribution",
-    items: 180,
-    status: "in_transit",
-    eta: "2024-06-19",
-    progress: 70
-  }
-];
-const mockProductionLines = [
-  {
-    lineName: "Line A - Marie Gold",
-    oee: 92,
-    efficiency: 88,
-    outputToday: 12500,
-    target: 14e3,
-    wastePercent: 2.1,
-    status: "running"
-  },
-  {
-    lineName: "Line B - Bourbon",
-    oee: 87,
-    efficiency: 85,
-    outputToday: 9800,
-    target: 11e3,
-    wastePercent: 3.2,
-    status: "running"
-  },
-  {
-    lineName: "Line C - Glucose",
-    oee: 94,
-    efficiency: 91,
-    outputToday: 15200,
-    target: 16e3,
-    wastePercent: 1.8,
-    status: "running"
-  },
-  {
-    lineName: "Line D - Packaging",
-    oee: 78,
-    efficiency: 76,
-    outputToday: 8400,
-    target: 12e3,
-    wastePercent: 4.5,
-    status: "maintenance"
-  }
-];
-const mockDistributorPerformance = [
-  {
-    name: "Sharma Distributors",
-    region: "Rajasthan",
-    ordersThisMonth: 45,
-    revenue: 125e4,
-    onTimeDelivery: 98,
-    rating: 4.8,
-    trend: 5.2
-  },
-  {
-    name: "Gupta Wholesale",
-    region: "Delhi NCR",
-    ordersThisMonth: 62,
-    revenue: 21e5,
-    onTimeDelivery: 95,
-    rating: 4.6,
-    trend: 8.1
-  },
-  {
-    name: "Patel Retail Mart",
-    region: "Karnataka",
-    ordersThisMonth: 38,
-    revenue: 89e4,
-    onTimeDelivery: 92,
-    rating: 4.4,
-    trend: -1.3
-  },
-  {
-    name: "Reddy Distribution",
-    region: "Andhra Pradesh",
-    ordersThisMonth: 51,
-    revenue: 156e4,
-    onTimeDelivery: 97,
-    rating: 4.7,
-    trend: 3.8
-  },
-  {
-    name: "Agarwal Supermart",
-    region: "Maharashtra",
-    ordersThisMonth: 29,
-    revenue: 72e4,
-    onTimeDelivery: 89,
-    rating: 4.2,
-    trend: 2.1
-  }
-];
-const mockRevenueByRegion = [
-  { region: "North India", revenue: 89.5, orders: 520 },
-  { region: "South India", revenue: 67.2, orders: 410 },
-  { region: "West India", revenue: 54.8, orders: 310 },
-  { region: "East India", revenue: 34.4, orders: 216 }
-];
-const mockProductionVsSales = [
-  { month: "Jan", production: 185, sales: 172 },
-  { month: "Feb", production: 210, sales: 198 },
-  { month: "Mar", production: 195, sales: 189 },
-  { month: "Apr", production: 240, sales: 225 },
-  { month: "May", production: 265, sales: 248 },
-  { month: "Jun", production: 280, sales: 264 }
-];
 var isArray$e = Array.isArray;
 var isArray_1 = isArray$e;
 var freeGlobal$1 = typeof commonjsGlobal == "object" && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
@@ -92658,11 +92344,8 @@ const orderColumns = [
       const status = row.getValue("orderStatus");
       const variants = {
         delivered: "default",
-        shipped: "default",
-        confirmed: "secondary",
-        processing: "secondary",
-        packed: "outline",
-        pending: "outline",
+        accepted: "default",
+        pending: "secondary",
         cancelled: "destructive"
       };
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: variants[status] || "secondary", children: status });
@@ -92732,224 +92415,168 @@ const inventoryColumns = [
   },
   { accessorKey: "warehouse", header: "Warehouse" }
 ];
-const deliveryColumns = [
-  { accessorKey: "id", header: "Shipment" },
-  { accessorKey: "destination", header: "Destination" },
-  { accessorKey: "distributor", header: "Distributor" },
-  {
-    accessorKey: "progress",
-    header: "Progress",
-    cell: ({ row }) => {
-      const progress2 = row.getValue("progress");
-      const status = row.original.status;
-      const statusColor = status === "delivered" ? "bg-success" : status === "delayed" ? "bg-destructive" : "bg-primary";
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-28", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between text-xs mb-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "capitalize", children: status.replace("_", " ") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-muted-foreground", children: [
-            progress2,
-            "%"
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-2 rounded-full bg-muted overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: `h-full rounded-full ${statusColor}`,
-            style: { width: `${progress2}%` }
-          }
-        ) })
-      ] });
-    }
-  },
-  { accessorKey: "eta", header: "ETA" }
-];
-const productionColumns = [
-  { accessorKey: "lineName", header: "Line" },
-  {
-    accessorKey: "oee",
-    header: "OEE",
-    cell: ({ row }) => {
-      const oee = row.getValue("oee");
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm font-medium", children: [
-          oee,
-          "%"
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-16 h-2 rounded-full bg-muted overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "h-full rounded-full bg-primary",
-            style: { width: `${oee}%` }
-          }
-        ) })
-      ] });
-    }
-  },
-  {
-    accessorKey: "efficiency",
-    header: "Efficiency",
-    cell: ({ row }) => {
-      const eff = row.getValue("efficiency");
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm font-medium", children: [
-          eff,
-          "%"
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-16 h-2 rounded-full bg-muted overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "h-full rounded-full bg-success",
-            style: { width: `${eff}%` }
-          }
-        ) })
-      ] });
-    }
-  },
-  {
-    accessorKey: "outputToday",
-    header: "Output",
-    cell: ({ row }) => {
-      const line = row.original;
-      Math.round(line.outputToday / line.target * 100);
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-medium", children: line.outputToday.toLocaleString() }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground", children: [
-          "/ ",
-          line.target.toLocaleString()
-        ] })
-      ] });
-    }
-  },
-  {
-    accessorKey: "wastePercent",
-    header: "Waste",
-    cell: ({ row }) => {
-      const waste = row.getValue("wastePercent");
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "span",
-        {
-          className: waste > 3 ? "text-destructive font-medium" : "text-success font-medium",
-          children: [
-            waste,
-            "%"
-          ]
-        }
-      );
-    }
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status");
-      const variants = {
-        running: "default",
-        idle: "secondary",
-        maintenance: "outline"
-      };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: variants[status] || "secondary", children: status });
-    }
-  }
-];
 function DashboardPage() {
   const [cities, setCities] = reactExports.useState([]);
   const [zones, setZones] = reactExports.useState([]);
+  const [dashboardStats, setDashboardStats] = reactExports.useState(null);
+  const [recentOrders, setRecentOrders] = reactExports.useState([]);
+  const [topProducts, setTopProducts] = reactExports.useState([]);
+  const [inventoryItems, setInventoryItems] = reactExports.useState([]);
+  const [revenueByRegion, setRevenueByRegion] = reactExports.useState([]);
+  const [monthlyTrends, setMonthlyTrends] = reactExports.useState([]);
+  const [sellerApplications, setSellerApplications] = reactExports.useState([]);
   const [loadingCities, setLoadingCities] = reactExports.useState(false);
   const [loadingZones, setLoadingZones] = reactExports.useState(false);
+  const [loadingStats, setLoadingStats] = reactExports.useState(false);
+  const [refreshing, setRefreshing] = reactExports.useState(false);
+  const fetchDashboardData = async () => {
+    setLoadingStats(true);
+    try {
+      console.log("Fetching dashboard data...");
+      const [
+        stats2,
+        orders,
+        products,
+        inventory,
+        revenue,
+        trends,
+        applications
+      ] = await Promise.all([
+        dashboardService.getStats(),
+        dashboardService.getRecentOrders(8),
+        dashboardService.getTopProducts(5, 30),
+        dashboardService.getInventoryStatus(),
+        dashboardService.getRevenueByRegion(30),
+        dashboardService.getMonthlyTrends(6),
+        dashboardService.getRecentSellerApplications(5)
+      ]);
+      console.log("Dashboard API responses:", {
+        stats: stats2,
+        orders,
+        products,
+        inventory,
+        revenue,
+        trends,
+        applications
+      });
+      setDashboardStats(stats2);
+      setRecentOrders(orders);
+      setTopProducts(products);
+      setInventoryItems(inventory);
+      setRevenueByRegion(revenue);
+      setMonthlyTrends(trends);
+      setSellerApplications(applications);
+      console.log("Dashboard data updated successfully");
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+    } finally {
+      setLoadingStats(false);
+      setRefreshing(false);
+    }
+  };
+  const fetchCitiesAndZones = async () => {
+    setLoadingCities(true);
+    setLoadingZones(true);
+    try {
+      const citiesResponse = await cityService.getCities({
+        page: 1,
+        pageSize: 5
+      });
+      setCities(citiesResponse.data);
+    } catch (error) {
+      console.error("Failed to fetch cities:", error);
+    } finally {
+      setLoadingCities(false);
+    }
+    try {
+      const zonesResponse = await zoneService.getZones({
+        page: 1,
+        pageSize: 5
+      });
+      setZones(zonesResponse.data);
+    } catch (error) {
+      console.error("Failed to fetch zones:", error);
+    } finally {
+      setLoadingZones(false);
+    }
+  };
   reactExports.useEffect(() => {
-    const fetchCitiesAndZones = async () => {
-      setLoadingCities(true);
-      setLoadingZones(true);
-      try {
-        const citiesResponse = await cityService.getCities({
-          page: 1,
-          pageSize: 5
-        });
-        setCities(citiesResponse.data);
-      } catch (error) {
-        console.error("Failed to fetch cities:", error);
-      } finally {
-        setLoadingCities(false);
-      }
-      try {
-        const zonesResponse = await zoneService.getZones({
-          page: 1,
-          pageSize: 5
-        });
-        setZones(zonesResponse.data);
-      } catch (error) {
-        console.error("Failed to fetch zones:", error);
-      } finally {
-        setLoadingZones(false);
-      }
-    };
+    fetchDashboardData();
     fetchCitiesAndZones();
   }, []);
-  const stats = [
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchDashboardData();
+  };
+  const stats = dashboardStats ? [
     {
-      title: "Production Output",
-      value: mockFmcgStats.totalOrders.toLocaleString(),
-      icon: Factory,
-      trend: { value: 22.1, label: "from last month" }
+      title: "Total Products",
+      value: dashboardStats.overview.totalProducts.toLocaleString(),
+      icon: Package,
+      description: `${dashboardStats.overview.activeProducts} active`
     },
     {
       title: "Today's Sales",
-      value: `₹${mockFmcgStats.todaySales.toLocaleString()}`,
+      value: `₹${dashboardStats.sales.today.amount.toLocaleString()}`,
       icon: IndianRupee,
-      trend: { value: 18.7, label: "from yesterday" }
+      trend: {
+        value: dashboardStats.sales.today.trend,
+        label: "from yesterday"
+      }
     },
     {
-      title: "Batch Yield Rate",
-      value: `${mockFmcgStats.inventoryStatus}%`,
-      icon: Package,
-      description: "Avg across all lines"
+      title: "Total Orders",
+      value: dashboardStats.overview.totalOrders.toLocaleString(),
+      icon: Store2,
+      description: `${dashboardStats.sales.today.orders} today`
     },
     {
       title: "Low Stock Alerts",
-      value: mockFmcgStats.lowStockAlerts,
+      value: dashboardStats.overview.lowStockAlerts,
       icon: TriangleAlert,
-      trend: { value: -5.2, label: "from last week" }
+      description: `${dashboardStats.inventory.outOfStock} out of stock`
     },
     {
-      title: "Top SKU",
-      value: mockFmcgStats.topSellingProduct,
-      icon: TrendingUp,
-      description: "Marie Gold leading"
-    },
-    {
-      title: "Distributor Count",
-      value: `${mockFmcgStats.distributorPerformance}`,
-      icon: Truck,
-      trend: { value: 3.8, label: "new this month" }
-    },
-    {
-      title: "Stockist Coverage",
-      value: mockFmcgStats.retailerActivity,
-      icon: Store2,
-      trend: { value: 12.5, label: "from last month" }
-    },
-    {
-      title: "Revenue (Lakhs)",
-      value: `₹${mockFmcgStats.revenueAnalytics}L`,
+      title: "Monthly Revenue",
+      value: `₹${(dashboardStats.sales.month.amount / 1e5).toFixed(1)}L`,
       icon: ChartColumn,
-      trend: { value: 15.3, label: "from last month" }
+      trend: {
+        value: dashboardStats.sales.month.trend,
+        label: "from last month"
+      }
     },
     {
-      title: "On-Time Delivery",
-      value: `${mockFmcgStats.deliveryTracking}%`,
+      title: "Active Cities",
+      value: dashboardStats.overview.activeCities.toLocaleString(),
       icon: MapPin,
-      description: "Last 7 days average"
+      description: `${dashboardStats.overview.activeZones} zones`
     },
     {
-      title: "OEE (Plant)",
-      value: `${mockFmcgStats.productionMetrics}%`,
+      title: "Total Users",
+      value: dashboardStats.overview.totalUsers.toLocaleString(),
+      icon: TrendingUp,
+      description: "Registered customers"
+    },
+    {
+      title: "Seller Requests",
+      value: dashboardStats.overview.pendingSellerApplications,
+      icon: Building2,
+      description: "Pending approval"
+    },
+    {
+      title: "Categories",
+      value: dashboardStats.overview.totalCategories,
       icon: Factory,
-      trend: { value: 8.1, label: "from last month" }
+      description: "Active categories"
+    },
+    {
+      title: "Pending Requests",
+      value: dashboardStats.overview.pendingSellerApplications,
+      icon: Truck,
+      description: "Seller applications"
     }
-  ];
-  const lowStockItems = mockInventoryItems.filter(
-    (i2) => i2.status !== "healthy"
-  );
+  ] : [];
+  const lowStockItems = inventoryItems.filter((i2) => i2.status !== "healthy");
   const COLORS = [
     "oklch(var(--chart-1))",
     "oklch(var(--chart-2))",
@@ -92958,184 +92585,203 @@ function DashboardPage() {
     "oklch(var(--chart-5))"
   ];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      PageHeader,
-      {
-        title: "Operations Dashboard",
-        description: "Real-time overview of Bikaner Biscuit manufacturing, inventory, and distribution"
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      motion.div,
-      {
-        initial: { opacity: 0, y: 20 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.4 },
-        className: "grid gap-4 md:grid-cols-2 lg:grid-cols-5",
-        children: stats.map((stat, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          motion.div,
-          {
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.4, delay: index2 * 0.05 },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { ...stat })
-          },
-          stat.title
-        ))
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 lg:grid-cols-3", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        PageHeader,
         {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.4, delay: 0.2 },
-          className: "rounded-lg border border-border bg-card p-6",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Revenue by Region" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(ResponsiveContainer, { width: "100%", height: 260, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(PieChart, { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                Pie,
-                {
-                  data: mockRevenueByRegion,
-                  cx: "50%",
-                  cy: "50%",
-                  innerRadius: 60,
-                  outerRadius: 90,
-                  paddingAngle: 4,
-                  dataKey: "revenue",
-                  nameKey: "region",
-                  children: mockRevenueByRegion.map((entry, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    Cell,
-                    {
-                      fill: COLORS[index2 % COLORS.length]
-                    },
-                    `cell-${entry.region}`
-                  ))
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                Tooltip$2,
-                {
-                  contentStyle: {
-                    backgroundColor: "oklch(var(--card))",
-                    border: "1px solid oklch(var(--border))",
-                    borderRadius: "8px"
-                  },
-                  formatter: (value) => [`₹${value}L`, "Revenue"]
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Legend, {})
-            ] }) })
-          ]
+          title: "Operations Dashboard",
+          description: "Real-time overview of Bikaner Biscuit operations"
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
+        Button,
         {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.4, delay: 0.3 },
-          className: "rounded-lg border border-border bg-card p-6 lg:col-span-2",
+          variant: "outline",
+          size: "sm",
+          onClick: handleRefresh,
+          disabled: refreshing,
+          className: "gap-2",
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Production vs Sales (Lakhs)" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(ResponsiveContainer, { width: "100%", height: 260, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(AreaChart, { data: mockProductionVsSales, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("defs", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("linearGradient", { id: "prodGradient", x1: "0", y1: "0", x2: "0", y2: "1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "stop",
-                    {
-                      offset: "5%",
-                      stopColor: "oklch(var(--chart-1))",
-                      stopOpacity: 0.3
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "stop",
-                    {
-                      offset: "95%",
-                      stopColor: "oklch(var(--chart-1))",
-                      stopOpacity: 0
-                    }
-                  )
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("linearGradient", { id: "salesGradient", x1: "0", y1: "0", x2: "0", y2: "1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "stop",
-                    {
-                      offset: "5%",
-                      stopColor: "oklch(var(--chart-2))",
-                      stopOpacity: 0.3
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "stop",
-                    {
-                      offset: "95%",
-                      stopColor: "oklch(var(--chart-2))",
-                      stopOpacity: 0
-                    }
-                  )
-                ] })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                CartesianGrid,
-                {
-                  strokeDasharray: "3 3",
-                  stroke: "oklch(var(--border))"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                XAxis,
-                {
-                  dataKey: "month",
-                  stroke: "oklch(var(--muted-foreground))",
-                  fontSize: 12
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(YAxis, { stroke: "oklch(var(--muted-foreground))", fontSize: 12 }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                Tooltip$2,
-                {
-                  contentStyle: {
-                    backgroundColor: "oklch(var(--card))",
-                    border: "1px solid oklch(var(--border))",
-                    borderRadius: "8px"
-                  },
-                  formatter: (value) => [`₹${value}L`, ""]
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Legend, {}),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                Area,
-                {
-                  type: "monotone",
-                  dataKey: "production",
-                  name: "Production",
-                  stroke: "oklch(var(--chart-1))",
-                  fill: "url(#prodGradient)",
-                  strokeWidth: 2
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                Area,
-                {
-                  type: "monotone",
-                  dataKey: "sales",
-                  name: "Sales",
-                  stroke: "oklch(var(--chart-2))",
-                  fill: "url(#salesGradient)",
-                  strokeWidth: 2
-                }
-              )
-            ] }) })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: `h-4 w-4 ${refreshing ? "animate-spin" : ""}` }),
+            "Refresh"
           ]
         }
       )
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 lg:grid-cols-2", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    loadingStats ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center py-20", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "h-8 w-8 animate-spin mx-auto text-muted-foreground" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-muted-foreground", children: "Loading dashboard data..." })
+    ] }) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        motion.div,
+        {
+          initial: { opacity: 0, y: 20 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.4 },
+          className: "grid gap-4 md:grid-cols-2 lg:grid-cols-5",
+          children: stats.map((stat, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.div,
+            {
+              initial: { opacity: 0, y: 20 },
+              animate: { opacity: 1, y: 0 },
+              transition: { duration: 0.4, delay: index2 * 0.05 },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { ...stat })
+            },
+            stat.title
+          ))
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 lg:grid-cols-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          motion.div,
+          {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.4, delay: 0.2 },
+            className: "rounded-lg border border-border bg-card p-6",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Revenue by Region" }),
+              revenueByRegion.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(ResponsiveContainer, { width: "100%", height: 260, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(PieChart, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Pie,
+                  {
+                    data: revenueByRegion,
+                    cx: "50%",
+                    cy: "50%",
+                    innerRadius: 60,
+                    outerRadius: 90,
+                    paddingAngle: 4,
+                    dataKey: "revenue",
+                    nameKey: "region",
+                    children: revenueByRegion.map((entry, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Cell,
+                      {
+                        fill: COLORS[index2 % COLORS.length]
+                      },
+                      `cell-${entry.region}`
+                    ))
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Tooltip$2,
+                  {
+                    contentStyle: {
+                      backgroundColor: "oklch(var(--card))",
+                      border: "1px solid oklch(var(--border))",
+                      borderRadius: "8px"
+                    },
+                    formatter: (value) => [`₹${value}L`, "Revenue"]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Legend, {})
+              ] }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-[260px] flex items-center justify-center text-muted-foreground", children: "No revenue data available" })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          motion.div,
+          {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.4, delay: 0.3 },
+            className: "rounded-lg border border-border bg-card p-6 lg:col-span-2",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Monthly Trends (Lakhs)" }),
+              monthlyTrends.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(ResponsiveContainer, { width: "100%", height: 260, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(AreaChart, { data: monthlyTrends, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("defs", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("linearGradient", { id: "prodGradient", x1: "0", y1: "0", x2: "0", y2: "1", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "stop",
+                      {
+                        offset: "5%",
+                        stopColor: "oklch(var(--chart-1))",
+                        stopOpacity: 0.3
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "stop",
+                      {
+                        offset: "95%",
+                        stopColor: "oklch(var(--chart-1))",
+                        stopOpacity: 0
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("linearGradient", { id: "salesGradient", x1: "0", y1: "0", x2: "0", y2: "1", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "stop",
+                      {
+                        offset: "5%",
+                        stopColor: "oklch(var(--chart-2))",
+                        stopOpacity: 0.3
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "stop",
+                      {
+                        offset: "95%",
+                        stopColor: "oklch(var(--chart-2))",
+                        stopOpacity: 0
+                      }
+                    )
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  CartesianGrid,
+                  {
+                    strokeDasharray: "3 3",
+                    stroke: "oklch(var(--border))"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  XAxis,
+                  {
+                    dataKey: "month",
+                    stroke: "oklch(var(--muted-foreground))",
+                    fontSize: 12
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(YAxis, { stroke: "oklch(var(--muted-foreground))", fontSize: 12 }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Tooltip$2,
+                  {
+                    contentStyle: {
+                      backgroundColor: "oklch(var(--card))",
+                      border: "1px solid oklch(var(--border))",
+                      borderRadius: "8px"
+                    },
+                    formatter: (value) => [`₹${value}L`, ""]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Legend, {}),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Area,
+                  {
+                    type: "monotone",
+                    dataKey: "production",
+                    name: "Production",
+                    stroke: "oklch(var(--chart-1))",
+                    fill: "url(#prodGradient)",
+                    strokeWidth: 2
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Area,
+                  {
+                    type: "monotone",
+                    dataKey: "sales",
+                    name: "Sales",
+                    stroke: "oklch(var(--chart-2))",
+                    fill: "url(#salesGradient)",
+                    strokeWidth: 2
+                  }
+                )
+              ] }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-[260px] flex items-center justify-center text-muted-foreground", children: "No trend data available" })
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid gap-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
         motion.div,
         {
           initial: { opacity: 0, y: 20 },
@@ -93144,8 +92790,8 @@ function DashboardPage() {
           className: "rounded-lg border border-border bg-card p-6",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Top Selling Products" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: mockTopProducts.map((product, index2) => {
-              const maxUnits = mockTopProducts[0].unitsSold;
+            topProducts.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: topProducts.map((product, index2) => {
+              const maxUnits = topProducts[0].unitsSold;
               const percent2 = Math.round(product.unitsSold / maxUnits * 100);
               return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between text-sm", children: [
@@ -93186,76 +92832,10 @@ function DashboardPage() {
                   }
                 ) })
               ] }, product.sku);
-            }) })
+            }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-8 text-center text-muted-foreground", children: "No product data available" })
           ]
         }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
-        {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.4, delay: 0.4 },
-          className: "rounded-lg border border-border bg-card p-6",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Distributor Performance" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: mockDistributorPerformance.map((dist, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between text-sm", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground w-5", children: index2 + 1 }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium", children: dist.name }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground", children: [
-                    "(",
-                    dist.region,
-                    ")"
-                  ] })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-muted-foreground text-xs", children: [
-                    "₹",
-                    (dist.revenue / 1e5).toFixed(1),
-                    "L"
-                  ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                    "span",
-                    {
-                      className: dist.trend >= 0 ? "text-success text-xs font-medium" : "text-destructive text-xs font-medium",
-                      children: [
-                        dist.trend >= 0 ? "+" : "",
-                        dist.trend,
-                        "%"
-                      ]
-                    }
-                  )
-                ] })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-2 rounded-full bg-muted overflow-hidden ml-7", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                motion.div,
-                {
-                  className: "h-full rounded-full bg-success",
-                  initial: { width: 0 },
-                  animate: { width: `${dist.onTimeDelivery}%` },
-                  transition: { duration: 0.8, delay: 0.4 + index2 * 0.1 }
-                }
-              ) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between text-xs text-muted-foreground ml-7", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                  "On-time: ",
-                  dist.onTimeDelivery,
-                  "%"
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                  "Rating: ",
-                  dist.rating,
-                  "/5"
-                ] })
-              ] })
-            ] }, dist.name)) })
-          ]
-        }
-      )
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 lg:grid-cols-2", children: [
+      ) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         motion.div,
         {
@@ -93271,204 +92851,154 @@ function DashboardPage() {
                 " alerts"
               ] })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
+            inventoryItems.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
               DataTable,
               {
                 columns: inventoryColumns,
-                data: mockInventoryItems,
+                data: inventoryItems,
                 searchPlaceholder: "Search inventory..."
               }
-            )
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg border border-border bg-card p-8 text-center text-muted-foreground", children: "No inventory data available" })
           ]
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
-        {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.4, delay: 0.5 },
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Delivery Tracking" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DataTable,
-              {
-                columns: deliveryColumns,
-                data: mockDeliveries,
-                searchPlaceholder: "Search deliveries..."
-              }
-            )
-          ]
-        }
-      )
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      motion.div,
-      {
-        initial: { opacity: 0, y: 20 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.4, delay: 0.55 },
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Production Lines" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            DataTable,
-            {
-              columns: productionColumns,
-              data: mockProductionLines,
-              searchPlaceholder: "Search production lines..."
-            }
-          )
-        ]
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 lg:grid-cols-2", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
-        {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.4, delay: 0.6 },
-          className: "rounded-lg border border-border bg-card p-6",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-4", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-lg font-semibold flex items-center gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Building2, { className: "h-5 w-5" }),
-                "Cities"
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 lg:grid-cols-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          motion.div,
+          {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.4, delay: 0.6 },
+            className: "rounded-lg border border-border bg-card p-6",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-4", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-lg font-semibold flex items-center gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Building2, { className: "h-5 w-5" }),
+                  "Cities"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/cities", children: "Manage" }) })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/settings", children: "Manage" }) })
-            ] }),
-            loadingCities ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground py-8 text-center", children: "Loading cities..." }) : cities.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: cities.map((city) => {
-              var _a3;
-              return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              loadingCities ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground py-8 text-center", children: "Loading cities..." }) : cities.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: cities.map((city) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
                 "div",
                 {
                   className: "flex items-center justify-between p-3 rounded-lg bg-muted/50",
                   children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: city.name }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-muted-foreground", children: [
-                        city.state,
+                      city.lat && city.lng && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-muted-foreground", children: [
+                        city.lat.toFixed(4),
                         ", ",
-                        city.country
+                        city.lng.toFixed(4)
                       ] })
                     ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Badge,
+                      {
+                        variant: city.status === "active" ? "default" : "secondary",
+                        children: city.status
+                      }
+                    )
+                  ]
+                },
+                city.id
+              )) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-sm text-muted-foreground py-8 text-center", children: [
+                "No cities available.",
+                " ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/cities", className: "text-primary hover:underline", children: "Add cities" })
+              ] })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          motion.div,
+          {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.4, delay: 0.65 },
+            className: "rounded-lg border border-border bg-card p-6",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-4", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-lg font-semibold flex items-center gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MapPinned, { className: "h-5 w-5" }),
+                  "Delivery Zones"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/zones", children: "Manage" }) })
+              ] }),
+              loadingZones ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground py-8 text-center", children: "Loading zones..." }) : zones.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: zones.map((zone) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "flex items-center justify-between p-3 rounded-lg bg-muted/50",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: zone.name }),
+                      zone.description && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-muted-foreground", children: zone.description })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-end gap-1", children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx(
                         Badge,
                         {
-                          variant: city.status === "active" ? "default" : "secondary",
-                          children: city.status
+                          variant: zone.status === "active" ? "default" : "secondary",
+                          children: zone.status
                         }
                       ),
                       /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground", children: [
-                        ((_a3 = city.pinCodes) == null ? void 0 : _a3.length) || 0,
-                        " pincodes"
+                        "₹",
+                        zone.deliveryCharge,
+                        " delivery"
                       ] })
                     ] })
                   ]
                 },
-                city.id
-              );
-            }) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-sm text-muted-foreground py-8 text-center", children: [
-              "No cities available.",
-              " ",
-              /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/settings", className: "text-primary hover:underline", children: "Add cities" })
-            ] })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
-        {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.4, delay: 0.65 },
-          className: "rounded-lg border border-border bg-card p-6",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-4", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-lg font-semibold flex items-center gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(MapPinned, { className: "h-5 w-5" }),
-                "Delivery Zones"
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/settings", children: "Manage" }) })
-            ] }),
-            loadingZones ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-muted-foreground py-8 text-center", children: "Loading zones..." }) : zones.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: zones.map((zone) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                className: "flex items-center justify-between p-3 rounded-lg bg-muted/50",
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: zone.name }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-muted-foreground", children: [
-                      "Code: ",
-                      zone.code
-                    ] })
-                  ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-end gap-1", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      Badge,
-                      {
-                        variant: zone.status === "active" ? "default" : "secondary",
-                        children: zone.status
-                      }
-                    ),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground", children: [
-                      "₹",
-                      zone.deliveryCharge,
-                      " delivery"
-                    ] })
-                  ] })
-                ]
-              },
-              zone.id
-            )) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-sm text-muted-foreground py-8 text-center", children: [
-              "No zones available.",
-              " ",
-              /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/settings", className: "text-primary hover:underline", children: "Add zones" })
-            ] })
-          ]
-        }
-      )
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 lg:grid-cols-2", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
-        {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.4, delay: 0.6 },
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Recent Orders" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DataTable,
-              {
-                columns: orderColumns,
-                data: mockRecentOrders,
-                searchPlaceholder: "Search orders..."
-              }
-            )
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
-        {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.4, delay: 0.65 },
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Recent Franchise Requests" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DataTable,
-              {
-                columns: franchiseColumns$1,
-                data: mockRecentFranchiseRequests,
-                searchPlaceholder: "Search requests..."
-              }
-            )
-          ]
-        }
-      )
+                zone.id
+              )) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-sm text-muted-foreground py-8 text-center", children: [
+                "No zones available.",
+                " ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/zones", className: "text-primary hover:underline", children: "Add zones" })
+              ] })
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-6 lg:grid-cols-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          motion.div,
+          {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.4, delay: 0.7 },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Recent Orders" }),
+              recentOrders.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                DataTable,
+                {
+                  columns: orderColumns,
+                  data: recentOrders,
+                  searchPlaceholder: "Search orders..."
+                }
+              ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg border border-border bg-card p-8 text-center text-muted-foreground", children: "No orders available" })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          motion.div,
+          {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.4, delay: 0.75 },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Recent Seller Applications" }),
+              sellerApplications.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                DataTable,
+                {
+                  columns: franchiseColumns$1,
+                  data: sellerApplications,
+                  searchPlaceholder: "Search requests..."
+                }
+              ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg border border-border bg-card p-8 text-center text-muted-foreground", children: "No seller applications available" })
+            ]
+          }
+        )
+      ] })
     ] })
   ] });
 }
@@ -94543,6 +94073,61 @@ function OfferManagementPage() {
     ] }) })
   ] });
 }
+const mockDashboardStats = {
+  walletBalance: 45230.75
+};
+const mockRecentFranchiseRequests = [
+  {
+    id: "FRQ-001",
+    applicantName: "Ramesh Kumar",
+    email: "ramesh@biscuitmart.com",
+    phone: "+91-98765-43201",
+    address: "45 Gandhi Road, Jaipur, Rajasthan",
+    businessName: "Kumar Biscuit Mart",
+    requestDate: "2024-06-18T08:00:00Z",
+    status: "pending"
+  },
+  {
+    id: "FRQ-002",
+    applicantName: "Priya Sharma",
+    email: "priya@snackshack.in",
+    phone: "+91-98765-43202",
+    address: "78 MG Road, Bangalore, Karnataka",
+    businessName: "Sharma Snack Shack",
+    requestDate: "2024-06-17T14:30:00Z",
+    status: "pending"
+  },
+  {
+    id: "FRQ-003",
+    applicantName: "Mohammed Ali",
+    email: "ali@biscuitworld.com",
+    phone: "+91-98765-43203",
+    address: "22 Park Street, Kolkata, West Bengal",
+    businessName: "Ali Biscuit World",
+    requestDate: "2024-06-16T11:00:00Z",
+    status: "approved"
+  },
+  {
+    id: "FRQ-004",
+    applicantName: "Lakshmi Iyer",
+    email: "lakshmi@bakersdelight.in",
+    phone: "+91-98765-43204",
+    address: "33 Anna Salai, Chennai, Tamil Nadu",
+    businessName: "Iyer Bakers Delight",
+    requestDate: "2024-06-15T09:45:00Z",
+    status: "pending"
+  },
+  {
+    id: "FRQ-005",
+    applicantName: "Harpreet Singh",
+    email: "harpreet@punjabfoods.com",
+    phone: "+91-98765-43205",
+    address: "12 GT Road, Amritsar, Punjab",
+    businessName: "Singh Punjab Foods",
+    requestDate: "2024-06-14T16:20:00Z",
+    status: "rejected"
+  }
+];
 const franchiseColumns = [
   { accessorKey: "applicantName", header: "Applicant" },
   { accessorKey: "businessName", header: "Business" },
@@ -96334,7 +95919,7 @@ function SellerApprovalsPage() {
         {
           permission: PERMISSIONS.SELLER_APPROVALS_MANAGE,
           hideOnDenied: true,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row justify-end gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
               Button,
               {
@@ -96345,6 +95930,7 @@ function SellerApprovalsPage() {
                   setSelectedApplication(row.original);
                   setAction("reject");
                 },
+                className: "w-full sm:w-auto",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "mr-1 h-4 w-4" }),
                   "Reject"
@@ -96360,6 +95946,7 @@ function SellerApprovalsPage() {
                   setSelectedApplication(row.original);
                   setAction("approve");
                 },
+                className: "w-full sm:w-auto",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "mr-1 h-4 w-4" }),
                   "Approve"
@@ -96412,6 +95999,7 @@ function SellerApprovalsPage() {
                 size: "sm",
                 onClick: loadApplications,
                 disabled: isLoading,
+                className: "w-full sm:w-auto",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "mr-2 h-4 w-4" }),
                   "Refresh"
@@ -96419,7 +96007,7 @@ function SellerApprovalsPage() {
               }
             )
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             DataTable,
             {
               columns: columns2,
@@ -96428,7 +96016,7 @@ function SellerApprovalsPage() {
               searchPlaceholder: "Search distributor applications...",
               emptyMessage: "No distributor applications found"
             }
-          )
+          ) })
         ]
       }
     ),
@@ -96520,6 +96108,8 @@ const settingsSchema = object$1({
   instagramUrl: string$1().optional(),
   twitterUrl: string$1().optional(),
   linkedinUrl: string$1().optional(),
+  playStoreUrl: string$1().optional(),
+  appStoreUrl: string$1().optional(),
   maintenanceMode: boolean(),
   maintenanceMessage: string$1().optional(),
   razorpayKeyId: string$1().optional(),
@@ -96554,6 +96144,8 @@ const defaultValues = {
   instagramUrl: "",
   twitterUrl: "",
   linkedinUrl: "",
+  playStoreUrl: "",
+  appStoreUrl: "",
   maintenanceMode: false,
   maintenanceMessage: "We are currently under maintenance. Please check back soon.",
   razorpayKeyId: "",
@@ -96573,7 +96165,7 @@ function getAssetUrl(path) {
   return `${apiOrigin}${path.startsWith("/") ? path : `/${path}`}`;
 }
 function SettingsPage() {
-  const { addToast } = useUIStore();
+  const alert2 = useAlert();
   const { isAdmin: isAdmin2 } = usePermissions();
   const { user, setUser } = useAuthStore();
   const { setBrandSettings } = useSettingsStore();
@@ -96626,6 +96218,8 @@ function SettingsPage() {
           instagramUrl: settings.instagramUrl || "",
           twitterUrl: settings.twitterUrl || "",
           linkedinUrl: settings.linkedinUrl || "",
+          playStoreUrl: settings.playStoreUrl || "",
+          appStoreUrl: settings.appStoreUrl || "",
           maintenanceMode: Boolean(settings.maintenanceMode),
           maintenanceMessage: settings.maintenanceMessage || defaultValues.maintenanceMessage,
           razorpayKeyId: settings.razorpayKeyId || "",
@@ -96649,11 +96243,7 @@ function SettingsPage() {
         });
         reset(nextValues);
       } catch (error) {
-        addToast({
-          title: "Settings load failed",
-          description: error.message || "Could not fetch settings.",
-          variant: "error"
-        });
+        alert2.error(error.message || "Could not fetch settings.");
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -96664,7 +96254,7 @@ function SettingsPage() {
     return () => {
       isMounted = false;
     };
-  }, [addToast, isAdmin2, reset, setBrandSettings, user == null ? void 0 : user.phone]);
+  }, [alert2, isAdmin2, reset, setBrandSettings, user == null ? void 0 : user.phone]);
   reactExports.useEffect(() => {
     if (!logoFile) return;
     const objectUrl = URL.createObjectURL(logoFile);
@@ -96677,26 +96267,18 @@ function SettingsPage() {
     if (!file) return;
     const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
     if (!validTypes.includes(file.type)) {
-      addToast({
-        title: "Invalid logo",
-        description: "Upload a PNG, JPG, or WEBP image.",
-        variant: "error"
-      });
+      alert2.error("Upload a PNG, JPG, or WEBP image.");
       return;
     }
     const maxSize = 2 * 1024 * 1024;
     if (file.size > maxSize) {
-      addToast({
-        title: "Logo too large",
-        description: "Logo must be smaller than 2 MB.",
-        variant: "error"
-      });
+      alert2.error("Logo must be smaller than 2 MB.");
       return;
     }
     setLogoFile(file);
   };
   const onSubmit = async (data) => {
-    var _a3, _b2, _c2, _d2, _e2, _f2, _g2, _h2;
+    var _a3, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j;
     try {
       const response = await settingsService.updateSettings({
         siteTitle: data.siteTitle.trim(),
@@ -96711,11 +96293,13 @@ function SettingsPage() {
         instagramUrl: ((_c2 = data.instagramUrl) == null ? void 0 : _c2.trim()) || "",
         twitterUrl: ((_d2 = data.twitterUrl) == null ? void 0 : _d2.trim()) || "",
         linkedinUrl: ((_e2 = data.linkedinUrl) == null ? void 0 : _e2.trim()) || "",
+        playStoreUrl: ((_f2 = data.playStoreUrl) == null ? void 0 : _f2.trim()) || "",
+        appStoreUrl: ((_g2 = data.appStoreUrl) == null ? void 0 : _g2.trim()) || "",
         maintenanceMode: data.maintenanceMode,
         maintenanceMessage: data.maintenanceMessage || "",
-        razorpayKeyId: ((_f2 = data.razorpayKeyId) == null ? void 0 : _f2.trim()) || "",
-        razorpayKeySecret: ((_g2 = data.razorpayKeySecret) == null ? void 0 : _g2.trim()) || "",
-        razorpayWebhookSecret: ((_h2 = data.razorpayWebhookSecret) == null ? void 0 : _h2.trim()) || "",
+        razorpayKeyId: ((_h2 = data.razorpayKeyId) == null ? void 0 : _h2.trim()) || "",
+        razorpayKeySecret: ((_i2 = data.razorpayKeySecret) == null ? void 0 : _i2.trim()) || "",
+        razorpayWebhookSecret: ((_j = data.razorpayWebhookSecret) == null ? void 0 : _j.trim()) || "",
         enableRazorpayForSellers: data.enableRazorpayForSellers,
         termsAndConditions: data.termsAndConditions || "",
         privacyPolicy: data.privacyPolicy || "",
@@ -96755,17 +96339,9 @@ function SettingsPage() {
         siteLogo: nextLogo
       });
       reset(nextValues);
-      addToast({
-        title: "Settings saved",
-        description: "Site, policy, login, and delivery settings were updated.",
-        variant: "success"
-      });
+      alert2.success("Settings saved successfully!");
     } catch (error) {
-      addToast({
-        title: "Settings save failed",
-        description: error.message || "Please check the fields and try again.",
-        variant: "error"
-      });
+      alert2.error(error.message || "Please check the fields and try again.");
     }
   };
   if (!isAdmin2) {
@@ -96790,7 +96366,7 @@ function SettingsPage() {
         transition: { duration: 0.4 },
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(FormProvider, { ...methods, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit(onSubmit), className: "space-y-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(Tabs, { value: activeTab, onValueChange: setActiveTab, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsList, { className: "grid w-full grid-cols-4 lg:w-[720px]", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsList, { className: "grid w-full grid-cols-2 sm:grid-cols-4 lg:w-[720px]", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsTrigger, { value: "general", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { className: "mr-2 h-4 w-4" }),
                 "General"
@@ -97038,7 +96614,28 @@ function SettingsPage() {
                     placeholder: "Enter your shipping policy...",
                     rows: 8
                   }
-                )
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-4 border-t", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-semibold mb-4", children: "App Download Links" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 sm:grid-cols-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      FormInput,
+                      {
+                        name: "playStoreUrl",
+                        label: "Play Store URL",
+                        placeholder: "https://play.google.com/store/apps/details?id=..."
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      FormInput,
+                      {
+                        name: "appStoreUrl",
+                        label: "App Store URL",
+                        placeholder: "https://apps.apple.com/app/..."
+                      }
+                    )
+                  ] })
+                ] })
               ] })
             ] }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsContent, { value: "app", className: "mt-6 space-y-6", children: [
@@ -97119,7 +96716,7 @@ function SettingsPage() {
               ] })
             ] }) })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row justify-end gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               Button,
               {
@@ -97131,10 +96728,11 @@ function SettingsPage() {
                   setLogoPreview(savedLogo);
                   reset(loadedValues);
                 },
+                className: "w-full sm:w-auto",
                 children: "Cancel"
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "submit", disabled: isSubmitting, children: isSubmitting ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "submit", disabled: isSubmitting, className: "w-full sm:w-auto", children: isSubmitting ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "mr-2 h-4 w-4 animate-spin" }),
               "Saving..."
             ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [

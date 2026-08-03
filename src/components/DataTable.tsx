@@ -88,7 +88,7 @@ export function DataTable<TData>({
 
       <div className="rounded-lg border border-border overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm table-fixed">
+          <table className="w-full text-sm">
             <thead className="bg-muted/50">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
@@ -100,9 +100,9 @@ export function DataTable<TData>({
                       <th
                         key={header.id}
                         className={cn(
-                          "px-4 py-3 font-medium text-muted-foreground",
-                          isActionsColumn && "w-32 text-right",
-                          isStatusColumn && "w-32 text-center",
+                          "px-4 py-3 font-medium text-muted-foreground whitespace-nowrap",
+                          isActionsColumn && "w-auto text-right",
+                          isStatusColumn && "w-auto text-center",
                           !isActionsColumn && !isStatusColumn && "text-left"
                         )}
                       >

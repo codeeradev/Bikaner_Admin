@@ -14,6 +14,8 @@ export interface SettingsData {
   aboutUs?: string;
   refundPolicy?: string;
   shippingPolicy?: string;
+  playStoreUrl?: string;
+  appStoreUrl?: string;
   facebookUrl?: string;
   instagramUrl?: string;
   twitterUrl?: string;

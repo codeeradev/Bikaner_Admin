@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAlert } from "@/hooks/use-alert";
 import { usePermissions } from "@/hooks/usePermissions";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
-import { useAuthStore, useSettingsStore, useUIStore } from "@/store";
+import { useAuthStore, useSettingsStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CreditCard,
@@ -101,6 +102,8 @@ const settingsSchema = z
     instagramUrl: z.string().optional(),
     twitterUrl: z.string().optional(),
     linkedinUrl: z.string().optional(),
+    playStoreUrl: z.string().optional(),
+    appStoreUrl: z.string().optional(),
     maintenanceMode: z.boolean(),
     maintenanceMessage: z.string().optional(),
     razorpayKeyId: z.string().optional(),
@@ -140,6 +143,8 @@ const defaultValues: SettingsFormData = {
   instagramUrl: "",
   twitterUrl: "",
   linkedinUrl: "",
+  playStoreUrl: "",
+  appStoreUrl: "",
   maintenanceMode: false,
   maintenanceMessage: "We are currently under maintenance. Please check back soon.",
   razorpayKeyId: "",
@@ -162,7 +167,7 @@ function getAssetUrl(path?: string) {
 }
 
 export function SettingsPage() {
-  const { addToast } = useUIStore();
+  const alert = useAlert();
   const { isAdmin } = usePermissions();
   const { user, setUser } = useAuthStore();
   const { setBrandSettings } = useSettingsStore();
@@ -223,6 +228,8 @@ export function SettingsPage() {
           instagramUrl: settings.instagramUrl || "",
           twitterUrl: settings.twitterUrl || "",
           linkedinUrl: settings.linkedinUrl || "",
+          playStoreUrl: settings.playStoreUrl || "",
+          appStoreUrl: settings.appStoreUrl || "",
           maintenanceMode: Boolean(settings.maintenanceMode),
           maintenanceMessage:
             settings.maintenanceMessage || defaultValues.maintenanceMessage,
@@ -248,11 +255,7 @@ export function SettingsPage() {
         });
         reset(nextValues);
       } catch (error: any) {
-        addToast({
-          title: "Settings load failed",
-          description: error.message || "Could not fetch settings.",
-          variant: "error",
-        });
+        alert.error(error.message || "Could not fetch settings.");
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -265,7 +268,7 @@ export function SettingsPage() {
     return () => {
       isMounted = false;
     };
-  }, [addToast, isAdmin, reset, setBrandSettings, user?.phone]);
+  }, [alert, isAdmin, reset, setBrandSettings, user?.phone]);
 
   useEffect(() => {
     if (!logoFile) return;
@@ -282,21 +285,13 @@ export function SettingsPage() {
 
     const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
     if (!validTypes.includes(file.type)) {
-      addToast({
-        title: "Invalid logo",
-        description: "Upload a PNG, JPG, or WEBP image.",
-        variant: "error",
-      });
+      alert.error("Upload a PNG, JPG, or WEBP image.");
       return;
     }
 
     const maxSize = 2 * 1024 * 1024;
     if (file.size > maxSize) {
-      addToast({
-        title: "Logo too large",
-        description: "Logo must be smaller than 2 MB.",
-        variant: "error",
-      });
+      alert.error("Logo must be smaller than 2 MB.");
       return;
     }
 
@@ -318,6 +313,8 @@ export function SettingsPage() {
         instagramUrl: data.instagramUrl?.trim() || "",
         twitterUrl: data.twitterUrl?.trim() || "",
         linkedinUrl: data.linkedinUrl?.trim() || "",
+        playStoreUrl: data.playStoreUrl?.trim() || "",
+        appStoreUrl: data.appStoreUrl?.trim() || "",
         maintenanceMode: data.maintenanceMode,
         maintenanceMessage: data.maintenanceMessage || "",
         razorpayKeyId: data.razorpayKeyId?.trim() || "",
@@ -366,17 +363,9 @@ export function SettingsPage() {
       });
       reset(nextValues);
 
-      addToast({
-        title: "Settings saved",
-        description: "Site, policy, login, and delivery settings were updated.",
-        variant: "success",
-      });
+      alert.success("Settings saved successfully!");
     } catch (error: any) {
-      addToast({
-        title: "Settings save failed",
-        description: error.message || "Please check the fields and try again.",
-        variant: "error",
-      });
+      alert.error(error.message || "Please check the fields and try again.");
     }
   };
 
@@ -407,7 +396,7 @@ export function SettingsPage() {
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-4 lg:w-[720px]">
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:w-[720px]">
                 <TabsTrigger value="general">
                   <Settings className="mr-2 h-4 w-4" />
                   General
@@ -619,6 +608,22 @@ export function SettingsPage() {
                       placeholder="Enter your shipping policy..."
                       rows={8}
                     />
+                    
+                    <div className="pt-4 border-t">
+                      <h3 className="text-sm font-semibold mb-4">App Download Links</h3>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <FormInput
+                          name="playStoreUrl"
+                          label="Play Store URL"
+                          placeholder="https://play.google.com/store/apps/details?id=..."
+                        />
+                        <FormInput
+                          name="appStoreUrl"
+                          label="App Store URL"
+                          placeholder="https://apps.apple.com/app/..."
+                        />
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -702,7 +707,7 @@ export function SettingsPage() {
               </TabsContent>
             </Tabs>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -712,10 +717,11 @@ export function SettingsPage() {
                   setLogoPreview(savedLogo);
                   reset(loadedValues);
                 }}
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

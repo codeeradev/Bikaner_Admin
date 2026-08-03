@@ -110,6 +110,12 @@ export const ENDPOINTS = {
   // Dashboard
   GET_DASHBOARD_STATS: `${BASE_URL}/dashboard/stats`,
   GET_DASHBOARD_CHARTS: `${BASE_URL}/dashboard/charts`,
+  GET_DASHBOARD_RECENT_ORDERS: `${BASE_URL}/dashboard/recent-orders`,
+  GET_DASHBOARD_TOP_PRODUCTS: `${BASE_URL}/dashboard/top-products`,
+  GET_DASHBOARD_INVENTORY_STATUS: `${BASE_URL}/dashboard/inventory-status`,
+  GET_DASHBOARD_REVENUE_BY_REGION: `${BASE_URL}/dashboard/revenue-by-region`,
+  GET_DASHBOARD_MONTHLY_TRENDS: `${BASE_URL}/dashboard/monthly-trends`,
+  GET_DASHBOARD_SELLER_APPLICATIONS: `${BASE_URL}/dashboard/seller-applications`,
 
   // Theme
   GET_THEME: `${BASE_URL}/theme`,

@@ -166,7 +166,7 @@ export function SellerApprovalsPage() {
             permission={PERMISSIONS.SELLER_APPROVALS_MANAGE}
             hideOnDenied
           >
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2">
               <Button
                 type="button"
                 size="sm"
@@ -175,6 +175,7 @@ export function SellerApprovalsPage() {
                   setSelectedApplication(row.original);
                   setAction("reject");
                 }}
+                className="w-full sm:w-auto"
               >
                 <X className="mr-1 h-4 w-4" />
                 Reject
@@ -186,6 +187,7 @@ export function SellerApprovalsPage() {
                   setSelectedApplication(row.original);
                   setAction("approve");
                 }}
+                className="w-full sm:w-auto"
               >
                 <Check className="mr-1 h-4 w-4" />
                 Approve
@@ -234,19 +236,22 @@ export function SellerApprovalsPage() {
             size="sm"
             onClick={loadApplications}
             disabled={isLoading}
+            className="w-full sm:w-auto"
           >
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
         </div>
 
-        <DataTable
-          columns={columns}
-          data={applications}
-          isLoading={isLoading}
-          searchPlaceholder="Search distributor applications..."
-          emptyMessage="No distributor applications found"
-        />
+        <div className="overflow-x-auto">
+          <DataTable
+            columns={columns}
+            data={applications}
+            isLoading={isLoading}
+            searchPlaceholder="Search distributor applications..."
+            emptyMessage="No distributor applications found"
+          />
+        </div>
       </motion.div>
 
       <ConfirmDialog

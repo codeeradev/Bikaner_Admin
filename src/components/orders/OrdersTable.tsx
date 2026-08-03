@@ -232,14 +232,14 @@ export function OrdersTable({
       accessorKey: "orderNumber",
       header: "Order",
       cell: ({ row }) => (
-        <span className="font-mono text-xs">{row.getValue("orderNumber")}</span>
+        <span className="font-mono text-xs whitespace-nowrap">{row.getValue("orderNumber")}</span>
       ),
     },
     {
       accessorKey: "customerName",
       header: "Customer",
       cell: ({ row }) => (
-        <div>
+        <div className="min-w-[150px]">
           <div className="font-medium">{row.original.customerName}</div>
           {row.original.customerMobile && (
             <div className="text-xs text-muted-foreground">
@@ -253,22 +253,33 @@ export function OrdersTable({
       accessorKey: "orderType",
       header: "Type",
       cell: ({ row }) => (
-        <Badge variant="outline" className="capitalize">
+        <Badge variant="outline" className="capitalize whitespace-nowrap">
           {row.getValue("orderType")}
         </Badge>
       ),
     },
-    { accessorKey: "productCount", header: "Products" },
-    { accessorKey: "quantity", header: "Qty" },
+    { 
+      accessorKey: "productCount", 
+      header: "Products",
+      cell: ({ row }) => <span className="whitespace-nowrap">{row.getValue("productCount")}</span>
+    },
+    { 
+      accessorKey: "quantity", 
+      header: "Qty",
+      cell: ({ row }) => <span className="whitespace-nowrap">{row.getValue("quantity")}</span>
+    },
     {
       accessorKey: "amount",
       header: "Amount",
-      cell: ({ row }) =>
-        new Intl.NumberFormat("en-IN", {
-          style: "currency",
-          currency: "INR",
-          maximumFractionDigits: 0,
-        }).format(Number(row.getValue("amount"))),
+      cell: ({ row }) => (
+        <span className="whitespace-nowrap">
+          {new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 0,
+          }).format(Number(row.getValue("amount")))}
+        </span>
+      ),
     },
     {
       accessorKey: "paymentStatus",
@@ -276,7 +287,7 @@ export function OrdersTable({
       cell: ({ row }) => {
         const status = row.getValue("paymentStatus") as string;
         return (
-          <Badge variant={paymentVariants[status] || "secondary"}>
+          <Badge variant={paymentVariants[status] || "secondary"} className="whitespace-nowrap">
             {status}
           </Badge>
         );
@@ -288,7 +299,7 @@ export function OrdersTable({
       cell: ({ row }) => {
         const status = row.getValue("orderStatus") as OrderStatus;
         return (
-          <Badge variant={orderVariants[status] || "secondary"}>
+          <Badge variant={orderVariants[status] || "secondary"} className="whitespace-nowrap">
             {statusLabels[status] || status}
           </Badge>
         );
@@ -297,10 +308,13 @@ export function OrdersTable({
     {
       accessorKey: "date",
       header: "Date",
-      cell: ({ row }) =>
-        row.getValue("date")
-          ? new Date(row.getValue("date")).toLocaleDateString()
-          : "—",
+      cell: ({ row }) => (
+        <span className="whitespace-nowrap">
+          {row.getValue("date")
+            ? new Date(row.getValue("date")).toLocaleDateString()
+            : "—"}
+        </span>
+      ),
     },
     {
       id: "actions",
@@ -310,7 +324,7 @@ export function OrdersTable({
         const isTerminal = status === "delivered" || status === "cancelled";
 
         return (
-          <div className="flex justify-end gap-2">
+          <div className="flex items-center justify-end gap-2 min-w-[200px]">
             <Button
               type="button"
               variant="outline"
@@ -327,6 +341,7 @@ export function OrdersTable({
                   variant="outline"
                   size="sm"
                   disabled={isTerminal || isUpdating}
+                  className="whitespace-nowrap"
                 >
                   Change Status
                   <ChevronDown className="ml-1 h-3 w-3" />
@@ -380,25 +395,28 @@ export function OrdersTable({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex flex-col sm:flex-row justify-end gap-2">
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={loadOrders}
           disabled={isLoading}
+          className="w-full sm:w-auto"
         >
           <RefreshCw className="mr-2 h-4 w-4" />
           Refresh
         </Button>
       </div>
-      <DataTable
-        columns={orderColumns}
-        data={orders}
-        isLoading={isLoading}
-        searchPlaceholder={searchPlaceholder}
-        emptyMessage={emptyMessage}
-      />
+      <div className="overflow-x-auto">
+        <DataTable
+          columns={orderColumns}
+          data={orders}
+          isLoading={isLoading}
+          searchPlaceholder={searchPlaceholder}
+          emptyMessage={emptyMessage}
+        />
+      </div>
 
       {/* Confirmation Dialog for Accept/Delivered */}
       <Dialog
@@ -417,17 +435,18 @@ export function OrdersTable({
               <span className="font-semibold">{confirmDialog.newStatus}</span>?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
               variant="outline"
               disabled={isUpdating}
               onClick={() =>
                 setConfirmDialog({ ...confirmDialog, open: false })
               }
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
-            <Button onClick={handleConfirmStatusChange} disabled={isUpdating}>
+            <Button onClick={handleConfirmStatusChange} disabled={isUpdating} className="w-full sm:w-auto">
               Confirm
             </Button>
           </DialogFooter>
@@ -463,13 +482,14 @@ export function OrdersTable({
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
               variant="outline"
               disabled={isUpdating}
               onClick={() =>
                 setCancelDialog({ ...cancelDialog, open: false, reason: "" })
               }
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
@@ -477,6 +497,7 @@ export function OrdersTable({
               variant="destructive"
               onClick={handleCancelOrder}
               disabled={isUpdating}
+              className="w-full sm:w-auto"
             >
               Cancel Order
             </Button>

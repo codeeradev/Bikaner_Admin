@@ -10,3 +10,4 @@ export * from "./settingsService";
 export * from "./sellerApplicationService";
 export * from "./notificationService";
 export * from "./offerService";
+export * from "./dashboardService";
