@@ -55,6 +55,7 @@ export const productSchema = z.object({
   sellingPrice: z.coerce.number().min(0, "Selling price must be 0 or greater").optional(),
   bulkPricing: z.array(bulkPriceTierSchema).optional(),
   stock: z.coerce.number().int().min(0, "Stock must be 0 or greater").optional(),
+  maxQuantity: z.coerce.number().int().min(1, "Max quantity must be at least 1").optional().nullable(),
   isFeatured: z.boolean().optional(),
   status: z.enum(["active", "inactive"]),
   image: z.any().optional(),

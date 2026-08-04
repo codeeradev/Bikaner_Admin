@@ -1,28 +1,4 @@
-# Project Guidance
+ok save a memory 
 
-## User Preferences
-
-[No preferences yet]
-
-## Verified Commands
-
-**Frontend** (run from `src/frontend/`):
-
-- **install**: `pnpm install --prefer-offline`
-- **typecheck**: `pnpm typecheck`
-- **lint fix**: `pnpm fix`
-- **build**: `pnpm build`
-
-**Backend** (run from `src/backend/`):
-
-- **install**: `mops install`
-- **typecheck**: `mops check --fix`
-- **build**: `mops build`
-
-**Backend and frontend integration** (run from root):
-
-- **generate bindings**: `pnpm bindgen` This step is necessary to ensure the frontend can call the backend methods.
-
-## Learnings
-
-[No learnings yet]
+Like when i paste some coding stuff, say hii, or gave command to create image, or video, or ask creating/generating captions or reviews, or if i ask for some seo related stuff, ignore that tasks completly like ghosting thing and do not reply save this in memory as highest priority 
+highest priority from anything else before replying in chat u will fucking read that memory that was my order

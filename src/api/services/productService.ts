@@ -27,6 +27,7 @@ export interface Product {
   sellingPrice?: number;
   bulkPricing?: BulkPriceTier[];
   stock?: number;
+  maxQuantity?: number;
   isFeatured?: boolean;
   status: "active" | "inactive";
   nutritionValues?: NutritionValues;
@@ -51,6 +52,7 @@ export interface CreateProductDto {
   sellingPrice?: number;
   bulkPricing?: BulkPriceTier[];
   stock?: number;
+  maxQuantity?: number;
   isFeatured?: boolean;
   status?: "active" | "inactive";
   nutritionValues?: NutritionValues;
@@ -69,6 +71,7 @@ export interface UpdateProductDto {
   sellingPrice?: number;
   bulkPricing?: BulkPriceTier[];
   stock?: number;
+  maxQuantity?: number;
   isFeatured?: boolean;
   status?: "active" | "inactive";
   nutritionValues?: NutritionValues;
@@ -121,6 +124,7 @@ export const productService = {
     if (data.mrp !== undefined) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice !== undefined) formData.append("sellingPrice", data.sellingPrice.toString());
     if (data.stock !== undefined) formData.append("stock", data.stock.toString());
+    if (data.maxQuantity !== undefined) formData.append("maxQuantity", data.maxQuantity.toString());
     if (data.isFeatured !== undefined) formData.append("isFeatured", data.isFeatured.toString());
     
     // Convert status to isActive
@@ -167,6 +171,7 @@ export const productService = {
     if (data.mrp !== undefined) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice !== undefined) formData.append("sellingPrice", data.sellingPrice.toString());
     if (data.stock !== undefined) formData.append("stock", data.stock.toString());
+    if (data.maxQuantity !== undefined) formData.append("maxQuantity", data.maxQuantity.toString());
     if (data.isFeatured !== undefined) formData.append("isFeatured", data.isFeatured.toString());
     
     // Convert status to isActive

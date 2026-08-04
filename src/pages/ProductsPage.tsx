@@ -51,8 +51,9 @@ export function ProductsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const methods = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
+  const methods = useForm({
+    resolver: zodResolver(productSchema) as any,
+    mode: "onChange",
   });
 
   const { handleSubmit, reset } = methods;
@@ -84,6 +85,7 @@ export function ProductsPage() {
       sellingPrice: 0,
       bulkPricing: [],
       stock: 0,
+      maxQuantity: null,
       isFeatured: false,
       status: "active",
       nutritionValues: {},
@@ -102,6 +104,9 @@ export function ProductsPage() {
       categoryId = (categoryId as any)._id || (categoryId as any).id || "";
     }
     
+    // Handle both bulkPricing and bulkPrice field names from backend
+    const bulkPricingData = product.bulkPricing || (product as any).bulkPrice || [];
+    
     reset({
       name: product.name,
       categoryId: categoryId as string,
@@ -111,8 +116,9 @@ export function ProductsPage() {
       unit: product.unit,
       mrp: product.mrp,
       sellingPrice: product.sellingPrice,
-      bulkPricing: product.bulkPricing || [],
+      bulkPricing: bulkPricingData,
       stock: product.stock,
+      maxQuantity: product.maxQuantity || null,
       isFeatured: product.isFeatured,
       status: product.status,
       nutritionValues: product.nutritionValues || {},
@@ -121,7 +127,7 @@ export function ProductsPage() {
     setIsModalOpen(true);
   };
 
-  const onSubmit = async (data: ProductFormData) => {
+  const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     const loadingId = alert.loading(
       editingProduct ? "Updating product..." : "Creating product...",
@@ -386,6 +392,19 @@ export function ProductsPage() {
                   placeholder="kg, ltr, pcs"
                 />
                 <FormInput name="stock" label="Stock" type="number" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormInput 
+                  name="maxQuantity" 
+                  label="Max Quantity Per Order (Optional)" 
+                  type="number"
+                  placeholder="Leave empty for no limit"
+                />
+                <div className="flex items-end">
+                  <p className="text-xs text-muted-foreground pb-2">
+                    Set maximum quantity a normal user can order. Sellers are not affected.
+                  </p>
+                </div>
               </div>
               <Controller
                 name="bulkPricing"

@@ -30,6 +30,7 @@ export interface SettingsData {
   globalDeliveryCharges?: number;
   platformFee?: number;
   globalTax?: number;
+  codLimit?: number;
 }
 
 export type UpdateSettingsDto = Partial<

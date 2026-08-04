@@ -98,6 +98,13 @@ const settingsSchema = z
         const tax = Number(value);
         return Number.isFinite(tax) && tax >= 0 && tax <= 100;
       }, "Global tax must be between 0 and 100"),
+    codLimit: z
+      .string()
+      .trim()
+      .min(1, "COD limit is required")
+      .refine((value) => Number.isFinite(Number(value)) && Number(value) >= 0, {
+        message: "COD limit must be a positive number",
+      }),
     facebookUrl: z.string().optional(),
     instagramUrl: z.string().optional(),
     twitterUrl: z.string().optional(),
@@ -140,6 +147,7 @@ const defaultValues: SettingsFormData = {
   globalDeliveryCharges: "30",
   platformFee: "5",
   globalTax: "0",
+  codLimit: "10000",
   facebookUrl: "",
   instagramUrl: "",
   twitterUrl: "",
@@ -226,6 +234,7 @@ export function SettingsPage() {
           ),
           platformFee: String(settings.platformFee ?? defaultValues.platformFee),
           globalTax: String(settings.globalTax ?? defaultValues.globalTax),
+          codLimit: String(settings.codLimit ?? defaultValues.codLimit),
           facebookUrl: settings.facebookUrl || "",
           instagramUrl: settings.instagramUrl || "",
           twitterUrl: settings.twitterUrl || "",
@@ -312,6 +321,7 @@ export function SettingsPage() {
         globalDeliveryCharges: Number(data.globalDeliveryCharges),
         platformFee: Number(data.platformFee),
         globalTax: Number(data.globalTax),
+        codLimit: Number(data.codLimit),
         facebookUrl: data.facebookUrl?.trim() || "",
         instagramUrl: data.instagramUrl?.trim() || "",
         twitterUrl: data.twitterUrl?.trim() || "",
@@ -497,6 +507,18 @@ export function SettingsPage() {
                         step="0.01"
                         placeholder="0"
                         description="Shown on invoices as tax already included in prices"
+                      />
+                    </div>
+
+                    <div className="grid gap-6 md:grid-cols-1">
+                      <FormInput
+                        name="codLimit"
+                        label="COD Limit (₹)"
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        placeholder="10000"
+                        description="Orders above this amount require online payment via Razorpay (only for normal users)"
                       />
                     </div>
 

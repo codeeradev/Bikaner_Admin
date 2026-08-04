@@ -31403,6 +31403,7 @@ const productService = {
     if (data.mrp !== void 0) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice !== void 0) formData.append("sellingPrice", data.sellingPrice.toString());
     if (data.stock !== void 0) formData.append("stock", data.stock.toString());
+    if (data.maxQuantity !== void 0) formData.append("maxQuantity", data.maxQuantity.toString());
     if (data.isFeatured !== void 0) formData.append("isFeatured", data.isFeatured.toString());
     if (data.status) {
       formData.append("isActive", (data.status === "active").toString());
@@ -31435,6 +31436,7 @@ const productService = {
     if (data.mrp !== void 0) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice !== void 0) formData.append("sellingPrice", data.sellingPrice.toString());
     if (data.stock !== void 0) formData.append("stock", data.stock.toString());
+    if (data.maxQuantity !== void 0) formData.append("maxQuantity", data.maxQuantity.toString());
     if (data.isFeatured !== void 0) formData.append("isFeatured", data.isFeatured.toString());
     if (data.status) {
       formData.append("isActive", (data.status === "active").toString());
@@ -58339,6 +58341,7 @@ const productSchema = object$1({
   sellingPrice: number$3().min(0, "Selling price must be 0 or greater").optional(),
   bulkPricing: array$1(bulkPriceTierSchema).optional(),
   stock: number$3().int().min(0, "Stock must be 0 or greater").optional(),
+  maxQuantity: number$3().int().min(1, "Max quantity must be at least 1").optional().nullable(),
   isFeatured: boolean().optional(),
   status: _enum(["active", "inactive"]),
   image: any().optional(),
@@ -93289,7 +93292,8 @@ function ProductsPage() {
   const [isSubmitting, setIsSubmitting] = reactExports.useState(false);
   const [imageFile, setImageFile] = reactExports.useState(null);
   const methods = useForm({
-    resolver: u$1(productSchema)
+    resolver: u$1(productSchema),
+    mode: "onChange"
   });
   const { handleSubmit, reset } = methods;
   reactExports.useEffect(() => {
@@ -93315,6 +93319,7 @@ function ProductsPage() {
       sellingPrice: 0,
       bulkPricing: [],
       stock: 0,
+      maxQuantity: null,
       isFeatured: false,
       status: "active",
       nutritionValues: {},
@@ -93329,6 +93334,7 @@ function ProductsPage() {
     if (typeof categoryId === "object" && categoryId !== null) {
       categoryId = categoryId._id || categoryId.id || "";
     }
+    const bulkPricingData = product.bulkPricing || product.bulkPrice || [];
     reset({
       name: product.name,
       categoryId,
@@ -93338,8 +93344,9 @@ function ProductsPage() {
       unit: product.unit,
       mrp: product.mrp,
       sellingPrice: product.sellingPrice,
-      bulkPricing: product.bulkPricing || [],
+      bulkPricing: bulkPricingData,
       stock: product.stock,
+      maxQuantity: product.maxQuantity || null,
       isFeatured: product.isFeatured,
       status: product.status,
       nutritionValues: product.nutritionValues || {},
@@ -93602,6 +93609,18 @@ function ProductsPage() {
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(FormInput, { name: "stock", label: "Stock", type: "number" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            FormInput,
+            {
+              name: "maxQuantity",
+              label: "Max Quantity Per Order (Optional)",
+              type: "number",
+              placeholder: "Leave empty for no limit"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground pb-2", children: "Set maximum quantity a normal user can order. Sellers are not affected." }) })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Controller,
@@ -94603,6 +94622,9 @@ const settingsSchema = object$1({
     const tax = Number(value);
     return Number.isFinite(tax) && tax >= 0 && tax <= 100;
   }, "Global tax must be between 0 and 100"),
+  codLimit: string$1().trim().min(1, "COD limit is required").refine((value) => Number.isFinite(Number(value)) && Number(value) >= 0, {
+    message: "COD limit must be a positive number"
+  }),
   facebookUrl: string$1().optional(),
   instagramUrl: string$1().optional(),
   twitterUrl: string$1().optional(),
@@ -94640,6 +94662,7 @@ const defaultValues = {
   globalDeliveryCharges: "30",
   platformFee: "5",
   globalTax: "0",
+  codLimit: "10000",
   facebookUrl: "",
   instagramUrl: "",
   twitterUrl: "",
@@ -94715,6 +94738,7 @@ function SettingsPage() {
           ),
           platformFee: String(settings.platformFee ?? defaultValues.platformFee),
           globalTax: String(settings.globalTax ?? defaultValues.globalTax),
+          codLimit: String(settings.codLimit ?? defaultValues.codLimit),
           facebookUrl: settings.facebookUrl || "",
           instagramUrl: settings.instagramUrl || "",
           twitterUrl: settings.twitterUrl || "",
@@ -94791,6 +94815,7 @@ function SettingsPage() {
         globalDeliveryCharges: Number(data.globalDeliveryCharges),
         platformFee: Number(data.platformFee),
         globalTax: Number(data.globalTax),
+        codLimit: Number(data.codLimit),
         facebookUrl: ((_b2 = data.facebookUrl) == null ? void 0 : _b2.trim()) || "",
         instagramUrl: ((_c2 = data.instagramUrl) == null ? void 0 : _c2.trim()) || "",
         twitterUrl: ((_d2 = data.twitterUrl) == null ? void 0 : _d2.trim()) || "",
@@ -94986,6 +95011,18 @@ function SettingsPage() {
                       }
                     )
                   ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid gap-6 md:grid-cols-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    FormInput,
+                    {
+                      name: "codLimit",
+                      label: "COD Limit (₹)",
+                      type: "number",
+                      min: 0,
+                      step: "0.01",
+                      placeholder: "10000",
+                      description: "Orders above this amount require online payment via Razorpay (only for normal users)"
+                    }
+                  ) }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "siteLogo", className: "text-sm font-medium", children: "Site Logo" }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
