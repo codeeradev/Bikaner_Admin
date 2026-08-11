@@ -51398,9 +51398,13 @@ const featureBundle = {
   ...layout
 };
 const motion = /* @__PURE__ */ createMotionProxy(featureBundle, createDomVisualElement);
+const API_BASE$1 = "https://bikanerapi.codeeratech.in";
 function BulkOrdersPage() {
+  var _a3, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j, _k, _l, _m, _n, _o, _p, _q;
   const [requests2, setRequests] = reactExports.useState([]);
   const [loadingRequests, setLoadingRequests] = reactExports.useState(true);
+  const [isRequestsDialogOpen, setIsRequestsDialogOpen] = reactExports.useState(false);
+  const [selectedRequest, setSelectedRequest] = reactExports.useState(null);
   const alert2 = useAlert();
   const loadRequests = async () => {
     try {
@@ -51424,40 +51428,130 @@ function BulkOrdersPage() {
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(PageHeader, { title: "Bulk Orders", description: "High-volume seller orders" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-xl border bg-card p-5 shadow-sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-4 flex items-center gap-2", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "rounded-xl border bg-card p-5 shadow-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(PhoneCall, { className: "h-5 w-5 text-primary" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-semibold", children: "Large quantity requests" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Requests submitted directly by customers for a quotation or callback." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Customer requests for a quotation or callback." })
         ] })
       ] }),
-      loadingRequests ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Loading requests..." }) : requests2.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "No large quantity requests yet." }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: requests2.map((request) => {
-        var _a3, _b2, _c2, _d2;
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-medium", children: [
-              ((_a3 = request.productId) == null ? void 0 : _a3.name) || "Deleted product",
-              " ",
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-muted-foreground", children: [
-                "× ",
-                request.quantity
-              ] })
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "outline", onClick: () => setIsRequestsDialogOpen(true), children: [
+        "View requests",
+        requests2.length ? ` (${requests2.length})` : ""
+      ] })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isRequestsDialogOpen, onOpenChange: setIsRequestsDialogOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-h-[90vh] overflow-y-auto sm:max-w-5xl", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Large quantity requests" }) }),
+      loadingRequests ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Loading requests..." }) : requests2.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "No large quantity requests yet." }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto rounded-lg border", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full min-w-[780px] text-left text-sm", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-muted/60 text-muted-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Product" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Quantity" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Customer" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Contact" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Status" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Actions" })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { children: requests2.map((request) => {
+          var _a4, _b3, _c3, _d3, _e3;
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "border-t", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "p-3 font-medium", children: [
+              ((_a4 = request.productId) == null ? void 0 : _a4.name) || "Deleted product",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-1 block text-xs font-normal text-muted-foreground", children: ((_b3 = request.productId) == null ? void 0 : _b3.sku) || "No SKU" })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-muted-foreground", children: [
-              ((_b2 = request.userId) == null ? void 0 : _b2.name) || "Customer",
-              ((_c2 = request.userId) == null ? void 0 : _c2.phone) ? ` · ${request.userId.phone}` : "",
-              ((_d2 = request.userId) == null ? void 0 : _d2.email) ? ` · ${request.userId.email}` : ""
+            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3", children: request.quantity }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3", children: ((_c3 = request.userId) == null ? void 0 : _c3.name) || "Customer" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "p-3", children: [
+              ((_d3 = request.userId) == null ? void 0 : _d3.mobile) || "—",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-1 block text-xs text-muted-foreground", children: ((_e3 = request.userId) == null ? void 0 : _e3.email) || "" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: request.status === "closed" ? "secondary" : "default", children: request.status }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { size: "sm", variant: "ghost", onClick: () => {
+                setIsRequestsDialogOpen(false);
+                setSelectedRequest(request);
+              }, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { className: "mr-1 h-4 w-4" }),
+                "Details"
+              ] }),
+              request.status === "pending" && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", onClick: () => setStatus(request.id, "contacted"), children: "Contacted" }),
+              request.status === "contacted" && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", onClick: () => setStatus(request.id, "closed"), children: "Close" })
+            ] }) })
+          ] }, request.id);
+        }) })
+      ] }) })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: Boolean(selectedRequest), onOpenChange: (open) => !open && setSelectedRequest(null), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-h-[90vh] overflow-y-auto sm:max-w-2xl", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Large quantity request details" }) }),
+      selectedRequest && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-5 text-sm sm:grid-cols-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-lg border p-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "mb-3 font-semibold", children: "Customer details" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 text-muted-foreground", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Name:" }),
+              " ",
+              ((_a3 = selectedRequest.userId) == null ? void 0 : _a3.name) || "Not available"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Mobile:" }),
+              " ",
+              ((_b2 = selectedRequest.userId) == null ? void 0 : _b2.mobile) || "Not available"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Email:" }),
+              " ",
+              ((_c2 = selectedRequest.userId) == null ? void 0 : _c2.email) || "Not available"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Area:" }),
+              " ",
+              [(_e2 = (_d2 = selectedRequest.userId) == null ? void 0 : _d2.cityId) == null ? void 0 : _e2.name, (_g2 = (_f2 = selectedRequest.userId) == null ? void 0 : _f2.zoneId) == null ? void 0 : _g2.name].filter(Boolean).join(", ") || "Not available"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Requested:" }),
+              " ",
+              new Date(selectedRequest.createdAt).toLocaleString()
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-lg border p-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "mb-3 font-semibold", children: "Product details" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
+            ((_h2 = selectedRequest.productId) == null ? void 0 : _h2.image) && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${API_BASE$1}${selectedRequest.productId.image}`, alt: selectedRequest.productId.name, className: "h-16 w-16 rounded-md object-cover" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 text-muted-foreground", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-foreground", children: ((_i2 = selectedRequest.productId) == null ? void 0 : _i2.name) || "Deleted product" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                "SKU: ",
+                ((_j = selectedRequest.productId) == null ? void 0 : _j.sku) || "—"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                "Category: ",
+                ((_l = (_k = selectedRequest.productId) == null ? void 0 : _k.categoryId) == null ? void 0 : _l.name) || "—"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                "Unit: ",
+                ((_m = selectedRequest.productId) == null ? void 0 : _m.unitValue) || "—",
+                " ",
+                ((_n = selectedRequest.productId) == null ? void 0 : _n.unit) || ""
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                "Regular price: ₹",
+                ((_o = selectedRequest.productId) == null ? void 0 : _o.sellingPrice) ?? "—"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                "Available stock: ",
+                ((_p = selectedRequest.productId) == null ? void 0 : _p.stock) ?? "—"
+              ] })
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: request.status === "closed" ? "secondary" : "default", children: request.status }),
-            request.status === "pending" && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", onClick: () => setStatus(request.id, "contacted"), children: "Mark contacted" }),
-            request.status === "contacted" && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", onClick: () => setStatus(request.id, "closed"), children: "Close" })
+          ((_q = selectedRequest.productId) == null ? void 0 : _q.description) && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 text-muted-foreground", children: selectedRequest.productId.description }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-3 font-medium", children: [
+            "Requested quantity: ",
+            selectedRequest.quantity
           ] })
-        ] }, request.id);
-      }) })
-    ] }),
+        ] })
+      ] })
+    ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       motion.div,
       {
