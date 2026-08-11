@@ -22260,11 +22260,46 @@ const createLucideIcon = (iconName, iconNode) => {
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$1a = [
+const __iconNode$1d = [
   ["path", { d: "M17 7 7 17", key: "15tmo1" }],
   ["path", { d: "M17 17H7V7", key: "1org7z" }]
 ];
-const ArrowDownLeft = createLucideIcon("arrow-down-left", __iconNode$1a);
+const ArrowDownLeft = createLucideIcon("arrow-down-left", __iconNode$1d);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$1c = [
+  ["path", { d: "M12 5v14", key: "s699le" }],
+  ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
+];
+const ArrowDown = createLucideIcon("arrow-down", __iconNode$1c);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$1b = [
+  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
+  ["path", { d: "M19 12H5", key: "x3x0zl" }]
+];
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$1b);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$1a = [
+  ["path", { d: "m21 16-4 4-4-4", key: "f6ql7i" }],
+  ["path", { d: "M17 20V4", key: "1ejh1v" }],
+  ["path", { d: "m3 8 4-4 4 4", key: "11wl7u" }],
+  ["path", { d: "M7 4v16", key: "1glfcx" }]
+];
+const ArrowUpDown = createLucideIcon("arrow-up-down", __iconNode$1a);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22272,10 +22307,10 @@ const ArrowDownLeft = createLucideIcon("arrow-down-left", __iconNode$1a);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$19 = [
-  ["path", { d: "M12 5v14", key: "s699le" }],
-  ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
+  ["path", { d: "M7 7h10v10", key: "1tivn9" }],
+  ["path", { d: "M7 17 17 7", key: "1vkiza" }]
 ];
-const ArrowDown = createLucideIcon("arrow-down", __iconNode$19);
+const ArrowUpRight = createLucideIcon("arrow-up-right", __iconNode$19);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22283,10 +22318,10 @@ const ArrowDown = createLucideIcon("arrow-down", __iconNode$19);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$18 = [
-  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
-  ["path", { d: "M19 12H5", key: "x3x0zl" }]
+  ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
+  ["path", { d: "M12 19V5", key: "x0mq9r" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$18);
+const ArrowUp = createLucideIcon("arrow-up", __iconNode$18);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22294,41 +22329,6 @@ const ArrowLeft = createLucideIcon("arrow-left", __iconNode$18);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$17 = [
-  ["path", { d: "m21 16-4 4-4-4", key: "f6ql7i" }],
-  ["path", { d: "M17 20V4", key: "1ejh1v" }],
-  ["path", { d: "m3 8 4-4 4 4", key: "11wl7u" }],
-  ["path", { d: "M7 4v16", key: "1glfcx" }]
-];
-const ArrowUpDown = createLucideIcon("arrow-up-down", __iconNode$17);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$16 = [
-  ["path", { d: "M7 7h10v10", key: "1tivn9" }],
-  ["path", { d: "M7 17 17 7", key: "1vkiza" }]
-];
-const ArrowUpRight = createLucideIcon("arrow-up-right", __iconNode$16);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$15 = [
-  ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
-  ["path", { d: "M12 19V5", key: "x0mq9r" }]
-];
-const ArrowUp = createLucideIcon("arrow-up", __iconNode$15);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$14 = [
   ["path", { d: "M10.268 21a2 2 0 0 0 3.464 0", key: "vwvbt9" }],
   [
     "path",
@@ -22338,14 +22338,14 @@ const __iconNode$14 = [
     }
   ]
 ];
-const Bell = createLucideIcon("bell", __iconNode$14);
+const Bell = createLucideIcon("bell", __iconNode$17);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$13 = [
+const __iconNode$16 = [
   ["path", { d: "M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z", key: "1b4qmf" }],
   ["path", { d: "M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2", key: "i71pzd" }],
   ["path", { d: "M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2", key: "10jefs" }],
@@ -22354,14 +22354,14 @@ const __iconNode$13 = [
   ["path", { d: "M10 14h4", key: "kelpxr" }],
   ["path", { d: "M10 18h4", key: "1ulq68" }]
 ];
-const Building2 = createLucideIcon("building-2", __iconNode$13);
+const Building2 = createLucideIcon("building-2", __iconNode$16);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$12 = [
+const __iconNode$15 = [
   [
     "path",
     {
@@ -22371,71 +22371,104 @@ const __iconNode$12 = [
   ],
   ["circle", { cx: "12", cy: "13", r: "3", key: "1vg3eu" }]
 ];
-const Camera = createLucideIcon("camera", __iconNode$12);
+const Camera = createLucideIcon("camera", __iconNode$15);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$11 = [
+const __iconNode$14 = [
   ["path", { d: "M3 3v16a2 2 0 0 0 2 2h16", key: "c24i48" }],
   ["path", { d: "M18 17V9", key: "2bz60n" }],
   ["path", { d: "M13 17V5", key: "1frdt8" }],
   ["path", { d: "M8 17v-3", key: "17ska0" }]
 ];
-const ChartColumn = createLucideIcon("chart-column", __iconNode$11);
+const ChartColumn = createLucideIcon("chart-column", __iconNode$14);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$10 = [
+const __iconNode$13 = [
   ["path", { d: "M18 6 7 17l-5-5", key: "116fxf" }],
   ["path", { d: "m22 10-7.5 7.5L13 16", key: "ke71qq" }]
 ];
-const CheckCheck = createLucideIcon("check-check", __iconNode$10);
+const CheckCheck = createLucideIcon("check-check", __iconNode$13);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$$ = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$$);
+const __iconNode$12 = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$12);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$_ = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("chevron-down", __iconNode$_);
+const __iconNode$11 = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("chevron-down", __iconNode$11);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$Z = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-const ChevronLeft = createLucideIcon("chevron-left", __iconNode$Z);
+const __iconNode$10 = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+const ChevronLeft = createLucideIcon("chevron-left", __iconNode$10);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$Y = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("chevron-right", __iconNode$Y);
+const __iconNode$$ = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+const ChevronRight = createLucideIcon("chevron-right", __iconNode$$);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$X = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-const ChevronUp = createLucideIcon("chevron-up", __iconNode$X);
+const __iconNode$_ = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+const ChevronUp = createLucideIcon("chevron-up", __iconNode$_);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$Z = [
+  ["path", { d: "m11 17-5-5 5-5", key: "13zhaf" }],
+  ["path", { d: "m18 17-5-5 5-5", key: "h8a8et" }]
+];
+const ChevronsLeft = createLucideIcon("chevrons-left", __iconNode$Z);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$Y = [
+  ["path", { d: "m6 17 5-5-5-5", key: "xnjwq" }],
+  ["path", { d: "m13 17 5-5-5-5", key: "17xmmf" }]
+];
+const ChevronsRight = createLucideIcon("chevrons-right", __iconNode$Y);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$X = [
+  ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
+  ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+];
+const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$X);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22443,10 +22476,10 @@ const ChevronUp = createLucideIcon("chevron-up", __iconNode$X);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$W = [
-  ["path", { d: "m11 17-5-5 5-5", key: "13zhaf" }],
-  ["path", { d: "m18 17-5-5 5-5", key: "h8a8et" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ];
-const ChevronsLeft = createLucideIcon("chevrons-left", __iconNode$W);
+const CircleCheck = createLucideIcon("circle-check", __iconNode$W);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22454,10 +22487,11 @@ const ChevronsLeft = createLucideIcon("chevrons-left", __iconNode$W);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$V = [
-  ["path", { d: "m6 17 5-5-5-5", key: "xnjwq" }],
-  ["path", { d: "m13 17 5-5-5-5", key: "17xmmf" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
+  ["path", { d: "M12 17h.01", key: "p32p05" }]
 ];
-const ChevronsRight = createLucideIcon("chevrons-right", __iconNode$V);
+const CircleHelp = createLucideIcon("circle-help", __iconNode$V);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22465,10 +22499,11 @@ const ChevronsRight = createLucideIcon("chevrons-right", __iconNode$V);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$U = [
-  ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
-  ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["line", { x1: "10", x2: "10", y1: "15", y2: "9", key: "c1nkhi" }],
+  ["line", { x1: "14", x2: "14", y1: "15", y2: "9", key: "h65svq" }]
 ];
-const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$U);
+const CirclePause = createLucideIcon("circle-pause", __iconNode$U);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22477,9 +22512,9 @@ const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$U);
  */
 const __iconNode$T = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+  ["polygon", { points: "10 8 16 12 10 16 10 8", key: "1cimsy" }]
 ];
-const CircleCheck = createLucideIcon("circle-check", __iconNode$T);
+const CirclePlay = createLucideIcon("circle-play", __iconNode$T);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22488,10 +22523,10 @@ const CircleCheck = createLucideIcon("circle-check", __iconNode$T);
  */
 const __iconNode$S = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
-  ["path", { d: "M12 17h.01", key: "p32p05" }]
+  ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
+  ["path", { d: "m9 9 6 6", key: "z0biqf" }]
 ];
-const CircleHelp = createLucideIcon("circle-help", __iconNode$S);
+const CircleX = createLucideIcon("circle-x", __iconNode$S);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22499,41 +22534,6 @@ const CircleHelp = createLucideIcon("circle-help", __iconNode$S);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$R = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["line", { x1: "10", x2: "10", y1: "15", y2: "9", key: "c1nkhi" }],
-  ["line", { x1: "14", x2: "14", y1: "15", y2: "9", key: "h65svq" }]
-];
-const CirclePause = createLucideIcon("circle-pause", __iconNode$R);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$Q = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["polygon", { points: "10 8 16 12 10 16 10 8", key: "1cimsy" }]
-];
-const CirclePlay = createLucideIcon("circle-play", __iconNode$Q);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$P = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
-  ["path", { d: "m9 9 6 6", key: "z0biqf" }]
-];
-const CircleX = createLucideIcon("circle-x", __iconNode$P);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$O = [
   ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
   [
     "path",
@@ -22547,14 +22547,14 @@ const __iconNode$O = [
   ["path", { d: "M8 11h.01", key: "1dfujw" }],
   ["path", { d: "M8 16h.01", key: "18s6g9" }]
 ];
-const ClipboardList = createLucideIcon("clipboard-list", __iconNode$O);
+const ClipboardList = createLucideIcon("clipboard-list", __iconNode$R);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$N = [
+const __iconNode$Q = [
   ["path", { d: "M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5", key: "laymnq" }],
   ["path", { d: "M8.5 8.5v.01", key: "ue8clq" }],
   ["path", { d: "M16 15.5v.01", key: "14dtrp" }],
@@ -22562,7 +22562,40 @@ const __iconNode$N = [
   ["path", { d: "M11 17v.01", key: "1hyl5a" }],
   ["path", { d: "M7 14v.01", key: "uct60s" }]
 ];
-const Cookie = createLucideIcon("cookie", __iconNode$N);
+const Cookie = createLucideIcon("cookie", __iconNode$Q);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$P = [
+  ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
+  ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
+];
+const Copy = createLucideIcon("copy", __iconNode$P);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$O = [
+  ["rect", { width: "20", height: "14", x: "2", y: "5", rx: "2", key: "ynyp8z" }],
+  ["line", { x1: "2", x2: "22", y1: "10", y2: "10", key: "1b3vmo" }]
+];
+const CreditCard = createLucideIcon("credit-card", __iconNode$O);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$N = [
+  ["line", { x1: "12", x2: "12", y1: "2", y2: "22", key: "7eqyqh" }],
+  ["path", { d: "M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6", key: "1b0p4s" }]
+];
+const DollarSign = createLucideIcon("dollar-sign", __iconNode$N);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22570,10 +22603,11 @@ const Cookie = createLucideIcon("cookie", __iconNode$N);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$M = [
-  ["rect", { width: "20", height: "14", x: "2", y: "5", rx: "2", key: "ynyp8z" }],
-  ["line", { x1: "2", x2: "22", y1: "10", y2: "10", key: "1b3vmo" }]
+  ["path", { d: "M12 15V3", key: "m9g1x1" }],
+  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
+  ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
 ];
-const CreditCard = createLucideIcon("credit-card", __iconNode$M);
+const Download = createLucideIcon("download", __iconNode$M);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22581,29 +22615,6 @@ const CreditCard = createLucideIcon("credit-card", __iconNode$M);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$L = [
-  ["line", { x1: "12", x2: "12", y1: "2", y2: "22", key: "7eqyqh" }],
-  ["path", { d: "M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6", key: "1b0p4s" }]
-];
-const DollarSign = createLucideIcon("dollar-sign", __iconNode$L);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$K = [
-  ["path", { d: "M12 15V3", key: "m9g1x1" }],
-  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
-  ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
-];
-const Download = createLucideIcon("download", __iconNode$K);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$J = [
   [
     "path",
     {
@@ -22621,14 +22632,14 @@ const __iconNode$J = [
   ],
   ["path", { d: "m2 2 20 20", key: "1ooewy" }]
 ];
-const EyeOff = createLucideIcon("eye-off", __iconNode$J);
+const EyeOff = createLucideIcon("eye-off", __iconNode$L);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$I = [
+const __iconNode$K = [
   [
     "path",
     {
@@ -22638,14 +22649,14 @@ const __iconNode$I = [
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Eye = createLucideIcon("eye", __iconNode$I);
+const Eye = createLucideIcon("eye", __iconNode$K);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$H = [
+const __iconNode$J = [
   ["path", { d: "M12 16h.01", key: "1drbdi" }],
   ["path", { d: "M16 16h.01", key: "1f9h7w" }],
   [
@@ -22657,7 +22668,36 @@ const __iconNode$H = [
   ],
   ["path", { d: "M8 16h.01", key: "18s6g9" }]
 ];
-const Factory = createLucideIcon("factory", __iconNode$H);
+const Factory = createLucideIcon("factory", __iconNode$J);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$I = [
+  ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
+  ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
+  ["path", { d: "M8 13h2", key: "yr2amv" }],
+  ["path", { d: "M14 13h2", key: "un5t4a" }],
+  ["path", { d: "M8 17h2", key: "2yhykz" }],
+  ["path", { d: "M14 17h2", key: "10kma7" }]
+];
+const FileSpreadsheet = createLucideIcon("file-spreadsheet", __iconNode$I);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$H = [
+  ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
+  ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
+  ["path", { d: "M10 9H8", key: "b1mrlr" }],
+  ["path", { d: "M16 13H8", key: "t4e002" }],
+  ["path", { d: "M16 17H8", key: "z1uh3a" }]
+];
+const FileText = createLucideIcon("file-text", __iconNode$H);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22665,20 +22705,6 @@ const Factory = createLucideIcon("factory", __iconNode$H);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$G = [
-  ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
-  ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
-  ["path", { d: "M10 9H8", key: "b1mrlr" }],
-  ["path", { d: "M16 13H8", key: "t4e002" }],
-  ["path", { d: "M16 17H8", key: "z1uh3a" }]
-];
-const FileText = createLucideIcon("file-text", __iconNode$G);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$F = [
   [
     "path",
     {
@@ -22696,7 +22722,19 @@ const __iconNode$F = [
   ["path", { d: "M3 5a2 2 0 0 0 2 2h3", key: "f2jnh7" }],
   ["path", { d: "M3 3v13a2 2 0 0 0 2 2h3", key: "k8epm1" }]
 ];
-const FolderTree = createLucideIcon("folder-tree", __iconNode$F);
+const FolderTree = createLucideIcon("folder-tree", __iconNode$G);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$F = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
+  ["path", { d: "M2 12h20", key: "9i4pu4" }]
+];
+const Globe = createLucideIcon("globe", __iconNode$F);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22704,18 +22742,6 @@ const FolderTree = createLucideIcon("folder-tree", __iconNode$F);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$E = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
-  ["path", { d: "M2 12h20", key: "9i4pu4" }]
-];
-const Globe = createLucideIcon("globe", __iconNode$E);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$D = [
   ["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8", key: "5wwlr5" }],
   [
     "path",
@@ -22725,7 +22751,19 @@ const __iconNode$D = [
     }
   ]
 ];
-const House = createLucideIcon("house", __iconNode$D);
+const House = createLucideIcon("house", __iconNode$E);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$D = [
+  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
+  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
+  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+];
+const Image$1 = createLucideIcon("image", __iconNode$D);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22733,11 +22771,13 @@ const House = createLucideIcon("house", __iconNode$D);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$C = [
-  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
-  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
-  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+  ["path", { d: "M6 3h12", key: "ggurg9" }],
+  ["path", { d: "M6 8h12", key: "6g4wlu" }],
+  ["path", { d: "m6 13 8.5 8", key: "u1kupk" }],
+  ["path", { d: "M6 13h3", key: "wdp6ag" }],
+  ["path", { d: "M9 13c6.667 0 6.667-10 0-10", key: "1nkvk2" }]
 ];
-const Image$1 = createLucideIcon("image", __iconNode$C);
+const IndianRupee = createLucideIcon("indian-rupee", __iconNode$C);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22745,13 +22785,11 @@ const Image$1 = createLucideIcon("image", __iconNode$C);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$B = [
-  ["path", { d: "M6 3h12", key: "ggurg9" }],
-  ["path", { d: "M6 8h12", key: "6g4wlu" }],
-  ["path", { d: "m6 13 8.5 8", key: "u1kupk" }],
-  ["path", { d: "M6 13h3", key: "wdp6ag" }],
-  ["path", { d: "M9 13c6.667 0 6.667-10 0-10", key: "1nkvk2" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 16v-4", key: "1dtifu" }],
+  ["path", { d: "M12 8h.01", key: "e9boi3" }]
 ];
-const IndianRupee = createLucideIcon("indian-rupee", __iconNode$B);
+const Info = createLucideIcon("info", __iconNode$B);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22759,32 +22797,32 @@ const IndianRupee = createLucideIcon("indian-rupee", __iconNode$B);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$A = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M12 16v-4", key: "1dtifu" }],
-  ["path", { d: "M12 8h.01", key: "e9boi3" }]
-];
-const Info = createLucideIcon("info", __iconNode$A);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$z = [
   ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
   ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
   ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
   ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
 ];
-const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$z);
+const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$A);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$y = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-const LoaderCircle = createLucideIcon("loader-circle", __iconNode$y);
+const __iconNode$z = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+const LoaderCircle = createLucideIcon("loader-circle", __iconNode$z);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$y = [
+  ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
+  ["path", { d: "M21 12H9", key: "dn1m92" }],
+  ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
+];
+const LogOut = createLucideIcon("log-out", __iconNode$y);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22792,18 +22830,6 @@ const LoaderCircle = createLucideIcon("loader-circle", __iconNode$y);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$x = [
-  ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-  ["path", { d: "M21 12H9", key: "dn1m92" }],
-  ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
-];
-const LogOut = createLucideIcon("log-out", __iconNode$x);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$w = [
   [
     "path",
     {
@@ -22813,14 +22839,14 @@ const __iconNode$w = [
   ],
   ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }]
 ];
-const MapPin = createLucideIcon("map-pin", __iconNode$w);
+const MapPin = createLucideIcon("map-pin", __iconNode$x);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$v = [
+const __iconNode$w = [
   [
     "path",
     {
@@ -22837,7 +22863,19 @@ const __iconNode$v = [
     }
   ]
 ];
-const MapPinned = createLucideIcon("map-pinned", __iconNode$v);
+const MapPinned = createLucideIcon("map-pinned", __iconNode$w);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$v = [
+  ["path", { d: "M4 12h16", key: "1lakjw" }],
+  ["path", { d: "M4 18h16", key: "19g7jn" }],
+  ["path", { d: "M4 6h16", key: "1o0s65" }]
+];
+const Menu$1 = createLucideIcon("menu", __iconNode$v);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22845,11 +22883,9 @@ const MapPinned = createLucideIcon("map-pinned", __iconNode$v);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$u = [
-  ["path", { d: "M4 12h16", key: "1lakjw" }],
-  ["path", { d: "M4 18h16", key: "19g7jn" }],
-  ["path", { d: "M4 6h16", key: "1o0s65" }]
+  ["path", { d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z", key: "a7tn18" }]
 ];
-const Menu$1 = createLucideIcon("menu", __iconNode$u);
+const Moon = createLucideIcon("moon", __iconNode$u);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -22857,16 +22893,6 @@ const Menu$1 = createLucideIcon("menu", __iconNode$u);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$t = [
-  ["path", { d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z", key: "a7tn18" }]
-];
-const Moon = createLucideIcon("moon", __iconNode$t);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$s = [
   [
     "path",
     {
@@ -22878,14 +22904,14 @@ const __iconNode$s = [
   ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
   ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
 ];
-const Package = createLucideIcon("package", __iconNode$s);
+const Package = createLucideIcon("package", __iconNode$t);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$r = [
+const __iconNode$s = [
   [
     "path",
     {
@@ -22898,14 +22924,14 @@ const __iconNode$r = [
   ["circle", { cx: "6.5", cy: "12.5", r: ".5", fill: "currentColor", key: "qy21gx" }],
   ["circle", { cx: "8.5", cy: "7.5", r: ".5", fill: "currentColor", key: "fotxhn" }]
 ];
-const Palette = createLucideIcon("palette", __iconNode$r);
+const Palette = createLucideIcon("palette", __iconNode$s);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$q = [
+const __iconNode$r = [
   [
     "path",
     {
@@ -22915,7 +22941,25 @@ const __iconNode$q = [
   ],
   ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
 ];
-const Pencil = createLucideIcon("pencil", __iconNode$q);
+const Pencil = createLucideIcon("pencil", __iconNode$r);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$q = [
+  ["path", { d: "M13 2a9 9 0 0 1 9 9", key: "1itnx2" }],
+  ["path", { d: "M13 6a5 5 0 0 1 5 5", key: "11nki7" }],
+  [
+    "path",
+    {
+      d: "M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384",
+      key: "9njp5v"
+    }
+  ]
+];
+const PhoneCall = createLucideIcon("phone-call", __iconNode$q);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -30290,6 +30334,8 @@ const ENDPOINTS = {
   GET_PRODUCTS_SELECTION: `${BASE_URL}/products`,
   GET_PRODUCT: (id2) => `${BASE_URL}/products/${id2}`,
   CREATE_PRODUCT: `${BASE_URL}/products`,
+  IMPORT_PRODUCTS_CSV: `${BASE_URL}/products/import-csv`,
+  UPLOAD_PRODUCT_IMAGES: `${BASE_URL}/products/upload-images`,
   UPDATE_PRODUCT: (id2) => `${BASE_URL}/products/${id2}`,
   DELETE_PRODUCT: (id2) => `${BASE_URL}/products/${id2}`,
   // Zones
@@ -30318,6 +30364,8 @@ const ENDPOINTS = {
   // Bulk Orders
   GET_BULK_ORDERS: `${BASE_URL}/orders/bulk`,
   GET_BULK_ORDER: (id2) => `${BASE_URL}/orders/bulk/${id2}`,
+  GET_BULK_ORDER_REQUESTS: `${BASE_URL}/bulk-order-requests`,
+  UPDATE_BULK_ORDER_REQUEST_STATUS: (id2) => `${BASE_URL}/bulk-order-requests/${id2}/status`,
   // Seller Approvals
   GET_SELLER_APPLICATIONS: `${BASE_URL}/seller-applications`,
   APPROVE_SELLER_APPLICATION: (id2) => `${BASE_URL}/seller-applications/${id2}/approve`,
@@ -31377,6 +31425,24 @@ const orderService = {
   }
 };
 const productService = {
+  async importProductsCsv(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await upload(
+      ENDPOINTS.IMPORT_PRODUCTS_CSV,
+      formData
+    );
+    return response.data;
+  },
+  async uploadProductImages(files) {
+    const formData = new FormData();
+    files.forEach((file) => formData.append("images", file));
+    const response = await upload(
+      ENDPOINTS.UPLOAD_PRODUCT_IMAGES,
+      formData
+    );
+    return response.data;
+  },
   /**
    * Get all products with pagination
    */
@@ -31672,6 +31738,16 @@ const offerService = {
       await del(ENDPOINTS.DELETE_OFFER(id2)),
       "Failed to delete offer"
     );
+  }
+};
+const bulkOrderRequestService = {
+  async getAll() {
+    const response = await get$4(ENDPOINTS.GET_BULK_ORDER_REQUESTS);
+    return response.data;
+  },
+  async updateStatus(id2, status) {
+    const response = await patch(ENDPOINTS.UPDATE_BULK_ORDER_REQUEST_STATUS(id2), { status });
+    return response.data;
   }
 };
 const ensureSuccess = (response, fallbackMessage) => {
@@ -51323,8 +51399,65 @@ const featureBundle = {
 };
 const motion = /* @__PURE__ */ createMotionProxy(featureBundle, createDomVisualElement);
 function BulkOrdersPage() {
+  const [requests2, setRequests] = reactExports.useState([]);
+  const [loadingRequests, setLoadingRequests] = reactExports.useState(true);
+  const alert2 = useAlert();
+  const loadRequests = async () => {
+    try {
+      setRequests(await bulkOrderRequestService.getAll());
+    } catch (error) {
+      alert2.error(error instanceof Error ? error.message : "Could not load bulk requests");
+    } finally {
+      setLoadingRequests(false);
+    }
+  };
+  reactExports.useEffect(() => {
+    loadRequests();
+  }, []);
+  const setStatus = async (id2, status) => {
+    try {
+      const updated = await bulkOrderRequestService.updateStatus(id2, status);
+      setRequests((items) => items.map((item) => item.id === id2 ? updated : item));
+    } catch (error) {
+      alert2.error(error instanceof Error ? error.message : "Could not update request");
+    }
+  };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(PageHeader, { title: "Bulk Orders", description: "High-volume seller orders" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-xl border bg-card p-5 shadow-sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-4 flex items-center gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(PhoneCall, { className: "h-5 w-5 text-primary" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-semibold", children: "Large quantity requests" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Requests submitted directly by customers for a quotation or callback." })
+        ] })
+      ] }),
+      loadingRequests ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Loading requests..." }) : requests2.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "No large quantity requests yet." }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: requests2.map((request) => {
+        var _a3, _b2, _c2, _d2;
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-medium", children: [
+              ((_a3 = request.productId) == null ? void 0 : _a3.name) || "Deleted product",
+              " ",
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-muted-foreground", children: [
+                "× ",
+                request.quantity
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-muted-foreground", children: [
+              ((_b2 = request.userId) == null ? void 0 : _b2.name) || "Customer",
+              ((_c2 = request.userId) == null ? void 0 : _c2.phone) ? ` · ${request.userId.phone}` : "",
+              ((_d2 = request.userId) == null ? void 0 : _d2.email) ? ` · ${request.userId.email}` : ""
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: request.status === "closed" ? "secondary" : "default", children: request.status }),
+            request.status === "pending" && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", onClick: () => setStatus(request.id, "contacted"), children: "Mark contacted" }),
+            request.status === "contacted" && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", onClick: () => setStatus(request.id, "closed"), children: "Close" })
+          ] })
+        ] }, request.id);
+      }) })
+    ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       motion.div,
       {
@@ -92950,6 +93083,306 @@ function LoginPage() {
     }
   ) });
 }
+const privacySections = [
+  [
+    "Introduction",
+    `Bikaner Bakery (“we”, “our”, “us”) respects your privacy and is committed to protecting the personal information of users who use the Bikaner Bakery mobile application.
+
+This Privacy Policy explains what information we collect, how we use it, and how we protect it when you use our application to browse or purchase bakery and food products such as biscuits, cookies, bread, cakes, snacks, and other related items.`
+  ],
+  [
+    "1. Information We Collect",
+    `When you use Bikaner Bakery, we may collect the following information:
+
+Personal Information
+
+• Name
+• Mobile number
+• Email address
+• Profile information
+• Delivery address
+• City, state, and postal code
+
+Location Information
+
+We may collect your location or delivery location when required to:
+
+• Determine whether delivery is available in your area.
+• Show nearby delivery options.
+• Help deliver your order to the correct address.
+
+Location permission is used only when necessary for app functionality.
+
+Order Information
+
+When you place an order, we may collect:
+
+• Products ordered
+• Quantity
+• Order amount
+• Delivery address
+• Order status
+• Order history
+• Delivery instructions
+
+Payment Information
+
+Payments may be processed through third-party payment providers.
+
+Bikaner Bakery does not intentionally store sensitive payment information such as your complete debit/credit card number, CVV, UPI PIN, or banking password.
+
+Payment providers may collect and process information according to their own privacy policies.
+
+Device and Technical Information
+
+We may automatically collect certain information such as:
+
+• Device type
+• Operating system
+• App version
+• Device identifiers
+• IP address
+• Crash logs
+• Diagnostic information
+• App usage information
+
+This information may be used to improve app performance, security, and reliability.`
+  ],
+  [
+    "2. How We Use Your Information",
+    `We may use your information to:
+
+• Create and manage your account.
+• Process and deliver your orders.
+• Contact you regarding your orders.
+• Provide customer support.
+• Show relevant products and services.
+• Process payments.
+• Maintain order history.
+• Detect fraud or misuse.
+• Improve the Bikaner Bakery application.
+• Fix bugs and technical problems.
+• Send important service-related notifications.
+• Send offers or promotional notifications where permitted.`
+  ],
+  [
+    "3. Delivery Information",
+    `Your name, phone number, delivery address, and order information may be shared with authorized delivery personnel when necessary to complete your order.
+
+Delivery personnel should only use this information for fulfilling the relevant delivery.`
+  ],
+  [
+    "4. Third-Party Services",
+    `Bikaner Bakery may use third-party services for features such as:
+
+• Payment processing
+• Authentication
+• Cloud database and storage
+• Push notifications
+• Analytics
+• Crash reporting
+• Maps and location services
+
+These third-party services may collect information necessary to provide their functionality and are governed by their respective privacy policies.`
+  ],
+  [
+    "5. Firebase and Cloud Services",
+    `The application may use Firebase or other cloud services for features such as authentication, database storage, notifications, analytics, and crash reporting.
+
+Information may be securely transmitted to and stored on servers operated by these service providers.`
+  ],
+  [
+    "6. Cookies and Similar Technologies",
+    `If any web-based features or third-party services are used within the application, cookies or similar technologies may be used to provide functionality, improve performance, and understand usage.`
+  ],
+  [
+    "7. How We Share Information",
+    `We do not sell or rent your personal information.
+
+We may share information only when reasonably necessary with:
+
+• Delivery partners
+• Payment processors
+• Cloud service providers
+• Technology and analytics providers
+• Government or legal authorities when required by law
+
+We only share information necessary for providing or protecting our services.`
+  ],
+  [
+    "8. Data Security",
+    `We take reasonable technical and organizational measures to protect user information against unauthorized access, loss, misuse, alteration, or disclosure.
+
+However, no method of electronic storage or internet transmission can be guaranteed to be completely secure.`
+  ],
+  [
+    "9. Data Retention",
+    `We may retain personal information for as long as necessary to:
+
+• Provide our services.
+• Maintain transaction and order records.
+• Resolve disputes.
+• Prevent fraud.
+• Meet legal or regulatory requirements.
+
+Information that is no longer required may be deleted or anonymized where reasonably possible.`
+  ],
+  [
+    "10. Account and Data Deletion",
+    `Users may request deletion of their account and associated personal information.
+
+To request deletion, users can contact us using the contact information provided below.
+
+Certain information may still be retained where required for legal, accounting, fraud prevention, or transaction-record purposes.`
+  ],
+  [
+    "11. Children's Privacy",
+    `Bikaner Bakery is intended for users who are legally permitted to purchase and order products through the application.
+
+We do not knowingly collect personal information from children in violation of applicable law.
+
+If we become aware that personal information belonging to a child has been collected improperly, we will take reasonable steps to delete it.`
+  ],
+  [
+    "12. Notifications and Promotions",
+    `With appropriate permission, Bikaner Bakery may send notifications regarding:
+
+• Order confirmations
+• Order status updates
+• Delivery updates
+• New products
+• Discounts
+• Offers and promotions
+
+Users may disable promotional notifications through their device settings where applicable.`
+  ],
+  [
+    "13. Your Rights",
+    `Depending on applicable laws, you may have the right to:
+
+• Access your personal information.
+• Correct inaccurate information.
+• Request deletion of your information.
+• Withdraw certain permissions.
+• Disable location access.
+• Disable notifications.
+
+Some permissions can be managed directly through your device settings.`
+  ],
+  [
+    "14. Changes to This Privacy Policy",
+    `We may update this Privacy Policy from time to time to reflect changes in the application, our services, legal requirements, or business practices.
+
+Any updated Privacy Policy will be made available through the application or the website where this policy is hosted.`
+  ],
+  [
+    "15. Contact Us",
+    `If you have any questions, concerns, or requests regarding this Privacy Policy or your personal information, please contact us:
+
+App Name: Bikaner Bakery
+Email: bikanerbakeryhsr@gmail.com
+
+By using Bikaner Bakery, you acknowledge that you have read and understood this Privacy Policy.`
+  ]
+];
+const termsSections = [
+  [
+    "1. User Account",
+    `Users must provide correct information such as name, mobile number, email and delivery address.
+You are responsible for activity performed through your account.`
+  ],
+  [
+    "2. Products & Orders",
+    `Bikaner Bakeryy allows users to browse and order bakery products such as biscuits, cookies, bread, rusk, snacks and other available products.
+All orders are subject to product availability.
+We may cancel an order if a product is unavailable or due to operational or technical issues.`
+  ],
+  [
+    "3. Pricing & Payment",
+    `Product prices and applicable charges will be shown in the app before placing an order.
+Payments may be made through available online payment methods or Cash on Delivery, where supported.`
+  ],
+  [
+    "4. Delivery",
+    `Delivery is available only within supported service areas.
+Users must provide a correct delivery address and reachable mobile number.
+Delivery time shown in the app is an estimate and may vary depending on traffic, weather, order volume or other circumstances.`
+  ],
+  [
+    "5. Order Cancellation",
+    `Customers may cancel an order before it has been prepared or dispatched, where cancellation is available.
+Once an order has been prepared or dispatched, cancellation may not be possible.`
+  ],
+  [
+    "6. Distributor Mode",
+    `Eligible users may apply to become a distributor and access features such as wholesale prices and bulk ordering.
+Distributor approval, minimum order requirements and wholesale prices may be determined by Bikaner Bakeryy.`
+  ],
+  [
+    "7. Offers & Discounts",
+    `Coupons, discounts and promotional offers may have specific conditions, minimum order requirements and expiry dates.
+Bikaner Bakeryy may modify or discontinue offers when required.`
+  ],
+  [
+    "8. User Conduct",
+    `Users must not misuse the app, place fake orders, misuse offers, attempt unauthorized access or use the platform for fraudulent or illegal activities.
+Accounts involved in misuse may be restricted or suspended.`
+  ],
+  [
+    "9. Privacy",
+    `Personal information collected through the app will be handled according to the Bikaner Bakeryy Privacy Policy.`
+  ],
+  [
+    "10. Changes to Terms",
+    `Bikaner Bakeryy may update these Terms & Conditions when necessary.
+Updated terms will be made available through the app or our website.`
+  ],
+  [
+    "11. Governing Law",
+    `These Terms & Conditions are governed by the applicable laws of India.`
+  ],
+  [
+    "Contact Us",
+    `App Name: Bikaner Bakeryy
+Business Name: Bikaner Bakery
+Email: bikanerbakeryhsr@gmail.com
+Phone: 90709 76355`
+  ]
+];
+function LegalPage({ type }) {
+  const isPrivacy = type === "privacy";
+  const sections = isPrivacy ? privacySections : termsSections;
+  const title = isPrivacy ? "Privacy Policy" : "Terms & Conditions";
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "min-h-screen bg-muted/30 px-4 py-10 sm:px-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "mx-auto max-w-3xl rounded-2xl border bg-background p-6 shadow-sm sm:p-10", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-8 border-b pb-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-medium text-primary", children: "Bikaner Biscuit" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "mt-2 text-3xl font-semibold tracking-tight", children: title }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 text-sm text-muted-foreground", children: "Last updated: August 11, 2026" })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-7 text-sm leading-6 text-muted-foreground", children: sections.map(([heading, text2]) => /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "mb-2 text-lg font-semibold text-foreground", children: heading }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "whitespace-pre-line", children: text2 })
+    ] }, heading)) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("footer", { className: "mt-10 flex gap-4 border-t pt-5 text-sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Link,
+        {
+          to: "/privacy-policy",
+          className: isPrivacy ? "font-semibold text-foreground" : "text-primary hover:underline",
+          children: "Privacy Policy"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Link,
+        {
+          to: "/terms-and-conditions",
+          className: !isPrivacy ? "font-semibold text-foreground" : "text-primary hover:underline",
+          children: "Terms & Conditions"
+        }
+      )
+    ] })
+  ] }) });
+}
 function NormalOrdersPage() {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -93291,6 +93724,14 @@ function ProductsPage() {
   const [editingProduct, setEditingProduct] = reactExports.useState(null);
   const [isSubmitting, setIsSubmitting] = reactExports.useState(false);
   const [imageFile, setImageFile] = reactExports.useState(null);
+  const [csvFile, setCsvFile] = reactExports.useState(null);
+  const [isCsvDialogOpen, setIsCsvDialogOpen] = reactExports.useState(false);
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = reactExports.useState(false);
+  const [isImporting, setIsImporting] = reactExports.useState(false);
+  const [csvImages, setCsvImages] = reactExports.useState([]);
+  const [uploadedImagePaths, setUploadedImagePaths] = reactExports.useState([]);
+  const [isImageUploadOpen, setIsImageUploadOpen] = reactExports.useState(false);
+  const [isUploadingImages, setIsUploadingImages] = reactExports.useState(false);
   const methods = useForm({
     resolver: u$1(productSchema),
     mode: "onChange"
@@ -93409,6 +93850,43 @@ function ProductsPage() {
       setImageFile(file);
     }
   };
+  const importCsv = async () => {
+    if (!csvFile) return alert2.error("Choose a CSV file first");
+    setIsImporting(true);
+    try {
+      const result = await productService.importProductsCsv(csvFile);
+      await fetchProducts();
+      setIsCsvDialogOpen(false);
+      setCsvFile(null);
+      if (result.errors.length) {
+        alert2.error(`${result.created} products imported. ${result.errors.length} row(s) need attention.`);
+      } else {
+        alert2.success(`${result.created} products imported successfully`);
+      }
+    } catch (err) {
+      alert2.error(err instanceof Error ? err.message : "CSV import failed");
+    } finally {
+      setIsImporting(false);
+    }
+  };
+  const uploadCsvImages = async () => {
+    if (!csvImages.length) return alert2.error("Choose one or more images first");
+    setIsUploadingImages(true);
+    try {
+      const images = await productService.uploadProductImages(csvImages);
+      setUploadedImagePaths(images.map((image) => image.path));
+      setCsvImages([]);
+      alert2.success(`${images.length} image(s) uploaded. Copy a path into your CSV.`);
+    } catch (err) {
+      alert2.error(err instanceof Error ? err.message : "Image upload failed");
+    } finally {
+      setIsUploadingImages(false);
+    }
+  };
+  const copyImagePaths = async () => {
+    await navigator.clipboard.writeText(uploadedImagePaths.join("\n"));
+    alert2.success("Image paths copied");
+  };
   const columns2 = [
     {
       accessorKey: "name",
@@ -93500,10 +93978,24 @@ function ProductsPage() {
     label: c2.name
   }));
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(PageHeader, { title: "Products", description: "Manage your product catalog", children: /* @__PURE__ */ jsxRuntimeExports.jsx(PermissionGuard, { permission: PERMISSIONS.PRODUCTS_CREATE, hideOnDenied: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openAddModal, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "h-4 w-4 mr-2" }),
-      "Add Product"
-    ] }) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(PageHeader, { title: "Products", description: "Manage your product catalog", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(PermissionGuard, { permission: PERMISSIONS.PRODUCTS_CREATE, hideOnDenied: true, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "outline", onClick: () => setIsHowItWorksOpen(true), children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Info, { className: "h-4 w-4 mr-2" }),
+        "How it works"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "outline", onClick: () => setIsCsvDialogOpen(true), children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(FileSpreadsheet, { className: "h-4 w-4 mr-2" }),
+        "Import CSV"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "outline", onClick: () => setIsImageUploadOpen(true), children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Image$1, { className: "h-4 w-4 mr-2" }),
+        "Upload CSV Images"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openAddModal, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "h-4 w-4 mr-2" }),
+        "Add Product"
+      ] })
+    ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 flex-wrap", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "input",
@@ -93723,6 +94215,98 @@ function ProductsPage() {
           /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "submit", disabled: isSubmitting, children: isSubmitting ? "Saving..." : editingProduct ? "Update" : "Create" })
         ] })
       ] }) })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isCsvDialogOpen, onOpenChange: setIsCsvDialogOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-lg", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Import products from CSV" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Upload a .csv file. Image columns should contain an existing public image URL or an `/assets/uploads/...` path." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "file", accept: ".csv,text/csv", onChange: (e3) => {
+        var _a3;
+        return setCsvFile(((_a3 = e3.target.files) == null ? void 0 : _a3[0]) || null);
+      }, className: "w-full rounded-md border border-input p-2 text-sm" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", onClick: () => setIsCsvDialogOpen(false), children: "Cancel" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: importCsv, disabled: isImporting || !csvFile, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "h-4 w-4 mr-2" }),
+          isImporting ? "Importing..." : "Import products"
+        ] })
+      ] })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isHowItWorksOpen, onOpenChange: setIsHowItWorksOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-xl", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "How CSV product import works" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3 text-sm text-muted-foreground", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Step 1: Upload your product photos." }),
+          " Click ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Upload CSV Images" }),
+          " and select all photos together. Keep simple names such as ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: "image1.png" }),
+          " and ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: "image2.png" }),
+          "."
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Step 2: Fill your Excel/CSV file." }),
+          " One row means one product. In the ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: "image" }),
+          " column, write the photo name only—for example ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: "image1.png" }),
+          "."
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Step 3: Add bulk price, if needed." }),
+          " If a product has different prices for different quantities, add its quantity-price details in the ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: "bulkPricing" }),
+          " column. If there is no bulk price, leave this column empty."
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Step 4: Choose the product category." }),
+          " Every product needs a category. Copy its category ID from the Categories page and paste it in the ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: "categoryId" }),
+          " column."
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Step 5: Import the file." }),
+          " Click ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Import CSV" }),
+          ", select your file and press Import. Correct products will be added. If any row has a problem, the rest will still be added and you will see how many rows need fixing."
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("details", { className: "rounded-md border p-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("summary", { className: "cursor-pointer font-medium text-foreground", children: "CSV columns and bulk-price example (for advanced users)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-3 space-y-2 text-xs", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "block break-all", children: "name,categoryId,description,sku,image,unitValue,unit,mrp,sellingPrice,stock,maxQuantity,bulkPricing,isFeatured,isActive" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+              "Bulk price example: ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: '"[{""minQty"":10,""maxQty"":49,""price"":90}]"' })
+            ] })
+          ] })
+        ] })
+      ] })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isImageUploadOpen, onOpenChange: setIsImageUploadOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-lg", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Upload images for CSV" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Select multiple images. Filenames are preserved and must be unique (for example, image1.png, image2.png)." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "file", accept: "image/*", multiple: true, onChange: (e3) => setCsvImages(Array.from(e3.target.files || [])), className: "w-full rounded-md border border-input p-2 text-sm" }),
+      csvImages.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-muted-foreground", children: [
+        "Selected: ",
+        csvImages.map((file) => file.name).join(", ")
+      ] }),
+      uploadedImagePaths.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-md bg-muted p-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-2 flex items-center justify-between", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-medium", children: "Use these paths in CSV" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { size: "sm", variant: "ghost", onClick: copyImagePaths, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Copy, { className: "mr-1 h-3.5 w-3.5" }),
+            "Copy"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("pre", { className: "whitespace-pre-wrap break-all text-xs text-muted-foreground", children: uploadedImagePaths.join("\n") })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", onClick: () => setIsImageUploadOpen(false), children: "Done" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: uploadCsvImages, disabled: isUploadingImages || !csvImages.length, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "mr-2 h-4 w-4" }),
+          isUploadingImages ? "Uploading..." : "Upload images"
+        ] })
+      ] })
     ] }) })
   ] });
 }
@@ -98503,6 +99087,16 @@ const loginRoute = createRoute({
   path: "/login",
   component: LoginPage
 });
+const privacyPolicyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/privacy-policy",
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(LegalPage, { type: "privacy" })
+});
+const termsAndConditionsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/terms-and-conditions",
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(LegalPage, { type: "terms" })
+});
 const appRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app",
@@ -98630,6 +99224,8 @@ const notFoundRoute = createRoute({
 });
 const routeTree = rootRoute.addChildren([
   loginRoute,
+  privacyPolicyRoute,
+  termsAndConditionsRoute,
   unauthorizedRoute,
   notFoundRoute,
   appRoute.addChildren([

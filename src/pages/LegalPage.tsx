@@ -205,20 +205,66 @@ By using Bikaner Bakery, you acknowledge that you have read and understood this 
 
 const termsSections = [
   [
-    "Orders and availability",
-    "Product availability, prices and delivery estimates may change. We may cancel or adjust an order when an item is unavailable or an error is identified.",
+    "1. User Account",
+    `Users must provide correct information such as name, mobile number, email and delivery address.
+You are responsible for activity performed through your account.`,
   ],
   [
-    "Bulk requests",
-    "A large quantity request is a request for a quotation or callback, not a confirmed order. Final pricing and fulfilment are confirmed by our team.",
+    "2. Products & Orders",
+    `Bikaner Bakeryy allows users to browse and order bakery products such as biscuits, cookies, bread, rusk, snacks and other available products.
+All orders are subject to product availability.
+We may cancel an order if a product is unavailable or due to operational or technical issues.`,
   ],
   [
-    "Payments and delivery",
-    "Payments, delivery charges and applicable taxes are shown during checkout. Delivery is subject to serviceability of the selected address.",
+    "3. Pricing & Payment",
+    `Product prices and applicable charges will be shown in the app before placing an order.
+Payments may be made through available online payment methods or Cash on Delivery, where supported.`,
   ],
   [
-    "Acceptable use",
-    "You must provide accurate information and use the service only for lawful purposes. We may suspend accounts that misuse the service.",
+    "4. Delivery",
+    `Delivery is available only within supported service areas.
+Users must provide a correct delivery address and reachable mobile number.
+Delivery time shown in the app is an estimate and may vary depending on traffic, weather, order volume or other circumstances.`,
+  ],
+  [
+    "5. Order Cancellation",
+    `Customers may cancel an order before it has been prepared or dispatched, where cancellation is available.
+Once an order has been prepared or dispatched, cancellation may not be possible.`,
+  ],
+  [
+    "6. Distributor Mode",
+    `Eligible users may apply to become a distributor and access features such as wholesale prices and bulk ordering.
+Distributor approval, minimum order requirements and wholesale prices may be determined by Bikaner Bakeryy.`,
+  ],
+  [
+    "7. Offers & Discounts",
+    `Coupons, discounts and promotional offers may have specific conditions, minimum order requirements and expiry dates.
+Bikaner Bakeryy may modify or discontinue offers when required.`,
+  ],
+  [
+    "8. User Conduct",
+    `Users must not misuse the app, place fake orders, misuse offers, attempt unauthorized access or use the platform for fraudulent or illegal activities.
+Accounts involved in misuse may be restricted or suspended.`,
+  ],
+  [
+    "9. Privacy",
+    `Personal information collected through the app will be handled according to the Bikaner Bakeryy Privacy Policy.`,
+  ],
+  [
+    "10. Changes to Terms",
+    `Bikaner Bakeryy may update these Terms & Conditions when necessary.
+Updated terms will be made available through the app or our website.`,
+  ],
+  [
+    "11. Governing Law",
+    `These Terms & Conditions are governed by the applicable laws of India.`,
+  ],
+  [
+    "Contact Us",
+    `App Name: Bikaner Bakeryy
+Business Name: Bikaner Bakery
+Email: bikanerbakeryhsr@gmail.com
+Phone: 90709 76355`,
   ],
 ];
 
@@ -244,7 +290,8 @@ export function LegalPage({ type }: { type: "privacy" | "terms" }) {
               <h2 className="mb-2 text-lg font-semibold text-foreground">
                 {heading}
               </h2>
-              <p>{text}</p>
+
+              <div className="whitespace-pre-line">{text}</div>
             </section>
           ))}
         </div>
