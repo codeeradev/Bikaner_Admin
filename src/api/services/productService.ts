@@ -85,7 +85,36 @@ export interface ProductListResponse {
   pageSize: number;
 }
 
+export interface ProductCsvImportResult {
+  created: number;
+  errors: { row: number; message: string }[];
+}
+
+export interface UploadedProductImage {
+  filename: string;
+  path: string;
+}
+
 export const productService = {
+  async importProductsCsv(file: File): Promise<ProductCsvImportResult> {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await upload<{ success: boolean; data: ProductCsvImportResult }>(
+      ENDPOINTS.IMPORT_PRODUCTS_CSV,
+      formData,
+    );
+    return response.data;
+  },
+
+  async uploadProductImages(files: File[]): Promise<UploadedProductImage[]> {
+    const formData = new FormData();
+    files.forEach((file) => formData.append("images", file));
+    const response = await upload<{ success: boolean; data: UploadedProductImage[] }>(
+      ENDPOINTS.UPLOAD_PRODUCT_IMAGES,
+      formData,
+    );
+    return response.data;
+  },
   /**
    * Get all products with pagination
    */

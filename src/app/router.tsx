@@ -9,6 +9,7 @@ import { OfferManagementPage } from "@/pages/OfferManagementPage";
 import { FranchisePage } from "@/pages/FranchisePage";
 import { FranchiseRequestsPage } from "@/pages/FranchiseRequestsPage";
 import { LoginPage } from "@/pages/LoginPage";
+import { LegalPage } from "@/pages/LegalPage";
 import { NormalOrdersPage } from "@/pages/NormalOrdersPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { OrdersPage } from "@/pages/OrdersPage";
@@ -45,6 +46,19 @@ const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/login",
   component: LoginPage,
+});
+
+// Public legal routes intentionally sit outside the authenticated application layout.
+const privacyPolicyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/privacy-policy",
+  component: () => <LegalPage type="privacy" />,
+});
+
+const termsAndConditionsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/terms-and-conditions",
+  component: () => <LegalPage type="terms" />,
 });
 
 const appRoute = createRoute({
@@ -199,6 +213,8 @@ const notFoundRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   loginRoute,
+  privacyPolicyRoute,
+  termsAndConditionsRoute,
   unauthorizedRoute,
   notFoundRoute,
   appRoute.addChildren([

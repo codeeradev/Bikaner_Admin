@@ -1,8 +1,8 @@
 // Base URL for API - Update this with your actual backend URL
 const BASE_URL = 
-// "http://localhost:9020";
+"http://localhost:9020";
 
-"https://bikanerapi.codeeratech.in";
+// "https://bikanerapi.codeeratech.in";
 export const ENDPOINTS = {
   // Authentication
   LOGIN: `${BASE_URL}/auth/login`,
@@ -40,6 +40,8 @@ export const ENDPOINTS = {
   GET_PRODUCTS_SELECTION: `${BASE_URL}/products`,
   GET_PRODUCT: (id: string) => `${BASE_URL}/products/${id}`,
   CREATE_PRODUCT: `${BASE_URL}/products`,
+  IMPORT_PRODUCTS_CSV: `${BASE_URL}/products/import-csv`,
+  UPLOAD_PRODUCT_IMAGES: `${BASE_URL}/products/upload-images`,
   UPDATE_PRODUCT: (id: string) => `${BASE_URL}/products/${id}`,
   DELETE_PRODUCT: (id: string) => `${BASE_URL}/products/${id}`,
 
@@ -73,6 +75,8 @@ export const ENDPOINTS = {
   // Bulk Orders
   GET_BULK_ORDERS: `${BASE_URL}/orders/bulk`,
   GET_BULK_ORDER: (id: string) => `${BASE_URL}/orders/bulk/${id}`,
+  GET_BULK_ORDER_REQUESTS: `${BASE_URL}/bulk-order-requests`,
+  UPDATE_BULK_ORDER_REQUEST_STATUS: (id: string) => `${BASE_URL}/bulk-order-requests/${id}/status`,
 
   // Seller Approvals
   GET_SELLER_APPLICATIONS: `${BASE_URL}/seller-applications`,

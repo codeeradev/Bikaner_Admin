@@ -22,9 +22,10 @@ import { useAlert } from "@/hooks/use-alert";
 import { PERMISSIONS } from "@/lib/permissions";
 import { type ProductFormData, productSchema } from "@/lib/validations";
 import { useCategoryStore, useProductStore, useUIStore } from "@/store";
+import { productService } from "@/api/services/productService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ImageIcon, Pencil, Plus, Trash2 } from "lucide-react";
+import { Copy, FileSpreadsheet, ImageIcon, Info, Pencil, Plus, Trash2, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 
@@ -50,6 +51,14 @@ export function ProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [isCsvDialogOpen, setIsCsvDialogOpen] = useState(false);
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [csvImages, setCsvImages] = useState<File[]>([]);
+  const [uploadedImagePaths, setUploadedImagePaths] = useState<string[]>([]);
+  const [isImageUploadOpen, setIsImageUploadOpen] = useState(false);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
 
   const methods = useForm({
     resolver: zodResolver(productSchema) as any,
@@ -186,6 +195,46 @@ export function ProductsPage() {
     }
   };
 
+  const importCsv = async () => {
+    if (!csvFile) return alert.error("Choose a CSV file first");
+    setIsImporting(true);
+    try {
+      const result = await productService.importProductsCsv(csvFile);
+      await fetchProducts();
+      setIsCsvDialogOpen(false);
+      setCsvFile(null);
+      if (result.errors.length) {
+        alert.error(`${result.created} products imported. ${result.errors.length} row(s) need attention.`);
+      } else {
+        alert.success(`${result.created} products imported successfully`);
+      }
+    } catch (err) {
+      alert.error(err instanceof Error ? err.message : "CSV import failed");
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const uploadCsvImages = async () => {
+    if (!csvImages.length) return alert.error("Choose one or more images first");
+    setIsUploadingImages(true);
+    try {
+      const images = await productService.uploadProductImages(csvImages);
+      setUploadedImagePaths(images.map((image) => image.path));
+      setCsvImages([]);
+      alert.success(`${images.length} image(s) uploaded. Copy a path into your CSV.`);
+    } catch (err) {
+      alert.error(err instanceof Error ? err.message : "Image upload failed");
+    } finally {
+      setIsUploadingImages(false);
+    }
+  };
+
+  const copyImagePaths = async () => {
+    await navigator.clipboard.writeText(uploadedImagePaths.join("\n"));
+    alert.success("Image paths copied");
+  };
+
   const columns: ColumnDef<Product>[] = [
     {
       accessorKey: "name",
@@ -292,6 +341,18 @@ export function ProductsPage() {
     <div className="space-y-6">
       <PageHeader title="Products" description="Manage your product catalog">
         <PermissionGuard permission={PERMISSIONS.PRODUCTS_CREATE} hideOnDenied>
+          <Button variant="outline" onClick={() => setIsHowItWorksOpen(true)}>
+            <Info className="h-4 w-4 mr-2" />
+            How it works
+          </Button>
+          <Button variant="outline" onClick={() => setIsCsvDialogOpen(true)}>
+            <FileSpreadsheet className="h-4 w-4 mr-2" />
+            Import CSV
+          </Button>
+          <Button variant="outline" onClick={() => setIsImageUploadOpen(true)}>
+            <ImageIcon className="h-4 w-4 mr-2" />
+            Upload CSV Images
+          </Button>
           <Button onClick={openAddModal}>
             <Plus className="h-4 w-4 mr-2" />
             Add Product
@@ -496,6 +557,43 @@ export function ProductsPage() {
               </div>
             </form>
           </FormProvider>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isCsvDialogOpen} onOpenChange={setIsCsvDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader><DialogTitle>Import products from CSV</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">Upload a .csv file. Image columns should contain an existing public image URL or an `/assets/uploads/...` path.</p>
+          <input type="file" accept=".csv,text/csv" onChange={(e) => setCsvFile(e.target.files?.[0] || null)} className="w-full rounded-md border border-input p-2 text-sm" />
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setIsCsvDialogOpen(false)}>Cancel</Button>
+            <Button onClick={importCsv} disabled={isImporting || !csvFile}><Upload className="h-4 w-4 mr-2" />{isImporting ? "Importing..." : "Import products"}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isHowItWorksOpen} onOpenChange={setIsHowItWorksOpen}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader><DialogTitle>How CSV product import works</DialogTitle></DialogHeader>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p><strong>Step 1: Upload your product photos.</strong> Click <strong>Upload CSV Images</strong> and select all photos together. Keep simple names such as <code>image1.png</code> and <code>image2.png</code>.</p>
+            <p><strong>Step 2: Fill your Excel/CSV file.</strong> One row means one product. In the <code>image</code> column, write the photo name only—for example <code>image1.png</code>.</p>
+            <p><strong>Step 3: Add bulk price, if needed.</strong> If a product has different prices for different quantities, add its quantity-price details in the <code>bulkPricing</code> column. If there is no bulk price, leave this column empty.</p>
+            <p><strong>Step 4: Choose the product category.</strong> Every product needs a category. Copy its category ID from the Categories page and paste it in the <code>categoryId</code> column.</p>
+            <p><strong>Step 5: Import the file.</strong> Click <strong>Import CSV</strong>, select your file and press Import. Correct products will be added. If any row has a problem, the rest will still be added and you will see how many rows need fixing.</p>
+            <details className="rounded-md border p-3"><summary className="cursor-pointer font-medium text-foreground">CSV columns and bulk-price example (for advanced users)</summary><div className="mt-3 space-y-2 text-xs"><code className="block break-all">name,categoryId,description,sku,image,unitValue,unit,mrp,sellingPrice,stock,maxQuantity,bulkPricing,isFeatured,isActive</code><p>Bulk price example: <code>{'"[{""minQty"":10,""maxQty"":49,""price"":90}]"'}</code></p></div></details>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isImageUploadOpen} onOpenChange={setIsImageUploadOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader><DialogTitle>Upload images for CSV</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">Select multiple images. Filenames are preserved and must be unique (for example, image1.png, image2.png).</p>
+          <input type="file" accept="image/*" multiple onChange={(e) => setCsvImages(Array.from(e.target.files || []))} className="w-full rounded-md border border-input p-2 text-sm" />
+          {csvImages.length > 0 && <p className="text-xs text-muted-foreground">Selected: {csvImages.map((file) => file.name).join(", ")}</p>}
+          {uploadedImagePaths.length > 0 && <div className="rounded-md bg-muted p-3"><div className="mb-2 flex items-center justify-between"><p className="text-sm font-medium">Use these paths in CSV</p><Button size="sm" variant="ghost" onClick={copyImagePaths}><Copy className="mr-1 h-3.5 w-3.5" />Copy</Button></div><pre className="whitespace-pre-wrap break-all text-xs text-muted-foreground">{uploadedImagePaths.join("\n")}</pre></div>}
+          <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setIsImageUploadOpen(false)}>Done</Button><Button onClick={uploadCsvImages} disabled={isUploadingImages || !csvImages.length}><Upload className="mr-2 h-4 w-4" />{isUploadingImages ? "Uploading..." : "Upload images"}</Button></div>
         </DialogContent>
       </Dialog>
     </div>
