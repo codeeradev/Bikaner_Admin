@@ -8,8 +8,14 @@ export interface BulkOrderRequest {
   quantity: number;
   status: BulkRequestStatus;
   createdAt: string;
-  productId?: { name: string; sku?: string; image?: string };
-  userId?: { name?: string; phone?: string; email?: string };
+  productId?: {
+    name: string; sku?: string; image?: string; description?: string; unitValue?: number; unit?: string;
+    mrp?: number; sellingPrice?: number; stock?: number; categoryId?: { name?: string };
+  };
+  userId?: {
+    name?: string; mobile?: string; email?: string; profileImage?: string;
+    cityId?: { name?: string }; zoneId?: { name?: string }; lat?: number; lng?: number;
+  };
 }
 
 export const bulkOrderRequestService = {
