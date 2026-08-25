@@ -2,7 +2,7 @@
 const BASE_URL = 
 // "http://localhost:9020";
 
-"https://bikanerapi.codeeratech.in";
+"http://api.bikanerbakeryy.com"
 export const ENDPOINTS = {
   // Authentication
   LOGIN: `${BASE_URL}/auth/login`,

@@ -45,6 +45,10 @@ export interface OrderListItem {
   orderNumber: string;
   customerName: string;
   customerMobile: string;
+  customerEmail: string;
+  deliveryAddress: string;
+  notes: string;
+  items: ApiOrder["items"];
   productCount: number;
   quantity: number;
   amount: number;
@@ -90,6 +94,12 @@ const toOrderListItem = (order: ApiOrder): OrderListItem => ({
   customerName:
     order.userId?.name || order.addressId?.name || "Unknown Customer",
   customerMobile: order.userId?.mobile || order.addressId?.mobile || "",
+  customerEmail: order.userId?.email || "",
+  deliveryAddress: [order.addressId?.address, order.addressId?.city]
+    .filter(Boolean)
+    .join(", "),
+  notes: order.notes || "",
+  items: order.items || [],
   productCount: order.items?.length || 0,
   quantity:
     order.items?.reduce(

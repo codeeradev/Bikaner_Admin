@@ -25,7 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAlert } from "@/hooks/use-alert";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ChevronDown, Download, RefreshCw } from "lucide-react";
+import { ChevronDown, Download, Eye, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 const paymentVariants: Record<
@@ -85,7 +85,12 @@ export function OrdersTable({
   const [orders, setOrders] = useState<OrderListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [downloadingInvoiceId, setDownloadingInvoiceId] = useState<string | null>(null);
+  const [downloadingInvoiceId, setDownloadingInvoiceId] = useState<
+    string | null
+  >(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderListItem | null>(
+    null,
+  );
 
   // Status change dialogs
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -232,7 +237,9 @@ export function OrdersTable({
       accessorKey: "orderNumber",
       header: "Order",
       cell: ({ row }) => (
-        <span className="font-mono text-xs whitespace-nowrap">{row.getValue("orderNumber")}</span>
+        <span className="font-mono text-xs whitespace-nowrap">
+          {row.getValue("orderNumber")}
+        </span>
       ),
     },
     {
@@ -258,15 +265,21 @@ export function OrdersTable({
         </Badge>
       ),
     },
-    { 
-      accessorKey: "productCount", 
+    {
+      accessorKey: "productCount",
       header: "Products",
-      cell: ({ row }) => <span className="whitespace-nowrap">{row.getValue("productCount")}</span>
+      cell: ({ row }) => (
+        <span className="whitespace-nowrap">
+          {row.getValue("productCount")}
+        </span>
+      ),
     },
-    { 
-      accessorKey: "quantity", 
+    {
+      accessorKey: "quantity",
       header: "Qty",
-      cell: ({ row }) => <span className="whitespace-nowrap">{row.getValue("quantity")}</span>
+      cell: ({ row }) => (
+        <span className="whitespace-nowrap">{row.getValue("quantity")}</span>
+      ),
     },
     {
       accessorKey: "amount",
@@ -287,7 +300,10 @@ export function OrdersTable({
       cell: ({ row }) => {
         const status = row.getValue("paymentStatus") as string;
         return (
-          <Badge variant={paymentVariants[status] || "secondary"} className="whitespace-nowrap">
+          <Badge
+            variant={paymentVariants[status] || "secondary"}
+            className="whitespace-nowrap"
+          >
             {status}
           </Badge>
         );
@@ -299,7 +315,10 @@ export function OrdersTable({
       cell: ({ row }) => {
         const status = row.getValue("orderStatus") as OrderStatus;
         return (
-          <Badge variant={orderVariants[status] || "secondary"} className="whitespace-nowrap">
+          <Badge
+            variant={orderVariants[status] || "secondary"}
+            className="whitespace-nowrap"
+          >
             {statusLabels[status] || status}
           </Badge>
         );
@@ -324,7 +343,16 @@ export function OrdersTable({
         const isTerminal = status === "delivered" || status === "cancelled";
 
         return (
-          <div className="flex items-center justify-end gap-2 min-w-[200px]">
+          <div className="flex items-center justify-end gap-2 min-w-[240px]">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedOrder(row.original)}
+            >
+              <Eye className="mr-1 h-4 w-4" />
+              View
+            </Button>
             <Button
               type="button"
               variant="outline"
@@ -418,6 +446,90 @@ export function OrdersTable({
         />
       </div>
 
+      <Dialog
+        open={Boolean(selectedOrder)}
+        onOpenChange={(open) => !open && setSelectedOrder(null)}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              Order details{" "}
+              {selectedOrder ? `— ${selectedOrder.orderNumber}` : ""}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedOrder && (
+            <div className="grid gap-5 text-sm sm:grid-cols-2">
+              <section className="rounded-lg border p-4">
+                <h3 className="mb-3 font-semibold">Customer details</h3>
+                <div className="space-y-2 text-muted-foreground">
+                  <p>
+                    <span className="font-medium text-foreground">Name:</span>{" "}
+                    {selectedOrder.customerName}
+                  </p>
+                  <p>
+                    <span className="font-medium text-foreground">Mobile:</span>{" "}
+                    {selectedOrder.customerMobile || "Not available"}
+                  </p>
+                  <p>
+                    <span className="font-medium text-foreground">Email:</span>{" "}
+                    {selectedOrder.customerEmail || "Not available"}
+                  </p>
+                  <p>
+                    <span className="font-medium text-foreground">
+                      Address:
+                    </span>{" "}
+                    {selectedOrder.deliveryAddress || "Not available"}
+                  </p>
+                </div>
+              </section>
+              <section className="rounded-lg border p-4">
+                <h3 className="mb-3 font-semibold">Order summary</h3>
+                <div className="space-y-2 text-muted-foreground">
+                  <p>
+                    <span className="font-medium text-foreground">Type:</span>{" "}
+                    {selectedOrder.orderType}
+                  </p>
+                  <p>
+                    <span className="font-medium text-foreground">
+                      Quantity:
+                    </span>{" "}
+                    {selectedOrder.quantity}
+                  </p>
+                  <p>
+                    <span className="font-medium text-foreground">Amount:</span>{" "}
+                    ₹{selectedOrder.amount.toLocaleString("en-IN")}
+                  </p>
+                  <p>
+                    <span className="font-medium text-foreground">Status:</span>{" "}
+                    {statusLabels[selectedOrder.orderStatus]}
+                  </p>
+                  <p>
+                    <span className="font-medium text-foreground">Notes:</span>{" "}
+                    {selectedOrder.notes || "—"}
+                  </p>
+                </div>
+              </section>
+              <section className="rounded-lg border p-4 sm:col-span-2">
+                <h3 className="mb-3 font-semibold">Products</h3>
+                <div className="space-y-2">
+                  {selectedOrder.items.map((item, index) => (
+                    <div
+                      key={`${item.name}-${index}`}
+                      className="flex items-center justify-between gap-3 border-b pb-2 last:border-0 last:pb-0"
+                    >
+                      <span>{item.name}</span>
+                      <span className="whitespace-nowrap text-muted-foreground">
+                        {item.quantity} × ₹{item.price}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Confirmation Dialog for Accept/Delivered */}
       <Dialog
         open={confirmDialog.open}
@@ -446,7 +558,11 @@ export function OrdersTable({
             >
               Cancel
             </Button>
-            <Button onClick={handleConfirmStatusChange} disabled={isUpdating} className="w-full sm:w-auto">
+            <Button
+              onClick={handleConfirmStatusChange}
+              disabled={isUpdating}
+              className="w-full sm:w-auto"
+            >
               Confirm
             </Button>
           </DialogFooter>

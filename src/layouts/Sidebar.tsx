@@ -95,13 +95,13 @@ const menuItems: MenuItem[] = [
         permission: PERMISSIONS.ORDERS_VIEW,
       },
       {
-        label: "Normal Orders",
+        label: "Customer Orders",
         icon: ShoppingCart,
         href: "/orders/normal",
         permission: PERMISSIONS.NORMAL_ORDERS_VIEW,
       },
       {
-        label: "Bulk Orders",
+        label: "Distributor Orders",
         icon: ShoppingCart,
         href: "/orders/bulk",
         permission: PERMISSIONS.BULK_ORDERS_VIEW,

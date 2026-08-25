@@ -30300,7 +30300,7 @@ const del = (url, options) => apiClient.delete(url, options);
 const upload = (url, formData, onProgress, method) => apiClient.upload(url, formData, onProgress, method);
 const BASE_URL = (
   // "http://localhost:9020";
-  "https://bikanerapi.codeeratech.in"
+  "http://api.bikanerbakeryy.com"
 );
 const ENDPOINTS = {
   // Authentication
@@ -31357,14 +31357,18 @@ const ensureSuccess$2 = (response, fallbackMessage) => {
   return response;
 };
 const toOrderListItem = (order) => {
-  var _a3, _b2, _c2, _d2, _e2, _f2;
+  var _a3, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2;
   return {
     id: order.id,
     orderNumber: order.orderNumber || order.id,
     customerName: ((_a3 = order.userId) == null ? void 0 : _a3.name) || ((_b2 = order.addressId) == null ? void 0 : _b2.name) || "Unknown Customer",
     customerMobile: ((_c2 = order.userId) == null ? void 0 : _c2.mobile) || ((_d2 = order.addressId) == null ? void 0 : _d2.mobile) || "",
-    productCount: ((_e2 = order.items) == null ? void 0 : _e2.length) || 0,
-    quantity: ((_f2 = order.items) == null ? void 0 : _f2.reduce(
+    customerEmail: ((_e2 = order.userId) == null ? void 0 : _e2.email) || "",
+    deliveryAddress: [(_f2 = order.addressId) == null ? void 0 : _f2.address, (_g2 = order.addressId) == null ? void 0 : _g2.city].filter(Boolean).join(", "),
+    notes: order.notes || "",
+    items: order.items || [],
+    productCount: ((_h2 = order.items) == null ? void 0 : _h2.length) || 0,
+    quantity: ((_i2 = order.items) == null ? void 0 : _i2.reduce(
       (total, item) => total + Number(item.quantity || 0),
       0
     )) || 0,
@@ -31742,11 +31746,16 @@ const offerService = {
 };
 const bulkOrderRequestService = {
   async getAll() {
-    const response = await get$4(ENDPOINTS.GET_BULK_ORDER_REQUESTS);
+    const response = await get$4(
+      ENDPOINTS.GET_BULK_ORDER_REQUESTS
+    );
     return response.data;
   },
-  async updateStatus(id2, status) {
-    const response = await patch(ENDPOINTS.UPDATE_BULK_ORDER_REQUEST_STATUS(id2), { status });
+  async updateStatus(id2, status, notes) {
+    const response = await patch(
+      ENDPOINTS.UPDATE_BULK_ORDER_REQUEST_STATUS(id2),
+      { status, notes }
+    );
     return response.data;
   }
 };
@@ -37827,13 +37836,13 @@ const menuItems = [
         permission: PERMISSIONS.ORDERS_VIEW
       },
       {
-        label: "Normal Orders",
+        label: "Customer Orders",
         icon: ShoppingCart,
         href: "/orders/normal",
         permission: PERMISSIONS.NORMAL_ORDERS_VIEW
       },
       {
-        label: "Bulk Orders",
+        label: "Distributor Orders",
         icon: ShoppingCart,
         href: "/orders/bulk",
         permission: PERMISSIONS.BULK_ORDERS_VIEW
@@ -42862,7 +42871,7 @@ function BannersPage() {
       isActive: banner.isActive
     });
     setImagePreview(
-      banner.image ? `${"https://bikanerapi.codeeratech.in"}${banner.image}` : ""
+      banner.image ? `${"http://api.bikanerbakeryy.com/"}${banner.image}` : ""
     );
     setErrors({});
     setIsDialogOpen(true);
@@ -42958,7 +42967,7 @@ function BannersPage() {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-10 w-10 rounded-lg overflow-hidden border", children: row.original.image ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
-            src: `${"https://bikanerapi.codeeratech.in"}${row.original.image}`,
+            src: `${"http://api.bikanerbakeryy.com/"}${row.original.image}`,
             alt: row.original.title,
             className: "h-full w-full object-cover"
           }
@@ -43202,6 +43211,9 @@ function OrdersTable({
   const [isLoading, setIsLoading] = reactExports.useState(true);
   const [isUpdating, setIsUpdating] = reactExports.useState(false);
   const [downloadingInvoiceId, setDownloadingInvoiceId] = reactExports.useState(null);
+  const [selectedOrder, setSelectedOrder] = reactExports.useState(
+    null
+  );
   const [confirmDialog, setConfirmDialog] = reactExports.useState({ open: false, orderId: "", orderNumber: "", newStatus: "accepted" });
   const [cancelDialog, setCancelDialog] = reactExports.useState({ open: false, orderId: "", orderNumber: "", reason: "" });
   const loadOrders = reactExports.useCallback(async () => {
@@ -43351,7 +43363,14 @@ function OrdersTable({
       header: "Payment",
       cell: ({ row }) => {
         const status = row.getValue("paymentStatus");
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: paymentVariants[status] || "secondary", className: "whitespace-nowrap", children: status });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Badge,
+          {
+            variant: paymentVariants[status] || "secondary",
+            className: "whitespace-nowrap",
+            children: status
+          }
+        );
       }
     },
     {
@@ -43359,7 +43378,14 @@ function OrdersTable({
       header: "Status",
       cell: ({ row }) => {
         const status = row.getValue("orderStatus");
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: orderVariants[status] || "secondary", className: "whitespace-nowrap", children: statusLabels[status] || status });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Badge,
+          {
+            variant: orderVariants[status] || "secondary",
+            className: "whitespace-nowrap",
+            children: statusLabels[status] || status
+          }
+        );
       }
     },
     {
@@ -43373,7 +43399,20 @@ function OrdersTable({
       cell: ({ row }) => {
         const status = row.getValue("orderStatus");
         const isTerminal = status === "delivered" || status === "cancelled";
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-2 min-w-[200px]", children: [
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-2 min-w-[240px]", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Button,
+            {
+              type: "button",
+              variant: "outline",
+              size: "sm",
+              onClick: () => setSelectedOrder(row.original),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { className: "mr-1 h-4 w-4" }),
+                "View"
+              ]
+            }
+          ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Button,
             {
@@ -43473,6 +43512,96 @@ function OrdersTable({
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       Dialog,
       {
+        open: Boolean(selectedOrder),
+        onOpenChange: (open) => !open && setSelectedOrder(null),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-h-[90vh] overflow-y-auto sm:max-w-2xl", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogTitle, { children: [
+            "Order details",
+            " ",
+            selectedOrder ? `— ${selectedOrder.orderNumber}` : ""
+          ] }) }),
+          selectedOrder && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-5 text-sm sm:grid-cols-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-lg border p-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "mb-3 font-semibold", children: "Customer details" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 text-muted-foreground", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Name:" }),
+                  " ",
+                  selectedOrder.customerName
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Mobile:" }),
+                  " ",
+                  selectedOrder.customerMobile || "Not available"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Email:" }),
+                  " ",
+                  selectedOrder.customerEmail || "Not available"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Address:" }),
+                  " ",
+                  selectedOrder.deliveryAddress || "Not available"
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-lg border p-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "mb-3 font-semibold", children: "Order summary" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 text-muted-foreground", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Type:" }),
+                  " ",
+                  selectedOrder.orderType
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Quantity:" }),
+                  " ",
+                  selectedOrder.quantity
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Amount:" }),
+                  " ",
+                  "₹",
+                  selectedOrder.amount.toLocaleString("en-IN")
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Status:" }),
+                  " ",
+                  statusLabels[selectedOrder.orderStatus]
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Notes:" }),
+                  " ",
+                  selectedOrder.notes || "—"
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-lg border p-4 sm:col-span-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "mb-3 font-semibold", children: "Products" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: selectedOrder.items.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "flex items-center justify-between gap-3 border-b pb-2 last:border-0 last:pb-0",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: item.name }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "whitespace-nowrap text-muted-foreground", children: [
+                      item.quantity,
+                      " × ₹",
+                      item.price
+                    ] })
+                  ]
+                },
+                `${item.name}-${index2}`
+              )) })
+            ] })
+          ] })
+        ] })
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Dialog,
+      {
         open: confirmDialog.open,
         onOpenChange: (open) => setConfirmDialog({ ...confirmDialog, open }),
         children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { children: [
@@ -43500,7 +43629,15 @@ function OrdersTable({
                 children: "Cancel"
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleConfirmStatusChange, disabled: isUpdating, className: "w-full sm:w-auto", children: "Confirm" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                onClick: handleConfirmStatusChange,
+                disabled: isUpdating,
+                className: "w-full sm:w-auto",
+                children: "Confirm"
+              }
+            )
           ] })
         ] })
       }
@@ -51398,7 +51535,7 @@ const featureBundle = {
   ...layout
 };
 const motion = /* @__PURE__ */ createMotionProxy(featureBundle, createDomVisualElement);
-const API_BASE$1 = "https://bikanerapi.codeeratech.in";
+const API_BASE$1 = "http://api.bikanerbakeryy.com/";
 function BulkOrdersPage() {
   var _a3, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j, _k, _l, _m, _n, _o, _p, _q;
   const [requests2, setRequests] = reactExports.useState([]);
@@ -51406,152 +51543,268 @@ function BulkOrdersPage() {
   const [isRequestsDialogOpen, setIsRequestsDialogOpen] = reactExports.useState(false);
   const [selectedRequest, setSelectedRequest] = reactExports.useState(null);
   const alert2 = useAlert();
-  const loadRequests = async () => {
+  const loadRequests = reactExports.useCallback(async () => {
     try {
       setRequests(await bulkOrderRequestService.getAll());
     } catch (error) {
-      alert2.error(error instanceof Error ? error.message : "Could not load bulk requests");
+      alert2.error(
+        error instanceof Error ? error.message : "Could not load bulk requests"
+      );
     } finally {
       setLoadingRequests(false);
     }
-  };
+  }, [alert2]);
   reactExports.useEffect(() => {
     loadRequests();
-  }, []);
-  const setStatus = async (id2, status) => {
+  }, [loadRequests]);
+  const setStatus = async (id2, status, notes) => {
     try {
-      const updated = await bulkOrderRequestService.updateStatus(id2, status);
-      setRequests((items) => items.map((item) => item.id === id2 ? updated : item));
+      const updated = await bulkOrderRequestService.updateStatus(
+        id2,
+        status,
+        notes
+      );
+      setRequests(
+        (items) => items.map((item) => item.id === id2 ? updated : item)
+      );
+      setSelectedRequest((item) => (item == null ? void 0 : item.id) === id2 ? updated : item);
+      alert2.success("Bulk order request updated.");
     } catch (error) {
-      alert2.error(error instanceof Error ? error.message : "Could not update request");
+      alert2.error(
+        error instanceof Error ? error.message : "Could not update request"
+      );
     }
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(PageHeader, { title: "Bulk Orders", description: "High-volume seller orders" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      PageHeader,
+      {
+        title: "Distributor Orders",
+        description: "High-volume distributor orders"
+      }
+    ),
     /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "rounded-xl border bg-card p-5 shadow-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(PhoneCall, { className: "h-5 w-5 text-primary" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-semibold", children: "Large quantity requests" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Customer requests for a quotation or callback." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-semibold", children: "Bulk Orders" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Large-quantity customer requests." })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "outline", onClick: () => setIsRequestsDialogOpen(true), children: [
-        "View requests",
-        requests2.length ? ` (${requests2.length})` : ""
-      ] })
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Button,
+        {
+          variant: "outline",
+          onClick: () => setIsRequestsDialogOpen(true),
+          children: [
+            "View bulk orders",
+            requests2.length ? ` (${requests2.length})` : ""
+          ]
+        }
+      )
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isRequestsDialogOpen, onOpenChange: setIsRequestsDialogOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-h-[90vh] overflow-y-auto sm:max-w-5xl", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Large quantity requests" }) }),
-      loadingRequests ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Loading requests..." }) : requests2.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "No large quantity requests yet." }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto rounded-lg border", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full min-w-[780px] text-left text-sm", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-muted/60 text-muted-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Product" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Quantity" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Customer" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Contact" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Status" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Actions" })
-        ] }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { children: requests2.map((request) => {
-          var _a4, _b3, _c3, _d3, _e3;
-          return /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "border-t", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "p-3 font-medium", children: [
-              ((_a4 = request.productId) == null ? void 0 : _a4.name) || "Deleted product",
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-1 block text-xs font-normal text-muted-foreground", children: ((_b3 = request.productId) == null ? void 0 : _b3.sku) || "No SKU" })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3", children: request.quantity }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3", children: ((_c3 = request.userId) == null ? void 0 : _c3.name) || "Customer" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "p-3", children: [
-              ((_d3 = request.userId) == null ? void 0 : _d3.mobile) || "—",
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-1 block text-xs text-muted-foreground", children: ((_e3 = request.userId) == null ? void 0 : _e3.email) || "" })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: request.status === "closed" ? "secondary" : "default", children: request.status }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { size: "sm", variant: "ghost", onClick: () => {
-                setIsRequestsDialogOpen(false);
-                setSelectedRequest(request);
-              }, children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { className: "mr-1 h-4 w-4" }),
-                "Details"
-              ] }),
-              request.status === "pending" && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", onClick: () => setStatus(request.id, "contacted"), children: "Contacted" }),
-              request.status === "contacted" && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", variant: "outline", onClick: () => setStatus(request.id, "closed"), children: "Close" })
-            ] }) })
-          ] }, request.id);
-        }) })
-      ] }) })
-    ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: Boolean(selectedRequest), onOpenChange: (open) => !open && setSelectedRequest(null), children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-h-[90vh] overflow-y-auto sm:max-w-2xl", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Large quantity request details" }) }),
-      selectedRequest && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-5 text-sm sm:grid-cols-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-lg border p-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "mb-3 font-semibold", children: "Customer details" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 text-muted-foreground", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Name:" }),
-              " ",
-              ((_a3 = selectedRequest.userId) == null ? void 0 : _a3.name) || "Not available"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Mobile:" }),
-              " ",
-              ((_b2 = selectedRequest.userId) == null ? void 0 : _b2.mobile) || "Not available"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Email:" }),
-              " ",
-              ((_c2 = selectedRequest.userId) == null ? void 0 : _c2.email) || "Not available"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Area:" }),
-              " ",
-              [(_e2 = (_d2 = selectedRequest.userId) == null ? void 0 : _d2.cityId) == null ? void 0 : _e2.name, (_g2 = (_f2 = selectedRequest.userId) == null ? void 0 : _f2.zoneId) == null ? void 0 : _g2.name].filter(Boolean).join(", ") || "Not available"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Requested:" }),
-              " ",
-              new Date(selectedRequest.createdAt).toLocaleString()
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-lg border p-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "mb-3 font-semibold", children: "Product details" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
-            ((_h2 = selectedRequest.productId) == null ? void 0 : _h2.image) && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${API_BASE$1}${selectedRequest.productId.image}`, alt: selectedRequest.productId.name, className: "h-16 w-16 rounded-md object-cover" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 text-muted-foreground", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-foreground", children: ((_i2 = selectedRequest.productId) == null ? void 0 : _i2.name) || "Deleted product" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-                "SKU: ",
-                ((_j = selectedRequest.productId) == null ? void 0 : _j.sku) || "—"
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-                "Category: ",
-                ((_l = (_k = selectedRequest.productId) == null ? void 0 : _k.categoryId) == null ? void 0 : _l.name) || "—"
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-                "Unit: ",
-                ((_m = selectedRequest.productId) == null ? void 0 : _m.unitValue) || "—",
-                " ",
-                ((_n = selectedRequest.productId) == null ? void 0 : _n.unit) || ""
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-                "Regular price: ₹",
-                ((_o = selectedRequest.productId) == null ? void 0 : _o.sellingPrice) ?? "—"
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-                "Available stock: ",
-                ((_p = selectedRequest.productId) == null ? void 0 : _p.stock) ?? "—"
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Dialog,
+      {
+        open: isRequestsDialogOpen,
+        onOpenChange: setIsRequestsDialogOpen,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-h-[90vh] overflow-y-auto sm:max-w-5xl", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Bulk Orders" }) }),
+          loadingRequests ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Loading requests..." }) : requests2.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "No bulk orders yet." }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto rounded-lg border", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full min-w-[780px] text-left text-sm", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-muted/60 text-muted-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Product" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Quantity" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Customer" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Mobile number" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Status" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 font-medium", children: "Actions" })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { children: requests2.map((request) => {
+              var _a4, _b3, _c3, _d3, _e3;
+              return /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "border-t", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "p-3 font-medium", children: [
+                  ((_a4 = request.productId) == null ? void 0 : _a4.name) || "Deleted product",
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-1 block text-xs font-normal text-muted-foreground", children: ((_b3 = request.productId) == null ? void 0 : _b3.sku) || "No SKU" })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3", children: request.quantity }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "p-3", children: [
+                  ((_c3 = request.userId) == null ? void 0 : _c3.name) || "Customer",
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-1 block text-xs text-muted-foreground", children: ((_d3 = request.userId) == null ? void 0 : _d3.email) || "" })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 font-medium", children: ((_e3 = request.userId) == null ? void 0 : _e3.mobile) || "Not available" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Badge,
+                  {
+                    variant: request.status === "cancelled" ? "destructive" : request.status === "delivered" ? "default" : "secondary",
+                    children: request.status
+                  }
+                ) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    size: "sm",
+                    variant: "outline",
+                    onClick: () => {
+                      setIsRequestsDialogOpen(false);
+                      setSelectedRequest(request);
+                    },
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { className: "mr-1 h-4 w-4" }),
+                      "View"
+                    ]
+                  }
+                ) })
+              ] }, request.id);
+            }) })
+          ] }) })
+        ] })
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Dialog,
+      {
+        open: Boolean(selectedRequest),
+        onOpenChange: (open) => !open && setSelectedRequest(null),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-h-[90vh] overflow-y-auto sm:max-w-2xl", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Bulk order details" }) }),
+          selectedRequest && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-5 text-sm sm:grid-cols-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-lg border p-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "mb-3 font-semibold", children: "Customer details" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 text-muted-foreground", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Name:" }),
+                  " ",
+                  ((_a3 = selectedRequest.userId) == null ? void 0 : _a3.name) || "Not available"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Mobile:" }),
+                  " ",
+                  ((_b2 = selectedRequest.userId) == null ? void 0 : _b2.mobile) || "Not available"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Email:" }),
+                  " ",
+                  ((_c2 = selectedRequest.userId) == null ? void 0 : _c2.email) || "Not available"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Area:" }),
+                  " ",
+                  [
+                    (_e2 = (_d2 = selectedRequest.userId) == null ? void 0 : _d2.cityId) == null ? void 0 : _e2.name,
+                    (_g2 = (_f2 = selectedRequest.userId) == null ? void 0 : _f2.zoneId) == null ? void 0 : _g2.name
+                  ].filter(Boolean).join(", ") || "Not available"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: "Requested:" }),
+                  " ",
+                  new Date(selectedRequest.createdAt).toLocaleString()
+                ] })
               ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-lg border p-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "mb-3 font-semibold", children: "Product details" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
+                ((_h2 = selectedRequest.productId) == null ? void 0 : _h2.image) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "img",
+                  {
+                    src: `${API_BASE$1}${selectedRequest.productId.image}`,
+                    alt: selectedRequest.productId.name,
+                    className: "h-16 w-16 rounded-md object-cover"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 text-muted-foreground", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-foreground", children: ((_i2 = selectedRequest.productId) == null ? void 0 : _i2.name) || "Deleted product" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                    "SKU: ",
+                    ((_j = selectedRequest.productId) == null ? void 0 : _j.sku) || "—"
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                    "Category:",
+                    " ",
+                    ((_l = (_k = selectedRequest.productId) == null ? void 0 : _k.categoryId) == null ? void 0 : _l.name) || "—"
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                    "Unit: ",
+                    ((_m = selectedRequest.productId) == null ? void 0 : _m.unitValue) || "—",
+                    " ",
+                    ((_n = selectedRequest.productId) == null ? void 0 : _n.unit) || ""
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                    "Regular price: ₹",
+                    ((_o = selectedRequest.productId) == null ? void 0 : _o.sellingPrice) ?? "—"
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+                    "Available stock: ",
+                    ((_p = selectedRequest.productId) == null ? void 0 : _p.stock) ?? "—"
+                  ] })
+                ] })
+              ] }),
+              ((_q = selectedRequest.productId) == null ? void 0 : _q.description) && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 text-muted-foreground", children: selectedRequest.productId.description }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-3 font-medium", children: [
+                "Requested quantity: ",
+                selectedRequest.quantity
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-lg border p-4 sm:col-span-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "bulkOrderNotes", children: "Notes" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Textarea,
+                {
+                  id: "bulkOrderNotes",
+                  className: "mt-2",
+                  placeholder: "Add notes for this bulk order...",
+                  value: selectedRequest.notes || "",
+                  onChange: (event) => setSelectedRequest({
+                    ...selectedRequest,
+                    notes: event.target.value
+                  }),
+                  rows: 4
+                }
+              )
             ] })
           ] }),
-          ((_q = selectedRequest.productId) == null ? void 0 : _q.description) && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 text-muted-foreground", children: selectedRequest.productId.description }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "mt-3 font-medium", children: [
-            "Requested quantity: ",
-            selectedRequest.quantity
+          selectedRequest && /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "outline",
+                onClick: () => setStatus(
+                  selectedRequest.id,
+                  selectedRequest.status,
+                  selectedRequest.notes
+                ),
+                children: "Save Notes"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                variant: "destructive",
+                disabled: selectedRequest.status !== "pending",
+                onClick: () => setStatus(
+                  selectedRequest.id,
+                  "cancelled",
+                  selectedRequest.notes
+                ),
+                children: "Cancel"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                disabled: selectedRequest.status !== "pending",
+                onClick: () => setStatus(
+                  selectedRequest.id,
+                  "delivered",
+                  selectedRequest.notes
+                ),
+                children: "Mark Delivered"
+              }
+            )
           ] })
         ] })
-      ] })
-    ] }) }),
+      }
+    ),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       motion.div,
       {
@@ -51562,8 +51815,8 @@ function BulkOrdersPage() {
           OrdersTable,
           {
             orderType: "bulk",
-            searchPlaceholder: "Search bulk orders...",
-            emptyMessage: "No bulk orders found"
+            searchPlaceholder: "Search distributor orders...",
+            emptyMessage: "No distributor orders found"
           }
         )
       }
@@ -58816,7 +59069,7 @@ function CategoriesPage() {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-10 w-10 rounded-lg overflow-hidden border", children: row.original.image ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
-            src: `${"https://bikanerapi.codeeratech.in"}${row.original.image}`,
+            src: `${"http://api.bikanerbakeryy.com/"}${row.original.image}`,
             alt: row.original.name,
             className: "h-full w-full object-cover"
           }
@@ -93482,8 +93735,8 @@ function NormalOrdersPage() {
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       PageHeader,
       {
-        title: "Normal Orders",
-        description: "Standard customer orders"
+        title: "Customer Orders",
+        description: "Customer purchase orders"
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -93496,8 +93749,8 @@ function NormalOrdersPage() {
           OrdersTable,
           {
             orderType: "normal",
-            searchPlaceholder: "Search normal orders...",
-            emptyMessage: "No normal orders found"
+            searchPlaceholder: "Search customer orders...",
+            emptyMessage: "No customer orders found"
           }
         )
       }
@@ -93797,7 +94050,7 @@ function NutritionValuesInput({
     ] })
   ] });
 }
-const API_BASE = "https://bikanerapi.codeeratech.in";
+const API_BASE = "http://api.bikanerbakeryy.com/";
 function ProductsPage() {
   const {
     isLoading,

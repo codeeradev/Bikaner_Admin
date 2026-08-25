@@ -6,8 +6,8 @@ export function NormalOrdersPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Normal Orders"
-        description="Standard customer orders"
+        title="Customer Orders"
+        description="Customer purchase orders"
       />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -16,8 +16,8 @@ export function NormalOrdersPage() {
       >
         <OrdersTable
           orderType="normal"
-          searchPlaceholder="Search normal orders..."
-          emptyMessage="No normal orders found"
+          searchPlaceholder="Search customer orders..."
+          emptyMessage="No customer orders found"
         />
       </motion.div>
     </div>
