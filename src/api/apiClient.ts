@@ -92,14 +92,19 @@ class ApiClient {
       return url;
     }
 
+    // Omit undefined/null so an unset optional filter (e.g. `status`
+    // left blank for "all") never turns into the literal query string
+    // "status=undefined" — encodeURIComponent(undefined) stringifies
+    // it, and the backend would then filter for that literal string.
     const queryString = Object.entries(params)
+      .filter(([, value]) => value !== undefined && value !== null)
       .map(
         ([key, value]) =>
           `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
       )
       .join("&");
 
-    return `${url}?${queryString}`;
+    return queryString ? `${url}?${queryString}` : url;
   }
 
   /**

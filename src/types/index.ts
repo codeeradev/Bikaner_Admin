@@ -191,17 +191,6 @@ export interface Order {
   date: string;
 }
 
-export interface FranchiseRequest {
-  id: string;
-  applicantName: string;
-  email: string;
-  phone: string;
-  address: string;
-  businessName: string;
-  requestDate: string;
-  status: "pending" | "approved" | "rejected";
-}
-
 export interface InventoryItem {
   product: string;
   sku: string;

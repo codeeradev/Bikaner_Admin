@@ -66,6 +66,9 @@ export const PERMISSIONS = {
   ORDERS_CREATE: "orders:create",
   ORDERS_EDIT: "orders:edit",
   ORDERS_DELETE: "orders:delete",
+  // Lets an admin hand a pending order to a franchise store — matches
+  // backend PERMISSIONS.ORDERS_ASSIGN_FRANCHISE in constants/permissions.js
+  ORDERS_ASSIGN_FRANCHISE: "orders:assignFranchise",
 
   // Normal Orders
   NORMAL_ORDERS_VIEW: "normalOrders:view",

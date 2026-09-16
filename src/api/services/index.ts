@@ -12,3 +12,4 @@ export * from "./notificationService";
 export * from "./offerService";
 export * from "./bulkOrderRequestService";
 export * from "./dashboardService";
+export * from "./franchiseService";

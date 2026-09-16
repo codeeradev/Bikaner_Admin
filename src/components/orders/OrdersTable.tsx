@@ -1,10 +1,13 @@
 import {
+  type Franchise,
   type OrderListItem,
   type OrderStatus,
   type OrderType,
+  franchiseService,
   orderService,
 } from "@/api/services";
 import { DataTable } from "@/components/DataTable";
+import { PermissionGuard } from "@/components/PermissionGuard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,10 +25,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useAlert } from "@/hooks/use-alert";
+import { PERMISSIONS } from "@/lib/permissions";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ChevronDown, Download, Eye, RefreshCw } from "lucide-react";
+import { ChevronDown, Download, Eye, RefreshCw, Store } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 const paymentVariants: Record<
@@ -53,6 +64,18 @@ const statusLabels: Record<OrderStatus, string> = {
   accepted: "Accepted",
   delivered: "Delivered",
   cancelled: "Cancelled",
+};
+
+// Badge color for a store's response to an assignment — distinct from
+// orderVariants above, since this tracks the franchiseAssignment
+// sub-document's status, not the order's own orderStatus.
+const franchiseAssignmentVariants: Record<
+  string,
+  "default" | "secondary" | "destructive"
+> = {
+  pending: "secondary",
+  accepted: "default",
+  rejected: "destructive",
 };
 
 const getErrorMessage = (error: unknown, fallback: string) => {
@@ -92,6 +115,9 @@ export function OrdersTable({
     null,
   );
 
+  // Stores available for the "Assign to Franchise" dialog below.
+  const [activeFranchises, setActiveFranchises] = useState<Franchise[]>([]);
+
   // Status change dialogs
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
@@ -106,6 +132,13 @@ export function OrdersTable({
     orderNumber: string;
     reason: string;
   }>({ open: false, orderId: "", orderNumber: "", reason: "" });
+
+  const [assignDialog, setAssignDialog] = useState<{
+    open: boolean;
+    orderId: string;
+    orderNumber: string;
+    selectedFranchiseId: string;
+  }>({ open: false, orderId: "", orderNumber: "", selectedFranchiseId: "" });
 
   const loadOrders = useCallback(async () => {
     setIsLoading(true);
@@ -127,6 +160,24 @@ export function OrdersTable({
   useEffect(() => {
     loadOrders();
   }, [loadOrders]);
+
+  useEffect(() => {
+    loadActiveFranchises();
+  }, []);
+
+  /** Loads the stores an order can be assigned to — only active ones,
+   *  since an inactive store's manager can't log in to respond. */
+  async function loadActiveFranchises() {
+    try {
+      const response = await franchiseService.getFranchises({
+        status: "active",
+        limit: 100,
+      });
+      setActiveFranchises(response.data);
+    } catch (error) {
+      alert.error(getErrorMessage(error, "Failed to load franchise stores."));
+    }
+  }
 
   // Handle status change click
   const handleStatusClick = (
@@ -231,6 +282,47 @@ export function OrdersTable({
     }
   };
 
+  /** Opens the store picker for a fresh assignment OR a reassignment
+   *  after a rejection — same dialog handles both. */
+  function openAssignDialog(order: OrderListItem) {
+    setAssignDialog({
+      open: true,
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      selectedFranchiseId: "",
+    });
+  }
+
+  async function handleConfirmAssign() {
+    if (!assignDialog.selectedFranchiseId) {
+      alert.error("Please select a store to assign this order to.");
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      const response = await franchiseService.assignOrderToFranchise(
+        assignDialog.orderId,
+        assignDialog.selectedFranchiseId,
+      );
+      alert.success(
+        response.message ||
+          `Order ${assignDialog.orderNumber} assigned to store successfully.`,
+      );
+      setAssignDialog({ ...assignDialog, open: false });
+      await loadOrders();
+    } catch (error) {
+      alert.error(
+        getErrorMessage(
+          error,
+          "Something went wrong while assigning the store.",
+        ),
+      );
+    } finally {
+      setIsUpdating(false);
+    }
+  }
+
   // Define columns with actions
   const orderColumns: ColumnDef<OrderListItem>[] = [
     {
@@ -325,6 +417,37 @@ export function OrdersTable({
       },
     },
     {
+      id: "franchiseAssignment",
+      header: "Franchise",
+      cell: ({ row }) => {
+        const assignment = row.original.franchiseAssignment;
+        if (!assignment) {
+          return (
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              Not assigned
+            </span>
+          );
+        }
+        const storeName =
+          typeof assignment.franchiseId === "string"
+            ? assignment.franchiseId
+            : assignment.franchiseId.name;
+        return (
+          <div className="min-w-[140px]">
+            <div className="text-sm font-medium truncate">{storeName}</div>
+            <Badge
+              variant={
+                franchiseAssignmentVariants[assignment.status] ?? "secondary"
+              }
+              className="mt-1"
+            >
+              {assignment.status}
+            </Badge>
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: "date",
       header: "Date",
       cell: ({ row }) => (
@@ -343,7 +466,7 @@ export function OrdersTable({
         const isTerminal = status === "delivered" || status === "cancelled";
 
         return (
-          <div className="flex items-center justify-end gap-2 min-w-[240px]">
+          <div className="flex items-center justify-end gap-2 min-w-[280px]">
             <Button
               type="button"
               variant="outline"
@@ -363,6 +486,21 @@ export function OrdersTable({
             >
               <Download className="h-4 w-4" />
             </Button>
+            <PermissionGuard
+              permission={PERMISSIONS.ORDERS_ASSIGN_FRANCHISE}
+              hideOnDenied
+            >
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                title="Assign to franchise store"
+                disabled={isTerminal}
+                onClick={() => openAssignDialog(row.original)}
+              >
+                <Store className="h-4 w-4" />
+              </Button>
+            </PermissionGuard>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -616,6 +754,63 @@ export function OrdersTable({
               className="w-full sm:w-auto"
             >
               Cancel Order
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Assign / Reassign to Franchise Store */}
+      <Dialog
+        open={assignDialog.open}
+        onOpenChange={(open) => setAssignDialog({ ...assignDialog, open })}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign to Franchise Store</DialogTitle>
+            <DialogDescription>
+              Choose a store to fulfill order{" "}
+              <span className="font-mono font-semibold">
+                {assignDialog.orderNumber}
+              </span>
+              . If this order was already assigned and rejected, this hands
+              it to a different store instead.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            <Label htmlFor="franchiseSelect">Store</Label>
+            <Select
+              value={assignDialog.selectedFranchiseId}
+              onValueChange={(value) =>
+                setAssignDialog({ ...assignDialog, selectedFranchiseId: value })
+              }
+            >
+              <SelectTrigger id="franchiseSelect">
+                <SelectValue placeholder="Select a store" />
+              </SelectTrigger>
+              <SelectContent>
+                {activeFranchises.map((franchise) => (
+                  <SelectItem key={franchise.id} value={franchise.id}>
+                    {franchise.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              disabled={isUpdating}
+              onClick={() => setAssignDialog({ ...assignDialog, open: false })}
+              className="w-full sm:w-auto"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmAssign}
+              disabled={isUpdating}
+              className="w-full sm:w-auto"
+            >
+              Assign
             </Button>
           </DialogFooter>
         </DialogContent>

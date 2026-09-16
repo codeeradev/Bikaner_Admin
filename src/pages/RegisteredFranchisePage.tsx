@@ -1,105 +1,518 @@
+import {
+  type City,
+  type CreateFranchiseDto,
+  type Franchise,
+  type Zone,
+  cityService,
+  franchiseService,
+  zoneService,
+} from "@/api";
 import { DataTable } from "@/components/DataTable";
+import {
+  FormCheckbox,
+  FormInput,
+  FormSelect,
+} from "@/components/FormComponents";
 import { PageHeader } from "@/components/PageHeader";
+import { PermissionGuard } from "@/components/PermissionGuard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { mockRecentFranchiseRequests } from "@/mock-data";
-import type { FranchiseRequest } from "@/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useAlert } from "@/hooks/use-alert";
+import { PERMISSIONS } from "@/lib/permissions";
+import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Eye, PauseCircle, PlayCircle } from "lucide-react";
-import { motion } from "motion/react";
+import { Eye, PauseCircle, Pencil, PlayCircle, Plus, Store } from "lucide-react";
+import { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 
-const registered = mockRecentFranchiseRequests
-  .filter((r) => r.status === "approved")
-  .map((r) => ({
-    ...r,
-    walletBalance: Math.floor(Math.random() * 50000) + 5000,
-    ownerName: r.applicantName,
-  }));
-
-interface RegisteredFranchise {
-  id: string;
-  businessName: string;
-  ownerName: string;
-  email: string;
-  phone: string;
+/** Local shape of the create/edit form — kept separate from the DTO types
+ *  in franchiseService because react-hook-form needs string-typed number
+ *  inputs (lat/lng) before they're parsed for the API call. */
+interface FranchiseFormData {
+  name: string;
   address: string;
-  walletBalance: number;
-  status: string;
+  cityId: string;
+  zoneId: string;
+  lat: string;
+  lng: string;
+  managerName: string;
+  email: string;
+  password: string;
+  phone: string;
+  status: "active" | "inactive";
 }
 
-const columns: ColumnDef<RegisteredFranchise>[] = [
-  { accessorKey: "businessName", header: "Franchise Name" },
-  { accessorKey: "ownerName", header: "Owner" },
-  { accessorKey: "email", header: "Email" },
-  { accessorKey: "phone", header: "Phone" },
-  { accessorKey: "address", header: "Address" },
-  {
-    accessorKey: "walletBalance",
-    header: "Wallet Balance",
-    cell: ({ row }) =>
-      `$${Number(row.getValue("walletBalance")).toLocaleString()}`,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      return (
-        <Badge variant={status === "active" ? "default" : "secondary"}>
-          {status}
-        </Badge>
-      );
-    },
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          data-ocid={`registered_franchise.view_button.${row.index + 1}`}
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          data-ocid={`registered_franchise.suspend_button.${row.index + 1}`}
-        >
-          <PauseCircle className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          data-ocid={`registered_franchise.activate_button.${row.index + 1}`}
-        >
-          <PlayCircle className="h-4 w-4" />
-        </Button>
-      </div>
-    ),
-  },
-];
+/** Displays status-style values (active/inactive, pending/accepted/rejected,
+ *  etc.) with a capitalized first letter without touching the underlying
+ *  value used for logic/comparisons. */
+function capitalizeFirst(value: string): string {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+const EMPTY_FORM_VALUES: FranchiseFormData = {
+  name: "",
+  address: "",
+  cityId: "",
+  zoneId: "",
+  lat: "",
+  lng: "",
+  managerName: "",
+  email: "",
+  password: "",
+  phone: "",
+  status: "active",
+};
 
 export function RegisteredFranchisePage() {
+  const alert = useAlert();
+  const navigate = useNavigate();
+
+  // -- Table data --------------------------------------------------------
+  const [franchises, setFranchises] = useState<Franchise[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">(
+    "all",
+  );
+
+  // -- Lookups for the City/Zone columns + form dropdowns -----------------
+  const [cities, setCities] = useState<City[]>([]);
+  const [zones, setZones] = useState<Zone[]>([]);
+
+  // -- Add/Edit modal ------------------------------------------------------
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingFranchise, setEditingFranchise] = useState<Franchise | null>(
+    null,
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Edit mode hides the password field behind this toggle so a blank
+  // field can never accidentally wipe the manager's login (see B2's
+  // UpdateFranchiseDto note) — it's local UI state, not form data.
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+
+  const methods = useForm<FranchiseFormData>({
+    defaultValues: EMPTY_FORM_VALUES,
+  });
+  const { handleSubmit, reset } = methods;
+
+  useEffect(() => {
+    fetchFranchises();
+  }, [statusFilter]);
+
+  useEffect(() => {
+    fetchLookups();
+  }, []);
+
+  /** Loads the store list, scoped to the current status filter. */
+  async function fetchFranchises() {
+    setIsLoading(true);
+    try {
+      const response = await franchiseService.getFranchises({
+        status: statusFilter === "all" ? undefined : statusFilter,
+        limit: 100, // list is small enough to load in one page; DataTable's
+        // built-in search box handles free-text filtering client-side
+      });
+      setFranchises(response.data);
+    } catch (err) {
+      alert.error(
+        err instanceof Error ? err.message : "Failed to fetch franchise stores",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  /** Loads cities + zones once, used for both the City column and the
+   *  Add/Edit form's dropdowns. */
+  async function fetchLookups() {
+    try {
+      const [cityRes, zoneRes] = await Promise.all([
+        cityService.getCities({ page: 1, pageSize: 100 }),
+        zoneService.getZones({ page: 1, pageSize: 100 }),
+      ]);
+      setCities(cityRes.data);
+      setZones(zoneRes.data);
+    } catch (err) {
+      alert.error(
+        err instanceof Error ? err.message : "Failed to fetch cities/zones",
+      );
+    }
+  }
+
+  function resolveCityName(cityId: Franchise["cityId"]): string {
+    const id = typeof cityId === "string" ? cityId : cityId?._id;
+    return cities.find((city) => city.id === id)?.name ?? "-";
+  }
+
+  function openAddModal() {
+    setEditingFranchise(null);
+    setIsResettingPassword(false);
+    reset(EMPTY_FORM_VALUES);
+    setIsModalOpen(true);
+  }
+
+  function openEditModal(franchise: Franchise) {
+    setEditingFranchise(franchise);
+    setIsResettingPassword(false);
+    reset({
+      name: franchise.name,
+      address: franchise.address,
+      cityId:
+        typeof franchise.cityId === "string"
+          ? franchise.cityId
+          : franchise.cityId._id,
+      zoneId:
+        typeof franchise.zoneId === "string"
+          ? franchise.zoneId
+          : franchise.zoneId._id,
+      lat: franchise.lat.toString(),
+      lng: franchise.lng.toString(),
+      managerName: franchise.managerName,
+      email: franchise.email,
+      password: "",
+      phone: franchise.phone,
+      status: franchise.status,
+    });
+    setIsModalOpen(true);
+  }
+
+  async function onSubmit(data: FranchiseFormData) {
+    setIsSubmitting(true);
+    try {
+      if (editingFranchise) {
+        await franchiseService.updateFranchise(editingFranchise.id, {
+          name: data.name,
+          address: data.address,
+          cityId: data.cityId,
+          zoneId: data.zoneId,
+          lat: Number.parseFloat(data.lat),
+          lng: Number.parseFloat(data.lng),
+          managerName: data.managerName,
+          email: data.email,
+          phone: data.phone,
+          // Only send a password when the admin explicitly opted in —
+          // an empty field must never reach the API.
+          ...(isResettingPassword && data.password
+            ? { password: data.password }
+            : {}),
+        });
+        alert.success("Franchise store updated successfully");
+      } else {
+        const createData: CreateFranchiseDto = {
+          name: data.name,
+          address: data.address,
+          cityId: data.cityId,
+          zoneId: data.zoneId,
+          lat: Number.parseFloat(data.lat),
+          lng: Number.parseFloat(data.lng),
+          managerName: data.managerName,
+          email: data.email,
+          password: data.password,
+          phone: data.phone,
+        };
+        await franchiseService.createFranchise(createData);
+        alert.success("Franchise store created successfully");
+      }
+      setIsModalOpen(false);
+      reset(EMPTY_FORM_VALUES);
+      await fetchFranchises();
+    } catch (err) {
+      alert.error(
+        err instanceof Error ? err.message : "Failed to save franchise store",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  /** Toggles a store between active/inactive — this is the "delete"
+   *  action too, since the backend soft-deletes by deactivating. */
+  async function handleToggleStatus(franchise: Franchise) {
+    const nextStatus = franchise.status === "active" ? "inactive" : "active";
+    const confirmed = confirm(
+      `Are you sure you want to mark "${franchise.name}" as ${nextStatus}?`,
+    );
+    if (!confirmed) return;
+
+    try {
+      await franchiseService.setFranchiseStatus(franchise.id, nextStatus);
+      alert.success(`Store marked as ${nextStatus}`);
+      await fetchFranchises();
+    } catch (err) {
+      alert.error(
+        err instanceof Error ? err.message : "Failed to update store status",
+      );
+    }
+  }
+
+  const columns: ColumnDef<Franchise>[] = [
+    {
+      accessorKey: "name",
+      header: "Store",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+            <Store className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <div>
+            <div className="font-medium">{row.getValue("name")}</div>
+            <div className="text-xs text-muted-foreground">
+              {row.original.email}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    { accessorKey: "managerName", header: "Manager" },
+    {
+      id: "city",
+      header: "City",
+      cell: ({ row }) => <span>{resolveCityName(row.original.cityId)}</span>,
+    },
+    {
+      accessorKey: "productCount",
+      header: "Products",
+      cell: ({ row }) => (
+        <span className="text-sm">{row.original.productCount ?? 0}</span>
+      ),
+    },
+    {
+      accessorKey: "pendingOrders",
+      header: "Pending Orders",
+      cell: ({ row }) => {
+        const pending = row.original.pendingOrders ?? 0;
+        return (
+          <Badge variant={pending > 0 ? "default" : "secondary"}>
+            {pending}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string;
+        return (
+          <Badge variant={status === "active" ? "default" : "secondary"}>
+            {capitalizeFirst(status)}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <div className="flex items-center justify-end gap-0.5">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                data-ocid={`registered_franchise.view_button.${row.index + 1}`}
+                onClick={() =>
+                  navigate({
+                    to: "/franchise/$id",
+                    params: { id: row.original.id },
+                  })
+                }
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>View store details</TooltipContent>
+          </Tooltip>
+          <PermissionGuard permission={PERMISSIONS.FRANCHISE_EDIT} hideOnDenied>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  data-ocid={`registered_franchise.edit_button.${row.index + 1}`}
+                  onClick={() => openEditModal(row.original)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Edit franchise</TooltipContent>
+            </Tooltip>
+          </PermissionGuard>
+          <PermissionGuard permission={PERMISSIONS.FRANCHISE_EDIT} hideOnDenied>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  data-ocid={`registered_franchise.toggle_status_button.${row.index + 1}`}
+                  onClick={() => handleToggleStatus(row.original)}
+                >
+                  {row.original.status === "active" ? (
+                    <PauseCircle className="h-4 w-4" />
+                  ) : (
+                    <PlayCircle className="h-4 w-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {row.original.status === "active"
+                  ? "Deactivate store"
+                  : "Activate store"}
+              </TooltipContent>
+            </Tooltip>
+          </PermissionGuard>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Registered Franchise"
-        description="Active and suspended franchise partners"
-      />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        description="Active and suspended franchise store partners"
       >
-        <DataTable
-          columns={columns}
-          data={registered}
-          searchPlaceholder="Search registered franchise..."
-        />
-      </motion.div>
+        <PermissionGuard permission={PERMISSIONS.FRANCHISE_CREATE} hideOnDenied>
+          <Button onClick={openAddModal} data-ocid="registered_franchise.add_button">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Franchise
+          </Button>
+        </PermissionGuard>
+      </PageHeader>
+
+      <Select
+        value={statusFilter}
+        onValueChange={(value) =>
+          setStatusFilter(value as "all" | "active" | "inactive")
+        }
+      >
+        <SelectTrigger className="w-48">
+          <SelectValue placeholder="Filter by status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All statuses</SelectItem>
+          <SelectItem value="active">Active</SelectItem>
+          <SelectItem value="inactive">Inactive</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <DataTable
+        columns={columns}
+        data={franchises}
+        isLoading={isLoading}
+        searchPlaceholder="Search by store, manager, or email..."
+        emptyMessage="No franchise stores found"
+      />
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingFranchise ? "Edit Franchise Store" : "Add Franchise Store"}
+            </DialogTitle>
+          </DialogHeader>
+          <FormProvider {...methods}>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <FormInput name="name" label="Store Name" placeholder="e.g. Sector 15 Store" />
+              <FormInput name="address" label="Address" placeholder="Full store address" />
+              <div className="grid grid-cols-2 gap-4">
+                <FormSelect
+                  name="cityId"
+                  label="City"
+                  options={cities.map((city) => ({ value: city.id, label: city.name }))}
+                  placeholder="Select a city"
+                />
+                <FormSelect
+                  name="zoneId"
+                  label="Zone"
+                  options={zones.map((zone) => ({ value: zone.id, label: zone.name }))}
+                  placeholder="Select a zone"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormInput name="lat" label="Latitude" type="number" step="any" />
+                <FormInput name="lng" label="Longitude" type="number" step="any" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormInput name="managerName" label="Manager Name" />
+                <FormInput name="phone" label="Manager Phone" />
+              </div>
+              <FormInput name="email" label="Manager Email" type="email" />
+
+              {editingFranchise ? (
+                <>
+                  <FormCheckbox
+                    name="__resetPasswordToggle__"
+                    label="Reset manager password"
+                    description="Leave unchecked to keep the current password"
+                  />
+                  {/* FormCheckbox is wired to react-hook-form, but we only
+                      need its on/off state locally — mirror it here rather
+                      than submit a throwaway field. */}
+                  <input
+                    type="checkbox"
+                    className="hidden"
+                    checked={isResettingPassword}
+                    onChange={(e) => setIsResettingPassword(e.target.checked)}
+                    ref={() => {}}
+                  />
+                  {isResettingPassword && (
+                    <FormInput name="password" label="New Password" type="password" />
+                  )}
+                </>
+              ) : (
+                <FormInput name="password" label="Password" type="password" />
+              )}
+
+              <FormSelect
+                name="status"
+                label="Status"
+                options={[
+                  { value: "active", label: "Active" },
+                  { value: "inactive", label: "Inactive" },
+                ]}
+              />
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsModalOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting
+                    ? "Saving..."
+                    : editingFranchise
+                      ? "Update"
+                      : "Create"}
+                </Button>
+              </div>
+            </form>
+          </FormProvider>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

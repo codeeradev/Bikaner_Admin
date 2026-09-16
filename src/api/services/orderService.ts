@@ -1,5 +1,6 @@
 import { get, getText, put } from "../apiClient";
 import { ENDPOINTS } from "../endpoints";
+import type { FranchiseAssignment } from "./franchiseService";
 
 export type OrderType = "normal" | "bulk";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
@@ -28,6 +29,9 @@ export interface ApiOrder {
   orderType: OrderType;
   paymentStatus: PaymentStatus;
   orderStatus: OrderStatus;
+  // Present once an order has been handed to a franchise store — see
+  // PART A1/A4 of the franchise task plan (models/orders.js franchiseAssignment sub-object).
+  franchiseAssignment?: FranchiseAssignment;
   paymentMethod?: "razorpay" | "cod";
   addressId?: {
     name?: string;
@@ -55,6 +59,7 @@ export interface OrderListItem {
   orderType: OrderType;
   paymentStatus: PaymentStatus;
   orderStatus: OrderStatus;
+  franchiseAssignment?: FranchiseAssignment;
   paymentMethod?: string;
   date: string;
 }
@@ -110,6 +115,7 @@ const toOrderListItem = (order: ApiOrder): OrderListItem => ({
   orderType: order.orderType,
   paymentStatus: order.paymentStatus,
   orderStatus: order.orderStatus,
+  franchiseAssignment: order.franchiseAssignment,
   paymentMethod: order.paymentMethod,
   date: order.createdAt || order.updatedAt,
 });

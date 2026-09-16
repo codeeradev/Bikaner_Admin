@@ -6,8 +6,7 @@ import { CategoriesPage } from "@/pages/CategoriesPage";
 import { CitiesPage } from "@/pages/CitiesPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { OfferManagementPage } from "@/pages/OfferManagementPage";
-import { FranchisePage } from "@/pages/FranchisePage";
-import { FranchiseRequestsPage } from "@/pages/FranchiseRequestsPage";
+import { FranchiseDetailPage } from "@/pages/FranchiseDetailPage";
 import { LoginPage } from "@/pages/LoginPage";
 import { LegalPage } from "@/pages/LegalPage";
 import { NormalOrdersPage } from "@/pages/NormalOrdersPage";
@@ -169,22 +168,16 @@ const sellerApprovalsRoute = createRoute({
   component: SellerApprovalsPage,
 });
 
-const franchiseRoute = createRoute({
-  getParentRoute: () => protectedRoute,
-  path: "/franchise",
-  component: FranchisePage,
-});
-
 const registeredFranchiseRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "/franchise/registered",
   component: RegisteredFranchisePage,
 });
 
-const franchiseRequestsRoute = createRoute({
+const franchiseDetailRoute = createRoute({
   getParentRoute: () => protectedRoute,
-  path: "/franchise/requests",
-  component: FranchiseRequestsPage,
+  path: "/franchise/$id",
+  component: FranchiseDetailPage,
 });
 
 const walletRoute = createRoute({
@@ -230,9 +223,8 @@ const routeTree = rootRoute.addChildren([
       normalOrdersRoute,
       bulkOrdersRoute,
       sellerApprovalsRoute,
-      franchiseRoute,
       registeredFranchiseRoute,
-      franchiseRequestsRoute,
+      franchiseDetailRoute,
       walletRoute,
       usersRoute,
       rolesRoute,

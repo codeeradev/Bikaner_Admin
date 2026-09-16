@@ -1,8 +1,8 @@
 // Base URL for API - Update this with your actual backend URL
 const BASE_URL = 
-// "http://localhost:9020";
+"http://localhost:9020";
+// "http://api.bikanerbakeryy.com";
 
-"http://api.bikanerbakeryy.com"
 export const ENDPOINTS = {
   // Authentication
   LOGIN: `${BASE_URL}/auth/login`,
@@ -85,25 +85,33 @@ export const ENDPOINTS = {
   REJECT_SELLER_APPLICATION: (id: string) =>
     `${BASE_URL}/seller-applications/${id}/reject`,
 
-  // Franchise
+  // Franchise (store) management — see PART A3/A4 of the franchise task plan.
+  // These map 1:1 to adminFranchiseController.js on the backend.
   GET_FRANCHISES: `${BASE_URL}/franchises`,
   GET_FRANCHISE: (id: string) => `${BASE_URL}/franchises/${id}`,
   CREATE_FRANCHISE: `${BASE_URL}/franchises`,
   UPDATE_FRANCHISE: (id: string) => `${BASE_URL}/franchises/${id}`,
+  SET_FRANCHISE_STATUS: (id: string) => `${BASE_URL}/franchises/${id}/status`,
   DELETE_FRANCHISE: (id: string) => `${BASE_URL}/franchises/${id}`,
 
-  // Franchise Requests
-  GET_FRANCHISE_REQUESTS: `${BASE_URL}/franchise-requests`,
-  GET_FRANCHISE_REQUEST: (id: string) => `${BASE_URL}/franchise-requests/${id}`,
-  APPROVE_FRANCHISE_REQUEST: (id: string) =>
-    `${BASE_URL}/franchise-requests/${id}/approve`,
-  REJECT_FRANCHISE_REQUEST: (id: string) =>
-    `${BASE_URL}/franchise-requests/${id}/reject`,
+  // Franchise inventory (Admin-side add/edit/remove of a store's
+  // products) — see adminFranchiseController.js's
+  // getFranchiseProducts/addFranchiseProduct/updateFranchiseProduct/
+  // removeFranchiseProduct.
+  GET_FRANCHISE_PRODUCTS: (franchiseId: string) =>
+    `${BASE_URL}/franchises/${franchiseId}/products`,
+  ADD_FRANCHISE_PRODUCT: (franchiseId: string) =>
+    `${BASE_URL}/franchises/${franchiseId}/products`,
+  UPDATE_FRANCHISE_PRODUCT: (franchiseId: string, productId: string) =>
+    `${BASE_URL}/franchises/${franchiseId}/products/${productId}`,
+  REMOVE_FRANCHISE_PRODUCT: (franchiseId: string, productId: string) =>
+    `${BASE_URL}/franchises/${franchiseId}/products/${productId}`,
 
-  // Registered Franchises
-  GET_REGISTERED_FRANCHISES: `${BASE_URL}/franchises/registered`,
-  GET_REGISTERED_FRANCHISE: (id: string) =>
-    `${BASE_URL}/franchises/registered/${id}`,
+  // Hands a pending order off to a franchise store (first assignment or
+  // reassignment after a rejection) — lives under /orders on the backend,
+  // not /franchises, so it's kept here alongside the other order endpoints.
+  ASSIGN_ORDER_TO_FRANCHISE: (orderId: string) =>
+    `${BASE_URL}/orders/${orderId}/assign-franchise`,
 
   // Wallet
   GET_WALLET: `${BASE_URL}/wallet`,

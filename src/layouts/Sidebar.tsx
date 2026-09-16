@@ -24,6 +24,7 @@ import {
   Tag,
   User,
   UserCheck,
+  Store
 } from "lucide-react";
 import { useState } from "react";
 
@@ -120,24 +121,12 @@ const menuItems: MenuItem[] = [
       },
     ],
   },
-  // {
-  //   label: "Franchise",
-  //   icon: Store,
-  //   children: [
-  //     {
-  //       label: "Registered Franchise",
-  //       icon: Store,
-  //       href: "/franchise/registered",
-  //       permission: PERMISSIONS.REGISTERED_FRANCHISES_VIEW,
-  //     },
-  //     {
-  //       label: "Franchise Requests",
-  //       icon: Store,
-  //       href: "/franchise/requests",
-  //       permission: PERMISSIONS.FRANCHISE_REQUESTS_VIEW,
-  //     },
-  //   ],
-  // },
+  {
+    label: "Franchise",
+    icon: Store,
+    href: "/franchise/registered",
+    permission: PERMISSIONS.REGISTERED_FRANCHISES_VIEW,
+  },
   {
     label: "Administration",
     icon: Shield,

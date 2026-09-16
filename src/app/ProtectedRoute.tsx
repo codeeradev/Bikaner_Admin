@@ -15,9 +15,7 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   "/orders/normal": "normalOrders:view",
   "/orders/bulk": "bulkOrders:view",
   "/approvals/sellers": "sellerApprovals:view",
-  "/franchise": "franchise:view",
   "/franchise/registered": "registeredFranchises:view",
-  "/franchise/requests": "franchiseRequests:view",
   "/users": "users:view",
   "/roles": "roles:view",
   "/wallet": "wallet:view",
@@ -43,7 +41,13 @@ export function ProtectedRoute() {
   useEffect(() => {
     if (isAuthenticated && !isRehydrating && !isLoading) {
       const currentPath = location.pathname;
-      const requiredPermission = ROUTE_PERMISSIONS[currentPath];
+      // Dynamic routes (e.g. /franchise/$id) won't match ROUTE_PERMISSIONS
+      // exactly, so fall back to the nearest static parent's permission.
+      const requiredPermission =
+        ROUTE_PERMISSIONS[currentPath] ??
+        (currentPath.startsWith("/franchise/")
+          ? ROUTE_PERMISSIONS["/franchise/registered"]
+          : undefined);
 
       // If route requires permission and user doesn't have it (and is not admin)
       if (requiredPermission && !isAdmin && !can(requiredPermission)) {
