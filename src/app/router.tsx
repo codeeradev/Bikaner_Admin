@@ -176,7 +176,7 @@ const registeredFranchiseRoute = createRoute({
 
 const franchiseDetailRoute = createRoute({
   getParentRoute: () => protectedRoute,
-  path: "/franchise/$id",
+  path: "/franchise/$slug",
   component: FranchiseDetailPage,
 });
 

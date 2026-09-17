@@ -9,6 +9,8 @@ import { ENDPOINTS } from "../endpoints";
  */
 export interface Franchise {
   id: string;
+  /** URL-safe identifier used for the admin detail page route. */
+  slug: string;
   name: string;
   address: string;
   cityId: { _id: string; name: string } | string;
@@ -30,8 +32,9 @@ export interface Franchise {
 /** One row of a store's per-product stock/pricing override. */
 export interface FranchiseInventoryItem {
   id: string;
-  // Populated shape uses `id`, not `_id` — apiClient's transformMongoResponse
-  // rewrites every Mongo `_id` to `id`, including inside populated fields.
+  // apiClient's transformMongoResponse recursively rewrites every _id
+  // to id (including nested populated fields) — so a populated
+  // productId arrives shaped like this, never with `_id`.
   productId: { id: string; name: string; sku: string; image?: string } | string;
   stock: number;
   mrp: number;
@@ -55,35 +58,6 @@ export interface FranchiseOrderHistoryItem {
 export interface FranchiseDetail extends Franchise {
   inventory: FranchiseInventoryItem[];
   orderHistory: FranchiseOrderHistoryItem[];
-}
-
-/** Body for POST /franchises/:id/products — adds a product to a store's catalog. */
-export interface AddFranchiseProductDto {
-  productId: string;
-  stock?: number;
-  mrp: number;
-  sellingPrice: number;
-  isVisible?: boolean;
-}
-
-/** Body for PUT /franchises/:id/products/:productId — only sent fields are touched. */
-export interface UpdateFranchiseProductDto {
-  stock?: number;
-  mrp?: number;
-  sellingPrice?: number;
-  isVisible?: boolean;
-}
-
-/** getFranchiseProducts' response envelope (same shape as FranchiseListResponse). */
-export interface FranchiseProductListResponse {
-  success: boolean;
-  data: FranchiseInventoryItem[];
-  pagination: {
-    total: number;
-    page: number;
-    limit: number;
-    pages: number;
-  };
 }
 
 /** Body for POST /franchises. */
@@ -116,6 +90,23 @@ export interface UpdateFranchiseDto {
   email?: string;
   password?: string;
   phone?: string;
+}
+
+/** Body for POST /franchises/:franchiseId/products. */
+export interface AddFranchiseProductDto {
+  productId: string;
+  stock: number;
+  mrp: number;
+  sellingPrice: number;
+  isVisible?: boolean;
+}
+
+/** Body for PUT /franchises/:franchiseId/products/:productId. */
+export interface UpdateFranchiseProductDto {
+  stock?: number;
+  mrp?: number;
+  sellingPrice?: number;
+  isVisible?: boolean;
 }
 
 /** Shape of the assignment sub-document embedded on an order. */
@@ -174,6 +165,19 @@ export const franchiseService = {
   },
 
   /**
+   * GET /franchises/slug/:slug
+   * Same response as getFranchise, looked up by slug instead of _id.
+   * Used by FranchiseDetailPage so the URL is human-readable.
+   */
+  async getFranchiseBySlug(
+    slug: string,
+  ): Promise<ApiResponse<FranchiseDetail>> {
+    return get<ApiResponse<FranchiseDetail>>(
+      ENDPOINTS.GET_FRANCHISE_BY_SLUG(slug),
+    );
+  },
+
+  /**
    * POST /franchises
    * Creates the store and its manager login in a single call.
    */
@@ -218,45 +222,8 @@ export const franchiseService = {
   },
 
   /**
-   * PUT /orders/:orderId/assign-franchise
-   * Hands a pending order to a store — used for both the first
-   * assignment and a reassignment after a rejection.
-   */
-  async assignOrderToFranchise(
-    orderId: string,
-    franchiseId: string,
-  ): Promise<ApiResponse<AssignedOrder>> {
-    return put<ApiResponse<AssignedOrder>>(
-      ENDPOINTS.ASSIGN_ORDER_TO_FRANCHISE(orderId),
-      { franchiseId },
-    );
-  },
-
-  /**
-   * GET /franchises/:id/products
-   * Paginated/searchable view of a store's catalog — an alternative to
-   * the full (unpaginated) `inventory` array embedded in getFranchise,
-   * for stores with large catalogs.
-   */
-  async getFranchiseProducts(
-    franchiseId: string,
-    params?: {
-      search?: string;
-      isVisible?: boolean;
-      page?: number;
-      limit?: number;
-    },
-  ): Promise<FranchiseProductListResponse> {
-    return get<FranchiseProductListResponse>(
-      ENDPOINTS.GET_FRANCHISE_PRODUCTS(franchiseId),
-      params,
-    );
-  },
-
-  /**
-   * POST /franchises/:id/products
-   * Adds a product to a store's catalog with its own stock/mrp/
-   * sellingPrice (never inherited from the global product record).
+   * POST /franchises/:franchiseId/products
+   * Adds a product to a store's catalog with its own stock/pricing.
    */
   async addFranchiseProduct(
     franchiseId: string,
@@ -269,9 +236,9 @@ export const franchiseService = {
   },
 
   /**
-   * PUT /franchises/:id/products/:productId
-   * Edits a store's existing stock/mrp/sellingPrice/isVisible override
-   * for a product already in its catalog.
+   * PUT /franchises/:franchiseId/products/:productId
+   * Edits a store's stock/pricing override for a product already in
+   * its catalog.
    */
   async updateFranchiseProduct(
     franchiseId: string,
@@ -285,7 +252,7 @@ export const franchiseService = {
   },
 
   /**
-   * DELETE /franchises/:id/products/:productId
+   * DELETE /franchises/:franchiseId/products/:productId
    * Removes a product from a store's catalog entirely.
    */
   async removeFranchiseProduct(
@@ -294,6 +261,21 @@ export const franchiseService = {
   ): Promise<ApiResponse<null>> {
     return del<ApiResponse<null>>(
       ENDPOINTS.REMOVE_FRANCHISE_PRODUCT(franchiseId, productId),
+    );
+  },
+
+  /**
+   * PUT /orders/:orderId/assign-franchise
+   * Hands a pending order to a store — used for both the first
+   * assignment and a reassignment after a rejection.
+   */
+  async assignOrderToFranchise(
+    orderId: string,
+    franchiseId: string,
+  ): Promise<ApiResponse<AssignedOrder>> {
+    return put<ApiResponse<AssignedOrder>>(
+      ENDPOINTS.ASSIGN_ORDER_TO_FRANCHISE(orderId),
+      { franchiseId },
     );
   },
 };

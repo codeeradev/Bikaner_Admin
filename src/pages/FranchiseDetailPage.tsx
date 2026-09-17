@@ -1,10 +1,12 @@
 import {
   type AddFranchiseProductDto,
+  type Category,
   type FranchiseDetail,
   type FranchiseInventoryItem,
   type FranchiseOrderHistoryItem,
   type Product,
   type UpdateFranchiseProductDto,
+  categoryService,
   franchiseService,
   productService,
 } from "@/api";
@@ -12,7 +14,6 @@ import { DataTable } from "@/components/DataTable";
 import {
   FormCheckbox,
   FormInput,
-  FormSelect,
 } from "@/components/FormComponents";
 import { PageHeader } from "@/components/PageHeader";
 import { PermissionGuard } from "@/components/PermissionGuard";
@@ -24,6 +25,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Tooltip,
   TooltipContent,
@@ -39,7 +48,9 @@ import { FormProvider, useForm } from "react-hook-form";
 
 /** Local shape of the add/edit-product form — react-hook-form needs
  *  string-typed number inputs before they're parsed for the API call,
- *  same pattern as RegisteredFranchisePage's lat/lng fields. */
+ *  same pattern as RegisteredFranchisePage's lat/lng fields. `productId`
+ *  is submitted; `categoryId` is a UI-only filter (kept out of the
+ *  form, see selectedCategoryId below) so it never gets sent as-is. */
 interface ProductFormData {
   productId: string;
   stock: string;
@@ -57,17 +68,21 @@ const EMPTY_PRODUCT_FORM_VALUES: ProductFormData = {
 };
 
 export function FranchiseDetailPage() {
-  // strict: false lets this compile before the /franchise/$id route is
-  // registered in the router (Task 5) — see the note in Task 3.
-  const { id } = useParams({ strict: false }) as { id: string };
+  // strict: false lets this compile independent of route-registration
+  // order. The URL param is the store's slug, not its _id — see
+  // franchiseDetailRoute in router.tsx.
+  const { slug } = useParams({ strict: false }) as { slug: string };
   const navigate = useNavigate();
   const alert = useAlert();
 
   const [franchise, setFranchise] = useState<FranchiseDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // -- Catalog lookup, used by the Add Product dropdown -------------------
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  // -- Add Product modal: category → product cascade ----------------------
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [categoryProducts, setCategoryProducts] = useState<Product[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
   // -- Add/Edit product modal ---------------------------------------------
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -82,20 +97,34 @@ export function FranchiseDetailPage() {
   const {
     handleSubmit: handleProductSubmit,
     reset: resetProductForm,
+    setValue: setProductFormValue,
   } = productMethods;
 
   useEffect(() => {
-    if (id) fetchFranchiseDetail(id);
-  }, [id]);
+    if (slug) fetchFranchiseDetail(slug);
+  }, [slug]);
 
   useEffect(() => {
-    fetchAllProducts();
+    fetchCategories();
   }, []);
 
-  async function fetchFranchiseDetail(franchiseId: string) {
+  // Re-fetch the product dropdown's options every time the chosen
+  // category changes. No category selected yet → leave the product
+  // list empty rather than showing every product in the catalog.
+  useEffect(() => {
+    if (selectedCategoryId) {
+      fetchCategoryProducts(selectedCategoryId);
+    } else {
+      setCategoryProducts([]);
+    }
+  }, [selectedCategoryId]);
+
+  async function fetchFranchiseDetail(franchiseSlug: string) {
     setIsLoading(true);
     try {
-      const response = await franchiseService.getFranchise(franchiseId);
+      const response = await franchiseService.getFranchiseBySlug(
+        franchiseSlug,
+      );
       setFranchise(response.data);
     } catch (err) {
       alert.error(
@@ -106,21 +135,40 @@ export function FranchiseDetailPage() {
     }
   }
 
-  /** Loads the full product catalog once, used for the "Add Product"
-   *  dropdown. 200 is comfortably above most catalogs; if that stops
-   *  being true, swap this for a searchable async select instead. */
-  async function fetchAllProducts() {
+  /** Loads active categories once, used for the "Add Product" modal's
+   *  category filter. */
+  async function fetchCategories() {
     try {
-      const response = await productService.getProducts({
+      const response = await categoryService.getCategories({
         page: 1,
-        pageSize: 200,
+        pageSize: 100,
         status: "active",
       });
-      setAllProducts(response.data);
+      setCategories(response.data);
     } catch (err) {
       alert.error(
-        err instanceof Error ? err.message : "Failed to fetch product catalog",
+        err instanceof Error ? err.message : "Failed to fetch categories",
       );
+    }
+  }
+
+  /** Loads active products for the chosen category — this is what
+   *  narrows the product dropdown once an admin picks a category. */
+  async function fetchCategoryProducts(categoryId: string) {
+    setIsLoadingProducts(true);
+    try {
+      const response = await productService.getProducts({
+        categoryId,
+        status: "active",
+        pageSize: 200,
+      });
+      setCategoryProducts(response.data);
+    } catch (err) {
+      alert.error(
+        err instanceof Error ? err.message : "Failed to fetch products",
+      );
+    } finally {
+      setIsLoadingProducts(false);
     }
   }
 
@@ -136,12 +184,16 @@ export function FranchiseDetailPage() {
 
   function openAddProductModal() {
     setEditingItem(null);
+    setSelectedCategoryId("");
+    setCategoryProducts([]);
     resetProductForm(EMPTY_PRODUCT_FORM_VALUES);
     setIsProductModalOpen(true);
   }
 
   function openEditProductModal(item: FranchiseInventoryItem) {
     setEditingItem(item);
+    setSelectedCategoryId("");
+    setCategoryProducts([]);
     resetProductForm({
       productId: resolveProductId(item.productId),
       stock: item.stock.toString(),
@@ -150,6 +202,29 @@ export function FranchiseDetailPage() {
       isVisible: item.isVisible,
     });
     setIsProductModalOpen(true);
+  }
+
+  function handleCategoryChange(categoryId: string) {
+    setSelectedCategoryId(categoryId);
+    // The previously-picked product almost certainly doesn't belong to
+    // the new category — clear it so an admin can't accidentally submit
+    // a stale selection that's no longer visible in the dropdown.
+    setProductFormValue("productId", "");
+  }
+
+  function handleProductChange(productId: string) {
+    setProductFormValue("productId", productId, { shouldValidate: true });
+    // Pre-fill MRP/selling price from the catalog product as a starting
+    // point — the admin can still override them per store below.
+    const product = categoryProducts.find((p) => p.id === productId);
+    if (product) {
+      if (product.mrp !== undefined) {
+        setProductFormValue("mrp", product.mrp.toString());
+      }
+      if (product.sellingPrice !== undefined) {
+        setProductFormValue("sellingPrice", product.sellingPrice.toString());
+      }
+    }
   }
 
   async function onSubmitProduct(data: ProductFormData) {
@@ -187,7 +262,7 @@ export function FranchiseDetailPage() {
       }
       setIsProductModalOpen(false);
       resetProductForm(EMPTY_PRODUCT_FORM_VALUES);
-      await fetchFranchiseDetail(franchise.id);
+      await fetchFranchiseDetail(franchise.slug);
     } catch (err) {
       alert.error(
         err instanceof Error ? err.message : "Failed to save store product",
@@ -212,7 +287,7 @@ export function FranchiseDetailPage() {
         resolveProductId(item.productId),
       );
       alert.success("Product removed from store");
-      await fetchFranchiseDetail(franchise.id);
+      await fetchFranchiseDetail(franchise.slug);
     } catch (err) {
       alert.error(
         err instanceof Error ? err.message : "Failed to remove store product",
@@ -226,7 +301,7 @@ export function FranchiseDetailPage() {
   const existingProductIds = new Set(
     (franchise?.inventory ?? []).map((item) => resolveProductId(item.productId)),
   );
-  const availableProducts = allProducts.filter(
+  const availableProducts = categoryProducts.filter(
     (product) => !existingProductIds.has(product.id),
   );
 
@@ -431,21 +506,67 @@ export function FranchiseDetailPage() {
                   </div>
                 </div>
               ) : (
-                <FormSelect
-                  name="productId"
-                  label="Product"
-                  placeholder={
-                    availableProducts.length === 0
-                      ? "All products already added"
-                      : "Select a product"
-                  }
-                  options={availableProducts.map((product) => ({
-                    value: product.id,
-                    label: product.sku
-                      ? `${product.name} (${product.sku})`
-                      : product.name,
-                  }))}
-                />
+                <>
+                  {/* Step 1: pick a category — this is what narrows the
+                      product list below to something browsable instead
+                      of the entire catalog. Not submitted to the API;
+                      it's a client-side filter only. */}
+                  <div className="space-y-2">
+                    <Label htmlFor="category-filter">Category</Label>
+                    <Select
+                      value={selectedCategoryId}
+                      onValueChange={handleCategoryChange}
+                    >
+                      <SelectTrigger id="category-filter">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Step 2: pick a product from that category. Kept as
+                      a plain controlled Select (not FormSelect) so its
+                      displayed value updates immediately when the
+                      category — and therefore the option list —
+                      changes. */}
+                  <div className="space-y-2">
+                    <Label htmlFor="product-filter">Product</Label>
+                    <Select
+                      value={productMethods.watch("productId")}
+                      onValueChange={handleProductChange}
+                      disabled={!selectedCategoryId || isLoadingProducts}
+                    >
+                      <SelectTrigger id="product-filter">
+                        <SelectValue
+                          placeholder={
+                            !selectedCategoryId
+                              ? "Select a category first"
+                              : isLoadingProducts
+                                ? "Loading products..."
+                                : availableProducts.length === 0
+                                  ? "No products available in this category"
+                                  : "Select a product"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableProducts.map((product) => (
+                          <SelectItem key={product.id} value={product.id}>
+                            {product.sku
+                              ? `${product.name} (${product.sku})`
+                              : product.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
               )}
 
               <div className="grid grid-cols-3 gap-4">
@@ -479,7 +600,7 @@ export function FranchiseDetailPage() {
                   type="submit"
                   disabled={
                     isSubmittingProduct ||
-                    (!editingItem && availableProducts.length === 0)
+                    (!editingItem && !productMethods.watch("productId"))
                   }
                 >
                   {isSubmittingProduct

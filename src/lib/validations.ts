@@ -77,6 +77,59 @@ export const roleSchema = z.object({
 
 export type RoleFormData = z.infer<typeof roleSchema>;
 
+export const franchiseSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Store name is required")
+    .max(150, "Name must be less than 150 characters"),
+  address: z
+    .string()
+    .min(1, "Address is required")
+    .max(300, "Address must be less than 300 characters"),
+  cityId: z.string().min(1, "City is required"),
+  zoneId: z.string().min(1, "Zone is required"),
+  lat: z
+    .string()
+    .min(1, "Latitude is required")
+    .refine((v) => !Number.isNaN(Number(v)), "Latitude must be a number")
+    .refine(
+      (v) => Number(v) >= -90 && Number(v) <= 90,
+      "Latitude must be between -90 and 90",
+    ),
+  lng: z
+    .string()
+    .min(1, "Longitude is required")
+    .refine((v) => !Number.isNaN(Number(v)), "Longitude must be a number")
+    .refine(
+      (v) => Number(v) >= -180 && Number(v) <= 180,
+      "Longitude must be between -180 and 180",
+    ),
+  managerName: z
+    .string()
+    .min(1, "Manager name is required")
+    .max(100, "Name must be less than 100 characters"),
+  email: z.string().min(1, "Manager email is required").email("Invalid email address"),
+  // Required only when creating a store, or when resetting the password
+  // on an existing one — both conditional on UI state the schema can't
+  // see, so RegisteredFranchisePage enforces that half of the rule
+  // itself (via setError) before calling the API.
+  password: z
+    .string()
+    .refine((v) => v === "" || v.length >= 6, "Password must be at least 6 characters")
+    .optional()
+    .or(z.literal("")),
+  // 10-digit mobile number, no country code — this is also the number
+  // the store manager signs in with via OTP in the mobile app, so it
+  // has to match that format exactly.
+  phone: z
+    .string()
+    .min(1, "Manager phone is required")
+    .regex(/^[0-9]{10}$/, "Enter a valid 10-digit mobile number"),
+  status: z.enum(["active", "inactive"]),
+});
+
+export type FranchiseFormData = z.infer<typeof franchiseSchema>;
+
 export const profileSchema = z.object({
   name: z
     .string()

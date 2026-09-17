@@ -7,6 +7,16 @@ import {
   franchiseService,
   zoneService,
 } from "@/api";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { DataTable } from "@/components/DataTable";
 import {
   FormCheckbox,
@@ -37,36 +47,13 @@ import {
 } from "@/components/ui/tooltip";
 import { useAlert } from "@/hooks/use-alert";
 import { PERMISSIONS } from "@/lib/permissions";
+import { type FranchiseFormData, franchiseSchema } from "@/lib/validations";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Eye, PauseCircle, Pencil, PlayCircle, Plus, Store } from "lucide-react";
+import { Eye, PauseCircle, Pencil, PlayCircle, Plus, Store, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-
-/** Local shape of the create/edit form — kept separate from the DTO types
- *  in franchiseService because react-hook-form needs string-typed number
- *  inputs (lat/lng) before they're parsed for the API call. */
-interface FranchiseFormData {
-  name: string;
-  address: string;
-  cityId: string;
-  zoneId: string;
-  lat: string;
-  lng: string;
-  managerName: string;
-  email: string;
-  password: string;
-  phone: string;
-  status: "active" | "inactive";
-}
-
-/** Displays status-style values (active/inactive, pending/accepted/rejected,
- *  etc.) with a capitalized first letter without touching the underlying
- *  value used for logic/comparisons. */
-function capitalizeFirst(value: string): string {
-  if (!value) return value;
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
 
 const EMPTY_FORM_VALUES: FranchiseFormData = {
   name: "",
@@ -108,10 +95,19 @@ export function RegisteredFranchisePage() {
   // UpdateFranchiseDto note) — it's local UI state, not form data.
   const [isResettingPassword, setIsResettingPassword] = useState(false);
 
+  // -- Delete confirmation ---------------------------------------------
+  // Holding the franchise itself (not just an id) lets the confirmation
+  // dialog show the store's name without a second lookup.
+  const [deletingFranchise, setDeletingFranchise] = useState<Franchise | null>(
+    null,
+  );
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const methods = useForm<FranchiseFormData>({
+    resolver: zodResolver(franchiseSchema),
     defaultValues: EMPTY_FORM_VALUES,
   });
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, setError } = methods;
 
   useEffect(() => {
     fetchFranchises();
@@ -195,6 +191,16 @@ export function RegisteredFranchisePage() {
   }
 
   async function onSubmit(data: FranchiseFormData) {
+    // Password is only required when creating a new store, or when the
+    // admin has explicitly opted into resetting an existing manager's
+    // login — both are UI toggles the zod schema has no visibility
+    // into, so that half of the "required" rule is enforced here.
+    const passwordRequired = !editingFranchise || isResettingPassword;
+    if (passwordRequired && !data.password) {
+      setError("password", { type: "manual", message: "Password is required" });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       if (editingFranchise) {
@@ -225,7 +231,9 @@ export function RegisteredFranchisePage() {
           lng: Number.parseFloat(data.lng),
           managerName: data.managerName,
           email: data.email,
-          password: data.password,
+          // Non-empty guaranteed by the passwordRequired check above —
+          // the fallback only satisfies TypeScript, it never actually runs.
+          password: data.password ?? "",
           phone: data.phone,
         };
         await franchiseService.createFranchise(createData);
@@ -243,8 +251,8 @@ export function RegisteredFranchisePage() {
     }
   }
 
-  /** Toggles a store between active/inactive — this is the "delete"
-   *  action too, since the backend soft-deletes by deactivating. */
+  /** Toggles a store between active/inactive without removing it —
+   *  distinct from the actual Delete action below. */
   async function handleToggleStatus(franchise: Franchise) {
     const nextStatus = franchise.status === "active" ? "inactive" : "active";
     const confirmed = confirm(
@@ -260,6 +268,27 @@ export function RegisteredFranchisePage() {
       alert.error(
         err instanceof Error ? err.message : "Failed to update store status",
       );
+    }
+  }
+
+  /** Confirms + permanently deletes a store. The backend hard-deletes
+   *  the franchise document along with its inventory and notification
+   *  history — this cannot be undone, which is why the confirmation
+   *  dialog spells that out before this ever fires. */
+  async function handleDeleteFranchise() {
+    if (!deletingFranchise) return;
+    setIsDeleting(true);
+    try {
+      await franchiseService.deleteFranchise(deletingFranchise.id);
+      alert.success(`"${deletingFranchise.name}" was deleted`);
+      setDeletingFranchise(null);
+      await fetchFranchises();
+    } catch (err) {
+      alert.error(
+        err instanceof Error ? err.message : "Failed to delete franchise store",
+      );
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -313,16 +342,16 @@ export function RegisteredFranchisePage() {
         const status = row.getValue("status") as string;
         return (
           <Badge variant={status === "active" ? "default" : "secondary"}>
-            {capitalizeFirst(status)}
+            {status}
           </Badge>
         );
       },
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => <div className="text-right">Actions</div>,
       cell: ({ row }) => (
-        <div className="flex items-center justify-end gap-0.5">
+        <div className="flex items-center justify-end gap-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -331,15 +360,15 @@ export function RegisteredFranchisePage() {
                 data-ocid={`registered_franchise.view_button.${row.index + 1}`}
                 onClick={() =>
                   navigate({
-                    to: "/franchise/$id",
-                    params: { id: row.original.id },
+                    to: "/franchise/$slug",
+                    params: { slug: row.original.slug },
                   })
                 }
               >
                 <Eye className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>View store details</TooltipContent>
+            <TooltipContent>View store</TooltipContent>
           </Tooltip>
           <PermissionGuard permission={PERMISSIONS.FRANCHISE_EDIT} hideOnDenied>
             <Tooltip>
@@ -353,7 +382,7 @@ export function RegisteredFranchisePage() {
                   <Pencil className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Edit franchise</TooltipContent>
+              <TooltipContent>Edit store</TooltipContent>
             </Tooltip>
           </PermissionGuard>
           <PermissionGuard permission={PERMISSIONS.FRANCHISE_EDIT} hideOnDenied>
@@ -377,6 +406,21 @@ export function RegisteredFranchisePage() {
                   ? "Deactivate store"
                   : "Activate store"}
               </TooltipContent>
+            </Tooltip>
+          </PermissionGuard>
+          <PermissionGuard permission={PERMISSIONS.FRANCHISE_DELETE} hideOnDenied>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  data-ocid={`registered_franchise.delete_button.${row.index + 1}`}
+                  onClick={() => setDeletingFranchise(row.original)}
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Delete store</TooltipContent>
             </Tooltip>
           </PermissionGuard>
         </div>
@@ -513,6 +557,46 @@ export function RegisteredFranchisePage() {
           </FormProvider>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={!!deletingFranchise}
+        onOpenChange={(open) => {
+          if (!open) setDeletingFranchise(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Permanently delete franchise store?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You're about to permanently delete{" "}
+              <span className="font-medium text-foreground">
+                "{deletingFranchise?.name}"
+              </span>
+              . This will remove the store, its manager login, and its
+              entire product catalog and notification history from the
+              database. <span className="font-medium text-foreground">
+                You will lose all of this store's data and this cannot
+                be undone.
+              </span>{" "}
+              Past orders placed through this store will be kept for
+              reporting, but will no longer show this store's details.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault(); // keep the dialog open until the API call resolves
+                handleDeleteFranchise();
+              }}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 // Base URL for API - Update this with your actual backend URL
 const BASE_URL = 
-"http://localhost:9020";
-// "http://api.bikanerbakeryy.com";
+// "http://localhost:9020";
+"http://api.bikanerbakeryy.com";
 
 export const ENDPOINTS = {
   // Authentication
@@ -89,17 +89,18 @@ export const ENDPOINTS = {
   // These map 1:1 to adminFranchiseController.js on the backend.
   GET_FRANCHISES: `${BASE_URL}/franchises`,
   GET_FRANCHISE: (id: string) => `${BASE_URL}/franchises/${id}`,
+  // Used by the admin detail page instead of GET_FRANCHISE, so the
+  // browser URL shows a readable slug rather than the raw _id.
+  GET_FRANCHISE_BY_SLUG: (slug: string) =>
+    `${BASE_URL}/franchises/slug/${slug}`,
   CREATE_FRANCHISE: `${BASE_URL}/franchises`,
   UPDATE_FRANCHISE: (id: string) => `${BASE_URL}/franchises/${id}`,
   SET_FRANCHISE_STATUS: (id: string) => `${BASE_URL}/franchises/${id}/status`,
   DELETE_FRANCHISE: (id: string) => `${BASE_URL}/franchises/${id}`,
 
-  // Franchise inventory (Admin-side add/edit/remove of a store's
-  // products) — see adminFranchiseController.js's
-  // getFranchiseProducts/addFranchiseProduct/updateFranchiseProduct/
-  // removeFranchiseProduct.
-  GET_FRANCHISE_PRODUCTS: (franchiseId: string) =>
-    `${BASE_URL}/franchises/${franchiseId}/products`,
+  // Per-store catalog management — add/edit/remove a product from one
+  // franchise's inventory. Admin equivalent of the store-manager app's
+  // own franchiseProductController.js endpoints.
   ADD_FRANCHISE_PRODUCT: (franchiseId: string) =>
     `${BASE_URL}/franchises/${franchiseId}/products`,
   UPDATE_FRANCHISE_PRODUCT: (franchiseId: string, productId: string) =>
