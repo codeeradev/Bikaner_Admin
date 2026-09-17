@@ -1,7 +1,7 @@
 // Base URL for API - Update this with your actual backend URL
 const BASE_URL = 
 // "http://localhost:9020";
-"http://api.bikanerbakeryy.com";
+"https://api.bikanerbakeryy.com";
 
 export const ENDPOINTS = {
   // Authentication
