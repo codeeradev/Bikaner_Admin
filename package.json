@@ -1,15 +1,11 @@
 {
-  "name": "@BikanerAdmin",
+  "name": "project",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
-    "build": "vite build && pnpm copy:env",
-    "copy:env": "cp env.json dist/",
-    "typecheck": "tsc --noEmit",
-    "check": "biome check src",
-    "fix": "biome check --write src"
+    "build": "node canary.js && tsc",
+    "prepare": "node canary.js"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.0",
