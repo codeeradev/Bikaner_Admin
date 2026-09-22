@@ -421,7 +421,7 @@ export function OrdersTable({
       header: "Franchise",
       cell: ({ row }) => {
         const assignment = row.original.franchiseAssignment;
-        if (!assignment) {
+        if (!assignment || !assignment.franchiseId) {
           return (
             <span className="text-xs text-muted-foreground whitespace-nowrap">
               Not assigned
@@ -431,7 +431,7 @@ export function OrdersTable({
         const storeName =
           typeof assignment.franchiseId === "string"
             ? assignment.franchiseId
-            : assignment.franchiseId.name;
+            : assignment.franchiseId?.name ?? "Unknown store";
         return (
           <div className="min-w-[140px]">
             <div className="text-sm font-medium truncate">{storeName}</div>

@@ -600,7 +600,7 @@ export function DashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Inventory Status</h3>
               {lowStockItems.length > 0 && (
-                <Badge variant="destructive" className="gap-1">
+                <Badge variant="destructive" className="gap-1 normal-case">
                   <AlertTriangle className="h-3 w-3" />
                   {lowStockItems.length} alerts
                 </Badge>

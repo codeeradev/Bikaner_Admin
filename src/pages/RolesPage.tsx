@@ -192,26 +192,30 @@ export function RolesPage() {
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => <div className="text-right">Actions</div>,
       cell: ({ row }) => {
-        const isAdminRole = row.original.name === "Admin";
+        const role = row.original;
+        const isAdminRole = role.name === "Admin";
 
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              onClick={() => openPermissionDialog(row.original)}
+              onClick={() => openPermissionDialog(role)}
+              aria-label={`Manage permissions for ${role.name}`}
             >
+              <Shield className="h-4 w-4 mr-1.5" />
               Permissions
             </Button>
             <PermissionGuard permission={PERMISSIONS.ROLES_EDIT} hideOnDenied>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => openEditDialog(row.original)}
+                onClick={() => openEditDialog(role)}
                 disabled={isAdminRole}
                 title={isAdminRole ? "Admin role cannot be edited" : "Edit role"}
+                aria-label="Edit role"
               >
                 <Pencil className="h-4 w-4" />
               </Button>
@@ -220,12 +224,14 @@ export function RolesPage() {
               <Button
                 variant="ghost"
                 size="icon"
+                className="hover:bg-destructive/10"
                 onClick={() => {
-                  setDeletingRole(row.original);
+                  setDeletingRole(role);
                   setIsDeleteDialogOpen(true);
                 }}
                 disabled={isAdminRole}
                 title={isAdminRole ? "Admin role cannot be deleted" : "Delete role"}
+                aria-label="Delete role"
               >
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>

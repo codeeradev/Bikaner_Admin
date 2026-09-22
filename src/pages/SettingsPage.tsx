@@ -1,6 +1,11 @@
 import { ENDPOINTS } from "@/api/endpoints";
 import { settingsService, staffService } from "@/api/services";
-import { FormCheckbox, FormInput, FormTextarea } from "@/components/FormComponents";
+import {
+  FormCheckbox,
+  FormInput,
+  FormPasswordInput,
+  FormTextarea,
+} from "@/components/FormComponents";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +21,7 @@ import {
   FileText,
   Globe,
   Loader2,
+  MapPin,
   Phone,
   Settings,
   Share2,
@@ -24,7 +30,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { type FieldErrors, FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 
 const phoneRegex = /^\+?[\d\s-()]{7,20}$/;
@@ -123,6 +129,8 @@ const settingsSchema = z
     aboutUs: z.string().optional(),
     refundPolicy: z.string().optional(),
     shippingPolicy: z.string().optional(),
+    olaApiKey: z.string().optional(),
+    googleApiKey: z.string().optional(),
   })
   .refine(
     (data) =>
@@ -166,14 +174,39 @@ const defaultValues: SettingsFormData = {
   aboutUs: "",
   refundPolicy: "",
   shippingPolicy: "",
+  olaApiKey: "",
+  googleApiKey: "",
 };
 
 const apiOrigin = new URL(ENDPOINTS.GET_SETTINGS).origin;
 
+// Fields that live on the "General" tab. If one of them fails validation while
+// another tab is open, the error would otherwise be invisible.
+const GENERAL_TAB_FIELDS: string[] = [
+  "siteTitle",
+  "siteDescription",
+  "contactEmail",
+  "contactPhone",
+  "range",
+  "globalDeliveryCharges",
+  "platformFee",
+  "globalTax",
+  "codLimit",
+  "loginPhone",
+  "adminPassword",
+  "confirmAdminPassword",
+];
+
 function getAssetUrl(path?: string) {
   if (!path) return "";
   if (/^https?:\/\//i.test(path)) return path;
-  return `${apiOrigin}${path.startsWith("/") ? path : `/${path}`}`;
+  let normalized = path.startsWith("/") ? path : `/${path}`;
+  // Older saves stored the logo as /uploads/...; the server serves it from
+  // /assets/uploads/..., so map the legacy value to the working URL.
+  if (normalized.startsWith("/uploads/")) {
+    normalized = `/assets${normalized}`;
+  }
+  return `${apiOrigin}${normalized}`;
 }
 
 export function SettingsPage() {
@@ -254,6 +287,8 @@ export function SettingsPage() {
           aboutUs: settings.aboutUs || "",
           refundPolicy: settings.refundPolicy || "",
           shippingPolicy: settings.shippingPolicy || "",
+          olaApiKey: settings.olaApiKey || "",
+          googleApiKey: settings.googleApiKey || "",
         };
 
         if (!isMounted) return;
@@ -310,9 +345,26 @@ export function SettingsPage() {
     setLogoFile(file);
   };
 
+  // Runs when validation fails. Without this, clicking Save on a tab that has
+  // no invalid fields (e.g. "Location Keys") does nothing and shows no error.
+  const onInvalid = (errors: FieldErrors<SettingsFormData>) => {
+    const invalidFields = Object.keys(errors);
+    if (invalidFields.some((field) => GENERAL_TAB_FIELDS.includes(field))) {
+      setActiveTab("general");
+    }
+    alert.error(
+      "Settings were not saved. Please fix the highlighted fields and try again.",
+    );
+  };
+
   const onSubmit = async (data: SettingsFormData) => {
+    const olaApiKey = data.olaApiKey?.trim() || "";
+    const googleApiKey = data.googleApiKey?.trim() || "";
+
+    // Step 1: save the site settings.
+    let response: Awaited<ReturnType<typeof settingsService.updateSettings>>;
     try {
-      const response = await settingsService.updateSettings({
+      response = await settingsService.updateSettings({
         siteTitle: data.siteTitle.trim(),
         siteDescription: data.siteDescription?.trim() || "",
         contactEmail: data.contactEmail.trim(),
@@ -340,47 +392,87 @@ export function SettingsPage() {
         aboutUs: data.aboutUs || "",
         refundPolicy: data.refundPolicy || "",
         shippingPolicy: data.shippingPolicy || "",
+        olaApiKey,
+        googleApiKey,
         ...(logoFile ? { siteLogo: logoFile } : {}),
       });
+    } catch (error: any) {
+      alert.error(error.message || "Please check the fields and try again.");
+      return;
+    }
 
-      if (user?.id) {
-        const updateData: { mobile?: string; password?: string } = {};
-        if (data.loginPhone.trim() !== user.phone) {
-          updateData.mobile = data.loginPhone.trim();
-        }
-        if (data.adminPassword) {
-          updateData.password = data.adminPassword;
-        }
+    const saved = response.data;
 
-        if (Object.keys(updateData).length > 0) {
+    // Step 2: make sure the server really stored the API keys. An outdated
+    // backend ignores unknown fields but still answers "success", which made
+    // the keys look saved until the page was reloaded.
+    const keysPersisted =
+      (saved?.olaApiKey ?? "") === olaApiKey &&
+      (saved?.googleApiKey ?? "") === googleApiKey;
+
+    // Step 3: update the admin login (mobile / password) separately so a
+    // failure here is reported accurately instead of hiding that the site
+    // settings were already saved.
+    let staffError: string | null = null;
+    let loginPhoneAfterSave = data.loginPhone.trim();
+
+    if (user?.id) {
+      const updateData: { mobile?: string; password?: string } = {};
+      if (data.loginPhone.trim() !== user.phone) {
+        updateData.mobile = data.loginPhone.trim();
+      }
+      if (data.adminPassword) {
+        updateData.password = data.adminPassword;
+      }
+
+      if (Object.keys(updateData).length > 0) {
+        try {
           await staffService.updateStaff(user.id, updateData);
           setUser({
             ...user,
             phone: updateData.mobile || user.phone,
           });
+        } catch (error: any) {
+          staffError =
+            error.message || "Could not update the admin login details.";
+          loginPhoneAfterSave = user.phone || "";
         }
       }
-
-      const nextValues: SettingsFormData = {
-        ...data,
-        adminPassword: "",
-        confirmAdminPassword: "",
-      };
-      setLoadedValues(nextValues);
-      const nextLogo = response.data.siteLogo || savedLogo;
-      setLogoFile(null);
-      setSavedLogo(nextLogo);
-      setLogoPreview(nextLogo);
-      setBrandSettings({
-        siteTitle: nextValues.siteTitle,
-        siteLogo: nextLogo,
-      });
-      reset(nextValues);
-
-      alert.success("Settings saved successfully!");
-    } catch (error: any) {
-      alert.error(error.message || "Please check the fields and try again.");
     }
+
+    // Reflect what the SERVER stored (not just what was typed) in the form.
+    const nextValues: SettingsFormData = {
+      ...data,
+      loginPhone: loginPhoneAfterSave,
+      olaApiKey: saved?.olaApiKey ?? "",
+      googleApiKey: saved?.googleApiKey ?? "",
+      adminPassword: "",
+      confirmAdminPassword: "",
+    };
+    setLoadedValues(nextValues);
+    const nextLogo = saved?.siteLogo || savedLogo;
+    setLogoFile(null);
+    setSavedLogo(nextLogo);
+    setLogoPreview(nextLogo);
+    setBrandSettings({
+      siteTitle: nextValues.siteTitle,
+      siteLogo: nextLogo,
+    });
+    reset(nextValues);
+
+    if (!keysPersisted) {
+      alert.error(
+        "Settings saved, but the server did not store the Ola/Google API keys. Deploy the latest backend and try again.",
+      );
+      return;
+    }
+
+    if (staffError) {
+      alert.error(`Settings saved, but the admin login was not updated: ${staffError}`);
+      return;
+    }
+
+    alert.success("Settings saved successfully!");
   };
 
   if (!isAdmin) {
@@ -408,9 +500,9 @@ export function SettingsPage() {
         transition={{ duration: 0.4 }}
       >
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:w-[720px]">
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 lg:w-[900px]">
                 <TabsTrigger value="general">
                   <Settings className="mr-2 h-4 w-4" />
                   General
@@ -426,6 +518,10 @@ export function SettingsPage() {
                 <TabsTrigger value="payments">
                   <CreditCard className="mr-2 h-4 w-4" />
                   Payments
+                </TabsTrigger>
+                <TabsTrigger value="location">
+                  <MapPin className="mr-2 h-4 w-4" />
+                  Location Keys
                 </TabsTrigger>
               </TabsList>
 
@@ -578,16 +674,14 @@ export function SettingsPage() {
                       description="Mobile number used by the admin to sign in"
                     />
                     <div className="grid gap-6 md:grid-cols-2">
-                      <FormInput
+                      <FormPasswordInput
                         name="adminPassword"
                         label="New Password"
-                        type="password"
                         placeholder="Leave blank to keep current password"
                       />
-                      <FormInput
+                      <FormPasswordInput
                         name="confirmAdminPassword"
                         label="Confirm New Password"
-                        type="password"
                         placeholder="Repeat new password"
                       />
                     </div>
@@ -703,15 +797,13 @@ export function SettingsPage() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <FormInput name="razorpayKeyId" label="Razorpay Key ID" />
-                    <FormInput
+                    <FormPasswordInput
                       name="razorpayKeySecret"
                       label="Razorpay Key Secret"
-                      type="password"
                     />
-                    <FormInput
+                    <FormPasswordInput
                       name="razorpayWebhookSecret"
                       label="Razorpay Webhook Secret"
-                      type="password"
                     />
                     <div className="flex items-center justify-between rounded-md border p-3">
                       <div className="space-y-0.5">
@@ -743,6 +835,36 @@ export function SettingsPage() {
                         onCheckedChange={(checked) => methods.setValue("enableRazorpayForUser", checked)}
                       />
                     </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="location" className="mt-6 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5" />
+                      Location & Maps API Keys
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <p className="text-sm text-muted-foreground">
+                      These keys are sent to the mobile app via the public
+                      settings endpoint and used for maps, geocoding, and
+                      location-based features.
+                    </p>
+                    <FormPasswordInput
+                      name="olaApiKey"
+                      label="Ola API Key"
+                      placeholder="Enter Ola Maps/Cabs API key"
+                      description="Used by the mobile app for Ola location/maps integration"
+                    />
+                    <FormPasswordInput
+                      name="googleApiKey"
+                      label="Google API Key"
+                      placeholder="Enter Google Maps API key"
+                      description="Used by the mobile app for Google Maps, Places, and geocoding"
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>

@@ -34,9 +34,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePermissions } from "@/hooks/usePermissions";
 import { PERMISSIONS } from "@/lib/permissions";
 import type { Role, Staff } from "@/types";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   Edit,
   Loader2,
@@ -48,23 +48,19 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+// Users with these roles are managed elsewhere, so edit/delete/toggle are disabled for them.
+const PROTECTED_ROLES = ["Admin", "Franchise"];
+
+const getInitials = (name?: string) =>
+  (name || "User")
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
 export function UsersPage() {
-  const { canCreate, canEdit, canDelete, isAdmin, userPermissions } =
-    usePermissions();
-
-  // Debug logging
-  console.log("🔍 UsersPage - Permission Check:");
-  console.log("  isAdmin:", isAdmin);
-  console.log("  canCreate:", canCreate);
-  console.log("  canEdit:", canEdit);
-  console.log("  canDelete:", canDelete);
-  console.log("  userPermissions:", userPermissions);
-  console.log("  USERS_CREATE permission:", PERMISSIONS.USERS_CREATE);
-  console.log(
-    "  Has USERS_CREATE?",
-    userPermissions.includes(PERMISSIONS.USERS_CREATE),
-  );
-
   const [staff, setStaff] = useState<Staff[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [cities, setCities] = useState<any[]>([]);
@@ -254,94 +250,87 @@ export function UsersPage() {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  const columns = [
+  const columns: ColumnDef<Staff>[] = [
     {
       accessorKey: "name",
-      key: "name",
-      label: "User",
-      render: (staffMember: Staff) => (
-        <div className="flex items-center gap-3">
-          <Avatar>
-            <AvatarImage src={staffMember.profileImage} />
-            <AvatarFallback>
-              {(staffMember.name || "User")
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="font-medium">
-              {staffMember.name || "Unnamed User"}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {staffMember.mobile || "No mobile"}
+      header: "User",
+      cell: ({ row }) => {
+        const member = row.original;
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar>
+              <AvatarImage src={member.profileImage} />
+              <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-medium">
+                {member.name || "Unnamed User"}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {member.mobile || "No mobile"}
+              </div>
             </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       accessorKey: "email",
-      key: "email",
-      label: "Email",
-      render: (staffMember: Staff) => staffMember.email || "—",
+      header: "Email",
+      cell: ({ row }) => row.original.email || "—",
     },
     {
-      accessorKey: "role",
-      key: "role",
-      label: "Role",
-      render: (staffMember: Staff) => (
-        <Badge
-          variant={staffMember.role?.name === "Admin" ? "default" : "secondary"}
-        >
-          {staffMember.role?.name || "No Role"}
-        </Badge>
-      ),
+      id: "role",
+      header: "Role",
+      // accessorFn gives the table a plain string, so sorting and search work
+      accessorFn: (member) => member.role?.name ?? "",
+      cell: ({ row }) => {
+        const roleName = row.original.role?.name;
+        return (
+          <Badge variant={roleName === "Admin" ? "default" : "secondary"}>
+            {roleName || "No Role"}
+          </Badge>
+        );
+      },
     },
     {
-      accessorKey: "city",
-      key: "city",
-      label: "City",
-      render: (staffMember: Staff) => staffMember.city?.name || "—",
+      id: "city",
+      header: "City",
+      accessorFn: (member) => member.city?.name ?? "",
+      cell: ({ row }) => row.original.city?.name || "—",
     },
     {
       accessorKey: "status",
-      key: "status",
-      label: "Status",
-      render: (staffMember: Staff) => (
-        <Badge
-          variant={staffMember.status === "active" ? "default" : "secondary"}
-        >
-          {staffMember.status}
-        </Badge>
-      ),
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.original.status;
+        return (
+          <Badge variant={status === "active" ? "default" : "secondary"}>
+            {status}
+          </Badge>
+        );
+      },
     },
     {
-      accessorKey: "actions",
-      key: "actions",
-      label: "Actions",
-      render: (staffMember: Staff) => {
-        // Don't allow editing/deleting admin users and franchise users
-        const isAdmin = staffMember.role?.name === "Admin";
-        const isFranchise = staffMember.role?.name === "Franchise";
-        const isProtectedRole = isAdmin || isFranchise;
+      id: "actions",
+      header: () => <div className="text-right">Actions</div>,
+      cell: ({ row }) => {
+        const member = row.original;
+        const isProtected = PROTECTED_ROLES.includes(member.role?.name ?? "");
+        const isActive = member.status === "active";
 
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-end">
             <PermissionGuard permission={PERMISSIONS.USERS_EDIT} hideOnDenied>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() =>
-                  staffMember.status === "active"
-                    ? handleToggleStatus(staffMember.id)
-                    : handleToggleStatus(staffMember.id)
-                }
-                disabled={isProtectedRole}
+                title={isActive ? "Deactivate user" : "Activate user"}
+                aria-label={isActive ? "Deactivate user" : "Activate user"}
+                onClick={() => handleToggleStatus(member.id)}
+                disabled={isProtected}
               >
-                {staffMember.status === "active" ? (
+                {isActive ? (
                   <UserX className="h-4 w-4" />
                 ) : (
                   <UserCheck className="h-4 w-4" />
@@ -353,8 +342,10 @@ export function UsersPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => handleEdit(staffMember)}
-                disabled={isProtectedRole}
+                title="Edit user"
+                aria-label="Edit user"
+                onClick={() => handleEdit(member)}
+                disabled={isProtected}
               >
                 <Edit className="h-4 w-4" />
               </Button>
@@ -364,11 +355,13 @@ export function UsersPage() {
               <Button
                 variant="ghost"
                 size="sm"
+                title="Delete user"
+                aria-label="Delete user"
                 onClick={() => {
-                  setDeletingId(staffMember.id);
+                  setDeletingId(member.id);
                   setIsDeleteDialogOpen(true);
                 }}
-                disabled={isProtectedRole}
+                disabled={isProtected}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

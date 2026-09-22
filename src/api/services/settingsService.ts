@@ -31,6 +31,8 @@ export interface SettingsData {
   platformFee?: number;
   globalTax?: number;
   codLimit?: number;
+  olaApiKey?: string;
+  googleApiKey?: string;
 }
 
 export type UpdateSettingsDto = Partial<

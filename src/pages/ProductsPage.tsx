@@ -304,7 +304,7 @@ export function ProductsPage() {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-end gap-2">
           <PermissionGuard permission={PERMISSIONS.PRODUCTS_EDIT} hideOnDenied>
             <Button
               variant="ghost"

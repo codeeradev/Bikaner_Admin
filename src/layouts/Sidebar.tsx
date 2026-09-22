@@ -291,13 +291,13 @@ export function Sidebar() {
   } = useUIStore();
 
   const sidebarContent = (
-    <div className="flex h-full flex-col">
-      <div className="flex h-14 items-center border-b border-sidebar-border px-4">
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex h-14 shrink-0 items-center border-b border-sidebar-border px-4">
         <div className="flex items-center gap-2 font-semibold text-sidebar-foreground">
           {!sidebarCollapsed && <span className="text-sm">Bikaner Admin</span>}
         </div>
       </div>
-      <ScrollArea className="flex-1 px-3 py-4">
+      <ScrollArea className="min-h-0 flex-1 px-3 py-4">
         <nav className="space-y-1">
           {menuItems.map((item) => (
             <MenuItemComponent
@@ -308,7 +308,7 @@ export function Sidebar() {
           ))}
         </nav>
       </ScrollArea>
-      <div className="border-t border-sidebar-border p-3">
+      <div className="shrink-0 border-t border-sidebar-border p-3">
         <Button
           variant="ghost"
           size="icon"
@@ -344,13 +344,13 @@ export function Sidebar() {
           side="left"
           className="w-64 p-0 bg-sidebar text-sidebar-foreground"
         >
-          <div className="flex h-full flex-col">
-            <div className="flex h-14 items-center border-b border-sidebar-border px-4">
+          <div className="flex h-full min-h-0 flex-col">
+            <div className="flex h-14 shrink-0 items-center border-b border-sidebar-border px-4">
               <div className="flex items-center gap-2 font-semibold text-sidebar-foreground">
                 <span className="text-sm">Bikaner Admin</span>
               </div>
             </div>
-            <ScrollArea className="flex-1 px-3 py-4">
+            <ScrollArea className="min-h-0 flex-1 px-3 py-4">
               <nav className="space-y-1">
                 {menuItems.map((item) => (
                   <MenuItemComponent

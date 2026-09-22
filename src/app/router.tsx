@@ -73,7 +73,7 @@ const protectedRoute = createRoute({
 });
 
 const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => protectedRoute,
   path: "/",
   component: () => <Navigate to="/dashboard" />,
 });

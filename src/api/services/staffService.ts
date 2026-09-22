@@ -1,6 +1,7 @@
 import type { Staff } from "@/types";
 import { del, get, patch, post, put, upload } from "../apiClient";
 import { ENDPOINTS } from "../endpoints";
+import { normalizeStaff } from "./normalizeStaff";
 
 export interface CreateStaffDto {
   roleId: string;
@@ -47,6 +48,14 @@ export interface StaffResponse {
   message?: string;
 }
 
+const normalizeList = (res: StaffListResponse): StaffListResponse => ({
+  ...res,
+  data: Array.isArray(res?.data) ? res.data.map(normalizeStaff) : [],
+});
+
+const normalizeOne = (res: StaffResponse): StaffResponse =>
+  res?.data ? { ...res, data: normalizeStaff(res.data) } : res;
+
 export const staffService = {
   /**
    * Get all staff members
@@ -58,14 +67,16 @@ export const staffService = {
     page?: number;
     limit?: number;
   }): Promise<StaffListResponse> {
-    return get<StaffListResponse>(ENDPOINTS.GET_USERS, params);
+    return normalizeList(
+      await get<StaffListResponse>(ENDPOINTS.GET_USERS, params),
+    );
   },
 
   /**
    * Get single staff member by ID
    */
   async getStaffById(id: string): Promise<StaffResponse> {
-    return get<StaffResponse>(ENDPOINTS.GET_USER(id));
+    return normalizeOne(await get<StaffResponse>(ENDPOINTS.GET_USER(id)));
   },
 
   /**
@@ -86,10 +97,12 @@ export const staffService = {
         }
       }
 
-      return upload<StaffResponse>(ENDPOINTS.CREATE_USER, formData);
+      return normalizeOne(
+        await upload<StaffResponse>(ENDPOINTS.CREATE_USER, formData),
+      );
     }
 
-    return post<StaffResponse>(ENDPOINTS.CREATE_USER, data);
+    return normalizeOne(await post<StaffResponse>(ENDPOINTS.CREATE_USER, data));
   },
 
   /**
@@ -110,15 +123,17 @@ export const staffService = {
         }
       }
 
-      return upload<StaffResponse>(
-        ENDPOINTS.UPDATE_USER(id),
-        formData,
-        undefined,
-        "PUT",
+      return normalizeOne(
+        await upload<StaffResponse>(
+          ENDPOINTS.UPDATE_USER(id),
+          formData,
+          undefined,
+          "PUT",
+        ),
       );
     }
 
-    return put<StaffResponse>(ENDPOINTS.UPDATE_USER(id), data);
+    return normalizeOne(await put<StaffResponse>(ENDPOINTS.UPDATE_USER(id), data));
   },
 
   /**
@@ -136,6 +151,8 @@ export const staffService = {
    * Toggle staff status
    */
   async toggleStaffStatus(id: string): Promise<StaffResponse> {
-    return patch<StaffResponse>(ENDPOINTS.TOGGLE_USER_STATUS(id));
+    return normalizeOne(
+      await patch<StaffResponse>(ENDPOINTS.TOGGLE_USER_STATUS(id)),
+    );
   },
 };

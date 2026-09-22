@@ -172,7 +172,8 @@ export function CategoriesPage() {
         </span>
       ),
     },
-    { accessorKey: "productCount", header: "Products" },
+    // Products count column hidden for now. Uncomment to show it again.
+    // { accessorKey: "productCount", header: "Products" },
     {
       accessorKey: "status",
       header: "Status",
@@ -189,7 +190,7 @@ export function CategoriesPage() {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-end gap-2">
           <PermissionGuard
             permission={PERMISSIONS.CATEGORIES_EDIT}
             hideOnDenied
