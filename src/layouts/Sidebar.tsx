@@ -209,10 +209,7 @@ function MenuItemComponent({
   // Don't show menu item if no permission
   if (!hasAccess && !hasChildAccess) return null;
 
-  const isActive = item.href
-    ? location.pathname === item.href ||
-      (item.href !== "/dashboard" && location.pathname.startsWith(item.href))
-    : false;
+  const isActive = item.href ? location.pathname === item.href : false;
   const isParentActive = item.children
     ? item.children.some(
         (child) =>
