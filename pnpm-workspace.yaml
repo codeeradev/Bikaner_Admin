@@ -1,5 +1,10 @@
 packages:
   - src/**/*
+allowBuilds:
+  '@biomejs/biome': false
+  '@firebase/util': false
+  esbuild: false
+  protobufjs: false
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - esbuild
