@@ -1,3 +1,6 @@
+import { useLiveRefresh } from "@/hooks/useLiveRefresh";
+import { FranchisePassword } from "@/components/FranchisePassword";
+import { useAuthStore } from "@/store/authStore";
 import {
   type City,
   type CreateFranchiseDto,
@@ -19,7 +22,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DataTable } from "@/components/DataTable";
 import {
-  FormCheckbox,
   FormInput,
   FormSelect,
 } from "@/components/FormComponents";
@@ -52,7 +54,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Eye, PauseCircle, Pencil, PlayCircle, Plus, Store, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 const EMPTY_FORM_VALUES: FranchiseFormData = {
@@ -71,6 +73,9 @@ const EMPTY_FORM_VALUES: FranchiseFormData = {
 
 export function RegisteredFranchisePage() {
   const alert = useAlert();
+  const fetchSequence = useRef(0);
+  useEffect(() => () => { fetchSequence.current++; }, []);
+  const isSuperAdmin = useAuthStore((state) => state.user?.role === "Admin");
   const navigate = useNavigate();
 
   // -- Table data --------------------------------------------------------
@@ -90,11 +95,6 @@ export function RegisteredFranchisePage() {
     null,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Edit mode hides the password field behind this toggle so a blank
-  // field can never accidentally wipe the manager's login (see B2's
-  // UpdateFranchiseDto note) — it's local UI state, not form data.
-  const [isResettingPassword, setIsResettingPassword] = useState(false);
-
   // -- Delete confirmation ---------------------------------------------
   // Holding the franchise itself (not just an id) lets the confirmation
   // dialog show the store's name without a second lookup.
@@ -118,21 +118,24 @@ export function RegisteredFranchisePage() {
   }, []);
 
   /** Loads the store list, scoped to the current status filter. */
-  async function fetchFranchises() {
-    setIsLoading(true);
+  useLiveRefresh(() => fetchFranchises(true));
+
+  async function fetchFranchises(quiet = false) {
+    const sequence = ++fetchSequence.current;
+    if (!quiet) setIsLoading(true);
     try {
       const response = await franchiseService.getFranchises({
         status: statusFilter === "all" ? undefined : statusFilter,
         limit: 100, // list is small enough to load in one page; DataTable's
         // built-in search box handles free-text filtering client-side
       });
-      setFranchises(response.data);
+      if (sequence === fetchSequence.current) setFranchises(response.data);
     } catch (err) {
-      alert.error(
+      if (!quiet && sequence === fetchSequence.current) alert.error(
         err instanceof Error ? err.message : "Failed to fetch franchise stores",
       );
     } finally {
-      setIsLoading(false);
+      if (sequence === fetchSequence.current) setIsLoading(false);
     }
   }
 
@@ -160,14 +163,12 @@ export function RegisteredFranchisePage() {
 
   function openAddModal() {
     setEditingFranchise(null);
-    setIsResettingPassword(false);
     reset(EMPTY_FORM_VALUES);
     setIsModalOpen(true);
   }
 
   function openEditModal(franchise: Franchise) {
     setEditingFranchise(franchise);
-    setIsResettingPassword(false);
     reset({
       name: franchise.name,
       address: franchise.address,
@@ -191,11 +192,7 @@ export function RegisteredFranchisePage() {
   }
 
   async function onSubmit(data: FranchiseFormData) {
-    // Password is only required when creating a new store, or when the
-    // admin has explicitly opted into resetting an existing manager's
-    // login — both are UI toggles the zod schema has no visibility
-    // into, so that half of the "required" rule is enforced here.
-    const passwordRequired = !editingFranchise || isResettingPassword;
+    const passwordRequired = !editingFranchise;
     if (passwordRequired && !data.password) {
       setError("password", { type: "manual", message: "Password is required" });
       return;
@@ -214,11 +211,7 @@ export function RegisteredFranchisePage() {
           managerName: data.managerName,
           email: data.email,
           phone: data.phone,
-          // Only send a password when the admin explicitly opted in —
-          // an empty field must never reach the API.
-          ...(isResettingPassword && data.password
-            ? { password: data.password }
-            : {}),
+
         });
         alert.success("Franchise store updated successfully");
       } else {
@@ -311,6 +304,11 @@ export function RegisteredFranchisePage() {
       ),
     },
     { accessorKey: "managerName", header: "Manager" },
+    ...(isSuperAdmin ? [{
+      id: "password",
+      header: "Password",
+      cell: ({ row }: { row: { original: Franchise } }) => <FranchisePassword franchiseId={row.original.id} />,
+    }] : []),
     {
       id: "city",
       header: "City",
@@ -318,11 +316,12 @@ export function RegisteredFranchisePage() {
     },
     {
       accessorKey: "productCount",
-      header: "Products",
+      header: "Product types",
       cell: ({ row }) => (
         <span className="text-sm">{row.original.productCount ?? 0}</span>
       ),
     },
+    { accessorKey: "totalStock", header: "Stock (packs)", cell: ({row}) => <span>{row.original.totalStock ?? "—"}</span> },
     {
       accessorKey: "pendingOrders",
       header: "Pending Orders",
@@ -502,28 +501,7 @@ export function RegisteredFranchisePage() {
               </div>
               <FormInput name="email" label="Manager Email" type="email" />
 
-              {editingFranchise ? (
-                <>
-                  <FormCheckbox
-                    name="__resetPasswordToggle__"
-                    label="Reset manager password"
-                    description="Leave unchecked to keep the current password"
-                  />
-                  {/* FormCheckbox is wired to react-hook-form, but we only
-                      need its on/off state locally — mirror it here rather
-                      than submit a throwaway field. */}
-                  <input
-                    type="checkbox"
-                    className="hidden"
-                    checked={isResettingPassword}
-                    onChange={(e) => setIsResettingPassword(e.target.checked)}
-                    ref={() => {}}
-                  />
-                  {isResettingPassword && (
-                    <FormInput name="password" label="New Password" type="password" />
-                  )}
-                </>
-              ) : (
+              {!editingFranchise && (
                 <FormInput name="password" label="Password" type="password" />
               )}
 

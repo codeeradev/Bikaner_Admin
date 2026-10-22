@@ -15,6 +15,7 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   "/orders/normal": "normalOrders:view",
   "/orders/bulk": "bulkOrders:view",
   "/approvals/sellers": "sellerApprovals:view",
+  "/franchise/stock-requests": "franchise:view",
   "/franchise/registered": "registeredFranchises:view",
   "/users": "users:view",
   "/roles": "roles:view",

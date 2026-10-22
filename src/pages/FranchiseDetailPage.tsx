@@ -1,3 +1,4 @@
+import { useLiveRefresh } from "@/hooks/useLiveRefresh";
 import {
   type AddFranchiseProductDto,
   type Category,
@@ -43,7 +44,7 @@ import { PERMISSIONS } from "@/lib/permissions";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowLeft, Pencil, Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 /** Local shape of the add/edit-product form — react-hook-form needs
@@ -74,6 +75,8 @@ export function FranchiseDetailPage() {
   const { slug } = useParams({ strict: false }) as { slug: string };
   const navigate = useNavigate();
   const alert = useAlert();
+  const fetchSequence = useRef(0);
+  useEffect(() => () => { fetchSequence.current++; }, []);
 
   const [franchise, setFranchise] = useState<FranchiseDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -119,19 +122,22 @@ export function FranchiseDetailPage() {
     }
   }, [selectedCategoryId]);
 
-  async function fetchFranchiseDetail(franchiseSlug: string) {
-    setIsLoading(true);
+  useLiveRefresh(async () => { if (slug) await fetchFranchiseDetail(slug, true); });
+
+  async function fetchFranchiseDetail(franchiseSlug: string, quiet = false) {
+    const sequence = ++fetchSequence.current;
+    if (!quiet) setIsLoading(true);
     try {
       const response = await franchiseService.getFranchiseBySlug(
         franchiseSlug,
       );
-      setFranchise(response.data);
+      if (sequence === fetchSequence.current) setFranchise(response.data);
     } catch (err) {
-      alert.error(
+      if (!quiet && sequence === fetchSequence.current) alert.error(
         err instanceof Error ? err.message : "Failed to fetch store details",
       );
     } finally {
-      setIsLoading(false);
+      if (sequence === fetchSequence.current) setIsLoading(false);
     }
   }
 
@@ -452,7 +458,8 @@ export function FranchiseDetailPage() {
 
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Inventory</h2>
+          <div><h2 className="text-lg font-semibold">Inventory</h2>
+<p className="text-sm text-muted-foreground">{franchise.inventory.reduce((sum,item) => sum + item.stock, 0)} packs in stock · {franchise.inventory.length} product types</p></div>
           <PermissionGuard permission={PERMISSIONS.FRANCHISE_EDIT} hideOnDenied>
             <Button
               onClick={openAddProductModal}

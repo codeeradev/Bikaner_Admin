@@ -124,8 +124,10 @@ const menuItems: MenuItem[] = [
   {
     label: "Franchise",
     icon: Store,
-    href: "/franchise/registered",
-    permission: PERMISSIONS.REGISTERED_FRANCHISES_VIEW,
+    children: [
+      { label: "Registered Franchise", icon: Store, href: "/franchise/registered", permission: PERMISSIONS.REGISTERED_FRANCHISES_VIEW },
+      { label: "Stock Requests", icon: Store, href: "/franchise/stock-requests", permission: PERMISSIONS.FRANCHISE_VIEW },
+    ],
   },
   {
     label: "Administration",

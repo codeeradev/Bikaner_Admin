@@ -1,3 +1,4 @@
+import { FranchiseStockRequestsPage } from "@/pages/FranchiseStockRequestsPage";
 import { AlertContainer } from "@/components/AlertContainer";
 import { MainLayout } from "@/layouts/MainLayout";
 import { BannersPage } from "@/pages/BannersPage";
@@ -174,6 +175,8 @@ const registeredFranchiseRoute = createRoute({
   component: RegisteredFranchisePage,
 });
 
+const franchiseStockRequestsRoute = createRoute({ getParentRoute: () => protectedRoute, path: "/franchise/stock-requests", component: FranchiseStockRequestsPage });
+
 const franchiseDetailRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "/franchise/$slug",
@@ -224,6 +227,7 @@ const routeTree = rootRoute.addChildren([
       bulkOrdersRoute,
       sellerApprovalsRoute,
       registeredFranchiseRoute,
+      franchiseStockRequestsRoute,
       franchiseDetailRoute,
       walletRoute,
       usersRoute,

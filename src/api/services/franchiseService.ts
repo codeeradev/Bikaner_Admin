@@ -23,6 +23,7 @@ export interface Franchise {
   status: "active" | "inactive";
   /** Present on the list endpoint only (aggregated server-side). */
   productCount?: number;
+  totalStock?: number;
   /** Present on the list endpoint only (aggregated server-side). */
   pendingOrders?: number;
   createdAt: string;
@@ -142,6 +143,9 @@ export interface FranchiseListResponse {
 }
 
 export const franchiseService = {
+  async revealPassword(id: string): Promise<ApiResponse<{ password: string | null }>> {
+    return get<ApiResponse<{ password: string | null }>>(`${ENDPOINTS.GET_FRANCHISE(id)}/password`);
+  },
   /**
    * GET /franchises
    * List every store, with product/pending-order counts already
