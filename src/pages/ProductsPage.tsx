@@ -8,7 +8,7 @@ import {
 } from "@/components/FormComponents";
 import { IngredientsInput } from "@/components/IngredientsInput";
 import { NutritionValuesInput } from "@/components/NutritionValuesInput";
-import { PageHeader } from "@/components/PageHeader";
+import { ManagementPageHeader } from "@/components/ManagementPageHeader";
 import { PermissionGuard } from "@/components/PermissionGuard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ import { useCategoryStore, useProductStore, useUIStore } from "@/store";
 import { productService } from "@/api/services/productService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Copy, FileSpreadsheet, ImageIcon, Info, Pencil, Plus, Trash2, Upload } from "lucide-react";
+import { Copy, FileSpreadsheet, ImageIcon, Info, Package, Pencil, Plus, Trash2, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 
@@ -35,6 +35,10 @@ export function ProductsPage() {
   const {
     isLoading,
     error,
+    searchQuery,
+    statusFilter,
+    categoryFilter,
+    total,
     addProduct,
     updateProduct,
     deleteProduct,
@@ -51,6 +55,7 @@ export function ProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [isCsvDialogOpen, setIsCsvDialogOpen] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
@@ -67,11 +72,15 @@ export function ProductsPage() {
 
   const { handleSubmit, reset } = methods;
 
-  // Fetch products and categories on mount
+  // Fetch categories once, and debounce API-backed product filters.
   useEffect(() => {
-    fetchProducts();
     fetchCategories();
-  }, [fetchProducts, fetchCategories]);
+  }, [fetchCategories]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => void fetchProducts(), 300);
+    return () => window.clearTimeout(timer);
+  }, [fetchProducts, statusFilter, categoryFilter]);
 
   // Show error alert when error changes
   useEffect(() => {
@@ -80,9 +89,16 @@ export function ProductsPage() {
     }
   }, [error, alert]);
 
+  useEffect(() => {
+    return () => {
+      if (imagePreview.startsWith("blob:")) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
+
   const openAddModal = () => {
     setEditingProduct(null);
     setImageFile(null);
+    setImagePreview("");
     reset({
       name: "",
       categoryId: "",
@@ -106,6 +122,13 @@ export function ProductsPage() {
   const openEditModal = (product: Product) => {
     setEditingProduct(product);
     setImageFile(null);
+    setImagePreview(
+      product.image
+        ? /^https?:\/\//.test(product.image)
+          ? product.image
+          : `${API_BASE}${product.image}`
+        : "",
+    );
     
     // Extract categoryId - handle both string and object formats
     let categoryId = product.categoryId;
@@ -160,6 +183,7 @@ export function ProductsPage() {
       setIsModalOpen(false);
       reset();
       setImageFile(null);
+      setImagePreview("");
     } catch (err) {
       alert.removeAlert(loadingId);
       alert.error(err instanceof Error ? err.message : "Operation failed");
@@ -192,6 +216,7 @@ export function ProductsPage() {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -339,80 +364,90 @@ export function ProductsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Products" description="Manage your product catalog">
+      <ManagementPageHeader
+        icon={Package}
+        title="Products"
+        description="Keep product details, pricing, stock, and storefront visibility in one place."
+      >
         <PermissionGuard permission={PERMISSIONS.PRODUCTS_CREATE} hideOnDenied>
-          <Button variant="outline" onClick={() => setIsHowItWorksOpen(true)}>
+          <Button variant="outline" className="rounded-xl border-rose-200 bg-white/70 hover:bg-rose-50 dark:bg-background/70" onClick={() => setIsHowItWorksOpen(true)}>
             <Info className="h-4 w-4 mr-2" />
             How it works
           </Button>
-          <Button variant="outline" onClick={() => setIsCsvDialogOpen(true)}>
+          <Button variant="outline" className="rounded-xl border-rose-200 bg-white/70 hover:bg-rose-50 dark:bg-background/70" onClick={() => setIsCsvDialogOpen(true)}>
             <FileSpreadsheet className="h-4 w-4 mr-2" />
             Import CSV
           </Button>
-          <Button variant="outline" onClick={() => setIsImageUploadOpen(true)}>
+          <Button variant="outline" className="rounded-xl border-rose-200 bg-white/70 hover:bg-rose-50 dark:bg-background/70" onClick={() => setIsImageUploadOpen(true)}>
             <ImageIcon className="h-4 w-4 mr-2" />
             Upload CSV Images
           </Button>
-          <Button onClick={openAddModal}>
+          <Button onClick={openAddModal} className="rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105">
             <Plus className="h-4 w-4 mr-2" />
             Add Product
           </Button>
         </PermissionGuard>
-      </PageHeader>
+      </ManagementPageHeader>
 
-      <div className="flex items-center gap-4 flex-wrap">
-        <input
-          type="text"
-          placeholder="Search products..."
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="max-w-sm h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        />
-        <select
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="all">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-        <select
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="all">All Categories</option>
-          {categoryOptions.map((c) => (
-            <option key={c.value} value={c.value}>
-              {c.label}
-            </option>
-          ))}
-        </select>
-        <Button variant="outline" onClick={() => fetchProducts()}>
-          Search
-        </Button>
-      </div>
-
-      {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-muted-foreground">Loading products...</div>
-        </div>
-      ) : (
-        <DataTable
-          columns={columns}
-          data={filteredProducts}
-          emptyMessage="No products found"
-        />
-      )}
+      <DataTable
+        columns={columns}
+        data={filteredProducts}
+        isLoading={isLoading}
+        searchPlaceholder="Search by product name, SKU, or category..."
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        resultCount={searchQuery ? undefined : total}
+        emptyMessage="No products match these filters"
+        toolbarContent={
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <select
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+              className="h-10 rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Filter products by status"
+            >
+              <option value="all">All statuses</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+            <select
+              value={categoryFilter}
+              onChange={(event) => setCategoryFilter(event.target.value)}
+              className="h-10 rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Filter products by category"
+            >
+              <option value="all">All categories</option>
+              {categoryOptions.map((category) => (
+                <option key={category.value} value={category.value}>
+                  {category.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        }
+      />
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {editingProduct ? "Edit Product" : "Add Product"}
-            </DialogTitle>
+        <DialogContent className="max-h-[92vh] overflow-y-auto rounded-[1.75rem] border-rose-100 p-5 shadow-2xl shadow-rose-950/10 sm:max-w-3xl sm:p-7">
+          <DialogHeader className="rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50 via-orange-50 to-amber-50 p-4 pr-10 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:p-5">
+            <div className="flex items-center gap-3">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/20">
+                <Package className="h-5 w-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-lg font-bold tracking-tight">{editingProduct ? "Edit Product" : "Add Product"}</DialogTitle>
+                <p className="mt-1 text-xs text-muted-foreground">Set the product details, pricing, stock, and ingredients.</p>
+              </div>
+            </div>
           </DialogHeader>
           <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 pt-1">
+              <section className="space-y-4 rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-5">
+                <div>
+                  <h3 className="text-sm font-semibold">Product information</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Add the name, category, and description customers will see.</p>
+                </div>
+              <div className="grid gap-4 sm:grid-cols-2">
                 <FormInput
                   name="name"
                   label="Product Name"
@@ -431,7 +466,13 @@ export function ProductsPage() {
                 label="Description"
                 placeholder="Enter product description"
               />
-              <div className="grid grid-cols-2 gap-4">
+              </section>
+              <section className="space-y-4 rounded-2xl border border-orange-100 bg-orange-50/25 p-4 dark:border-border dark:bg-muted/15 sm:p-5">
+                <div>
+                  <h3 className="text-sm font-semibold">Pricing and stock</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Keep the selling price and available quantities up to date.</p>
+                </div>
+              <div className="grid gap-4 sm:grid-cols-2">
                 <FormInput name="mrp" label="MRP" type="number" step="0.01" />
                 <FormInput
                   name="sellingPrice"
@@ -440,7 +481,7 @@ export function ProductsPage() {
                   step="0.01"
                 />
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid gap-4 sm:grid-cols-3">
                 <FormInput
                   name="unitValue"
                   label="Unit Value"
@@ -454,7 +495,7 @@ export function ProductsPage() {
                 />
                 <FormInput name="stock" label="Stock" type="number" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <FormInput 
                   name="maxQuantity" 
                   label="Max Quantity Per Order (Optional)" 
@@ -477,26 +518,29 @@ export function ProductsPage() {
                   />
                 )}
               />
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Product Image
-                </label>
+              </section>
+              <section className="space-y-4 rounded-2xl border border-dashed border-rose-200 bg-rose-50/25 p-4 dark:border-border dark:bg-muted/15 sm:p-5">
+                <div>
+                  <label className="block text-sm font-semibold">Product image</label>
+                  <p className="mt-1 text-xs text-muted-foreground">Choose a clear image to help customers recognize the product.</p>
+                </div>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-xl border border-border/70 bg-background shadow-sm">
+                  {imagePreview ? <img src={imagePreview} alt="Product preview" className="h-full w-full object-cover" /> : <ImageIcon className="h-7 w-7 text-muted-foreground" />}
+                </div>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
-                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className="w-full rounded-xl border border-rose-200 bg-background px-3 py-2.5 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-rose-100 file:px-3 file:py-1.5 file:font-medium file:text-rose-900 hover:file:bg-rose-200 dark:border-border dark:file:bg-muted dark:file:text-foreground"
                 />
-                {editingProduct?.image && !imageFile && (
-                  <div className="mt-2">
-                    <img
-                      src={`${API_BASE}${editingProduct.image}`}
-                      alt="Current"
-                      className="h-20 w-20 object-cover rounded"
-                    />
-                  </div>
-                )}
-              </div>
+                </div>
+              </section>
+              <section className="space-y-4 rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-5">
+                <div>
+                  <h3 className="text-sm font-semibold">Store settings</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Choose product visibility and featured placement.</p>
+                </div>
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -513,8 +557,12 @@ export function ProductsPage() {
                   { value: "inactive", label: "Inactive" },
                 ]}
               />
-              <div className="space-y-4 pt-4 border-t">
-                <h3 className="text-lg font-medium">Nutrition & Ingredients</h3>
+              </section>
+              <section className="space-y-4 rounded-2xl border border-rose-100 bg-rose-50/30 p-4 dark:border-border dark:bg-muted/15 sm:p-5">
+                <div>
+                  <h3 className="text-sm font-semibold">Nutrition and ingredients</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Optional product information for your catalog.</p>
+                </div>
 
                 <Controller
                   name="nutritionValues"
@@ -537,17 +585,18 @@ export function ProductsPage() {
                     />
                   )}
                 />
-              </div>
-              <div className="flex justify-end gap-2 pt-4">
+              </section>
+              <div className="flex justify-end gap-2 border-t border-border/70 pt-4">
                 <Button
                   type="button"
                   variant="outline"
+                  className="rounded-xl"
                   onClick={() => setIsModalOpen(false)}
                   disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting} className="min-w-28 rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/20 hover:brightness-105">
                   {isSubmitting
                     ? "Saving..."
                     : editingProduct

@@ -1,11 +1,24 @@
-import { type Offer, offerService, type OfferPayload } from "@/api/services";
+import { get } from "@/api/apiClient";
+import { ENDPOINTS } from "@/api/endpoints";
+import { type Offer, type OfferPayload, offerService } from "@/api/services";
 import { DataTable } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -20,13 +33,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { useAlert } from "@/hooks/use-alert";
-import { ENDPOINTS } from "@/api/endpoints";
-import { get } from "@/api/apiClient";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Pencil, Plus, RefreshCw, Tag, Trash2, X } from "lucide-react";
+import { Gift, Pencil, Plus, RefreshCw, Tag, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 type OfferForm = {
@@ -138,6 +149,8 @@ export function OfferManagementPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [offerToDelete, setOfferToDelete] = useState<Offer | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [editingOffer, setEditingOffer] = useState<Offer | null>(null);
   const [selectedProductId, setSelectedProductId] = useState("");
   const [form, setForm] = useState<OfferForm>(emptyForm);
@@ -161,7 +174,7 @@ export function OfferManagementPage() {
     loadOffers();
   }, [loadOffers]);
 
-  const loadProducts = async () => {
+  const loadProducts = async (): Promise<ProductOption[]> => {
     try {
       const response = await get<{
         success: boolean;
@@ -170,9 +183,12 @@ export function OfferManagementPage() {
 
       if (response.success) {
         setProductOptions(response.data);
+        return response.data;
       }
+      return [];
     } catch (error) {
-      console.error(error);
+      alert.error(getErrorMessage(error, "Could not load products."));
+      return [];
     }
   };
 
@@ -180,22 +196,26 @@ export function OfferManagementPage() {
     setEditingOffer(null);
     setForm(emptyForm);
     setSelectedProducts([]);
+    setSelectedProductId("");
     await loadProducts();
     setDialogOpen(true);
   };
 
   const openEditDialog = async (offer: Offer) => {
     setEditingOffer(offer);
-    await loadProducts();
+    setSelectedProductId("");
+    const products = await loadProducts();
     setForm(toForm(offer));
 
     // Load selected products if specific_products
     if (offer.applicableOn === "specific_products") {
-      const selected = productOptions.filter((p) =>
+      const selected = products.filter((p) =>
         offer.specificProducts?.includes(p.id),
       );
 
       setSelectedProducts(selected);
+    } else {
+      setSelectedProducts([]);
     }
 
     setDialogOpen(true);
@@ -254,17 +274,17 @@ export function OfferManagementPage() {
     if (form.offerType === "bogo") {
       const buyQty = Number(form.bogoConfig.buyQuantity);
       const getQty = Number(form.bogoConfig.getQuantity);
-      
+
       if (!Number.isFinite(buyQty) || buyQty < 1) {
         alert.error("Buy quantity must be at least 1.");
         return;
       }
-      
+
       if (!Number.isFinite(getQty) || getQty < 1) {
         alert.error("Get quantity must be at least 1.");
         return;
       }
-      
+
       // BOGO requires specific products
       if (form.applicableOn !== "specific_products") {
         alert.error("BOGO offers must be applied to specific products.");
@@ -341,15 +361,18 @@ export function OfferManagementPage() {
     }
   };
 
-  const handleDelete = async (offer: Offer) => {
-    if (!window.confirm(`Delete offer "${offer.name}"?`)) return;
-
+  const handleDelete = async () => {
+    if (!offerToDelete) return;
+    setIsDeleting(true);
     try {
-      await offerService.deleteOffer(offer.id);
+      await offerService.deleteOffer(offerToDelete.id);
       alert.success("Offer deleted.");
+      setOfferToDelete(null);
       await loadOffers();
     } catch (error) {
       alert.error(getErrorMessage(error, "Could not delete offer."));
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -361,7 +384,10 @@ export function OfferManagementPage() {
         <div>
           <div className="font-medium">{row.original.name}</div>
           {row.original.description && (
-            <div className="text-xs text-muted-foreground">
+            <div
+              className="mt-0.5 max-w-[280px] truncate text-xs text-muted-foreground"
+              title={row.original.description}
+            >
               {row.original.description}
             </div>
           )}
@@ -370,7 +396,7 @@ export function OfferManagementPage() {
     },
     {
       accessorKey: "offerType",
-      header: "Type",
+      header: "Application",
       cell: ({ row }) => getOfferTypeBadge(row.original.offerType),
     },
     {
@@ -443,7 +469,7 @@ export function OfferManagementPage() {
             type="button"
             variant="outline"
             size="icon"
-            onClick={() => handleDelete(row.original)}
+            onClick={() => setOfferToDelete(row.original)}
             title="Delete offer"
           >
             <Trash2 className="h-4 w-4 text-destructive" />
@@ -458,24 +484,27 @@ export function OfferManagementPage() {
       <PageHeader
         title="Offer Management"
         description="Create and manage offers including coupons, discounts, and BOGO deals"
-      />
-
-      <div className="flex justify-end gap-2">
+        className="rounded-3xl border border-rose-100 bg-gradient-to-br from-rose-50 via-orange-50/80 to-amber-50 px-5 py-5 shadow-sm dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:px-6"
+      >
         <Button
           type="button"
           variant="outline"
-          size="sm"
+          className="h-10 rounded-xl border-rose-200 bg-white/80"
           onClick={loadOffers}
           disabled={isLoading}
         >
           <RefreshCw className="mr-2 h-4 w-4" />
           Refresh
         </Button>
-        <Button type="button" size="sm" onClick={openCreateDialog}>
+        <Button
+          type="button"
+          className="h-10 rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105"
+          onClick={openCreateDialog}
+        >
           <Plus className="mr-2 h-4 w-4" />
           Add Offer
         </Button>
-      </div>
+      </PageHeader>
 
       <DataTable
         columns={columns}
@@ -486,15 +515,24 @@ export function OfferManagementPage() {
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle className="flex items-center gap-2">
-                <Tag className="h-5 w-5" />
-                {editingOffer ? "Edit Offer" : "Create Offer"}
-              </DialogTitle>
-              <div className="flex items-center gap-2">
-                <Label htmlFor="isActive" className="text-sm font-normal">
+        <DialogContent className="max-h-[92vh] overflow-y-auto rounded-[1.75rem] border-rose-100 p-5 shadow-2xl shadow-rose-950/10 sm:max-w-3xl sm:p-7">
+          <DialogHeader className="rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50 via-orange-50 to-amber-50 p-4 pr-10 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:p-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/20">
+                  <Gift className="h-5 w-5" />
+                </div>
+                <div>
+                  <DialogTitle className="text-lg font-bold tracking-tight">
+                    {editingOffer ? "Edit offer" : "Create an offer"}
+                  </DialogTitle>
+                  <DialogDescription className="mt-1 text-xs">
+                    Configure the discount, eligible products, and validity.
+                  </DialogDescription>
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-white/80 bg-white/70 px-3 py-2 dark:border-border dark:bg-card/60">
+                <Label htmlFor="isActive" className="text-sm font-medium">
                   {form.isActive ? "Active" : "Inactive"}
                 </Label>
                 <Switch
@@ -508,13 +546,16 @@ export function OfferManagementPage() {
             </div>
           </DialogHeader>
 
-          <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs defaultValue="basic" className="w-full pt-1">
+            <TabsList className="grid h-11 w-full grid-cols-2 rounded-xl border border-rose-100 bg-rose-50/70 p-1 dark:border-border dark:bg-muted/60">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
               <TabsTrigger value="conditions">Conditions</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="basic" className="space-y-4 mt-4">
+            <TabsContent
+              value="basic"
+              className="mt-4 space-y-5 rounded-2xl border border-border/70 bg-card/60 p-4 sm:p-5"
+            >
               <div className="space-y-2">
                 <Label htmlFor="name">Offer Name *</Label>
                 <Input
@@ -547,7 +588,7 @@ export function OfferManagementPage() {
                       setForm({ ...form, offerType: value })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-11 w-full rounded-xl">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -575,7 +616,7 @@ export function OfferManagementPage() {
                       setSelectedProducts([]);
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-11 w-full rounded-xl">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -605,7 +646,7 @@ export function OfferManagementPage() {
                       }
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-11 w-full rounded-xl">
                       <SelectValue placeholder="Select Product" />
                     </SelectTrigger>
 
@@ -624,7 +665,7 @@ export function OfferManagementPage() {
                         {selectedProducts.map((product) => (
                           <div
                             key={product.id}
-                            className="flex items-center gap-1 bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs"
+                            className="flex items-center gap-1 rounded-lg border border-rose-100 bg-rose-50 px-2.5 py-1.5 text-xs text-rose-800 dark:border-border dark:bg-rose-950/30 dark:text-rose-200"
                           >
                             <span>{product.name}</span>
                             <button
@@ -693,8 +734,10 @@ export function OfferManagementPage() {
               )}
 
               {form.offerType === "bogo" && (
-                <div className="space-y-4 rounded-lg border p-4 bg-muted/50">
-                  <div className="font-medium">Buy One Get One Configuration</div>
+                <div className="space-y-4 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50/70 p-4 dark:border-amber-900 dark:from-amber-950/20 dark:to-orange-950/10">
+                  <div className="font-medium">
+                    Buy One Get One Configuration
+                  </div>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="buyQuantity">Buy Quantity</Label>
@@ -741,14 +784,14 @@ export function OfferManagementPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="text-sm text-muted-foreground bg-background p-3 rounded">
+                  <div className="rounded-xl border border-amber-100 bg-white/80 p-3 text-sm text-muted-foreground dark:border-border dark:bg-card/70">
                     Example: Buy {form.bogoConfig.buyQuantity || "1"}, Get{" "}
                     {form.bogoConfig.getQuantity || "1"} Free
                   </div>
                 </div>
               )}
 
-              <div className="flex items-center justify-between rounded-md border p-3">
+              <div className="flex items-center justify-between rounded-xl border border-border/70 bg-background/70 p-3">
                 <div className="space-y-0.5">
                   <Label htmlFor="autoApply">Auto Apply</Label>
                   <p className="text-xs text-muted-foreground">
@@ -765,7 +808,10 @@ export function OfferManagementPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="conditions" className="space-y-4 mt-4">
+            <TabsContent
+              value="conditions"
+              className="mt-4 space-y-5 rounded-2xl border border-border/70 bg-card/60 p-4 sm:p-5"
+            >
               <div className="space-y-2">
                 <Label htmlFor="minCartValue">Minimum Cart Value (₹)</Label>
                 <Input
@@ -823,21 +869,65 @@ export function OfferManagementPage() {
             </TabsContent>
           </Tabs>
 
-          <DialogFooter>
+          <DialogFooter className="flex-col gap-2 border-t border-border/70 pt-4 sm:flex-row">
             <Button
               type="button"
               variant="outline"
+              className="w-full rounded-xl sm:w-auto"
               onClick={() => setDialogOpen(false)}
               disabled={isSaving}
             >
               Cancel
             </Button>
-            <Button type="button" onClick={handleSubmit} disabled={isSaving}>
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isSaving}
+              className="w-full rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105 sm:w-auto"
+            >
               {isSaving ? "Saving..." : "Save Offer"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={!!offerToDelete}
+        onOpenChange={(open) => {
+          if (!open && !isDeleting) setOfferToDelete(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-3xl border-rose-100 p-6 shadow-2xl shadow-rose-950/10 sm:max-w-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-lg font-bold tracking-tight">
+              Delete this offer?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="leading-relaxed">
+              The offer{" "}
+              <span className="font-semibold text-foreground">
+                {offerToDelete?.name}
+              </span>{" "}
+              will be removed and will no longer be available to customers. This
+              action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl" disabled={isDeleting}>
+              Keep offer
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isDeleting}
+              onClick={(event) => {
+                event.preventDefault();
+                void handleDelete();
+              }}
+            >
+              {isDeleting ? "Deleting…" : "Delete offer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

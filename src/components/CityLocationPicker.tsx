@@ -147,8 +147,8 @@ export function CityLocationPicker() {
   const zoom = hasLocation ? SELECTED_ZOOM : DEFAULT_ZOOM;
 
   return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium leading-none">Location</label>
+    <div className="space-y-3">
+      <label className="text-sm font-semibold leading-none">Search city center</label>
 
       <div ref={containerRef} className="relative">
         <div className="relative">
@@ -159,7 +159,7 @@ export function CityLocationPicker() {
             onChange={(e) => handleQueryChange(e.target.value)}
             onFocus={() => results.length > 0 && setShowResults(true)}
             placeholder="Search for a location..."
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-9 pr-9 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 pl-9 pr-9 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300 disabled:cursor-not-allowed disabled:opacity-50"
           />
           {isSearching && (
             <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
@@ -167,13 +167,13 @@ export function CityLocationPicker() {
         </div>
 
         {showResults && results.length > 0 && (
-          <ul className="absolute z-[1000] mt-1 max-h-56 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md">
+          <ul className="absolute z-[1000] mt-1 max-h-56 w-full overflow-auto rounded-xl border bg-popover text-popover-foreground shadow-lg">
             {results.map((result) => (
               <li key={result.place_id}>
                 <button
                   type="button"
                   onClick={() => handleSelectResult(result)}
-                  className="flex w-full items-start gap-2 px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                  className="flex w-full items-start gap-2 px-3 py-2 text-left text-sm hover:bg-orange-50 hover:text-orange-950 dark:hover:bg-muted dark:hover:text-foreground"
                 >
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                   <span className="line-clamp-2">{result.display_name}</span>
@@ -184,11 +184,11 @@ export function CityLocationPicker() {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-2xl border border-orange-100 shadow-sm dark:border-border">
         <MapContainer
           center={center}
           zoom={zoom}
-          style={{ height: "420px", width: "100%" }}
+          style={{ height: "320px", width: "100%" }}
           scrollWheelZoom={false}
         >
           <TileLayer

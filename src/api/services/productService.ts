@@ -126,7 +126,16 @@ export const productService = {
     status?: "active" | "inactive";
     isFeatured?: boolean;
   }): Promise<ProductListResponse> {
-    return get<ProductListResponse>(ENDPOINTS.GET_PRODUCTS, params);
+    const query: Record<string, string | number | boolean> = {
+      page: params?.page ?? 1,
+      limit: params?.pageSize ?? 1000,
+    };
+    if (params?.categoryId) query.categoryId = params.categoryId;
+    if (params?.status !== undefined) {
+      query.isActive = params.status === "active";
+    }
+    if (params?.isFeatured !== undefined) query.isFeatured = params.isFeatured;
+    return get<ProductListResponse>(ENDPOINTS.GET_PRODUCTS, query);
   },
 
   /**
@@ -153,7 +162,7 @@ export const productService = {
     if (data.mrp !== undefined) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice !== undefined) formData.append("sellingPrice", data.sellingPrice.toString());
     if (data.stock !== undefined) formData.append("stock", data.stock.toString());
-    if (data.maxQuantity !== undefined) formData.append("maxQuantity", data.maxQuantity.toString());
+    if (data.maxQuantity !== undefined) formData.append("maxQuantity", data.maxQuantity == null ? "" : data.maxQuantity.toString());
     if (data.isFeatured !== undefined) formData.append("isFeatured", data.isFeatured.toString());
     
     // Convert status to isActive
@@ -191,16 +200,16 @@ export const productService = {
     const formData = new FormData();
     
     // Add text fields
-    if (data.name) formData.append("name", data.name);
-    if (data.categoryId) formData.append("categoryId", data.categoryId);
-    if (data.description) formData.append("description", data.description);
-    if (data.sku) formData.append("sku", data.sku);
-    if (data.unitValue) formData.append("unitValue", data.unitValue.toString());
-    if (data.unit) formData.append("unit", data.unit);
+    if (data.name !== undefined) formData.append("name", data.name);
+    if (data.categoryId !== undefined) formData.append("categoryId", data.categoryId);
+    if (data.description !== undefined) formData.append("description", data.description);
+    if (data.sku !== undefined) formData.append("sku", data.sku);
+    if (data.unitValue !== undefined) formData.append("unitValue", data.unitValue.toString());
+    if (data.unit !== undefined) formData.append("unit", data.unit);
     if (data.mrp !== undefined) formData.append("mrp", data.mrp.toString());
     if (data.sellingPrice !== undefined) formData.append("sellingPrice", data.sellingPrice.toString());
     if (data.stock !== undefined) formData.append("stock", data.stock.toString());
-    if (data.maxQuantity !== undefined) formData.append("maxQuantity", data.maxQuantity.toString());
+    if (data.maxQuantity !== undefined) formData.append("maxQuantity", data.maxQuantity == null ? "" : data.maxQuantity.toString());
     if (data.isFeatured !== undefined) formData.append("isFeatured", data.isFeatured.toString());
     
     // Convert status to isActive

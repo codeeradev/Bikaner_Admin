@@ -13,7 +13,6 @@ import {
 } from "@/components/FormComponents";
 import { PageHeader } from "@/components/PageHeader";
 import { PermissionGuard } from "@/components/PermissionGuard";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +26,7 @@ import { PERMISSIONS } from "@/lib/permissions";
 import { useToast } from "@/hooks/use-toast";
 import { ZoneLocationPicker } from "@/components/ZoneLocationPicker";
 import type { ColumnDef } from "@tanstack/react-table";
-import { AlertCircle, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
+import { LocateFixed, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -141,6 +140,15 @@ export function ZonesPage() {
   };
 
   const onSubmit = async (data: ZoneFormData) => {
+    if (
+      data.lat == null || data.lng == null ||
+      !Number.isFinite(data.lat) || !Number.isFinite(data.lng) ||
+      data.lat < -90 || data.lat > 90 || data.lng < -180 || data.lng > 180
+    ) {
+      alert.error("Choose a valid zone location on the map or enter its coordinates.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const zoneData = {
@@ -207,7 +215,26 @@ export function ZonesPage() {
     {
       accessorKey: "city",
       header: "City",
-      cell: ({ row }) => <span>{row.original.cityId?.name ?? "-"}</span>,
+      cell: ({ row }) => (
+        <span className="inline-flex items-center gap-2 text-sm">
+          <MapPin className="h-3.5 w-3.5 text-rose-500" />
+          {row.original.cityId?.name ?? "-"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "locationLabel",
+      header: "Map location",
+      cell: ({ row }) => (
+        <div className="max-w-56">
+          <p className="truncate text-sm font-medium">{row.original.locationLabel || "Pinned location"}</p>
+          <p className="font-mono text-[11px] text-muted-foreground">
+            {row.original.lat != null && row.original.lng != null
+              ? `${row.original.lat.toFixed(5)}, ${row.original.lng.toFixed(5)}`
+              : "Coordinates not set"}
+          </p>
+        </div>
+      ),
     },
     {
       accessorKey: "deliveryCharge",
@@ -267,10 +294,11 @@ export function ZonesPage() {
     <div className="space-y-6">
       <PageHeader
         title="Delivery Zones"
-        description="Manage delivery zones and charges"
+        description="Set delivery areas, map pins, and charges for your customers."
+        className="rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 via-orange-50 to-amber-50 px-5 py-5 shadow-sm dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card"
       >
         <PermissionGuard permission={PERMISSIONS.ZONES_CREATE} hideOnDenied>
-          <Button onClick={openAddModal}>
+          <Button onClick={openAddModal} className="rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-sm hover:brightness-105">
             <Plus className="h-4 w-4 mr-2" />
             Add Zone
           </Button>
@@ -290,12 +318,25 @@ export function ZonesPage() {
       )}
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editingZone ? "Edit Zone" : "Add Zone"}</DialogTitle>
+        <DialogContent className="max-h-[92vh] overflow-y-auto rounded-[1.75rem] border-rose-100 p-5 shadow-2xl shadow-rose-950/10 sm:max-w-3xl sm:p-7">
+          <DialogHeader className="rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50 via-orange-50 to-amber-50 p-4 pr-10 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:p-5">
+            <div className="flex items-center gap-3">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/20">
+                <LocateFixed className="h-5 w-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-lg font-bold tracking-tight">{editingZone ? "Edit delivery zone" : "Add delivery zone"}</DialogTitle>
+                <p className="mt-1 text-xs text-muted-foreground">Set the service area, charges, and exact map pin.</p>
+              </div>
+            </div>
           </DialogHeader>
           <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 pt-1">
+              <section className="space-y-4 rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-5">
+                <div>
+                  <h3 className="text-sm font-semibold">Zone details</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Name the area and select its city.</p>
+                </div>
               <FormInput
                 name="name"
                 label="Zone Name"
@@ -305,18 +346,6 @@ export function ZonesPage() {
                 name="description"
                 label="Description"
                 placeholder="Enter description (optional)"
-              />
-              <FormInput
-                name="deliveryCharge"
-                label="Delivery Charge (₹)"
-                placeholder="Enter delivery charge"
-                type="number"
-              />
-              <FormInput
-                name="minimumOrderAmount"
-                label="Minimum Order Amount (₹)"
-                placeholder="Enter minimum order amount"
-                type="number"
               />
               <FormSelect
                 name="cityId"
@@ -329,7 +358,27 @@ export function ZonesPage() {
                   isCitiesLoading ? "Loading cities..." : "Select a city"
                 }
               />
+              </section>
+              <section className="space-y-4 rounded-2xl border border-orange-100 bg-orange-50/25 p-4 dark:border-border dark:bg-muted/10 sm:p-5">
+                <div>
+                  <h3 className="text-sm font-semibold">Delivery charges</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Set the fee and minimum order amount for this zone.</p>
+                </div>
+              <FormInput
+                name="deliveryCharge"
+                label="Delivery Charge (₹)"
+                placeholder="Enter delivery charge"
+                type="number"
+              />
+              <FormInput
+                name="minimumOrderAmount"
+                label="Minimum Order Amount (₹)"
+                placeholder="Enter minimum order amount"
+                type="number"
+              />
+              </section>
               <ZoneLocationPicker cities={cities} />
+              <section className="rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-5">
               <FormSelect
                 name="status"
                 label="Status"
@@ -338,16 +387,18 @@ export function ZonesPage() {
                   { value: "inactive", label: "Inactive" },
                 ]}
               />
-              <div className="flex justify-end gap-2 pt-4">
+              </section>
+              <div className="flex justify-end gap-2 border-t border-border/70 pt-4">
                 <Button
                   type="button"
                   variant="outline"
+                  className="rounded-xl"
                   onClick={() => setIsModalOpen(false)}
                   disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting} className="min-w-28 rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-sm hover:brightness-105">
                   {isSubmitting
                     ? "Saving..."
                     : editingZone

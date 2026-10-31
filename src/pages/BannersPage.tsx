@@ -2,7 +2,7 @@ import type { Banner } from "@/api/services/bannerService";
 import { bannerService } from "@/api/services/bannerService";
 import { productService } from "@/api/services/productService";
 import { DataTable } from "@/components/DataTable";
-import { PageHeader } from "@/components/PageHeader";
+import { ManagementPageHeader } from "@/components/ManagementPageHeader";
 import { PermissionGuard } from "@/components/PermissionGuard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ import { useAlert } from "@/hooks/use-alert";
 import { PERMISSIONS } from "@/lib/permissions";
 import { useUIStore } from "@/store";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ImageIcon, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { ImageIcon, ImagePlus, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface Product {
@@ -286,17 +286,18 @@ export function BannersPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
+      <ManagementPageHeader
+        icon={ImagePlus}
         title="Banners"
-        description="Manage promotional banners for your store"
+        description="Create and organize the promotions customers see across your storefront."
       >
         <PermissionGuard permission={PERMISSIONS.BANNERS_CREATE} hideOnDenied>
-          <Button onClick={openAddDialog}>
+          <Button onClick={openAddDialog} className="rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105">
             <Plus className="h-4 w-4 mr-2" />
             Add Banner
           </Button>
         </PermissionGuard>
-      </PageHeader>
+      </ManagementPageHeader>
 
       <DataTable
         columns={columns}
@@ -306,15 +307,28 @@ export function BannersPage() {
 
       {/* Create/Edit Banner Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>
-              {editingBanner ? "Edit Banner" : "Add New Banner"}
-            </DialogTitle>
+        <DialogContent className="max-h-[92vh] overflow-y-auto rounded-[1.75rem] border-rose-100 p-5 shadow-2xl shadow-rose-950/10 sm:max-w-xl sm:p-7">
+          <DialogHeader className="rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50 via-orange-50 to-amber-50 p-4 pr-10 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:p-5">
+            <div className="flex items-center gap-3">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/20">
+                <ImagePlus className="h-5 w-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-lg font-bold tracking-tight">
+                  {editingBanner ? "Edit Banner" : "Add Banner"}
+                </DialogTitle>
+                <p className="mt-1 text-xs text-muted-foreground">Create a clear promotion for the storefront.</p>
+              </div>
+            </div>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+          <form onSubmit={handleSubmit} className="space-y-5 pt-1">
+            <section className="space-y-4 rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-5">
+              <div>
+                <h3 className="text-sm font-semibold">Banner details</h3>
+                <p className="mt-1 text-xs text-muted-foreground">Add a title and choose the image to display.</p>
+              </div>
+              <div>
               <Label htmlFor="title">
                 Banner Title <span className="text-destructive">*</span>
               </Label>
@@ -330,15 +344,15 @@ export function BannersPage() {
               {errors.title && (
                 <p className="text-xs text-destructive mt-1">{errors.title}</p>
               )}
-            </div>
+              </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 rounded-xl border border-dashed border-rose-200 bg-rose-50/25 p-4 dark:border-border dark:bg-muted/15">
               <Label>
                 Banner Image{" "}
                 {!editingBanner && <span className="text-destructive">*</span>}
               </Label>
-              <div className="flex items-center gap-4">
-                <div className="h-24 w-24 rounded-lg border overflow-hidden bg-muted flex items-center justify-center">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div className="grid h-28 w-full max-w-56 shrink-0 place-items-center overflow-hidden rounded-xl border border-border/70 bg-background shadow-sm sm:h-24 sm:w-40">
                   {imagePreview ? (
                     <img
                       src={imagePreview}
@@ -365,6 +379,7 @@ export function BannersPage() {
                   <Button
                     type="button"
                     variant="outline"
+                    className="rounded-xl border-rose-200 bg-background hover:bg-rose-50"
                     onClick={() =>
                       document.getElementById("banner-image")?.click()
                     }
@@ -382,7 +397,14 @@ export function BannersPage() {
               )}
             </div>
 
-            <div>
+            </section>
+
+            <section className="space-y-4 rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-5">
+              <div>
+                <h3 className="text-sm font-semibold">Display settings</h3>
+                <p className="mt-1 text-xs text-muted-foreground">Optionally connect this banner to a product and set its visibility.</p>
+              </div>
+              <div>
               <Label htmlFor="productId">Linked Product (Optional)</Label>
               <Select
                 value={formData.productId || "none"}
@@ -393,7 +415,7 @@ export function BannersPage() {
                   })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="rounded-xl">
                   <SelectValue placeholder="Select a product" />
                 </SelectTrigger>
                 <SelectContent>
@@ -405,7 +427,7 @@ export function BannersPage() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+              </div>
 
             <div>
               <Label htmlFor="isActive">Status</Label>
@@ -415,7 +437,7 @@ export function BannersPage() {
                   setFormData({ ...formData, isActive: value === "active" })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -423,18 +445,20 @@ export function BannersPage() {
                   <SelectItem value="inactive">Inactive</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+              </div>
+            </section>
 
-            <DialogFooter>
+            <DialogFooter className="border-t border-border/70 pt-4">
               <Button
                 type="button"
                 variant="outline"
+                className="rounded-xl"
                 onClick={() => setIsDialogOpen(false)}
                 disabled={isSubmitting}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting} className="min-w-32 rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/20 hover:brightness-105">
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />

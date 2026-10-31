@@ -15,7 +15,7 @@ import {
 import { useAlert } from "@/hooks/use-alert";
 import { PERMISSIONS } from "@/lib/permissions";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Building2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Building2, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -180,6 +180,18 @@ export function CitiesPage() {
       },
     },
     {
+      accessorKey: "coordinates",
+      header: "Map center",
+      cell: ({ row }) => (
+        <span className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground">
+          <MapPin className="h-3.5 w-3.5 text-rose-500" />
+          {row.original.lat != null && row.original.lng != null
+            ? `${row.original.lat.toFixed(5)}, ${row.original.lng.toFixed(5)}`
+            : "Not set"}
+        </span>
+      ),
+    },
+    {
       id: "actions",
       header: () => <div className="text-right">Actions</div>,
       cell: ({ row }) => (
@@ -211,10 +223,11 @@ export function CitiesPage() {
     <div className="space-y-6">
       <PageHeader
         title="Cities"
-        description="Manage cities"
+        description="Manage service cities and their map centers."
+        className="rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 via-orange-50 to-amber-50 px-5 py-5 shadow-sm dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card"
       >
         <PermissionGuard permission={PERMISSIONS.CITIES_CREATE} hideOnDenied>
-          <Button onClick={openAddModal}>
+          <Button onClick={openAddModal} className="rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-sm hover:brightness-105">
             <Plus className="h-4 w-4 mr-2" />
             Add City
           </Button>
@@ -226,22 +239,7 @@ export function CitiesPage() {
           <div className="text-muted-foreground">Loading cities...</div>
         </div>
       ) : (
-        <div className="cities-table-wrapper">
-          <style>{`
-            .cities-table-wrapper table {
-              table-layout: auto !important;
-            }
-            .cities-table-wrapper th:has(button:only-child),
-            .cities-table-wrapper th:has(div) {
-              width: auto !important;
-            }
-            .cities-table-wrapper th:last-child {
-              text-align: right;
-            }
-            .cities-table-wrapper td:last-child {
-              text-align: right;
-            }
-          `}</style>
+        <div>
           <DataTable
             columns={columns}
             data={cities}
@@ -251,12 +249,25 @@ export function CitiesPage() {
       )}
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editingCity ? "Edit City" : "Add City"}</DialogTitle>
+        <DialogContent className="max-h-[92vh] overflow-y-auto rounded-[1.75rem] border-rose-100 p-5 shadow-2xl shadow-rose-950/10 sm:max-w-3xl sm:p-7">
+          <DialogHeader className="rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50 via-orange-50 to-amber-50 p-4 pr-10 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:p-5">
+            <div className="flex items-center gap-3">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/20">
+                <Building2 className="h-5 w-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-lg font-bold tracking-tight">{editingCity ? "Edit city" : "Add city"}</DialogTitle>
+                <p className="mt-1 text-xs text-muted-foreground">Choose the city center on the map so delivery zones can use it.</p>
+              </div>
+            </div>
           </DialogHeader>
           <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 pt-1">
+              <section className="space-y-4 rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-5">
+                <div>
+                  <h3 className="text-sm font-semibold">City details</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Set its display name and whether it is available for delivery.</p>
+                </div>
               <FormInput
                 name="name"
                 label="City Name"
@@ -270,17 +281,25 @@ export function CitiesPage() {
                   { value: "inactive", label: "Inactive" },
                 ]}
               />
+              </section>
+              <section className="space-y-3 rounded-2xl border border-orange-100 bg-orange-50/25 p-4 dark:border-border dark:bg-muted/10 sm:p-5">
+                <div>
+                  <h3 className="text-sm font-semibold">City map center</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Search for the city or move the pin to its center.</p>
+                </div>
               <CityLocationPicker />
-              <div className="flex justify-end gap-2 pt-4">
+              </section>
+              <div className="flex justify-end gap-2 border-t border-border/70 pt-4">
                 <Button
                   type="button"
                   variant="outline"
+                  className="rounded-xl"
                   onClick={() => setIsModalOpen(false)}
                   disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting} className="min-w-28 rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-sm hover:brightness-105">
                   {isSubmitting
                     ? "Saving..."
                     : editingCity

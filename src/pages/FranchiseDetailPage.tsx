@@ -1,4 +1,3 @@
-import { useLiveRefresh } from "@/hooks/useLiveRefresh";
 import {
   type AddFranchiseProductDto,
   type Category,
@@ -12,10 +11,7 @@ import {
   productService,
 } from "@/api";
 import { DataTable } from "@/components/DataTable";
-import {
-  FormCheckbox,
-  FormInput,
-} from "@/components/FormComponents";
+import { FormCheckbox, FormInput } from "@/components/FormComponents";
 import { PageHeader } from "@/components/PageHeader";
 import { PermissionGuard } from "@/components/PermissionGuard";
 import { Badge } from "@/components/ui/badge";
@@ -40,10 +36,22 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAlert } from "@/hooks/use-alert";
+import { useLiveRefresh } from "@/hooks/useLiveRefresh";
 import { PERMISSIONS } from "@/lib/permissions";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowLeft, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Mail,
+  MapPin,
+  PackagePlus,
+  Pencil,
+  Phone,
+  Plus,
+  ShieldCheck,
+  Store,
+  Trash2,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -76,7 +84,12 @@ export function FranchiseDetailPage() {
   const navigate = useNavigate();
   const alert = useAlert();
   const fetchSequence = useRef(0);
-  useEffect(() => () => { fetchSequence.current++; }, []);
+  useEffect(
+    () => () => {
+      fetchSequence.current++;
+    },
+    [],
+  );
 
   const [franchise, setFranchise] = useState<FranchiseDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -122,20 +135,21 @@ export function FranchiseDetailPage() {
     }
   }, [selectedCategoryId]);
 
-  useLiveRefresh(async () => { if (slug) await fetchFranchiseDetail(slug, true); });
+  useLiveRefresh(async () => {
+    if (slug) await fetchFranchiseDetail(slug, true);
+  });
 
   async function fetchFranchiseDetail(franchiseSlug: string, quiet = false) {
     const sequence = ++fetchSequence.current;
     if (!quiet) setIsLoading(true);
     try {
-      const response = await franchiseService.getFranchiseBySlug(
-        franchiseSlug,
-      );
+      const response = await franchiseService.getFranchiseBySlug(franchiseSlug);
       if (sequence === fetchSequence.current) setFranchise(response.data);
     } catch (err) {
-      if (!quiet && sequence === fetchSequence.current) alert.error(
-        err instanceof Error ? err.message : "Failed to fetch store details",
-      );
+      if (!quiet && sequence === fetchSequence.current)
+        alert.error(
+          err instanceof Error ? err.message : "Failed to fetch store details",
+        );
     } finally {
       if (sequence === fetchSequence.current) setIsLoading(false);
     }
@@ -305,7 +319,9 @@ export function FranchiseDetailPage() {
   // when adding a new one, so admins can't accidentally create a
   // duplicate (franchiseId, productId) row.
   const existingProductIds = new Set(
-    (franchise?.inventory ?? []).map((item) => resolveProductId(item.productId)),
+    (franchise?.inventory ?? []).map((item) =>
+      resolveProductId(item.productId),
+    ),
   );
   const availableProducts = categoryProducts.filter(
     (product) => !existingProductIds.has(product.id),
@@ -406,12 +422,17 @@ export function FranchiseDetailPage() {
       header: "Assignment",
       cell: ({ row }) => {
         const status = row.original.franchiseAssignment.status;
-        const variants: Record<string, "default" | "secondary" | "destructive"> = {
+        const variants: Record<
+          string,
+          "default" | "secondary" | "destructive"
+        > = {
           accepted: "default",
           pending: "secondary",
           rejected: "destructive",
         };
-        return <Badge variant={variants[status] ?? "secondary"}>{status}</Badge>;
+        return (
+          <Badge variant={variants[status] ?? "secondary"}>{status}</Badge>
+        );
       },
     },
     {
@@ -432,9 +453,14 @@ export function FranchiseDetailPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={franchise.name} description={franchise.address}>
+      <PageHeader
+        title={franchise.name}
+        description={franchise.address}
+        className="rounded-3xl border border-rose-100 bg-gradient-to-br from-rose-50 via-orange-50/80 to-amber-50 px-5 py-5 shadow-sm dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:px-6"
+      >
         <Button
           variant="outline"
+          className="rounded-xl border-rose-200 bg-white/80 shadow-sm"
           onClick={() => navigate({ to: "/franchise/registered" })}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -442,28 +468,47 @@ export function FranchiseDetailPage() {
         </Button>
       </PageHeader>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <DetailStat label="Manager" value={franchise.managerName} />
-        <DetailStat label="Email" value={franchise.email} />
-        <DetailStat label="Phone" value={franchise.phone} />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <DetailStat
+          icon={Store}
+          label="Store manager"
+          value={franchise.managerName}
+        />
+        <DetailStat icon={Mail} label="Manager email" value={franchise.email} />
+        <DetailStat
+          icon={Phone}
+          label="Contact number"
+          value={franchise.phone}
+        />
+        <DetailStat
+          icon={ShieldCheck}
           label="Status"
           value={
-            <Badge variant={franchise.status === "active" ? "default" : "secondary"}>
+            <Badge
+              variant={franchise.status === "active" ? "default" : "secondary"}
+            >
               {franchise.status}
             </Badge>
           }
         />
       </div>
 
-      <div>
+      <div className="space-y-4">
         <div className="flex items-center justify-between mb-3">
-          <div><h2 className="text-lg font-semibold">Inventory</h2>
-<p className="text-sm text-muted-foreground">{franchise.inventory.reduce((sum,item) => sum + item.stock, 0)} packs in stock · {franchise.inventory.length} product types</p></div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-600 dark:text-rose-300">
+              Store catalog
+            </p>
+            <h2 className="mt-1 text-xl font-bold tracking-tight">Inventory</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Manage this store’s products, stock levels, and selling prices.
+            </p>
+          </div>
           <PermissionGuard permission={PERMISSIONS.FRANCHISE_EDIT} hideOnDenied>
             <Button
               onClick={openAddProductModal}
               data-ocid="franchise_detail.add_product_button"
+              className="rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Product
@@ -478,8 +523,18 @@ export function FranchiseDetailPage() {
         />
       </div>
 
-      <div>
-        <h2 className="text-lg font-semibold mb-3">Order History</h2>
+      <div className="space-y-4">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-600 dark:text-rose-300">
+            Store activity
+          </p>
+          <h2 className="mt-1 text-xl font-bold tracking-tight">
+            Order History
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Orders routed to this franchise and their assignment progress.
+          </p>
+        </div>
         <DataTable
           columns={orderHistoryColumns}
           data={franchise.orderHistory}
@@ -489,115 +544,144 @@ export function FranchiseDetailPage() {
       </div>
 
       <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
-        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {editingItem ? "Edit Store Product" : "Add Product to Store"}
-            </DialogTitle>
+        <DialogContent className="max-h-[92vh] overflow-y-auto rounded-[1.75rem] border-rose-100 p-5 shadow-2xl shadow-rose-950/10 sm:max-w-2xl sm:p-7">
+          <DialogHeader className="rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50 via-orange-50 to-amber-50 p-4 pr-10 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:p-5">
+            <div className="flex items-center gap-3">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/20">
+                <PackagePlus className="h-5 w-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-lg font-bold tracking-tight">
+                  {editingItem ? "Edit store product" : "Add product to store"}
+                </DialogTitle>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Set this franchise’s stock, price, and product visibility.
+                </p>
+              </div>
+            </div>
           </DialogHeader>
           <FormProvider {...productMethods}>
             <form
               onSubmit={handleProductSubmit(onSubmitProduct)}
-              className="space-y-4"
+              className="space-y-5 pt-1"
             >
-              {editingItem ? (
-                // The product itself can't be changed once added — only
-                // its per-store stock/pricing/visibility can. Swapping
-                // the linked product would really be "remove + add".
-                <div className="rounded-lg border border-border p-3">
-                  <div className="text-xs text-muted-foreground">Product</div>
-                  <div className="font-medium">
-                    {typeof editingItem.productId === "string"
-                      ? editingItem.productId
-                      : editingItem.productId.name}
+              <section className="space-y-4 rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-5">
+                {editingItem ? (
+                  // The product itself can't be changed once added — only
+                  // its per-store stock/pricing/visibility can. Swapping
+                  // the linked product would really be "remove + add".
+                  <div className="rounded-xl border border-rose-100 bg-rose-50/60 p-3 dark:border-border dark:bg-muted/30">
+                    <div className="text-xs text-muted-foreground">Product</div>
+                    <div className="font-medium">
+                      {typeof editingItem.productId === "string"
+                        ? editingItem.productId
+                        : editingItem.productId.name}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <>
-                  {/* Step 1: pick a category — this is what narrows the
+                ) : (
+                  <>
+                    {/* Step 1: pick a category — this is what narrows the
                       product list below to something browsable instead
                       of the entire catalog. Not submitted to the API;
                       it's a client-side filter only. */}
-                  <div className="space-y-2">
-                    <Label htmlFor="category-filter">Category</Label>
-                    <Select
-                      value={selectedCategoryId}
-                      onValueChange={handleCategoryChange}
-                    >
-                      <SelectTrigger id="category-filter">
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="category-filter">Category</Label>
+                        <Select
+                          value={selectedCategoryId}
+                          onValueChange={handleCategoryChange}
+                        >
+                          <SelectTrigger id="category-filter">
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories.map((category) => (
+                              <SelectItem key={category.id} value={category.id}>
+                                {category.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                  {/* Step 2: pick a product from that category. Kept as
+                      {/* Step 2: pick a product from that category. Kept as
                       a plain controlled Select (not FormSelect) so its
                       displayed value updates immediately when the
                       category — and therefore the option list —
                       changes. */}
-                  <div className="space-y-2">
-                    <Label htmlFor="product-filter">Product</Label>
-                    <Select
-                      value={productMethods.watch("productId")}
-                      onValueChange={handleProductChange}
-                      disabled={!selectedCategoryId || isLoadingProducts}
-                    >
-                      <SelectTrigger id="product-filter">
-                        <SelectValue
-                          placeholder={
-                            !selectedCategoryId
-                              ? "Select a category first"
-                              : isLoadingProducts
-                                ? "Loading products..."
-                                : availableProducts.length === 0
-                                  ? "No products available in this category"
-                                  : "Select a product"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableProducts.map((product) => (
-                          <SelectItem key={product.id} value={product.id}>
-                            {product.sku
-                              ? `${product.name} (${product.sku})`
-                              : product.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </>
-              )}
+                      <div className="space-y-2">
+                        <Label htmlFor="product-filter">Product</Label>
+                        <Select
+                          value={productMethods.watch("productId")}
+                          onValueChange={handleProductChange}
+                          disabled={!selectedCategoryId || isLoadingProducts}
+                        >
+                          <SelectTrigger id="product-filter">
+                            <SelectValue
+                              placeholder={
+                                !selectedCategoryId
+                                  ? "Select a category first"
+                                  : isLoadingProducts
+                                    ? "Loading products..."
+                                    : availableProducts.length === 0
+                                      ? "No products available in this category"
+                                      : "Select a product"
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableProducts.map((product) => (
+                              <SelectItem key={product.id} value={product.id}>
+                                {product.sku
+                                  ? `${product.name} (${product.sku})`
+                                  : product.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </section>
 
-              <div className="grid grid-cols-3 gap-4">
-                <FormInput name="stock" label="Stock" type="number" min="0" />
-                <FormInput name="mrp" label="MRP" type="number" min="0" step="0.01" />
-                <FormInput
-                  name="sellingPrice"
-                  label="Selling Price"
-                  type="number"
-                  min="0"
-                  step="0.01"
+              <section className="space-y-4 rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-5">
+                <div>
+                  <h3 className="text-sm font-semibold">Stock and pricing</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    These values apply only to {franchise.name}.
+                  </p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <FormInput name="stock" label="Stock" type="number" min="0" />
+                  <FormInput
+                    name="mrp"
+                    label="MRP"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                  />
+                  <FormInput
+                    name="sellingPrice"
+                    label="Selling Price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+
+                <FormCheckbox
+                  name="isVisible"
+                  label="Visible in store"
+                  description="Uncheck to hide this product from the store's catalog without removing its pricing/stock record"
                 />
-              </div>
+              </section>
 
-              <FormCheckbox
-                name="isVisible"
-                label="Visible in store"
-                description="Uncheck to hide this product from the store's catalog without removing its pricing/stock record"
-              />
-
-              <div className="flex justify-end gap-2 pt-4">
+              <div className="flex justify-end gap-2 border-t border-border/70 pt-4">
                 <Button
                   type="button"
                   variant="outline"
+                  className="rounded-xl"
                   onClick={() => setIsProductModalOpen(false)}
                   disabled={isSubmittingProduct}
                 >
@@ -605,6 +689,7 @@ export function FranchiseDetailPage() {
                 </Button>
                 <Button
                   type="submit"
+                  className="min-w-28 rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105"
                   disabled={
                     isSubmittingProduct ||
                     (!editingItem && !productMethods.watch("productId"))
@@ -627,16 +712,23 @@ export function FranchiseDetailPage() {
 
 /** Small read-only key/value tile used for the profile summary row. */
 function DetailStat({
+  icon: Icon,
   label,
   value,
 }: {
+  icon: typeof Store;
   label: string;
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-border p-4">
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div className="mt-1 font-medium">{value}</div>
+    <div className="flex min-w-0 items-start gap-3 rounded-2xl border border-rose-100/80 bg-card/90 p-4 shadow-sm dark:border-border">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-rose-100 to-orange-100 text-rose-600 dark:from-rose-950/60 dark:to-orange-950/30 dark:text-rose-300">
+        <Icon className="h-4 w-4" />
+      </span>
+      <div className="min-w-0">
+        <div className="text-xs font-medium text-muted-foreground">{label}</div>
+        <div className="mt-1 truncate font-semibold">{value}</div>
+      </div>
     </div>
   );
 }

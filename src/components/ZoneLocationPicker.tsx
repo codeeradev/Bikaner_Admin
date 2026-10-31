@@ -5,6 +5,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import type { City } from "@/api";
+import { Input } from "@/components/ui/input";
 
 // Leaflet's default marker icon paths are computed relative to a URL that
 // doesn't exist once bundled (Vite/Webpack), so the marker silently fails to
@@ -99,7 +100,11 @@ function resultBelongsToCity(result: NominatimResult, cityName: string): boolean
   return result.display_name.toLowerCase().includes(normalizedCity);
 }
 
-async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
+async function reverseGeocode(
+  lat: number,
+  lng: number,
+  includeFullAddress = false,
+): Promise<string | null> {
   try {
     const params = new URLSearchParams({
       format: "json",
@@ -113,7 +118,7 @@ async function reverseGeocode(lat: number, lng: number): Promise<string | null> 
     });
     if (!response.ok) return null;
     const data: NominatimResult = await response.json();
-    return extractAreaLabel(data);
+    return includeFullAddress ? data.display_name : extractAreaLabel(data);
   } catch {
     return null;
   }
@@ -124,11 +129,12 @@ async function reverseGeocode(lat: number, lng: number): Promise<string | null> 
 // slice of the shape. useFormContext is generic-typed per-consumer, so this
 // narrowing is safe as long as the parent form actually has these fields.
 interface ZoneLocationFormValues {
-  name: string;
+  name?: string;
+  address?: string;
   cityId: string;
-  lat: number | null;
-  lng: number | null;
-  locationLabel: string;
+  lat: number | string | null;
+  lng: number | string | null;
+  locationLabel?: string;
 }
 
 /** Imperatively pans/zooms the map whenever the target coordinates change. */
@@ -172,23 +178,52 @@ function ClickToPlaceMarker({
 interface ZoneLocationPickerProps {
   /** Cities available for selection, used to look up a city's lat/lng/name when it's picked. */
   cities: City[];
+  /** Uses the same picker for a franchise address while keeping the existing form/API shape. */
+  locationMode?: "zone" | "franchise";
 }
 
-export function ZoneLocationPicker({ cities }: ZoneLocationPickerProps) {
+export function ZoneLocationPicker({
+  cities,
+  locationMode = "zone",
+}: ZoneLocationPickerProps) {
   const { setValue, watch, getValues } = useFormContext<ZoneLocationFormValues>();
   const cityId = watch("cityId");
-  const lat = watch("lat");
-  const lng = watch("lng");
+  const rawLat = watch("lat");
+  const rawLng = watch("lng");
+  const lat = rawLat === "" || rawLat == null ? null : Number(rawLat);
+  const lng = rawLng === "" || rawLng == null ? null : Number(rawLng);
+  const locationField = locationMode === "franchise" ? "address" : "locationLabel";
+  const locationLabel = watch(locationField);
 
   const selectedCity = cities.find((city) => city.id === cityId) ?? null;
 
   // Local search box state. Initialized once from the form's saved
   // locationLabel (relevant when editing), then owned by the component.
-  const [query, setQuery] = useState(() => getValues("locationLabel") ?? "");
+  const [query, setQuery] = useState(() => getValues(locationField) ?? "");
   const [results, setResults] = useState<NominatimResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
+
+  const writeCoordinate = (
+    field: "lat" | "lng",
+    value: number | null,
+    shouldDirty = true,
+  ) => {
+    const formValue =
+      value == null
+        ? locationMode === "franchise" ? "" : null
+        : locationMode === "franchise" ? String(value) : value;
+    setValue(field, formValue as never, { shouldDirty, shouldValidate: true });
+  };
+
+  const writeLocation = (value: string) => {
+    setValue(locationField, value, { shouldDirty: true });
+  };
+
+  useEffect(() => {
+    setQuery(locationLabel ?? "");
+  }, [locationLabel]);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchRequestId = useRef(0);
@@ -229,16 +264,16 @@ export function ZoneLocationPicker({ cities }: ZoneLocationPickerProps) {
 
       if (lat == null || lng == null) {
         // Brand-new zone: default the marker to the city's center.
-        setValue("lat", city.lat, { shouldDirty: false });
-        setValue("lng", city.lng, { shouldDirty: false });
+        writeCoordinate("lat", city.lat, false);
+        writeCoordinate("lng", city.lng, false);
       } else if (!query) {
         // Editing a zone that has a saved lat/lng but no stored label (e.g.
         // created before this feature existed) — best-effort backfill so the
         // search box isn't left blank.
-        reverseGeocode(lat, lng).then((label) => {
+        reverseGeocode(lat, lng, locationMode === "franchise").then((label) => {
           if (label) {
             setQuery(label);
-            setValue("locationLabel", label, { shouldDirty: false });
+            setValue(locationField, label, { shouldDirty: false });
           }
         });
       }
@@ -247,9 +282,9 @@ export function ZoneLocationPicker({ cities }: ZoneLocationPickerProps) {
 
     if (prevCityId.current !== cityId) {
       prevCityId.current = cityId;
-      setValue("lat", city.lat, { shouldDirty: true, shouldValidate: true });
-      setValue("lng", city.lng, { shouldDirty: true, shouldValidate: true });
-      setValue("locationLabel", "", { shouldDirty: true });
+      writeCoordinate("lat", city.lat);
+      writeCoordinate("lng", city.lng);
+      writeLocation("");
       setQuery("");
       setResults([]);
       setShowResults(false);
@@ -305,6 +340,7 @@ export function ZoneLocationPicker({ cities }: ZoneLocationPickerProps) {
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
+    writeLocation(value);
     if (!selectedCity) return;
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -315,36 +351,53 @@ export function ZoneLocationPicker({ cities }: ZoneLocationPickerProps) {
   const handleSelectResult = (result: NominatimResult) => {
     const nextLat = parseFloat(result.lat);
     const nextLng = parseFloat(result.lon);
-    const label = extractAreaLabel(result);
+    const areaLabel = extractAreaLabel(result);
+    const label = locationMode === "franchise" ? result.display_name : areaLabel;
 
-    setValue("lat", nextLat, { shouldDirty: true, shouldValidate: true });
-    setValue("lng", nextLng, { shouldDirty: true, shouldValidate: true });
-    setValue("locationLabel", label, { shouldDirty: true });
+    writeCoordinate("lat", nextLat);
+    writeCoordinate("lng", nextLng);
+    writeLocation(label);
     setQuery(label);
     setResults([]);
     setShowResults(false);
 
     // Auto-fill the Zone Name field, but never overwrite something the user already typed.
-    const currentName = getValues("name");
-    if (!currentName || !currentName.trim()) {
-      setValue("name", label, { shouldDirty: true, shouldValidate: true });
+    const currentName = locationMode === "zone" ? getValues("name") : undefined;
+    if (locationMode === "zone" && !currentName?.trim()) {
+      setValue("name", areaLabel, { shouldDirty: true, shouldValidate: true });
     }
   };
 
   const handleManualPositionChange = (nextLat: number, nextLng: number) => {
-    setValue("lat", nextLat, { shouldDirty: true, shouldValidate: true });
-    setValue("lng", nextLng, { shouldDirty: true, shouldValidate: true });
+    writeCoordinate("lat", nextLat);
+    writeCoordinate("lng", nextLng);
+    writeLocation("");
 
     const requestId = ++reverseGeocodeRequestId.current;
     setIsReverseGeocoding(true);
-    reverseGeocode(nextLat, nextLng).then((label) => {
+    reverseGeocode(nextLat, nextLng, locationMode === "franchise").then((label) => {
       if (requestId !== reverseGeocodeRequestId.current) return; // superseded by a newer move
       setIsReverseGeocoding(false);
       if (label) {
         setQuery(label);
-        setValue("locationLabel", label, { shouldDirty: true });
+        writeLocation(label);
       }
     });
+  };
+
+  const updateCoordinate = (field: "lat" | "lng", rawValue: string) => {
+    if (rawValue.trim() === "") {
+      writeCoordinate(field, null);
+      return;
+    }
+
+    const value = Number(rawValue);
+    const limit = field === "lat" ? 90 : 180;
+    if (Number.isFinite(value) && value >= -limit && value <= limit) {
+      writeCoordinate(field, value);
+      writeLocation("");
+      setQuery("");
+    }
   };
 
   const hasLocation = lat != null && lng != null;
@@ -356,16 +409,27 @@ export function ZoneLocationPicker({ cities }: ZoneLocationPickerProps) {
   const zoom = hasLocation || selectedCity ? SELECTED_ZOOM : DEFAULT_ZOOM;
 
   const helperText = !cityId
-    ? "Select a city above to search for a zone or area."
+    ? `Select a city above to search for a ${locationMode === "franchise" ? "store address" : "zone or area"}.`
     : isReverseGeocoding
       ? "Detecting the nearest area..."
       : hasLocation
         ? `Selected: ${(lat as number).toFixed(6)}, ${(lng as number).toFixed(6)} — drag the marker or click the map to adjust.`
-        : "Search for an area above, or click the map to set the location.";
+        : locationMode === "franchise"
+          ? "Search for the store address above, or click the map to choose its location."
+          : "Search for an area above, or click the map to set the location.";
 
   return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium leading-none">Search Zone / Area</label>
+    <div className="space-y-3 rounded-2xl border border-orange-100 bg-orange-50/30 p-4 dark:border-border dark:bg-muted/15 sm:p-5">
+      <div>
+        <label className="text-sm font-semibold leading-none">
+          {locationMode === "franchise" ? "Store location" : "Zone location"}
+        </label>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {locationMode === "franchise"
+            ? "Search the store address, enter coordinates, or move the pin. The address and coordinates stay in sync."
+            : "Search an area, enter coordinates, or move the map pin. All three stay in sync."}
+        </p>
+      </div>
 
       <div ref={containerRef} className="relative">
         <div className="relative">
@@ -376,8 +440,14 @@ export function ZoneLocationPicker({ cities }: ZoneLocationPickerProps) {
             onChange={(e) => handleQueryChange(e.target.value)}
             onFocus={() => results.length > 0 && setShowResults(true)}
             disabled={!cityId}
-            placeholder={cityId ? "Search for a sector, locality, or area..." : "Select a city first"}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-9 pr-9 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            placeholder={
+              !cityId
+                ? "Select a city first"
+                : locationMode === "franchise"
+                  ? "Search the franchise address..."
+                  : "Search for a sector, locality, or area..."
+            }
+            className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 pl-9 pr-9 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300 disabled:cursor-not-allowed disabled:opacity-50"
           />
           {isSearching && (
             <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
@@ -385,13 +455,13 @@ export function ZoneLocationPicker({ cities }: ZoneLocationPickerProps) {
         </div>
 
         {showResults && results.length > 0 && (
-          <ul className="absolute z-[1200] mt-1 max-h-56 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md">
+          <ul className="absolute z-[1200] mt-1 max-h-56 w-full overflow-auto rounded-xl border bg-popover text-popover-foreground shadow-lg">
             {results.map((result) => (
               <li key={result.place_id}>
                 <button
                   type="button"
                   onClick={() => handleSelectResult(result)}
-                  className="flex w-full items-start gap-2 px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                  className="flex w-full items-start gap-2 px-3 py-2 text-left text-sm hover:bg-orange-50 hover:text-orange-950 dark:hover:bg-muted dark:hover:text-foreground"
                 >
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                   <span className="flex flex-col">
@@ -407,11 +477,11 @@ export function ZoneLocationPicker({ cities }: ZoneLocationPickerProps) {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-2xl border border-orange-100 shadow-sm dark:border-border">
         <MapContainer
           center={center}
           zoom={zoom}
-          style={{ height: "420px", width: "100%" }}
+          style={{ height: "320px", width: "100%" }}
           scrollWheelZoom={false}
         >
           <TileLayer
@@ -435,7 +505,41 @@ export function ZoneLocationPicker({ cities }: ZoneLocationPickerProps) {
         </MapContainer>
       </div>
 
-      <p className="text-xs text-muted-foreground">{helperText}</p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="space-y-1.5 text-xs font-medium text-muted-foreground">
+          Latitude <span className="text-destructive">*</span>
+          <Input
+            type="number"
+            inputMode="decimal"
+            step="any"
+            min="-90"
+            max="90"
+            required
+            value={lat ?? ""}
+            onChange={(event) => updateCoordinate("lat", event.target.value)}
+            placeholder="e.g. 29.1492"
+            className="h-10 rounded-xl bg-background font-mono text-sm text-foreground"
+            aria-label="Zone latitude"
+          />
+        </label>
+        <label className="space-y-1.5 text-xs font-medium text-muted-foreground">
+          Longitude <span className="text-destructive">*</span>
+          <Input
+            type="number"
+            inputMode="decimal"
+            step="any"
+            min="-180"
+            max="180"
+            required
+            value={lng ?? ""}
+            onChange={(event) => updateCoordinate("lng", event.target.value)}
+            placeholder="e.g. 75.7217"
+            className="h-10 rounded-xl bg-background font-mono text-sm text-foreground"
+            aria-label="Zone longitude"
+          />
+        </label>
+      </div>
+      <p className="text-xs leading-relaxed text-muted-foreground">{helperText}</p>
     </div>
   );
 }

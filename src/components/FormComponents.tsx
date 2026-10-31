@@ -163,6 +163,8 @@ interface FormSelectProps {
   description?: string;
   options: { value: string; label: string }[];
   placeholder?: string;
+  triggerClassName?: string;
+  onValueChange?: (value: string) => void;
 }
 
 export function FormSelect({
@@ -171,6 +173,8 @@ export function FormSelect({
   description,
   options,
   placeholder,
+  triggerClassName,
+  onValueChange,
 }: FormSelectProps) {
   const {
     control,
@@ -188,10 +192,18 @@ export function FormSelect({
         name={name}
         control={control}
         render={({ field }) => (
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select
+            value={field.value ?? ""}
+            onValueChange={(value) => {
+              field.onChange(value);
+              onValueChange?.(value);
+            }}
+          >
             <SelectTrigger
               id={name}
               className={cn(
+                "w-full",
+                triggerClassName,
                 error && "border-destructive focus-visible:ring-destructive",
               )}
             >

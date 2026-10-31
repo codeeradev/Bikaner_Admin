@@ -32,8 +32,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { useAlert } from "@/hooks/use-alert";
 import { PERMISSIONS } from "@/lib/permissions";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -166,7 +166,7 @@ export function OrdersTable({
   const selectedFranchiseId =
     typeof selectedFranchiseRef === "string"
       ? selectedFranchiseRef
-      : selectedFranchiseRef?.id ?? selectedFranchiseRef?._id;
+      : (selectedFranchiseRef?.id ?? selectedFranchiseRef?._id);
   const selectedFranchise =
     typeof selectedFranchiseRef === "object" && selectedFranchiseRef
       ? selectedFranchiseRef
@@ -473,7 +473,7 @@ export function OrdersTable({
         const franchiseId =
           typeof assignment.franchiseId === "string"
             ? assignment.franchiseId
-            : assignment.franchiseId.id ?? assignment.franchiseId._id;
+            : (assignment.franchiseId.id ?? assignment.franchiseId._id);
         const franchise =
           typeof assignment.franchiseId === "string"
             ? activeFranchises.find((item) => item.id === franchiseId)
@@ -633,14 +633,14 @@ export function OrdersTable({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row justify-end gap-2">
+      <div className="flex flex-col justify-end gap-2 sm:flex-row">
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={loadOrders}
           disabled={isLoading}
-          className="w-full sm:w-auto"
+          className="h-10 rounded-xl bg-card shadow-sm sm:w-auto"
         >
           <RefreshCw className="mr-2 h-4 w-4" />
           Refresh
@@ -650,7 +650,7 @@ export function OrdersTable({
         value={statusFilter}
         onValueChange={(value) => setStatusFilter(value as OrderStatusFilter)}
       >
-        <TabsList className="h-auto max-w-full justify-start gap-1 overflow-x-auto p-1">
+        <TabsList className="h-auto max-w-full justify-start gap-1 overflow-x-auto rounded-2xl border border-rose-100/80 bg-rose-50/70 p-1 dark:border-border dark:bg-muted/60">
           {(
             [
               ["all", "All"],
@@ -659,7 +659,11 @@ export function OrdersTable({
               ["cancelled", "Cancelled"],
             ] as const
           ).map(([value, label]) => (
-            <TabsTrigger key={value} value={value} className="gap-2 px-3 sm:px-4">
+            <TabsTrigger
+              key={value}
+              value={value}
+              className="gap-2 rounded-xl px-3 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm dark:data-[state=active]:bg-card dark:data-[state=active]:text-rose-300 sm:px-4"
+            >
               {label}
               <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs leading-none text-muted-foreground">
                 {statusCounts[value]}
@@ -682,16 +686,20 @@ export function OrdersTable({
         open={Boolean(selectedOrder)}
         onOpenChange={(open) => !open && setSelectedOrder(null)}
       >
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
+        <DialogContent className="max-h-[92vh] overflow-y-auto rounded-[1.75rem] border-rose-100 p-5 shadow-2xl shadow-rose-950/10 sm:max-w-3xl sm:p-7">
+          <DialogHeader className="rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50 via-orange-50 to-amber-50 p-4 pr-10 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:p-5">
+            <DialogTitle className="text-lg font-bold tracking-tight">
               Order details{" "}
               {selectedOrder ? `— ${selectedOrder.orderNumber}` : ""}
             </DialogTitle>
+            <DialogDescription>
+              Customer, products, fulfillment, and payment details for this
+              order.
+            </DialogDescription>
           </DialogHeader>
           {selectedOrder && (
-            <div className="grid gap-5 text-sm sm:grid-cols-2">
-              <section className="rounded-lg border p-4">
+            <div className="grid gap-4 pt-1 text-sm sm:grid-cols-2">
+              <section className="rounded-2xl border border-border/70 bg-card/70 p-4">
                 <h3 className="mb-3 font-semibold">Customer details</h3>
                 <div className="space-y-2 text-muted-foreground">
                   <p>
@@ -714,7 +722,7 @@ export function OrdersTable({
                   </p>
                 </div>
               </section>
-              <section className="rounded-lg border p-4">
+              <section className="rounded-2xl border border-border/70 bg-card/70 p-4">
                 <h3 className="mb-3 font-semibold">Order summary</h3>
                 <div className="space-y-2 text-muted-foreground">
                   <p>
@@ -742,11 +750,15 @@ export function OrdersTable({
                   {selectedOrder.orderStatus === "cancelled" && (
                     <>
                       <p>
-                        <span className="font-medium text-foreground">Cancelled by:</span>{" "}
+                        <span className="font-medium text-foreground">
+                          Cancelled by:
+                        </span>{" "}
                         {selectedOrder.cancelledBy || "Unknown"}
                       </p>
                       <p>
-                        <span className="font-medium text-foreground">Cancellation reason:</span>{" "}
+                        <span className="font-medium text-foreground">
+                          Cancellation reason:
+                        </span>{" "}
                         {selectedOrder.cancelReason || "No reason provided"}
                       </p>
                     </>
@@ -754,13 +766,14 @@ export function OrdersTable({
                 </div>
               </section>
               {selectedAssignment && selectedFranchiseId && (
-                <section className="rounded-lg border p-4 sm:col-span-2">
+                <section className="rounded-2xl border border-rose-100 bg-gradient-to-br from-rose-50/70 to-orange-50/70 p-4 dark:border-border dark:from-rose-950/15 dark:to-orange-950/10 sm:col-span-2">
                   <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                     <h3 className="font-semibold">Franchise assignment</h3>
                     <Badge
                       variant={
-                        franchiseAssignmentVariants[selectedAssignment.status] ??
-                        "secondary"
+                        franchiseAssignmentVariants[
+                          selectedAssignment.status
+                        ] ?? "secondary"
                       }
                     >
                       {selectedAssignment.status}
@@ -768,43 +781,62 @@ export function OrdersTable({
                   </div>
                   <div className="grid gap-2 text-muted-foreground sm:grid-cols-2">
                     <p>
-                      <span className="font-medium text-foreground">Store:</span>{" "}
+                      <span className="font-medium text-foreground">
+                        Store:
+                      </span>{" "}
                       {selectedFranchise?.name || "Franchise unavailable"}
                     </p>
                     <p>
-                      <span className="font-medium text-foreground">Manager:</span>{" "}
+                      <span className="font-medium text-foreground">
+                        Manager:
+                      </span>{" "}
                       {selectedFranchise?.managerName || "Not available"}
                     </p>
                     <p>
-                      <span className="font-medium text-foreground">Phone:</span>{" "}
+                      <span className="font-medium text-foreground">
+                        Phone:
+                      </span>{" "}
                       {selectedFranchise?.phone || "Not available"}
                     </p>
                     <p>
-                      <span className="font-medium text-foreground">Email:</span>{" "}
+                      <span className="font-medium text-foreground">
+                        Email:
+                      </span>{" "}
                       {selectedFranchise?.email || "Not available"}
                     </p>
                     {selectedFranchise?.address && (
                       <p className="sm:col-span-2">
-                        <span className="font-medium text-foreground">Address:</span>{" "}
+                        <span className="font-medium text-foreground">
+                          Address:
+                        </span>{" "}
                         {selectedFranchise.address}
                       </p>
                     )}
                     <p>
-                      <span className="font-medium text-foreground">Assigned:</span>{" "}
+                      <span className="font-medium text-foreground">
+                        Assigned:
+                      </span>{" "}
                       {selectedAssignment.assignedAt
-                        ? new Date(selectedAssignment.assignedAt).toLocaleString()
+                        ? new Date(
+                            selectedAssignment.assignedAt,
+                          ).toLocaleString()
                         : "Not available"}
                     </p>
                   </div>
                 </section>
               )}
-              <section className="rounded-lg border p-4 sm:col-span-2">
-                <h3 className="mb-3 font-semibold">Products</h3>
+              <section className="rounded-2xl border border-border/70 bg-card/70 p-4 sm:col-span-2">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h3 className="font-semibold">Products</h3>
+                  <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+                    {selectedOrder.items.length} line items
+                  </span>
+                </div>
                 <div className="space-y-2">
                   {selectedOrder.items.map((item, index) => (
                     <div
                       key={`${item.name}-${index}`}
-                      className="flex items-center justify-between gap-3 border-b pb-2 last:border-0 last:pb-0"
+                      className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-background/70 px-3 py-2.5 last:border-border/60"
                     >
                       <span>{item.name || `Product ${index + 1}`}</span>
                       <span className="whitespace-nowrap text-muted-foreground">
@@ -824,9 +856,11 @@ export function OrdersTable({
         open={confirmDialog.open}
         onOpenChange={(open) => setConfirmDialog({ ...confirmDialog, open })}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Status Change</DialogTitle>
+        <DialogContent className="rounded-[1.75rem] border-rose-100 p-5 shadow-2xl shadow-rose-950/10 sm:max-w-lg sm:p-7">
+          <DialogHeader className="rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50 via-orange-50 to-amber-50 p-4 pr-10 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card">
+            <DialogTitle className="text-lg font-bold tracking-tight">
+              Confirm Status Change
+            </DialogTitle>
             <DialogDescription>
               Are you sure you want to change the status of order{" "}
               <span className="font-mono font-semibold">
@@ -836,21 +870,21 @@ export function OrdersTable({
               <span className="font-semibold">{confirmDialog.newStatus}</span>?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex-col sm:flex-row gap-2">
+          <DialogFooter className="flex-col gap-2 border-t border-border/70 pt-4 sm:flex-row">
             <Button
               variant="outline"
               disabled={isUpdating}
               onClick={() =>
                 setConfirmDialog({ ...confirmDialog, open: false })
               }
-              className="w-full sm:w-auto"
+              className="w-full rounded-xl sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               onClick={handleConfirmStatusChange}
               disabled={isUpdating}
-              className="w-full sm:w-auto"
+              className="w-full rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white hover:brightness-105 sm:w-auto"
             >
               Confirm
             </Button>
@@ -863,9 +897,11 @@ export function OrdersTable({
         open={cancelDialog.open}
         onOpenChange={(open) => setCancelDialog({ ...cancelDialog, open })}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Cancel Order</DialogTitle>
+        <DialogContent className="rounded-[1.75rem] border-rose-100 p-5 shadow-2xl shadow-rose-950/10 sm:max-w-lg sm:p-7">
+          <DialogHeader className="rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50 via-orange-50 to-amber-50 p-4 pr-10 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card">
+            <DialogTitle className="text-lg font-bold tracking-tight">
+              Cancel Order
+            </DialogTitle>
             <DialogDescription>
               Please provide a reason for cancelling order{" "}
               <span className="font-mono font-semibold">
@@ -873,7 +909,7 @@ export function OrdersTable({
               </span>
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 pt-1">
             <div className="space-y-2">
               <Label htmlFor="cancelReason">Cancel Reason*</Label>
               <Textarea
@@ -887,14 +923,14 @@ export function OrdersTable({
               />
             </div>
           </div>
-          <DialogFooter className="flex-col sm:flex-row gap-2">
+          <DialogFooter className="flex-col gap-2 border-t border-border/70 pt-4 sm:flex-row">
             <Button
               variant="outline"
               disabled={isUpdating}
               onClick={() =>
                 setCancelDialog({ ...cancelDialog, open: false, reason: "" })
               }
-              className="w-full sm:w-auto"
+              className="w-full rounded-xl sm:w-auto"
             >
               Cancel
             </Button>
@@ -902,7 +938,7 @@ export function OrdersTable({
               variant="destructive"
               onClick={handleCancelOrder}
               disabled={isUpdating}
-              className="w-full sm:w-auto"
+              className="w-full rounded-xl sm:w-auto"
             >
               Cancel Order
             </Button>
@@ -915,19 +951,21 @@ export function OrdersTable({
         open={assignDialog.open}
         onOpenChange={(open) => setAssignDialog({ ...assignDialog, open })}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Assign to Franchise Store</DialogTitle>
+        <DialogContent className="rounded-[1.75rem] border-rose-100 p-5 shadow-2xl shadow-rose-950/10 sm:max-w-lg sm:p-7">
+          <DialogHeader className="rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50 via-orange-50 to-amber-50 p-4 pr-10 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card">
+            <DialogTitle className="text-lg font-bold tracking-tight">
+              Assign to Franchise Store
+            </DialogTitle>
             <DialogDescription>
               Choose a store to fulfill order{" "}
               <span className="font-mono font-semibold">
                 {assignDialog.orderNumber}
               </span>
-              . If this order was already assigned and rejected, this hands
-              it to a different store instead.
+              . If this order was already assigned and rejected, this hands it
+              to a different store instead.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 py-2">
+          <div className="space-y-2 rounded-2xl border border-border/70 bg-card/70 p-4">
             <Label htmlFor="franchiseSelect">Store</Label>
             <Select
               value={assignDialog.selectedFranchiseId}
@@ -935,7 +973,10 @@ export function OrdersTable({
                 setAssignDialog({ ...assignDialog, selectedFranchiseId: value })
               }
             >
-              <SelectTrigger id="franchiseSelect">
+              <SelectTrigger
+                id="franchiseSelect"
+                className="h-11 w-full rounded-xl"
+              >
                 <SelectValue placeholder="Select a store" />
               </SelectTrigger>
               <SelectContent>
@@ -947,19 +988,19 @@ export function OrdersTable({
               </SelectContent>
             </Select>
           </div>
-          <DialogFooter className="flex-col sm:flex-row gap-2">
+          <DialogFooter className="flex-col gap-2 border-t border-border/70 pt-4 sm:flex-row">
             <Button
               variant="outline"
               disabled={isUpdating}
               onClick={() => setAssignDialog({ ...assignDialog, open: false })}
-              className="w-full sm:w-auto"
+              className="w-full rounded-xl sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               onClick={handleConfirmAssign}
               disabled={isUpdating}
-              className="w-full sm:w-auto"
+              className="w-full rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white hover:brightness-105 sm:w-auto"
             >
               Assign
             </Button>

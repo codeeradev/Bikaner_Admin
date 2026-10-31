@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/PageHeader";
 import { ColorPicker } from "@/components/theme/ColorPicker";
 import {
   AccessibilityScore,
@@ -33,8 +34,8 @@ function UploadArea({
   return (
     <div className="flex flex-col gap-2">
       <span className="text-sm font-medium text-card-foreground">{label}</span>
-      <div className="border-2 border-dashed border-border rounded-xl p-5 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors cursor-pointer group">
-        <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
+      <div className="group flex min-h-36 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-rose-200 bg-gradient-to-br from-rose-50/70 to-amber-50/60 p-5 transition-colors hover:border-orange-300 dark:border-border dark:from-muted/40 dark:to-card">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-rose-500 shadow-sm transition-transform group-hover:-translate-y-0.5 dark:bg-card">
           <Icon className="h-4 w-4 text-muted-foreground" />
         </div>
         <span className="text-xs text-muted-foreground">
@@ -369,15 +370,11 @@ export function ThemePage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Theme Builder
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Customize your admin panel colors, branding, and appearance
-          </p>
-        </div>
+      <PageHeader
+        title="Theme Builder"
+        description="Customize your admin panel colors, branding, and appearance"
+        className="rounded-3xl border border-rose-100 bg-gradient-to-br from-rose-50 via-orange-50/80 to-amber-50 px-5 py-5 shadow-sm dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:px-6"
+      >
         <div className="flex items-center gap-3 flex-wrap">
           {hasChanges && (
             <span className="text-xs font-medium flex items-center gap-1.5 text-warning animate-pulse">
@@ -411,7 +408,7 @@ export function ThemePage() {
             className="hidden"
           />
         </div>
-      </div>
+      </PageHeader>
 
       {/* Contrast Warnings */}
       {contrastChecks.map((check) => (
@@ -433,8 +430,8 @@ export function ThemePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <Card>
-              <CardHeader className="pb-3">
+            <Card className="overflow-hidden rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+              <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/70 to-orange-50/50 pb-3 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                 <CardTitle className="text-base flex items-center gap-2 text-card-foreground">
                   <Sun className="h-4 w-4 text-muted-foreground" />
                   Appearance Mode
@@ -487,8 +484,8 @@ export function ThemePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.05 }}
           >
-            <Card>
-              <CardHeader className="pb-3">
+            <Card className="overflow-hidden rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+              <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/70 to-orange-50/50 pb-3 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                 <CardTitle className="text-base flex items-center gap-2 text-card-foreground">
                   <ImageIcon className="h-4 w-4 text-muted-foreground" />
                   Branding
@@ -510,8 +507,8 @@ export function ThemePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <Card>
-              <CardHeader className="pb-3">
+            <Card className="overflow-hidden rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+              <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/70 to-orange-50/50 pb-3 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                 <CardTitle className="text-base flex items-center gap-2 text-card-foreground">
                   <Palette className="h-4 w-4 text-muted-foreground" />
                   Brand Colors
@@ -529,8 +526,8 @@ export function ThemePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.15 }}
           >
-            <Card>
-              <CardHeader className="pb-3">
+            <Card className="overflow-hidden rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+              <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/70 to-orange-50/50 pb-3 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                 <CardTitle className="text-base flex items-center gap-2 text-card-foreground">
                   <Palette className="h-4 w-4 text-muted-foreground" />
                   Surface Colors
@@ -548,8 +545,8 @@ export function ThemePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <Card>
-              <CardHeader className="pb-3">
+            <Card className="overflow-hidden rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+              <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/70 to-orange-50/50 pb-3 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                 <CardTitle className="text-base flex items-center gap-2 text-card-foreground">
                   <Palette className="h-4 w-4 text-muted-foreground" />
                   Status Colors
@@ -576,8 +573,8 @@ export function ThemePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
           >
-            <Card>
-              <CardHeader className="pb-3">
+            <Card className="overflow-hidden rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+              <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/70 to-orange-50/50 pb-3 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                 <CardTitle className="text-base flex items-center gap-2 text-card-foreground">
                   <Palette className="h-4 w-4 text-muted-foreground" />
                   Theme Presets
@@ -608,8 +605,8 @@ export function ThemePage() {
           className="lg:col-span-2"
         >
           <div className="lg:sticky lg:top-6 space-y-4">
-            <Card>
-              <CardHeader className="pb-3">
+            <Card className="overflow-hidden rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+              <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/70 to-orange-50/50 pb-3 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                 <CardTitle className="text-base flex items-center gap-2 text-card-foreground">
                   <Eye className="h-4 w-4 text-muted-foreground" />
                   Live Preview

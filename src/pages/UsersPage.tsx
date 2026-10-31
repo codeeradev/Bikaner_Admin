@@ -10,13 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -263,9 +257,7 @@ export function UsersPage() {
               <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
             </Avatar>
             <div>
-              <div className="font-medium">
-                {member.name || "Unnamed User"}
-              </div>
+              <div className="font-medium">{member.name || "Unnamed User"}</div>
               <div className="text-sm text-muted-foreground">
                 {member.mobile || "No mobile"}
               </div>
@@ -385,6 +377,7 @@ export function UsersPage() {
       <PageHeader
         title="Users & Staff"
         description="Manage staff members and their roles"
+        className="rounded-3xl border border-rose-100 bg-gradient-to-br from-rose-50 via-orange-50/80 to-amber-50 px-5 py-5 shadow-sm dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:px-6"
       >
         <PermissionGuard permission={PERMISSIONS.USERS_CREATE} hideOnDenied>
           <Button
@@ -392,6 +385,7 @@ export function UsersPage() {
               resetForm();
               setIsDialogOpen(true);
             }}
+            className="rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add User
@@ -399,72 +393,76 @@ export function UsersPage() {
         </PermissionGuard>
       </PageHeader>
 
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by name, mobile, or email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Filter by role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                {roles.map((role) => (
-                  <SelectItem key={role.id} value={role.id}>
-                    {role.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardHeader>
+      <Card className="overflow-hidden rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
         <CardContent>
-          <DataTable columns={columns} data={filteredStaff} />
+          <DataTable
+            columns={columns}
+            data={filteredStaff}
+            showSearch={false}
+            toolbarContent={
+              <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="relative min-w-0 flex-1">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name, mobile, or email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="h-10 rounded-xl border-rose-100 bg-background pl-9 dark:border-border"
+                  />
+                </div>
+                <Select value={roleFilter} onValueChange={setRoleFilter}>
+                  <SelectTrigger className="h-10 w-full rounded-xl border-rose-100 bg-background sm:w-40 dark:border-border">
+                    <SelectValue placeholder="Filter by role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Roles</SelectItem>
+                    {roles.map((role) => (
+                      <SelectItem key={role.id} value={role.id}>
+                        {role.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="h-10 w-full rounded-xl border-rose-100 bg-background sm:w-40 dark:border-border">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            }
+          />
         </CardContent>
       </Card>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {editingStaff ? "Edit User" : "Add New User"}
-            </DialogTitle>
-            <DialogDescription>
-              {editingStaff
-                ? "Update user information and role assignment"
-                : "Create a new staff member with role assignment"}
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto rounded-3xl border-rose-100 p-0 shadow-2xl dark:border-border">
+          <div className="sticky top-0 z-10 border-b border-rose-100/70 bg-gradient-to-r from-rose-50 via-orange-50 to-amber-50 px-6 py-5 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card">
+            <DialogHeader>
+              <DialogTitle>
+                {editingStaff ? "Edit User" : "Add New User"}
+              </DialogTitle>
+              <DialogDescription>
+                {editingStaff
+                  ? "Update user information and role assignment"
+                  : "Create a new staff member with role assignment"}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5 px-6 py-5">
             {errors.submit && (
               <Alert variant="destructive">
                 <AlertDescription>{errors.submit}</AlertDescription>
               </Alert>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="sm:col-span-2">
                 <Label htmlFor="name">
                   Full Name <span className="text-destructive">*</span>
                 </Label>
@@ -512,7 +510,7 @@ export function UsersPage() {
                 />
               </div>
 
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <Label htmlFor="password">
                   Password{" "}
                   {!editingStaff && <span className="text-destructive">*</span>}
@@ -536,7 +534,7 @@ export function UsersPage() {
                 )}
               </div>
 
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <Label htmlFor="roleId">
                   Role <span className="text-destructive">*</span>
                 </Label>
@@ -627,7 +625,7 @@ export function UsersPage() {
               </div>
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="sticky bottom-0 -mx-6 border-t border-rose-100/70 bg-background/95 px-6 py-4 backdrop-blur dark:border-border">
               <Button
                 type="button"
                 variant="outline"
@@ -636,10 +634,15 @@ export function UsersPage() {
                   resetForm();
                 }}
                 disabled={submitting}
+                className="rounded-xl"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={submitting}>
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105"
+              >
                 {submitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />

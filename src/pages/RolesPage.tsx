@@ -1,7 +1,10 @@
+import { roleService } from "@/api/services/roleService";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { DataTable } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { PermissionGuard } from "@/components/PermissionGuard";
-import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -15,18 +18,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PERMISSIONS } from "@/lib/permissions";
-import { roleService } from "@/api/services/roleService";
 import type { Role } from "@/types";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Pencil, Plus, Shield, Trash2, Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Loader2, Pencil, Plus, Shield, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function RolesPage() {
   const [roles, setRoles] = useState<Role[]>([]);
-  const [availablePermissions, setAvailablePermissions] = useState<string[]>([]);
+  const [availablePermissions, setAvailablePermissions] = useState<string[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -55,7 +57,8 @@ export function RolesPage() {
       ]);
 
       if (rolesRes.success) setRoles(rolesRes.data);
-      if (permissionsRes.success) setAvailablePermissions(permissionsRes.data.all);
+      if (permissionsRes.success)
+        setAvailablePermissions(permissionsRes.data.all);
     } catch (error) {
       console.error("Failed to load data:", error);
     } finally {
@@ -159,7 +162,7 @@ export function RolesPage() {
     setSelectedPermissions((prev) =>
       prev.includes(permission)
         ? prev.filter((p) => p !== permission)
-        : [...prev, permission]
+        : [...prev, permission],
     );
   };
 
@@ -214,7 +217,9 @@ export function RolesPage() {
                 size="icon"
                 onClick={() => openEditDialog(role)}
                 disabled={isAdminRole}
-                title={isAdminRole ? "Admin role cannot be edited" : "Edit role"}
+                title={
+                  isAdminRole ? "Admin role cannot be edited" : "Edit role"
+                }
                 aria-label="Edit role"
               >
                 <Pencil className="h-4 w-4" />
@@ -230,7 +235,9 @@ export function RolesPage() {
                   setIsDeleteDialogOpen(true);
                 }}
                 disabled={isAdminRole}
-                title={isAdminRole ? "Admin role cannot be deleted" : "Delete role"}
+                title={
+                  isAdminRole ? "Admin role cannot be deleted" : "Delete role"
+                }
                 aria-label="Delete role"
               >
                 <Trash2 className="h-4 w-4 text-destructive" />
@@ -255,30 +262,44 @@ export function RolesPage() {
       <PageHeader
         title="Roles & Permissions"
         description="Manage user roles and access permissions"
+        className="rounded-3xl border border-rose-100 bg-gradient-to-br from-rose-50 via-orange-50/80 to-amber-50 px-5 py-5 shadow-sm dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:px-6"
       >
         <PermissionGuard permission={PERMISSIONS.ROLES_CREATE} hideOnDenied>
-          <Button onClick={openAddDialog}>
+          <Button
+            onClick={openAddDialog}
+            className="rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add Role
           </Button>
         </PermissionGuard>
       </PageHeader>
 
-      <DataTable columns={columns} data={roles} emptyMessage="No roles found" />
+      <div className="overflow-hidden rounded-3xl border border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+        <DataTable
+          columns={columns}
+          data={roles}
+          emptyMessage="No roles found"
+        />
+      </div>
 
       {/* Create/Edit Role Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{editingRole ? "Edit Role" : "Add New Role"}</DialogTitle>
-            <DialogDescription>
-              {editingRole
-                ? "Update role name and description"
-                : "Create a new role with custom permissions"}
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="overflow-hidden rounded-3xl border-rose-100 p-0 shadow-2xl dark:border-border sm:max-w-lg">
+          <div className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50 via-orange-50 to-amber-50 px-6 py-5 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card">
+            <DialogHeader>
+              <DialogTitle>
+                {editingRole ? "Edit Role" : "Add New Role"}
+              </DialogTitle>
+              <DialogDescription>
+                {editingRole
+                  ? "Update role name and description"
+                  : "Create a new role with custom permissions"}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5 px-6 py-5">
             {errors.submit && (
               <Alert variant="destructive">
                 <AlertDescription>{errors.submit}</AlertDescription>
@@ -292,7 +313,9 @@ export function RolesPage() {
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="e.g., Store Manager"
                 className={errors.name ? "border-destructive" : ""}
               />
@@ -314,16 +337,21 @@ export function RolesPage() {
               />
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="-mx-6 border-t border-rose-100/70 bg-background/80 px-6 py-4 dark:border-border">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsDialogOpen(false)}
                 disabled={submitting}
+                className="rounded-xl"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={submitting}>
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105"
+              >
                 {submitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -339,19 +367,29 @@ export function RolesPage() {
       </Dialog>
 
       {/* Permissions Dialog */}
-      <Dialog open={isPermissionDialogOpen} onOpenChange={setIsPermissionDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Manage Permissions: {permissionRole?.name}</DialogTitle>
-            <DialogDescription>
-              Select which permissions this role should have
-            </DialogDescription>
-          </DialogHeader>
+      <Dialog
+        open={isPermissionDialogOpen}
+        onOpenChange={setIsPermissionDialogOpen}
+      >
+        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto rounded-3xl border-rose-100 p-0 shadow-2xl dark:border-border">
+          <div className="sticky top-0 z-10 border-b border-rose-100/70 bg-gradient-to-r from-rose-50 via-orange-50 to-amber-50 px-6 py-5 dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card">
+            <DialogHeader>
+              <DialogTitle>
+                Manage Permissions: {permissionRole?.name}
+              </DialogTitle>
+              <DialogDescription>
+                Select which permissions this role should have
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4 px-6 py-5">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {availablePermissions.map((permission) => (
-                <div key={permission} className="flex items-center space-x-2">
+                <div
+                  key={permission}
+                  className="flex items-center gap-3 rounded-xl border border-rose-100/80 bg-gradient-to-r from-rose-50/50 to-amber-50/40 p-3 dark:border-border dark:from-muted/40 dark:to-card"
+                >
                   <Checkbox
                     id={permission}
                     checked={selectedPermissions.includes(permission)}
@@ -362,7 +400,9 @@ export function RolesPage() {
                     htmlFor={permission}
                     className="text-sm font-normal cursor-pointer"
                   >
-                    {permission.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
+                    {permission
+                      .replace(/([A-Z])/g, " $1")
+                      .replace(/^./, (str) => str.toUpperCase())}
                   </Label>
                 </div>
               ))}
@@ -377,18 +417,20 @@ export function RolesPage() {
             )}
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="sticky bottom-0 border-t border-rose-100/70 bg-background/95 px-6 py-4 backdrop-blur dark:border-border">
             <Button
               type="button"
               variant="outline"
               onClick={() => setIsPermissionDialogOpen(false)}
               disabled={submitting}
+              className="rounded-xl"
             >
               Cancel
             </Button>
             <Button
               onClick={handleUpdatePermissions}
               disabled={submitting || permissionRole?.name === "Admin"}
+              className="rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105"
             >
               {submitting ? (
                 <>

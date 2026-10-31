@@ -25,9 +25,9 @@ import {
   Tag,
   User,
   UserCheck,
-  Store
+  Store,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface MenuItem {
   label: string;
@@ -209,9 +209,6 @@ function MenuItemComponent({
       })
     : false;
 
-  // Don't show menu item if no permission
-  if (!hasAccess && !hasChildAccess) return null;
-
   const isActive = item.href ? location.pathname === item.href : false;
   const isParentActive = item.children
     ? item.children.some(
@@ -223,6 +220,13 @@ function MenuItemComponent({
     : false;
   const hasChildren = item.children && item.children.length > 0;
 
+  useEffect(() => {
+    if (isParentActive) setExpanded(true);
+  }, [isParentActive]);
+
+  // Don't show menu item if no permission.
+  if (!hasAccess && !hasChildAccess) return null;
+
   if (hasChildren) {
     return (
       <div>
@@ -233,9 +237,9 @@ function MenuItemComponent({
               onClick={() => setExpanded(!expanded)}
               aria-label={collapsed ? item.label : undefined}
               className={cn(
-                "flex items-center w-full gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                (expanded || isParentActive) && "bg-sidebar-accent/50",
+                "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                "hover:translate-x-0.5 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                (expanded || isParentActive) && "bg-sidebar-accent/80 text-sidebar-accent-foreground",
               )}
             >
               <item.icon className="h-4 w-4 shrink-0" />
@@ -256,7 +260,7 @@ function MenuItemComponent({
           </TooltipContent>
         </Tooltip>
         {expanded && !collapsed && (
-          <div className="ml-4 mt-1 space-y-1">
+          <div className="ml-5 mt-1.5 space-y-1 border-l border-rose-200/70 py-1 pl-2.5 dark:border-border">
             {item.children?.map((child) => (
               <MenuItemComponent
                 key={child.label}
@@ -280,10 +284,10 @@ function MenuItemComponent({
           to={item.href}
           aria-label={collapsed ? item.label : undefined}
           className={cn(
-            "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-            "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+            "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+            "hover:translate-x-0.5 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
             (isActive || isParentActive) &&
-              "bg-sidebar-primary text-sidebar-primary-foreground",
+              "bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/20 hover:translate-x-0 hover:from-rose-500 hover:to-orange-500 hover:text-white",
           )}
           data-ocid={`sidebar.link.${item.label.toLowerCase().replace(/\s+/g, "_")}`}
         >
@@ -308,13 +312,25 @@ export function Sidebar() {
 
   const sidebarContent = (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex h-14 shrink-0 items-center border-b border-sidebar-border px-4">
-        <div className="flex items-center gap-2 font-semibold text-sidebar-foreground">
-          {!sidebarCollapsed && <span className="text-sm">Bikaner Admin</span>}
+      <div className={cn("relative flex h-[4.75rem] shrink-0 items-center border-b border-sidebar-border/70 bg-gradient-to-r from-sidebar via-sidebar to-rose-50/60 dark:to-rose-950/10", sidebarCollapsed ? "justify-center px-2" : "px-4")}>
+        {!sidebarCollapsed && <div className="absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-rose-300/0 via-rose-300/70 to-orange-300/0" />}
+        <div className={cn("flex min-w-0 items-center gap-3 font-semibold text-sidebar-foreground", sidebarCollapsed && "justify-center")}>
+          <img
+            src="/assets/images/bikaner-logo.jpeg"
+            alt="Bikaner Biscuit Bakery"
+            className="h-10 w-10 shrink-0 rounded-2xl border border-white/90 bg-white object-contain p-1 shadow-md shadow-rose-950/10"
+          />
+          {!sidebarCollapsed && (
+            <div className="min-w-0">
+              <span className="block truncate text-sm font-bold tracking-tight">Bikaner Admin</span>
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-rose-600/75 dark:text-rose-300/70">Bakery workspace</span>
+            </div>
+          )}
         </div>
       </div>
-      <ScrollArea className="min-h-0 flex-1 px-3 py-4">
-        <nav className="space-y-1">
+      <ScrollArea className="min-h-0 flex-1 px-2.5 py-3">
+        <nav aria-label="Main navigation" className="space-y-1">
+          {!sidebarCollapsed && <p className="mb-2 px-3 pt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-sidebar-foreground/45">Workspace</p>}
           {menuItems.map((item) => (
             <MenuItemComponent
               key={item.label}
@@ -324,21 +340,21 @@ export function Sidebar() {
           ))}
         </nav>
       </ScrollArea>
-      <div className="shrink-0 border-t border-sidebar-border p-3">
+      <div className="shrink-0 border-t border-sidebar-border/70 bg-gradient-to-r from-sidebar to-rose-50/50 p-3 dark:to-rose-950/10">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              size="icon"
+              size={sidebarCollapsed ? "icon" : "default"}
               onClick={toggleSidebarCollapsed}
               aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              className="w-full flex items-center justify-center"
+              className={cn("flex rounded-xl hover:bg-sidebar-accent", sidebarCollapsed ? "w-full justify-center" : "w-full justify-start gap-2 px-3 text-xs text-sidebar-foreground/65")}
               data-ocid="sidebar.toggle_button"
             >
               {sidebarCollapsed ? (
                 <ChevronRight className="h-4 w-4" />
               ) : (
-                <ChevronLeft className="h-4 w-4" />
+                <><ChevronLeft className="h-4 w-4" />Collapse sidebar</>
               )}
             </Button>
           </TooltipTrigger>
@@ -366,15 +382,23 @@ export function Sidebar() {
         </SheetTrigger>
         <SheetContent
           side="left"
-          className="w-64 p-0 bg-sidebar text-sidebar-foreground"
+          className="w-72 border-sidebar-border/70 bg-sidebar p-0 text-sidebar-foreground shadow-2xl"
         >
           <div className="flex h-full min-h-0 flex-col">
-            <div className="flex h-14 shrink-0 items-center border-b border-sidebar-border px-4">
-              <div className="flex items-center gap-2 font-semibold text-sidebar-foreground">
-                <span className="text-sm">Bikaner Admin</span>
+            <div className="flex h-[4.5rem] shrink-0 items-center border-b border-sidebar-border/70 bg-gradient-to-r from-sidebar to-sidebar-accent/30 px-4">
+              <div className="flex items-center gap-3 font-semibold text-sidebar-foreground">
+                <img
+                  src="/assets/images/bikaner-logo.jpeg"
+                  alt="Bikaner Biscuit Bakery"
+                  className="h-10 w-10 rounded-xl border border-white/80 bg-white object-contain p-1 shadow-sm"
+                />
+                <div>
+                  <span className="block text-sm font-bold">Bikaner Admin</span>
+                  <span className="block text-[10px] font-medium uppercase tracking-[0.18em] text-sidebar-foreground/60">Bakery workspace</span>
+                </div>
               </div>
             </div>
-            <ScrollArea className="min-h-0 flex-1 px-3 py-4">
+            <ScrollArea className="min-h-0 flex-1 px-2.5 py-4">
               <nav className="space-y-1">
                 {menuItems.map((item) => (
                   <MenuItemComponent

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 import {
   type ColumnDef,
   type SortingState,
@@ -30,15 +31,36 @@ interface DataTableProps<TData> {
   searchColumn?: string;
   isLoading?: boolean;
   emptyMessage?: string;
+  toolbarContent?: ReactNode;
+  showSearch?: boolean;
+  resultCount?: number;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+}
+
+function getSearchableValues(value: unknown): string[] {
+  if (value === null || value === undefined) return [];
+  if (Array.isArray(value)) return value.flatMap(getSearchableValues);
+  if (typeof value === "object") {
+    return Object.values(value as Record<string, unknown>).flatMap(
+      getSearchableValues,
+    );
+  }
+  return [String(value)];
 }
 
 export function DataTable<TData>({
   columns,
   data,
   searchPlaceholder = "Search...",
-  searchColumn: _searchColumn,
+  searchColumn,
   isLoading = false,
   emptyMessage = "No data found",
+  toolbarContent,
+  showSearch = true,
+  resultCount,
+  searchValue,
+  onSearchChange,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -49,6 +71,16 @@ export function DataTable<TData>({
     state: { sorting, globalFilter },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: (row, _columnId, filterValue) => {
+      const query = String(filterValue ?? "").toLocaleLowerCase();
+      if (!query) return true;
+      const values = searchColumn
+        ? getSearchableValues(row.getValue(searchColumn))
+        : getSearchableValues(row.original);
+      return values.some((value) =>
+        value.toLocaleLowerCase().includes(query),
+      );
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -73,26 +105,36 @@ export function DataTable<TData>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Input
-          placeholder={searchPlaceholder}
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          className="max-w-sm"
-          data-ocid="datatable.search_input"
-        />
-        <div className="text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} results
+      <div className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-card/80 p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+          {showSearch && (
+            <Input
+              placeholder={searchPlaceholder}
+              value={searchValue ?? globalFilter}
+              onChange={(e) => {
+                setGlobalFilter(e.target.value);
+                onSearchChange?.(e.target.value);
+              }}
+              className="h-10 w-full rounded-xl bg-background sm:max-w-sm"
+              data-ocid="datatable.search_input"
+            />
+          )}
+          {toolbarContent}
+        </div>
+        <div className="shrink-0 text-sm text-muted-foreground">
+          <span className="rounded-full bg-muted px-3 py-1.5">
+            {resultCount ?? table.getFilteredRowModel().rows.length} results
+          </span>
         </div>
       </div>
 
-      <div className="rounded-lg border border-border overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-muted/50">
+            <thead className="bg-muted/70">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header, index) => {
+                  {headerGroup.headers.map((header) => {
                     const isActionsColumn = header.id === 'actions';
                     const isStatusColumn = header.column.id === 'status' || header.column.id === 'isActive';
                     
@@ -100,7 +142,7 @@ export function DataTable<TData>({
                       <th
                         key={header.id}
                         className={cn(
-                          "px-4 py-3 font-medium text-muted-foreground whitespace-nowrap",
+                          "whitespace-nowrap px-4 py-3.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground",
                           isActionsColumn && "w-auto text-right",
                           isStatusColumn && "w-auto text-center",
                           !isActionsColumn && !isStatusColumn && "text-left"
@@ -141,12 +183,12 @@ export function DataTable<TData>({
                 </tr>
               ))}
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-border/70">
               {table.getRowModel().rows.length === 0 ? (
                 <tr>
                   <td
                     colSpan={columns.length}
-                    className="px-4 py-12 text-center text-muted-foreground"
+                    className="px-4 py-16 text-center text-muted-foreground"
                   >
                     {emptyMessage}
                   </td>
@@ -155,7 +197,7 @@ export function DataTable<TData>({
                 table.getRowModel().rows.map((row) => (
                   <tr
                     key={row.id}
-                    className="hover:bg-muted/30 transition-colors"
+                    className="transition-colors hover:bg-muted/40"
                   >
                     {row.getVisibleCells().map((cell) => {
                       const isActionsColumn = cell.column.id === 'actions';
@@ -185,7 +227,7 @@ export function DataTable<TData>({
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm text-muted-foreground">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}

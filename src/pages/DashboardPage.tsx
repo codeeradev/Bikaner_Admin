@@ -10,7 +10,6 @@ import type {
   DashboardSellerApplication,
 } from "@/api/services/dashboardService";
 import { DataTable } from "@/components/DataTable";
-import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,9 +26,8 @@ import {
   MapPinned,
   Package,
   RefreshCw,
+  Sparkles,
   Store,
-  TrendingUp,
-  Truck,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
@@ -304,6 +302,7 @@ export function DashboardPage() {
           value: dashboardStats.overview.totalProducts.toLocaleString(),
           icon: Package,
           description: `${dashboardStats.overview.activeProducts} active`,
+          tone: "amber" as const,
         },
         {
           title: "Today's Sales",
@@ -313,18 +312,21 @@ export function DashboardPage() {
             value: dashboardStats.sales.today.trend,
             label: "from yesterday",
           },
+          tone: "rose" as const,
         },
         {
           title: "Total Orders",
           value: dashboardStats.overview.totalOrders.toLocaleString(),
           icon: Store,
           description: `${dashboardStats.sales.today.orders} today`,
+          tone: "violet" as const,
         },
         {
           title: "Low Stock Alerts",
           value: dashboardStats.overview.lowStockAlerts,
           icon: AlertTriangle,
           description: `${dashboardStats.inventory.outOfStock} out of stock`,
+          tone: "orange" as const,
         },
         {
           title: "Monthly Revenue",
@@ -334,36 +336,28 @@ export function DashboardPage() {
             value: dashboardStats.sales.month.trend,
             label: "from last month",
           },
+          tone: "teal" as const,
         },
         {
           title: "Active Cities",
           value: dashboardStats.overview.activeCities.toLocaleString(),
           icon: MapPin,
           description: `${dashboardStats.overview.activeZones} zones`,
-        },
-        {
-          title: "Total Users",
-          value: dashboardStats.overview.totalUsers.toLocaleString(),
-          icon: TrendingUp,
-          description: "Registered customers",
+          tone: "sky" as const,
         },
         {
           title: "Seller Requests",
           value: dashboardStats.overview.pendingSellerApplications,
           icon: Building2,
           description: "Pending approval",
+          tone: "pink" as const,
         },
         {
           title: "Categories",
           value: dashboardStats.overview.totalCategories,
           icon: Factory,
           description: "Active categories",
-        },
-        {
-          title: "Pending Requests",
-          value: dashboardStats.overview.pendingSellerApplications,
-          icon: Truck,
-          description: "Seller applications",
+          tone: "lime" as const,
         },
       ]
     : [];
@@ -379,23 +373,47 @@ export function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <PageHeader
-          title="Operations Dashboard"
-          description="Real-time overview of Bikaner Biscuit operations"
-        />
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="gap-2"
-        >
-          <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-          Refresh
-        </Button>
-      </div>
+    <div className="space-y-7">
+      <motion.section
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative isolate overflow-hidden rounded-[1.75rem] border border-rose-200/70 bg-gradient-to-br from-rose-100 via-orange-50 to-amber-100 p-5 shadow-sm dark:border-rose-900/50 dark:from-rose-950/45 dark:via-orange-950/25 dark:to-amber-950/35 sm:p-7"
+      >
+        <div className="pointer-events-none absolute -right-12 -top-24 -z-10 h-64 w-64 rounded-full bg-fuchsia-200/40 blur-3xl dark:bg-fuchsia-700/10" />
+        <div className="pointer-events-none absolute -bottom-24 right-1/3 -z-10 h-52 w-52 rounded-full bg-amber-300/35 blur-3xl dark:bg-amber-700/10" />
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4 sm:gap-5">
+            <div className="grid h-[76px] w-[76px] shrink-0 place-items-center rounded-2xl border border-white/80 bg-white/90 p-2 shadow-md sm:h-[92px] sm:w-[92px]">
+              <img
+                src="/assets/images/bikaner-logo.jpeg"
+                alt="Bikaner Biscuit Bakery"
+                className="h-full w-full rounded-xl object-contain"
+              />
+            </div>
+            <div className="min-w-0">
+              <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-rose-200/80 bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-rose-700 dark:border-rose-800 dark:bg-black/15 dark:text-rose-200">
+                <Sparkles className="h-3.5 w-3.5" /> Bakery operations
+              </div>
+              <h1 className="font-display text-2xl font-semibold leading-tight tracking-tight text-stone-900 dark:text-stone-50 sm:text-3xl">
+                Welcome to your bakery dashboard
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm text-stone-700/80 dark:text-stone-200/75 sm:text-base">
+                Your daily view of sales, orders, products, and store activity.
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="shrink-0 gap-2 border-white/80 bg-white/80 shadow-sm hover:bg-white dark:border-white/15 dark:bg-white/10 dark:hover:bg-white/15"
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            Refresh dashboard
+          </Button>
+        </div>
+      </motion.section>
 
       {loadingStats ? (
         <div className="flex items-center justify-center py-20">
@@ -411,7 +429,7 @@ export function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-5"
+            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
           >
             {stats.map((stat, index) => (
               <motion.div
@@ -432,7 +450,7 @@ export function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
-              className="rounded-lg border border-border bg-card p-6"
+              className="rounded-2xl border border-amber-200/70 bg-gradient-to-br from-amber-50/70 to-card p-6 shadow-sm dark:border-amber-900/40 dark:from-amber-950/20"
             >
               <h3 className="text-lg font-semibold mb-4">Revenue (Last 30 Days)</h3>
               {totalRevenue ? (
@@ -470,7 +488,7 @@ export function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.3 }}
-              className="rounded-lg border border-border bg-card p-6 lg:col-span-2"
+              className="rounded-2xl border border-rose-200/70 bg-gradient-to-br from-rose-50/60 to-card p-6 shadow-sm dark:border-rose-900/40 dark:from-rose-950/15 lg:col-span-2"
             >
               <h3 className="text-lg font-semibold mb-4">
                 Monthly Sales Trends
@@ -535,7 +553,7 @@ export function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.35 }}
-              className="rounded-lg border border-border bg-card p-6"
+              className="rounded-2xl border border-violet-200/70 bg-gradient-to-br from-violet-50/55 to-card p-6 shadow-sm dark:border-violet-900/40 dark:from-violet-950/15"
             >
               <h3 className="text-lg font-semibold mb-4">Top Selling Products</h3>
               {topProducts.length > 0 ? (
@@ -613,7 +631,7 @@ export function DashboardPage() {
                 searchPlaceholder="Search inventory..."
               />
             ) : (
-              <div className="rounded-lg border border-border bg-card p-8 text-center text-muted-foreground">
+              <div className="rounded-2xl border border-orange-200/70 bg-gradient-to-br from-orange-50/60 to-card p-8 text-center text-muted-foreground dark:border-orange-900/40 dark:from-orange-950/15">
                 No inventory data available
               </div>
             )}
@@ -625,7 +643,7 @@ export function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.6 }}
-              className="rounded-lg border border-border bg-card p-6"
+              className="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50/60 to-card p-6 shadow-sm dark:border-sky-900/40 dark:from-sky-950/15"
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -679,7 +697,7 @@ export function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.65 }}
-              className="rounded-lg border border-border bg-card p-6"
+              className="rounded-2xl border border-teal-200/70 bg-gradient-to-br from-teal-50/60 to-card p-6 shadow-sm dark:border-teal-900/40 dark:from-teal-950/15"
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">

@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { setupAdminFirebaseNotifications } from "@/services/adminFirebaseMessaging";
 import { useAuthStore, useThemeStore, useUIStore } from "@/store";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import {
   Bell,
   CheckCheck,
+  ChevronDown,
   ClipboardList,
   LogOut,
   Moon,
@@ -70,6 +71,7 @@ const getNotificationIcon = (notification: HeaderNotification) => {
 
 export function Header() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { user, logout, isAuthenticated } = useAuthStore();
   const [notifications, setNotifications] = useState<HeaderNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -86,6 +88,32 @@ export function Header() {
     () => (unreadCount > 99 ? "99+" : unreadCount.toString()),
     [unreadCount],
   );
+  const routeTitle: Record<string, string> = {
+    "/": "Dashboard",
+    "/dashboard": "Dashboard",
+    "/orders/normal": "Customer orders",
+    "/orders/bulk": "Distributor orders",
+    "/franchise/registered": "Registered franchise",
+    "/franchise/stock-requests": "Stock requests",
+    "/approvals/sellers": "Distributor applications",
+    "/users": "Users & staff",
+    "/roles": "Roles & permissions",
+  };
+  const pageTitle = routeTitle[pathname] ||
+    pathname
+      .split("/")
+      .filter(Boolean)
+      .at(-1)
+      ?.replace(/-/g, " ")
+      .replace(/\b\w/g, (letter) => letter.toUpperCase()) ||
+    "Admin workspace";
+  const sectionTitle = pathname.startsWith("/categories") || pathname.startsWith("/products") || pathname.startsWith("/banners")
+    ? "Catalog management"
+    : pathname.startsWith("/orders")
+      ? "Order desk"
+      : pathname.startsWith("/locations") || pathname.startsWith("/cities") || pathname.startsWith("/zones")
+        ? "Delivery coverage"
+        : "Bakery operations";
 
   const loadNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -220,11 +248,11 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-border bg-card/80 backdrop-blur-md px-4 lg:px-6">
+    <header className="sticky top-0 z-30 flex h-[4.5rem] items-center gap-3 border-b border-rose-100/80 bg-gradient-to-r from-background/95 via-card/90 to-orange-50/75 px-3 shadow-sm shadow-rose-950/[0.035] backdrop-blur-xl dark:border-border/70 dark:to-card/85 sm:gap-4 sm:px-5 lg:px-7">
       <Button
         variant="ghost"
         size="icon"
-        className="lg:hidden"
+        className="h-10 w-10 shrink-0 rounded-xl border border-rose-100 bg-white/80 shadow-sm hover:bg-rose-50 dark:border-border dark:bg-background/70 lg:hidden"
         onClick={() => setMobileDrawerOpen(true)}
         data-ocid="header.mobile_menu"
       >
@@ -246,14 +274,23 @@ export function Header() {
         </svg>
       </Button>
 
-      <div className="flex-1" />
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <div className="hidden h-10 w-10 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/20 sm:grid">
+          <Store className="h-5 w-5" />
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-[10px] font-bold uppercase tracking-[0.18em] text-rose-600/75 dark:text-rose-300/75">{sectionTitle}</p>
+          <p className="truncate text-sm font-bold tracking-tight text-foreground sm:text-base">{pageTitle}</p>
+        </div>
+      </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-1 rounded-2xl border border-rose-100/80 bg-white/70 p-1 shadow-sm shadow-rose-950/[0.025] dark:border-border dark:bg-background/70 sm:gap-1.5">
         <Button
           variant="ghost"
           size="icon"
           onClick={toggleDarkMode}
-          className="relative"
+          aria-label={darkMode ? "Switch to light theme" : "Switch to dark theme"}
+          className="relative h-9 w-9 rounded-xl border border-transparent hover:border-amber-200 hover:bg-amber-50 dark:hover:border-border dark:hover:bg-muted"
           data-ocid="header.theme_toggle"
         >
           {darkMode ? (
@@ -268,7 +305,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="relative"
+              className="relative h-9 w-9 rounded-xl border border-transparent hover:border-rose-200 hover:bg-rose-50 dark:hover:border-border dark:hover:bg-muted"
               data-ocid="header.notifications"
             >
               <Bell className="h-4 w-4" />
@@ -281,7 +318,7 @@ export function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-96 max-w-[calc(100vw-2rem)]"
+            className="w-96 max-w-[calc(100vw-2rem)] rounded-2xl border-rose-100 p-2 shadow-xl shadow-rose-950/10 dark:border-border"
             align="end"
           >
             <div className="flex items-center justify-between gap-3 px-2 py-1.5">
@@ -363,17 +400,19 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="relative h-8 w-8 rounded-full"
+              className="relative h-9 w-9 rounded-xl border border-amber-200/70 bg-gradient-to-br from-white to-amber-50/70 px-1 shadow-sm hover:from-rose-50 hover:to-amber-50 dark:border-border dark:from-background dark:to-background/70 dark:hover:bg-muted sm:w-auto sm:gap-2 sm:px-1.5"
               data-ocid="header.user_menu"
             >
               <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                  <AvatarFallback className="bg-gradient-to-br from-rose-500 via-orange-500 to-amber-400 text-xs font-bold text-white">
                   {user?.name?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
+              <span className="hidden max-w-24 truncate text-xs font-semibold sm:inline">{user?.name?.split(" ")[0] || "Account"}</span>
+              <ChevronDown className="hidden h-3.5 w-3.5 text-muted-foreground sm:block" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuContent className="w-60 rounded-2xl border-rose-100 p-2 shadow-xl shadow-rose-950/10 dark:border-border" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium">{user?.name || "User"}</p>

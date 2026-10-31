@@ -34,7 +34,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
   error: null,
   total: 0,
   page: 1,
-  pageSize: 100,
+  pageSize: 1000,
 
   setSearchQuery: (query) => {
     set({ searchQuery: query, page: 1 });

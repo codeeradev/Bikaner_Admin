@@ -163,7 +163,8 @@ const defaultValues: SettingsFormData = {
   playStoreUrl: "",
   appStoreUrl: "",
   maintenanceMode: false,
-  maintenanceMessage: "We are currently under maintenance. Please check back soon.",
+  maintenanceMessage:
+    "We are currently under maintenance. Please check back soon.",
   razorpayKeyId: "",
   razorpayKeySecret: "",
   razorpayWebhookSecret: "",
@@ -263,9 +264,12 @@ export function SettingsPage() {
           confirmAdminPassword: "",
           range: String(settings.range || defaultValues.range),
           globalDeliveryCharges: String(
-            settings.globalDeliveryCharges ?? defaultValues.globalDeliveryCharges,
+            settings.globalDeliveryCharges ??
+              defaultValues.globalDeliveryCharges,
           ),
-          platformFee: String(settings.platformFee ?? defaultValues.platformFee),
+          platformFee: String(
+            settings.platformFee ?? defaultValues.platformFee,
+          ),
           globalTax: String(settings.globalTax ?? defaultValues.globalTax),
           codLimit: String(settings.codLimit ?? defaultValues.codLimit),
           facebookUrl: settings.facebookUrl || "",
@@ -468,7 +472,9 @@ export function SettingsPage() {
     }
 
     if (staffError) {
-      alert.error(`Settings saved, but the admin login was not updated: ${staffError}`);
+      alert.error(
+        `Settings saved, but the admin login was not updated: ${staffError}`,
+      );
       return;
     }
 
@@ -492,6 +498,7 @@ export function SettingsPage() {
       <PageHeader
         title="Settings"
         description="Configure your site preferences"
+        className="rounded-3xl border border-rose-100 bg-gradient-to-br from-rose-50 via-orange-50/80 to-amber-50 px-5 py-5 shadow-sm dark:border-border dark:from-rose-950/20 dark:via-orange-950/10 dark:to-card sm:px-6"
       />
 
       <motion.div
@@ -500,9 +507,12 @@ export function SettingsPage() {
         transition={{ duration: 0.4 }}
       >
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
+          <form
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
+            className="space-y-6"
+          >
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 lg:w-[900px]">
+              <TabsList className="grid h-auto w-full grid-cols-2 gap-1 overflow-x-auto rounded-2xl border border-rose-100 bg-rose-50/70 p-1 dark:border-border dark:bg-muted/60 sm:grid-cols-3 lg:grid-cols-5">
                 <TabsTrigger value="general">
                   <Settings className="mr-2 h-4 w-4" />
                   General
@@ -525,9 +535,9 @@ export function SettingsPage() {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="general" className="mt-6 space-y-6">
-                <Card>
-                  <CardHeader>
+              <TabsContent value="general" className="mt-5 space-y-5">
+                <Card className="rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+                  <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/80 to-orange-50/60 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                     <CardTitle className="flex items-center gap-2">
                       <Globe className="h-5 w-5" />
                       Site Information
@@ -622,13 +632,13 @@ export function SettingsPage() {
                       <label htmlFor="siteLogo" className="text-sm font-medium">
                         Site Logo
                       </label>
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted">
+                      <div className="flex flex-col gap-4 rounded-2xl border border-rose-100/80 bg-gradient-to-r from-rose-50/50 to-amber-50/50 p-4 dark:border-border dark:from-muted/50 dark:to-card sm:flex-row sm:items-center">
+                        <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-rose-100 bg-white shadow-sm dark:border-border dark:bg-card">
                           {previewUrl ? (
                             <img
                               src={previewUrl}
                               alt="Site logo preview"
-                              className="h-full w-full object-cover"
+                              className="h-full w-full object-contain p-1"
                             />
                           ) : (
                             <Globe className="h-8 w-8 text-muted-foreground" />
@@ -647,6 +657,7 @@ export function SettingsPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => fileInputRef.current?.click()}
+                          className="w-fit rounded-xl border-rose-200 bg-white hover:bg-rose-50 dark:border-border dark:bg-card dark:hover:bg-muted"
                         >
                           <Upload className="mr-2 h-4 w-4" />
                           Upload Logo
@@ -659,8 +670,8 @@ export function SettingsPage() {
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader>
+                <Card className="rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+                  <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/80 to-orange-50/60 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                     <CardTitle className="flex items-center gap-2">
                       <Shield className="h-5 w-5" />
                       Admin Login
@@ -689,9 +700,9 @@ export function SettingsPage() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="policies" className="mt-6 space-y-6">
-                <Card>
-                  <CardHeader>
+              <TabsContent value="policies" className="mt-5 space-y-5">
+                <Card className="rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+                  <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/80 to-orange-50/60 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                     <CardTitle className="flex items-center gap-2">
                       <FileText className="h-5 w-5" />
                       Policy Pages
@@ -728,9 +739,16 @@ export function SettingsPage() {
                       placeholder="Enter your shipping policy..."
                       rows={8}
                     />
-                    
-                    <div className="pt-4 border-t">
-                      <h3 className="text-sm font-semibold mb-4">App Download Links</h3>
+
+                    <div className="space-y-4 rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50/50 to-amber-50/50 p-4 dark:border-border dark:from-muted/40 dark:to-card sm:p-5">
+                      <div>
+                        <h3 className="text-sm font-semibold">
+                          App Download Links
+                        </h3>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Add store links displayed to your customers.
+                        </p>
+                      </div>
                       <div className="grid gap-4 sm:grid-cols-2">
                         <FormInput
                           name="playStoreUrl"
@@ -747,9 +765,9 @@ export function SettingsPage() {
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent value="app" className="mt-6 space-y-6">
-                <Card>
-                  <CardHeader>
+              <TabsContent value="app" className="mt-5 space-y-5">
+                <Card className="rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+                  <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/80 to-orange-50/60 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                     <CardTitle className="flex items-center gap-2">
                       <Share2 className="h-5 w-5" />
                       Social Links
@@ -765,8 +783,8 @@ export function SettingsPage() {
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader>
+                <Card className="rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+                  <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/80 to-orange-50/60 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                     <CardTitle className="flex items-center gap-2">
                       <Settings className="h-5 w-5" />
                       App Settings
@@ -787,9 +805,9 @@ export function SettingsPage() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="payments" className="mt-6 space-y-6">
-                <Card>
-                  <CardHeader>
+              <TabsContent value="payments" className="mt-5 space-y-5">
+                <Card className="rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+                  <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/80 to-orange-50/60 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                     <CardTitle className="flex items-center gap-2">
                       <CreditCard className="h-5 w-5" />
                       Razorpay Settings
@@ -805,9 +823,12 @@ export function SettingsPage() {
                       name="razorpayWebhookSecret"
                       label="Razorpay Webhook Secret"
                     />
-                    <div className="flex items-center justify-between rounded-md border p-3">
+                    <div className="flex items-center justify-between gap-4 rounded-2xl border border-rose-100/80 bg-gradient-to-r from-rose-50/50 to-amber-50/40 p-4 dark:border-border dark:from-muted/40 dark:to-card">
                       <div className="space-y-0.5">
-                        <label htmlFor="enableRazorpayForSellers" className="text-sm font-medium">
+                        <label
+                          htmlFor="enableRazorpayForSellers"
+                          className="text-sm font-medium"
+                        >
                           Enable Razorpay for Sellers
                         </label>
                         <p className="text-xs text-muted-foreground">
@@ -817,12 +838,17 @@ export function SettingsPage() {
                       <Switch
                         id="enableRazorpayForSellers"
                         checked={methods.watch("enableRazorpayForSellers")}
-                        onCheckedChange={(checked) => methods.setValue("enableRazorpayForSellers", checked)}
+                        onCheckedChange={(checked) =>
+                          methods.setValue("enableRazorpayForSellers", checked)
+                        }
                       />
                     </div>
-                    <div className="flex items-center justify-between rounded-md border p-3">
+                    <div className="flex items-center justify-between gap-4 rounded-2xl border border-rose-100/80 bg-gradient-to-r from-rose-50/50 to-amber-50/40 p-4 dark:border-border dark:from-muted/40 dark:to-card">
                       <div className="space-y-0.5">
-                        <label htmlFor="enableRazorpayForUser" className="text-sm font-medium">
+                        <label
+                          htmlFor="enableRazorpayForUser"
+                          className="text-sm font-medium"
+                        >
                           Enable Razorpay for Users
                         </label>
                         <p className="text-xs text-muted-foreground">
@@ -832,16 +858,18 @@ export function SettingsPage() {
                       <Switch
                         id="enableRazorpayForUser"
                         checked={methods.watch("enableRazorpayForUser")}
-                        onCheckedChange={(checked) => methods.setValue("enableRazorpayForUser", checked)}
+                        onCheckedChange={(checked) =>
+                          methods.setValue("enableRazorpayForUser", checked)
+                        }
                       />
                     </div>
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              <TabsContent value="location" className="mt-6 space-y-6">
-                <Card>
-                  <CardHeader>
+              <TabsContent value="location" className="mt-5 space-y-5">
+                <Card className="rounded-3xl border-rose-100/80 bg-card/90 shadow-sm dark:border-border">
+                  <CardHeader className="border-b border-rose-100/70 bg-gradient-to-r from-rose-50/80 to-orange-50/60 dark:border-border dark:from-rose-950/10 dark:to-orange-950/5">
                     <CardTitle className="flex items-center gap-2">
                       <MapPin className="h-5 w-5" />
                       Location & Maps API Keys
@@ -870,7 +898,7 @@ export function SettingsPage() {
               </TabsContent>
             </Tabs>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-2">
+            <div className="sticky bottom-3 z-10 flex flex-col justify-end gap-2 rounded-2xl border border-rose-100/80 bg-background/95 p-3 shadow-lg backdrop-blur sm:flex-row dark:border-border">
               <Button
                 type="button"
                 variant="outline"
@@ -880,11 +908,15 @@ export function SettingsPage() {
                   setLogoPreview(savedLogo);
                   reset(loadedValues);
                 }}
-                className="w-full sm:w-auto"
+                className="w-full rounded-xl sm:w-auto"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-500/15 hover:brightness-105 sm:w-auto"
+              >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

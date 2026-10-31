@@ -40,7 +40,7 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
   error: null,
   total: 0,
   page: 1,
-  pageSize: 20,
+  pageSize: 1000,
 
   setSearchQuery: (query) => {
     set({ searchQuery: query, page: 1 });

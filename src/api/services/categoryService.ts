@@ -47,10 +47,16 @@ export const categoryService = {
     console.log("🔵 Endpoint:", ENDPOINTS.GET_CATEGORIES);
 
     try {
-      const response = await get<CategoryListResponse>(
-        ENDPOINTS.GET_CATEGORIES,
-        params,
-      );
+      const query: Record<string, string | number | boolean> = {
+        page: params?.page ?? 1,
+        limit: params?.pageSize ?? 1000,
+      };
+      if (params?.status !== undefined) {
+        query.isActive = params.status === "active";
+      }
+      const response = await get<CategoryListResponse>(ENDPOINTS.GET_CATEGORIES, {
+        ...query,
+      });
       console.log("✅ Categories fetched successfully:", response);
       return response;
     } catch (error) {
@@ -87,7 +93,7 @@ export const categoryService = {
       const formData = new FormData();
       formData.append("name", data.name);
       
-      if (data.description) formData.append("description", data.description);
+      if (data.description !== undefined) formData.append("description", data.description);
       
       // Convert status to isActive for backend
       if (data.status) {
@@ -118,8 +124,8 @@ export const categoryService = {
     try {
       const formData = new FormData();
       
-      if (data.name) formData.append("name", data.name);
-      if (data.description) formData.append("description", data.description);
+      if (data.name !== undefined) formData.append("name", data.name);
+      if (data.description !== undefined) formData.append("description", data.description);
       
       // Convert status to isActive for backend
       if (data.status) {
