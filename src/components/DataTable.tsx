@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
 import {
   type ColumnDef,
   type SortingState,
@@ -22,6 +21,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import { useState } from "react";
 
 interface DataTableProps<TData> {
@@ -77,9 +77,7 @@ export function DataTable<TData>({
       const values = searchColumn
         ? getSearchableValues(row.getValue(searchColumn))
         : getSearchableValues(row.original);
-      return values.some((value) =>
-        value.toLocaleLowerCase().includes(query),
-      );
+      return values.some((value) => value.toLocaleLowerCase().includes(query));
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -90,7 +88,7 @@ export function DataTable<TData>({
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="data-table-loading space-y-4">
         <Skeleton className="h-10 w-full max-w-sm" />
         <div className="rounded-lg border border-border">
           <div className="space-y-2 p-4">
@@ -135,9 +133,11 @@ export function DataTable<TData>({
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
-                    const isActionsColumn = header.id === 'actions';
-                    const isStatusColumn = header.column.id === 'status' || header.column.id === 'isActive';
-                    
+                    const isActionsColumn = header.id === "actions";
+                    const isStatusColumn =
+                      header.column.id === "status" ||
+                      header.column.id === "isActive";
+
                     return (
                       <th
                         key={header.id}
@@ -145,7 +145,7 @@ export function DataTable<TData>({
                           "whitespace-nowrap px-4 py-3.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground",
                           isActionsColumn && "w-auto text-right",
                           isStatusColumn && "w-auto text-center",
-                          !isActionsColumn && !isStatusColumn && "text-left"
+                          !isActionsColumn && !isStatusColumn && "text-left",
                         )}
                       >
                         {header.isPlaceholder ? null : (
@@ -155,7 +155,7 @@ export function DataTable<TData>({
                               "flex items-center gap-1 hover:text-foreground transition-colors",
                               header.column.getCanSort() && "cursor-pointer",
                               isActionsColumn && "ml-auto",
-                              isStatusColumn && "mx-auto"
+                              isStatusColumn && "mx-auto",
                             )}
                             onClick={header.column.getToggleSortingHandler()}
                             disabled={!header.column.getCanSort()}
@@ -200,16 +200,18 @@ export function DataTable<TData>({
                     className="transition-colors hover:bg-muted/40"
                   >
                     {row.getVisibleCells().map((cell) => {
-                      const isActionsColumn = cell.column.id === 'actions';
-                      const isStatusColumn = cell.column.id === 'status' || cell.column.id === 'isActive';
-                      
+                      const isActionsColumn = cell.column.id === "actions";
+                      const isStatusColumn =
+                        cell.column.id === "status" ||
+                        cell.column.id === "isActive";
+
                       return (
-                        <td 
-                          key={cell.id} 
+                        <td
+                          key={cell.id}
                           className={cn(
                             "px-4 py-3",
                             isActionsColumn && "text-right",
-                            isStatusColumn && "text-center"
+                            isStatusColumn && "text-center",
                           )}
                         >
                           {flexRender(

@@ -164,6 +164,32 @@
   }
 }
 
+/* Keep loading spinners rose-pink throughout the Admin app. */
+svg.animate-spin {
+  color: #d9467a;
+}
+
+/* Use the same rose tone for shared table skeleton loaders. */
+.data-table-loading [data-slot="skeleton"] {
+  background: linear-gradient(90deg, #fce7f3 20%, #f9c7dc 50%, #fce7f3 80%);
+  background-size: 200% 100%;
+  animation: table-loader-shimmer 1.5s ease-in-out infinite;
+}
+
+.dark .data-table-loading [data-slot="skeleton"] {
+  background: linear-gradient(90deg, #482638 20%, #63324b 50%, #482638 80%);
+  background-size: 200% 100%;
+}
+
+@keyframes table-loader-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
 /* Keep the page and in-panel scrollbars slim while retaining a clear thumb. */
 * {
   scrollbar-width: thin;
