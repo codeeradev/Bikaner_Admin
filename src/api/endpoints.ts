@@ -1,7 +1,7 @@
 // Base URL for API - Update this with your actual backend URL
 const BASE_URL = 
-"http://localhost:9020";
-// "https://api.bikanerbakeryy.com";
+// "http://localhost:9020";
+"https://api.bikanerbakeryy.com";
 
 export const ENDPOINTS = {
   GET_FRANCHISE_STOCK_REQUESTS: `${BASE_URL}/franchise-stock-requests`,
