@@ -5,6 +5,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { PERMISSIONS } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
   Building2,
@@ -225,27 +226,35 @@ function MenuItemComponent({
   if (hasChildren) {
     return (
       <div>
-        <button
-          type="button"
-          onClick={() => setExpanded(!expanded)}
-          className={cn(
-            "flex items-center w-full gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-            "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-            (expanded || isParentActive) && "bg-sidebar-accent/50",
-          )}
-        >
-          <item.icon className="h-4 w-4 shrink-0" />
-          {!collapsed && (
-            <>
-              <span className="flex-1 text-left">{item.label}</span>
-              {expanded ? (
-                <ChevronUp className="h-3 w-3" />
-              ) : (
-                <ChevronDown className="h-3 w-3" />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={() => setExpanded(!expanded)}
+              aria-label={collapsed ? item.label : undefined}
+              className={cn(
+                "flex items-center w-full gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                (expanded || isParentActive) && "bg-sidebar-accent/50",
               )}
-            </>
-          )}
-        </button>
+            >
+              <item.icon className="h-4 w-4 shrink-0" />
+              {!collapsed && (
+                <>
+                  <span className="flex-1 text-left">{item.label}</span>
+                  {expanded ? (
+                    <ChevronUp className="h-3 w-3" />
+                  ) : (
+                    <ChevronDown className="h-3 w-3" />
+                  )}
+                </>
+              )}
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right" align="center" sideOffset={8} hidden={!collapsed}>
+            {item.label}
+          </TooltipContent>
+        </Tooltip>
         {expanded && !collapsed && (
           <div className="ml-4 mt-1 space-y-1">
             {item.children?.map((child) => (
@@ -265,19 +274,27 @@ function MenuItemComponent({
   if (!item.href) return null;
 
   return (
-    <Link
-      to={item.href}
-      className={cn(
-        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-        (isActive || isParentActive) &&
-          "bg-sidebar-primary text-sidebar-primary-foreground",
-      )}
-      data-ocid={`sidebar.link.${item.label.toLowerCase().replace(/\s+/g, "_")}`}
-    >
-      <item.icon className="h-4 w-4 shrink-0" />
-      {!collapsed && <span>{item.label}</span>}
-    </Link>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Link
+          to={item.href}
+          aria-label={collapsed ? item.label : undefined}
+          className={cn(
+            "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+            "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+            (isActive || isParentActive) &&
+              "bg-sidebar-primary text-sidebar-primary-foreground",
+          )}
+          data-ocid={`sidebar.link.${item.label.toLowerCase().replace(/\s+/g, "_")}`}
+        >
+          <item.icon className="h-4 w-4 shrink-0" />
+          {!collapsed && <span>{item.label}</span>}
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent side="right" align="center" sideOffset={8} hidden={!collapsed}>
+        {item.label}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -308,19 +325,27 @@ export function Sidebar() {
         </nav>
       </ScrollArea>
       <div className="shrink-0 border-t border-sidebar-border p-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebarCollapsed}
-          className="w-full flex items-center justify-center"
-          data-ocid="sidebar.toggle_button"
-        >
-          {sidebarCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebarCollapsed}
+              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              className="w-full flex items-center justify-center"
+              data-ocid="sidebar.toggle_button"
+            >
+              {sidebarCollapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right" align="center" sideOffset={8}>
+            {sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          </TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );

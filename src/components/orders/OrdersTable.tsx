@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAlert } from "@/hooks/use-alert";
 import { PERMISSIONS } from "@/lib/permissions";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -99,6 +100,25 @@ interface OrdersTableProps {
   emptyMessage: string;
 }
 
+type OrderStatusFilter = "all" | "pending" | "completed" | "cancelled";
+
+function matchesStatusFilter(
+  orderStatus: OrderStatus,
+  filter: OrderStatusFilter,
+) {
+  switch (filter) {
+    case "pending":
+      // Accepted orders are still being processed and are not complete yet.
+      return orderStatus === "pending" || orderStatus === "accepted";
+    case "completed":
+      return orderStatus === "delivered";
+    case "cancelled":
+      return orderStatus === "cancelled";
+    default:
+      return true;
+  }
+}
+
 export function OrdersTable({
   orderType,
   searchPlaceholder,
@@ -106,6 +126,7 @@ export function OrdersTable({
 }: OrdersTableProps) {
   const alert = useAlert();
   const [orders, setOrders] = useState<OrderListItem[]>([]);
+  const [statusFilter, setStatusFilter] = useState<OrderStatusFilter>("all");
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [downloadingInvoiceId, setDownloadingInvoiceId] = useState<
@@ -139,6 +160,17 @@ export function OrdersTable({
     orderNumber: string;
     selectedFranchiseId: string;
   }>({ open: false, orderId: "", orderNumber: "", selectedFranchiseId: "" });
+
+  const selectedAssignment = selectedOrder?.franchiseAssignment;
+  const selectedFranchiseRef = selectedAssignment?.franchiseId;
+  const selectedFranchiseId =
+    typeof selectedFranchiseRef === "string"
+      ? selectedFranchiseRef
+      : selectedFranchiseRef?.id ?? selectedFranchiseRef?._id;
+  const selectedFranchise =
+    typeof selectedFranchiseRef === "object" && selectedFranchiseRef
+      ? selectedFranchiseRef
+      : activeFranchises.find((item) => item.id === selectedFranchiseId);
 
   const loadOrders = useCallback(async () => {
     setIsLoading(true);
@@ -407,12 +439,22 @@ export function OrdersTable({
       cell: ({ row }) => {
         const status = row.getValue("orderStatus") as OrderStatus;
         return (
-          <Badge
-            variant={orderVariants[status] || "secondary"}
-            className="whitespace-nowrap"
-          >
-            {statusLabels[status] || status}
-          </Badge>
+          <div className="space-y-1">
+            <Badge
+              variant={orderVariants[status] || "secondary"}
+              className="whitespace-nowrap"
+            >
+              {statusLabels[status] || status}
+            </Badge>
+            {status === "cancelled" && row.original.cancelReason && (
+              <p
+                className="max-w-[220px] truncate text-xs text-muted-foreground"
+                title={row.original.cancelReason}
+              >
+                {row.original.cancelReason}
+              </p>
+            )}
+          </div>
         );
       },
     },
@@ -428,10 +470,15 @@ export function OrdersTable({
             </span>
           );
         }
-        const storeName =
+        const franchiseId =
           typeof assignment.franchiseId === "string"
             ? assignment.franchiseId
-            : assignment.franchiseId?.name ?? "Unknown store";
+            : assignment.franchiseId.id ?? assignment.franchiseId._id;
+        const franchise =
+          typeof assignment.franchiseId === "string"
+            ? activeFranchises.find((item) => item.id === franchiseId)
+            : assignment.franchiseId;
+        const storeName = franchise?.name || "Franchise unavailable";
         return (
           <div className="min-w-[140px]">
             <div className="text-sm font-medium truncate">{storeName}</div>
@@ -464,6 +511,9 @@ export function OrdersTable({
       cell: ({ row }) => {
         const status = row.getValue("orderStatus") as OrderStatus;
         const isTerminal = status === "delivered" || status === "cancelled";
+        const assignedToFranchise =
+          Boolean(row.original.franchiseAssignment?.franchiseId) &&
+          row.original.franchiseAssignment?.status !== "rejected";
 
         return (
           <div className="flex items-center justify-end gap-2 min-w-[280px]">
@@ -506,7 +556,12 @@ export function OrdersTable({
                 <Button
                   variant="outline"
                   size="sm"
-                  disabled={isTerminal || isUpdating}
+                  disabled={isTerminal || isUpdating || assignedToFranchise}
+                  title={
+                    assignedToFranchise
+                      ? "The assigned franchise manages this order’s status"
+                      : undefined
+                  }
                   className="whitespace-nowrap"
                 >
                   Change Status
@@ -559,6 +614,23 @@ export function OrdersTable({
     },
   ];
 
+  const statusCounts: Record<OrderStatusFilter, number> = {
+    all: orders.length,
+    pending: orders.filter((order) =>
+      matchesStatusFilter(order.orderStatus, "pending"),
+    ).length,
+    completed: orders.filter((order) =>
+      matchesStatusFilter(order.orderStatus, "completed"),
+    ).length,
+    cancelled: orders.filter((order) =>
+      matchesStatusFilter(order.orderStatus, "cancelled"),
+    ).length,
+  };
+
+  const filteredOrders = orders.filter((order) =>
+    matchesStatusFilter(order.orderStatus, statusFilter),
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row justify-end gap-2">
@@ -574,10 +646,32 @@ export function OrdersTable({
           Refresh
         </Button>
       </div>
+      <Tabs
+        value={statusFilter}
+        onValueChange={(value) => setStatusFilter(value as OrderStatusFilter)}
+      >
+        <TabsList className="h-auto max-w-full justify-start gap-1 overflow-x-auto p-1">
+          {(
+            [
+              ["all", "All"],
+              ["pending", "Pending"],
+              ["completed", "Completed"],
+              ["cancelled", "Cancelled"],
+            ] as const
+          ).map(([value, label]) => (
+            <TabsTrigger key={value} value={value} className="gap-2 px-3 sm:px-4">
+              {label}
+              <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs leading-none text-muted-foreground">
+                {statusCounts[value]}
+              </span>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
       <div className="overflow-x-auto">
         <DataTable
           columns={orderColumns}
-          data={orders}
+          data={filteredOrders}
           isLoading={isLoading}
           searchPlaceholder={searchPlaceholder}
           emptyMessage={emptyMessage}
@@ -645,8 +739,65 @@ export function OrdersTable({
                     <span className="font-medium text-foreground">Notes:</span>{" "}
                     {selectedOrder.notes || "—"}
                   </p>
+                  {selectedOrder.orderStatus === "cancelled" && (
+                    <>
+                      <p>
+                        <span className="font-medium text-foreground">Cancelled by:</span>{" "}
+                        {selectedOrder.cancelledBy || "Unknown"}
+                      </p>
+                      <p>
+                        <span className="font-medium text-foreground">Cancellation reason:</span>{" "}
+                        {selectedOrder.cancelReason || "No reason provided"}
+                      </p>
+                    </>
+                  )}
                 </div>
               </section>
+              {selectedAssignment && selectedFranchiseId && (
+                <section className="rounded-lg border p-4 sm:col-span-2">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="font-semibold">Franchise assignment</h3>
+                    <Badge
+                      variant={
+                        franchiseAssignmentVariants[selectedAssignment.status] ??
+                        "secondary"
+                      }
+                    >
+                      {selectedAssignment.status}
+                    </Badge>
+                  </div>
+                  <div className="grid gap-2 text-muted-foreground sm:grid-cols-2">
+                    <p>
+                      <span className="font-medium text-foreground">Store:</span>{" "}
+                      {selectedFranchise?.name || "Franchise unavailable"}
+                    </p>
+                    <p>
+                      <span className="font-medium text-foreground">Manager:</span>{" "}
+                      {selectedFranchise?.managerName || "Not available"}
+                    </p>
+                    <p>
+                      <span className="font-medium text-foreground">Phone:</span>{" "}
+                      {selectedFranchise?.phone || "Not available"}
+                    </p>
+                    <p>
+                      <span className="font-medium text-foreground">Email:</span>{" "}
+                      {selectedFranchise?.email || "Not available"}
+                    </p>
+                    {selectedFranchise?.address && (
+                      <p className="sm:col-span-2">
+                        <span className="font-medium text-foreground">Address:</span>{" "}
+                        {selectedFranchise.address}
+                      </p>
+                    )}
+                    <p>
+                      <span className="font-medium text-foreground">Assigned:</span>{" "}
+                      {selectedAssignment.assignedAt
+                        ? new Date(selectedAssignment.assignedAt).toLocaleString()
+                        : "Not available"}
+                    </p>
+                  </div>
+                </section>
+              )}
               <section className="rounded-lg border p-4 sm:col-span-2">
                 <h3 className="mb-3 font-semibold">Products</h3>
                 <div className="space-y-2">
@@ -655,7 +806,7 @@ export function OrdersTable({
                       key={`${item.name}-${index}`}
                       className="flex items-center justify-between gap-3 border-b pb-2 last:border-0 last:pb-0"
                     >
-                      <span>{item.name}</span>
+                      <span>{item.name || `Product ${index + 1}`}</span>
                       <span className="whitespace-nowrap text-muted-foreground">
                         {item.quantity} × ₹{item.price}
                       </span>

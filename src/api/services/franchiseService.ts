@@ -112,7 +112,18 @@ export interface UpdateFranchiseProductDto {
 
 /** Shape of the assignment sub-document embedded on an order. */
 export interface FranchiseAssignment {
-  franchiseId: string | { _id: string; name: string; managerName: string; phone: string };
+  franchiseId:
+    | string
+    | {
+        id?: string;
+        _id?: string;
+        name?: string;
+        managerName?: string;
+        phone?: string;
+        email?: string;
+        address?: string;
+      }
+    | null;
   status: "pending" | "accepted" | "rejected";
   assignedAt: string;
   assignedBy?: string;

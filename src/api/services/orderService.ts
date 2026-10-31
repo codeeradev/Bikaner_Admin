@@ -6,6 +6,15 @@ export type OrderType = "normal" | "bulk";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
 export type OrderStatus = "pending" | "accepted" | "cancelled" | "delivered";
 
+export interface ApiOrderItem {
+  name?: string;
+  productId?: string | { _id?: string; name?: string; sku?: string } | null;
+  quantity: number;
+  price: number;
+  priceType: "selling" | "bulk";
+  subtotal: number;
+}
+
 export interface ApiOrder {
   id: string;
   orderNumber?: string;
@@ -16,19 +25,16 @@ export interface ApiOrder {
     email?: string;
     mobile?: string;
   };
-  items: Array<{
-    name: string;
-    quantity: number;
-    price: number;
-    priceType: "selling" | "bulk";
-    subtotal: number;
-  }>;
+  items: ApiOrderItem[];
   totalAmount: number;
   deliveryCharge: number;
   grandTotal: number;
   orderType: OrderType;
   paymentStatus: PaymentStatus;
   orderStatus: OrderStatus;
+  cancelReason?: string;
+  cancelledBy?: "customer" | "admin" | "franchise";
+  cancelledAt?: string;
   // Present once an order has been handed to a franchise store — see
   // PART A1/A4 of the franchise task plan (models/orders.js franchiseAssignment sub-object).
   franchiseAssignment?: FranchiseAssignment;
@@ -59,6 +65,9 @@ export interface OrderListItem {
   orderType: OrderType;
   paymentStatus: PaymentStatus;
   orderStatus: OrderStatus;
+  cancelReason?: string;
+  cancelledBy?: "customer" | "admin" | "franchise";
+  cancelledAt?: string;
   franchiseAssignment?: FranchiseAssignment;
   paymentMethod?: string;
   date: string;
@@ -104,7 +113,14 @@ const toOrderListItem = (order: ApiOrder): OrderListItem => ({
     .filter(Boolean)
     .join(", "),
   notes: order.notes || "",
-  items: order.items || [],
+  items: (order.items || []).map((item) => ({
+    ...item,
+    name:
+      item.name ||
+      (typeof item.productId === "object" && item.productId
+        ? item.productId.name || item.productId.sku
+        : undefined),
+  })),
   productCount: order.items?.length || 0,
   quantity:
     order.items?.reduce(
@@ -115,6 +131,9 @@ const toOrderListItem = (order: ApiOrder): OrderListItem => ({
   orderType: order.orderType,
   paymentStatus: order.paymentStatus,
   orderStatus: order.orderStatus,
+  cancelReason: order.cancelReason,
+  cancelledBy: order.cancelledBy,
+  cancelledAt: order.cancelledAt,
   franchiseAssignment: order.franchiseAssignment,
   paymentMethod: order.paymentMethod,
   date: order.createdAt || order.updatedAt,
