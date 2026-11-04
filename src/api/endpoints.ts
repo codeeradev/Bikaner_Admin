@@ -89,7 +89,6 @@ export const ENDPOINTS = {
     `${BASE_URL}/seller-applications/${id}/reject`,
 
   // Franchise (store) management — see PART A3/A4 of the franchise task plan.
-  // These map 1:1 to adminFranchiseController.js on the backend.
   GET_FRANCHISES: `${BASE_URL}/franchises`,
   GET_FRANCHISE: (id: string) => `${BASE_URL}/franchises/${id}`,
   // Used by the admin detail page instead of GET_FRANCHISE, so the
@@ -166,3 +165,4 @@ export const ENDPOINTS = {
     `${BASE_URL}/admin-notifications/${id}/read`,
   DELETE_NOTIFICATION: (id: string) => `${BASE_URL}/admin-notifications/${id}`,
 } as const;
+
