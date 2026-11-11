@@ -1,3 +1,4 @@
+import { playNotificationSound } from "./notificationSound";
 import { getApps, initializeApp } from "firebase/app";
 import {
   getMessaging,
@@ -80,6 +81,7 @@ const startForegroundListener = async () => {
   const messaging = getMessaging(getFirebaseApp());
 
   onMessage(messaging, (payload) => {
+    void playNotificationSound();
     if (Notification.permission === "granted") {
       showForegroundNotification(payload);
     }
